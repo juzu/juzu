@@ -49,15 +49,12 @@ public abstract class WebRequestContext {
     if (response.decorated) {
 
       //
-      AssetManager stylesheetManager;
-      AssetManager scriptManager;
+      AssetManager assetManager;
       ModuleManager moduleManager;
       if (assetPlugin != null) {
-        stylesheetManager = assetPlugin.getStylesheetManager();
-        scriptManager = assetPlugin.getScriptManager();
+        assetManager = assetPlugin.getAssetManager();
       } else {
-        stylesheetManager = null;
-        scriptManager = null;
+        assetManager = null;
       }
       
       if (amdPlugin != null) {
@@ -67,7 +64,7 @@ public abstract class WebRequestContext {
       }
 
       //
-      stream = new WebStream((HttpStream)stream, stylesheetManager, scriptManager, moduleManager) {
+      stream = new WebStream((HttpStream)stream, assetManager, moduleManager) {
         @Override
         public String renderAssetURL(AssetLocation location, String uri) {
           try {

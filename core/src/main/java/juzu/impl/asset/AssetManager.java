@@ -36,8 +36,11 @@ public class AssetManager {
   protected final HashMap<String, URL> resources = new HashMap<String, URL>();
 
   /**
-   * Attempt to add an asset to the manager, the manager will return the asset id
-   * if the asset was registered or null if it was not.
+   * <p>Attempt to add an asset to the manager, the manager will return the asset id
+   * if the asset was registered or null if it was not.</p>
+   *
+   * <p>When no asset id is specified, an asset id will be generated from the asset value by taking
+   * the longest trailing substring that contains no <code>/</code> char.</p>
    *
    * @param data the asset description
    * @param url the asset url
@@ -48,9 +51,11 @@ public class AssetManager {
   public String addAsset(AssetMetaData data, URL url) throws NullPointerException, IllegalArgumentException {
     String id = data.id;
 
-    // Use value hashcode if no id is provided
+    // Use asset value if no specific id specifed
     if (id == null) {
-      id = "" + data.getValue().hashCode();
+      String value = data.getValue();
+      int slash = value.lastIndexOf('/');
+      id = slash >= 0 ? value.substring(slash + 1) : value;
     }
 
     //

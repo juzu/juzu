@@ -23,42 +23,32 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A script asset.
+ * An asset definition.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({})
-public @interface Script {
+public @interface Asset {
 
   /**
-   * Returns the script id, the value is optional and has meaning when this script must be referenced (for instance as
-   * a dependency of another script).
-   *
-   * @return the script id
+   * @return the asset id, used for referencing this asset, the value is optional.
    */
   String id() default "";
 
   /**
-   * Return the script dependencies, i.e the script that should be executed before the script determined by this
-   * annotation.
-   *
-   * @return the dependencies
+   * @return the asset dependencies, i.e the asset that are needed by this asset.
    */
   String[] depends() default {};
 
   /**
-   * The script location.
-   *
-   * @return the location
+   * @return the asset location
    */
   AssetLocation location() default AssetLocation.APPLICATION;
 
   /**
-   * The script source.
-   *
-   * @return the source
+   * @return the value for resolving the asset
    */
-  String src();
+  String value();
 
 }

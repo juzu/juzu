@@ -48,25 +48,30 @@ import juzu.plugin.less.Less;
 This annotation triggers the compilation of the ##bootstrap.less## in the ##assets## package, the ##minified## parameter
 instruct Less to minify the resulting css.
 
-== Injecting CSS ==
+== Serving Stylesheet ==
 
 Now that we have worked out the CSS details we need to make our stylesheet available in the application page. The //asset//
 plugin will achieve this result for us. This plugin provides declarative configuration for the various assets required
 by an application. It works both for stylesheets and javascript, in this section we use it for stylesheet:
 
-{{example title="Injecting Bootstrap CSS in our application"}}
+{{example title="Declaring and serving Bootstrap CSS in our application"}}
 {{java}}
 @Application
-@Assets(stylesheets = @Stylesheet(
-  src = "/examples/tutorial/assets/bootstrap.css",
+@Assets(@Asset(
+  value = "/examples/tutorial/assets/bootstrap.css",
   location = AssetLocation.CLASSPATH)
 )
+@WithAssets
 package examples.tutorial.weather7;
 {{/java}}
 {{/example}}
 
-The usage is fairly straightforward with the ##@Assets## and ##Stylesheet## annotations. We configure the ##location## parameter
-to be ##CLASSPATH## because the Less plugin created it there.
+The usage is fairly straightforward with the ##@Assets## and ##WithAssets## annotations:
+
+* The ##@Assets## annotation declares the application assets
+* The ##@WithAssets## annotation declares the application to serve during a request
+
+We configure the ##location## parameter to be ##CLASSPATH## because the Less plugin created it there.
 
 == Bringing CSS to life ==
 

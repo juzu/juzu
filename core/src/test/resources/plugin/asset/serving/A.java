@@ -23,6 +23,6 @@ import juzu.View;
 public class A {
   @View
   public Response.Status index() {
-    return Response.ok("content");
+    return Response.ok("content").withAssets("test.js");
   }
 }

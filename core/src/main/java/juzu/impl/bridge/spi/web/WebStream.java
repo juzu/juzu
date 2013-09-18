@@ -54,10 +54,7 @@ public abstract class WebStream implements AsyncStream {
   private int status = BUFFERING;
 
   /** . */
-  private final AssetManager stylesheetManager;
-
-  /** . */
-  private final AssetManager scriptManager;
+  private final AssetManager assetManager;
   
   /** .*/
   private final ModuleManager moduleManager;
@@ -65,10 +62,9 @@ public abstract class WebStream implements AsyncStream {
   /** The current document being assembled. */
   private final Page page;
 
-  public WebStream(HttpStream stream, AssetManager stylesheetManager, AssetManager scriptManager, ModuleManager moduleManager) {
+  public WebStream(HttpStream stream, AssetManager assetManager, ModuleManager moduleManager) {
     this.stream = stream;
-    this.stylesheetManager = stylesheetManager;
-    this.scriptManager = scriptManager;
+    this.assetManager = assetManager;
     this.moduleManager = moduleManager;
     this.page = new Page();
   }
@@ -85,10 +81,8 @@ public abstract class WebStream implements AsyncStream {
           page.metaTags.add(((Map.Entry<String, String>)property.value));
         } else if (property.type == PropertyType.META_HTTP_EQUIV) {
           page.metaHttpEquivs.add(((Map.Entry<String, String>)property.value));
-        } else if (property.type == PropertyType.STYLESHEET) {
-          page.stylesheets.add(((String)property.value));
-        } else if (property.type == PropertyType.SCRIPT) {
-          page.scripts.add(((String)property.value));
+        } else if (property.type == PropertyType.ASSET) {
+          page.assets.add(((String)property.value));
         } else if (property.type == Module.TYPE) {
           page.modules.add(((Module)property.value));
         } else if (property.type == PropertyType.HEADER_TAG) {
@@ -98,13 +92,9 @@ public abstract class WebStream implements AsyncStream {
         }
       } else if (chunk instanceof Chunk.Data) {
         try {
-          if (page.stylesheets.size() > 0 && stylesheetManager != null) {
-            Iterable<Asset> stylesheetAssets =  stylesheetManager.resolveAssets(page.stylesheets);
-            Tools.addAll(page.stylesheetAssets, stylesheetAssets);
-          }
-          if (page.scripts.size() > 0 && scriptManager != null) {
-            Iterable<Asset> scriptAssets =  scriptManager.resolveAssets(page.scripts);
-            Tools.addAll(page.scriptAssets, scriptAssets);
+          if (page.assets.size() > 0 && assetManager != null) {
+            Iterable<Asset> resolvedAssets =  assetManager.resolveAssets(page.assets);
+            Tools.addAll(page.resolvedAssets, resolvedAssets);
           }
           status = STREAMING;
           page.sendHeader(stream);
@@ -176,7 +166,7 @@ public abstract class WebStream implements AsyncStream {
     private final LinkedList<Map.Entry<String, String>> metaHttpEquivs = new LinkedList<Map.Entry<String, String>>();
 
     /** . */
-    private final LinkedList<String> stylesheets = new LinkedList<String>();
+    private final LinkedList<String> assets = new LinkedList<String>();
 
     /** . */
     private final LinkedList<String> scripts = new LinkedList<String>();
@@ -185,19 +175,15 @@ public abstract class WebStream implements AsyncStream {
     private final LinkedList<Element> headerTags = new LinkedList<Element>();
 
     /** . */
-    private final LinkedList<Asset> scriptAssets = new LinkedList<Asset>();
+    private final LinkedList<Asset> resolvedAssets = new LinkedList<Asset>();
 
-    /** . */
-    private final LinkedList<Asset> stylesheetAssets = new LinkedList<Asset>();
-    
     /** .*/
     private final LinkedList<Module> modules = new LinkedList<Module>();
 
     void clear() {
       this.title = null;
       this.metaTags.clear();
-      this.stylesheetAssets.clear();
-      this.scriptAssets.clear();
+      this.assets.clear();
       this.headerTags.clear();
       this.modules.clear();
     }
@@ -233,25 +219,29 @@ public abstract class WebStream implements AsyncStream {
         stream.provide(Chunk.create(metaTag.getValue()));
         stream.provide(Chunk.create("\">\n"));
       }
-      for (Asset asset : stylesheetAssets) {
-        String path = asset.getURI();
-        int pos = path.lastIndexOf('.');
-        String ext = pos == -1 ? "css" : path.substring(pos + 1);
-        String url = renderAssetURL(asset.getLocation(), asset.getURI());
-        stream.provide(Chunk.create("<link rel=\"stylesheet\" type=\"text/"));
-        stream.provide(Chunk.create(ext));
-        stream.provide(Chunk.create("\" href=\""));
-        stream.provide(Chunk.create(url));
-        stream.provide(Chunk.create("\"></link>\n"));
+      for (Asset asset : resolvedAssets) {
+        if (asset.isStylesheet()) {
+          String path = asset.getURI();
+          int pos = path.lastIndexOf('.');
+          String ext = pos == -1 ? "css" : path.substring(pos + 1);
+          String url = renderAssetURL(asset.getLocation(), asset.getURI());
+          stream.provide(Chunk.create("<link rel=\"stylesheet\" type=\"text/"));
+          stream.provide(Chunk.create(ext));
+          stream.provide(Chunk.create("\" href=\""));
+          stream.provide(Chunk.create(url));
+          stream.provide(Chunk.create("\"></link>\n"));
+        }
       }
       if (!modules.isEmpty()) {
         renderAMD(modules, stream);
       }
-      for (Asset asset : scriptAssets) {
-        String url = renderAssetURL(asset.getLocation(), asset.getURI());
-        stream.provide(Chunk.create("<script type=\"text/javascript\" src=\""));
-        stream.provide(Chunk.create(url));
-        stream.provide(Chunk.create("\"></script>\n"));
+      for (Asset asset : resolvedAssets) {
+        if (asset.isScript()) {
+          String url = renderAssetURL(asset.getLocation(), asset.getURI());
+          stream.provide(Chunk.create("<script type=\"text/javascript\" src=\""));
+          stream.provide(Chunk.create(url));
+          stream.provide(Chunk.create("\"></script>\n"));
+        }
       }
 
       for (Element headerTag : headerTags) {

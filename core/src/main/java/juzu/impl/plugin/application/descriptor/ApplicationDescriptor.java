@@ -70,22 +70,11 @@ public class ApplicationDescriptor extends PluginDescriptor {
       Tools.safeClose(in);
     }
 
-    //
-    Class<?> packageClass;
-    try {
-      packageClass = applicationClass.getClassLoader().loadClass(applicationClass.getPackage().getName() + ".package-info");
-    }
-    catch (ClassNotFoundException e) {
-      AssertionError ae = new AssertionError("Cannot load package class");
-      ae.initCause(e);
-      throw ae;
-    }
-
     // Init this first before initing plugin so they can use it
     this.applicationClass = applicationClass;
     this.name = applicationClass.getSimpleName();
     this.packageName = applicationClass.getPackage().getName();
-    this.packageClass = packageClass;
+    this.packageClass = Tools.getPackageClass(applicationClass.getClassLoader(), applicationClass.getPackage().getName());
 
 
     //

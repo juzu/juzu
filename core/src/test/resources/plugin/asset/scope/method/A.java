@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-@Application()
-@Assets(
-    declaredScripts = @Script(id = "test", src = "test.js"),
-    declaredStylesheets = @Stylesheet(id = "main", src = "main.css")
-)
-package plugin.asset.declared;
+package plugin.asset.scope.method;
 
-import juzu.Application;
-import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
-import juzu.plugin.asset.Stylesheet;
+import juzu.Response;
+import juzu.View;
+import juzu.plugin.asset.WithAssets;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+  @View
+  @WithAssets("test.js")
+  public Response.Status index() {
+    return Response.ok("content");
+  }
+}

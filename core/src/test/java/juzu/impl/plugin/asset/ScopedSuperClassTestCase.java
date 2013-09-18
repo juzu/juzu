@@ -20,10 +20,10 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class DeclaredTestCase extends AbstractLocationTestCase {
+public class ScopedSuperClassTestCase extends AbstractScopedTestCase {
 
-  @Deployment
+  @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createLocationDeployment("plugin.asset.declared");
+    return createServletDeployment(true, "plugin.asset.scope.superclazz");
   }
 }

@@ -67,10 +67,7 @@ public class ApplicationRuntime<P, R> implements Closeable {
   private ApplicationDescriptor descriptor;
 
   /** . */
-  private AssetManager stylesheetManager;
-
-  /** . */
-  private AssetManager scriptManager;
+  private AssetManager assetManager;
 
   /** . */
   private InjectionContext<?, ?> injectionContext;
@@ -108,12 +105,8 @@ public class ApplicationRuntime<P, R> implements Closeable {
     return application != null ? application : null;
   }
 
-  public AssetManager getScriptManager() {
-    return scriptManager;
-  }
-
-  public AssetManager getStylesheetManager() {
-    return stylesheetManager;
+  public AssetManager getAssetManager() {
+    return assetManager;
   }
 
   public ApplicationDescriptor getDescriptor() {
@@ -185,8 +178,7 @@ public class ApplicationRuntime<P, R> implements Closeable {
 
     //
     this.injectionContext = injectionContext;
-    this.scriptManager = assetPlugin.getScriptManager();
-    this.stylesheetManager = assetPlugin.getStylesheetManager();
+    this.assetManager = assetPlugin.getAssetManager();
     this.descriptor = descriptor;
     this.application = application;
     this.classLoader = moduleLifeCycle.getClassLoader();
@@ -211,8 +203,7 @@ public class ApplicationRuntime<P, R> implements Closeable {
     Tools.safeClose(injectionContext);
     application = null;
     injectionContext = null;
-    stylesheetManager = null;
-    scriptManager = null;
+    assetManager = null;
     descriptor = null;
     classLoader = null;
   }

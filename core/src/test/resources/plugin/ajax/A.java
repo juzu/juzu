@@ -79,7 +79,7 @@ public class A {
       "});\n" +
       "</script>\n";
 
-    return Response.ok(content);
+    return Response.ok(content).withAssets("jquery");
   }
 
   @Ajax

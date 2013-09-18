@@ -36,7 +36,6 @@ import juzu.request.Phase;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,7 +50,6 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
   ControllerPlugin controllerPlugin;
 
   @Inject
-  @Named("juzu.asset_manager.script")
   AssetManager manager;
 
   public AjaxPlugin() {
@@ -111,7 +109,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
                 public void provide(Chunk chunk) {
                   if (chunk instanceof Chunk.Data && !done) {
                     done = true;
-                    stream.provide(new Chunk.Property<String>("juzu.ajax", PropertyType.SCRIPT));
+                    stream.provide(new Chunk.Property<String>("juzu.ajax", PropertyType.ASSET));
                     // FOR NOW WE DO WITH THE METHOD NAME
                     // BUT THAT SHOULD BE REVISED TO USE THE ID INSTEAD
                     StringBuilder sb = new StringBuilder();

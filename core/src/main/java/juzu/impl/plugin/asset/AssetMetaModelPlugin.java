@@ -46,7 +46,7 @@ import java.util.Set;
 public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
-  private static final String[] KINDS = {"scripts","declaredScripts","stylesheets","declaredStylesheets"};
+  private static final String[] KINDS = {"value"};
 
   /** . */
   private HashMap<ElementHandle.Package, AnnotationState> annotations = new HashMap<ElementHandle.Package, AnnotationState>();
@@ -71,9 +71,8 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   private List<JSON> build(List<Map<String, Object>> scripts) {
-    List<JSON> foo = Collections.emptyList();
-    if (scripts != null && scripts.size() > 0) {
-      foo = new ArrayList<JSON>(scripts.size());
+    List<JSON> foo = new ArrayList<JSON>();
+    if (scripts != null) {
       for (Map<String, Object> script : scripts) {
         JSON bar = new JSON();
         for (Map.Entry<String, Object> entry : script.entrySet()) {
@@ -98,7 +97,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
           for (AnnotationState script : scripts) {
             location = (String)script.get("location");
             if ((location == null && classpath) || AssetLocation.APPLICATION.equals(AssetLocation.safeValueOf(location))) {
-              String value = (String)script.get("src");
+              String value = (String)script.get("value");
               Path path = Path.parse(value);
               if (path.isRelative()) {
                 context.log("Found classpath asset to copy " + value);
@@ -145,10 +144,8 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
     AnnotationState annotation = annotations.get(application.getHandle());
     if (annotation != null) {
       JSON json = new JSON();
-      json.set("scripts", build((List<Map<String, Object>>)annotation.get("scripts")));
-      json.set("declaredScripts", build((List<Map<String, Object>>)annotation.get("declaredScripts")));
-      json.set("stylesheets", build((List<Map<String, Object>>)annotation.get("stylesheets")));
-      json.set("declaredStylesheets", build((List<Map<String, Object>>)annotation.get("declaredStylesheets")));
+      List<JSON> assets = build((List<Map<String, Object>>)annotation.get("value"));
+      json.set("assets", assets);
       json.set("package", "assets");
       json.set("location", annotation.get("location"));
       return json;

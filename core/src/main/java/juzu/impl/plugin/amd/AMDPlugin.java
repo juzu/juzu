@@ -24,7 +24,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
 
 import juzu.PropertyType;
 import juzu.asset.AssetLocation;
@@ -63,8 +62,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
   @Inject
-  @Named("juzu.asset_manager.script")
-  AssetManager scriptManager;
+  AssetManager assetManager;
 
   /** . */
   @Inject
@@ -181,9 +179,9 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
     }
 
     //
-    scriptManager.addAsset(new AssetMetaData("juzu.amd", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/require.js"),
+    assetManager.addAsset(new AssetMetaData("juzu.amd", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/require.js"),
         requirejsURL);
-    scriptManager.addAsset(new AssetMetaData("juzu.amd.wrapper", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/wrapper.js"),
+    assetManager.addAsset(new AssetMetaData("juzu.amd.wrapper", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/wrapper.js"),
         wrapperjsURL);
 
     //
@@ -238,8 +236,8 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
           status = new Result.Status(status.code, true, new StreamableDecorator(status.streamable) {
             @Override
             protected void sendHeader(Stream consumer) {
-              consumer.provide(new Chunk.Property<String>("juzu.amd", PropertyType.SCRIPT));
-              consumer.provide(new Chunk.Property<String>("juzu.amd.wrapper", PropertyType.SCRIPT));
+              consumer.provide(new Chunk.Property<String>("juzu.amd", PropertyType.ASSET));
+              consumer.provide(new Chunk.Property<String>("juzu.amd.wrapper", PropertyType.ASSET));
               for (Module define : defines) {
                 consumer.provide(new Chunk.Property<Module>(define, Module.TYPE));
               }

@@ -16,12 +16,12 @@
 
 @Application()
 @Assets(
-    scripts = @Script(src = "/plugin/asset/location/applicationabsolute/test.js"),
-    stylesheets = @Stylesheet(src = "/plugin/asset/location/applicationabsolute/main.css")
+    value = {
+        @Asset(id = "test.js", value = "/plugin/asset/location/applicationabsolute/test.js"),
+      @Asset(id = "main.css", value = "/plugin/asset/location/applicationabsolute/main.css") }
 )
 package plugin.asset.location.defaultabsolute;
 
 import juzu.Application;
+import juzu.plugin.asset.Asset;
 import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
-import juzu.plugin.asset.Stylesheet;

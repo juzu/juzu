@@ -153,6 +153,15 @@ public class Tools {
     }
   }
 
+  public static Class<?> getPackageClass(ClassLoader loader, String pkgName) {
+    try {
+      return loader.loadClass(pkgName + ".package-info");
+    }
+    catch (ClassNotFoundException e) {
+      return null;
+    }
+  }
+
   public static void escape(CharSequence s, StringBuilder appendable) {
     for (int i = 0;i < s.length();i++) {
       char c = s.charAt(i);

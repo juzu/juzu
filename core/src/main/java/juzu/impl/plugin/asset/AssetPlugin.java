@@ -19,6 +19,7 @@ package juzu.impl.plugin.asset;
 import juzu.PropertyType;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.Name;
+import juzu.impl.common.Tools;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
@@ -27,6 +28,7 @@ import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.common.JSON;
+import juzu.plugin.asset.WithAssets;
 import juzu.request.Result;
 import juzu.io.Chunk;
 import juzu.io.Stream;
@@ -35,26 +37,20 @@ import juzu.request.Phase;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.inject.Named;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
-  private String[] scripts;
-
-  /** . */
-  private String[] declaredScripts;
-
-  /** . */
-  private String[] stylesheets;
-
-  /** . */
-  private String[] declaredStylesheets;
+  private LinkedHashMap<String, Chunk.Property<String>> assets;
 
   /** . */
   private AssetDescriptor descriptor;
@@ -67,24 +63,14 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
   @Inject
-  @Named("juzu.asset_manager.script")
-  AssetManager scriptManager;
-
-  /** . */
-  @Inject
-  @Named("juzu.asset_manager.stylesheet")
-  AssetManager stylesheetManager;
+  AssetManager assetManager;
 
   public AssetPlugin() {
     super("asset");
   }
 
-  public AssetManager getScriptManager() {
-    return scriptManager;
-  }
-
-  public AssetManager getStylesheetManager() {
-    return stylesheetManager;
+  public AssetManager getAssetManager() {
+    return assetManager;
   }
 
   /**
@@ -99,30 +85,21 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
   @Override
   public PluginDescriptor init(PluginContext context) throws Exception {
     JSON config = context.getConfig();
-    List<AssetMetaData> scripts;
-    List<AssetMetaData> declaredScripts;
-    List<AssetMetaData> stylesheets;
-    List<AssetMetaData> declaredStylesheets;
     String assetsPath;
+    List<AssetMetaData> assets;
     if (config != null) {
       String packageName = config.getString("package");
       AssetLocation location = AssetLocation.safeValueOf(config.getString("location"));
       if (location == null) {
         location = AssetLocation.APPLICATION;
       }
-      scripts = load(packageName, location, config.getList("scripts", JSON.class));
-      declaredScripts = load(packageName, location, config.getList("declaredScripts", JSON.class));
-      stylesheets = load(packageName, location, config.getList("stylesheets", JSON.class));
-      declaredStylesheets = load(packageName, location, config.getList("declaredStylesheets", JSON.class));
+      assets = load(packageName, location, config.getList("assets", JSON.class));
       assetsPath = "/" + Name.parse(application.getPackageName()).append(packageName).toString().replace('.', '/') + "/";
     } else {
-      scripts = Collections.emptyList();
-      declaredScripts = Collections.emptyList();
-      stylesheets = Collections.emptyList();
-      declaredStylesheets = Collections.emptyList();
+      assets = Collections.emptyList();
       assetsPath = null;
     }
-    this.descriptor = new AssetDescriptor(scripts, declaredScripts, stylesheets, declaredStylesheets);
+    this.descriptor = new AssetDescriptor(assets);
     this.context = context;
     this.assetsPath = assetsPath;
     return descriptor;
@@ -145,7 +122,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
         }
 
         //
-        String value = script.getString("src");
+        String value = script.getString("value");
         if (!value.startsWith("/") && location == AssetLocation.APPLICATION) {
           value = "/" + application.getPackageName().replace('.', '/') + "/" + packageName.replace('.', '/') + "/" + value;
         }
@@ -165,10 +142,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
 
   @PostConstruct
   public void start() throws Exception {
-    this.scripts = process(descriptor.getScripts(), scriptManager);
-    this.declaredScripts = process(descriptor.getDeclaredScripts(), scriptManager);
-    this.stylesheets = process(descriptor.getStylesheets(), stylesheetManager);
-    this.declaredStylesheets = process(descriptor.getDeclaredStylesheets(), stylesheetManager);
+    this.assets = process(descriptor.getAssets());
   }
 
   public URL resolve(AssetLocation location, String path) {
@@ -182,8 +156,8 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     }
   }
 
-  private String[] process(List<AssetMetaData> data, AssetManager manager) throws Exception {
-    ArrayList<String> assets = new ArrayList<String>();
+  private LinkedHashMap<String, Chunk.Property<String>> process(List<AssetMetaData> data) throws Exception {
+    LinkedHashMap<String, Chunk.Property<String>> assets = new LinkedHashMap<String, Chunk.Property<String>>();
     for (AssetMetaData script : data) {
 
       // Validate assets
@@ -208,31 +182,72 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
       }
 
       //
-      String id = manager.addAsset(script, url);
-      assets.add(id);
+      String id = assetManager.addAsset(script, url);
+      assets.put(id, new Chunk.Property<String>(id, PropertyType.ASSET));
     }
 
     //
-    return assets.toArray(new String[assets.size()]);
+    return assets;
+  }
+
+  private Collection<Chunk.Property<String>> foo(AnnotatedElement elt, List<Chunk.Property<String>> bar) {
+    WithAssets decl = elt.getAnnotation(WithAssets.class);
+    if (decl != null) {
+      String[] value = decl.value();
+      for (String s : value) {
+        if (s.equals("*")) {
+          return assets.values();
+        } else {
+          Chunk.Property<String> p = assets.get(s);
+          if (p == null) {
+            throw new UnsupportedOperationException("handle me gracefully");
+          } else {
+            if (bar.size() == 0) {
+              bar = new ArrayList<Chunk.Property<String>>();
+            }
+            bar.add(p);
+          }
+        }
+      }
+    }
+    if (elt instanceof Method) {
+      Method methodElt = (Method)elt;
+      return foo(methodElt.getDeclaringClass(), bar);
+    } else if (elt instanceof Class<?>) {
+      Class<?> classElt = (Class<Object>)elt;
+      String pkgName;
+      if (classElt.getSimpleName().equals("package-info")) {
+        pkgName = Tools.parentPackageOf(Tools.parentPackageOf(classElt.getName()));
+      } else {
+        pkgName = Tools.parentPackageOf(classElt.getName());
+      }
+      while (pkgName != null) {
+        Class<?> currentPackage = Tools.getPackageClass(Thread.currentThread().getContextClassLoader(), pkgName);
+        if (currentPackage != null) {
+          return foo(currentPackage, bar);
+        } else {
+          pkgName = Tools.parentPackageOf(pkgName);
+        }
+      }
+      return bar;
+    } else {
+      return bar;
+    }
   }
 
   public void invoke(Request request) {
     request.invoke();
-
-    //
     if (request.getPhase() == Phase.VIEW) {
       Result result = request.getResult();
       if (result instanceof Result.Status) {
+        final Collection<Chunk.Property<String>> bar = foo(request.getMethod().getMethod(), Collections.<Chunk.Property<String>>emptyList());
         Result.Status status = (Result.Status)result;
-        if (status.decorated && (scripts.length > 0 || stylesheets.length > 0)) {
+        if (status.decorated && (bar.size() > 0)) {
           status = new Result.Status(status.code, true, new StreamableDecorator(status.streamable) {
             @Override
             protected void sendHeader(Stream consumer) {
-              for (String stylesheet : stylesheets) {
-                consumer.provide(new Chunk.Property<String>(stylesheet, PropertyType.STYLESHEET));
-              }
-              for (String script : scripts) {
-                consumer.provide(new Chunk.Property<String>(script, PropertyType.SCRIPT));
+              for (Chunk.Property<String> asset : bar) {
+                consumer.provide(asset);
               }
             }
           });

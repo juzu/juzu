@@ -32,6 +32,6 @@ public class A {
       "});\n" +
       "</script>\n" +
       "<a id='trigger' href='#'>click</a>";
-    return Response.ok(content);
+    return Response.ok(content).withAssets("jquery.js").withAssets("main.css");
   }
 }

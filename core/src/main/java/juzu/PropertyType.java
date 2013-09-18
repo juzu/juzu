@@ -30,11 +30,8 @@ import java.util.Map;
  */
 public abstract class PropertyType<T> {
 
-  /** Script. */
-  public static PropertyType<String> SCRIPT = new PropertyType<String>(){};
-
   /** Stylesheet. */
-  public static PropertyType<String> STYLESHEET = new PropertyType<String>(){};
+  public static PropertyType<String> ASSET = new PropertyType<String>(){};
 
   /** Title. */
   public static PropertyType<String> TITLE = new PropertyType<String>(){};

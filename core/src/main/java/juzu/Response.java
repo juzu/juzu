@@ -543,22 +543,12 @@ public abstract class Response {
       return with(PropertyType.TITLE, title);
     }
 
-    public Content withScripts(String... scripts) throws NullPointerException {
-      if (scripts == null) {
-        throw new NullPointerException("No null script accepted");
+    public Content withAssets(String... assets) throws NullPointerException {
+      if (assets == null) {
+        throw new NullPointerException("No null asset accepted");
       }
-      for (String script : scripts) {
-        with(PropertyType.SCRIPT, script);
-      }
-      return this;
-    }
-
-    public Content withStylesheets(String... stylesheets) throws NullPointerException {
-      if (stylesheets == null) {
-        throw new NullPointerException("No null stylesheet accepted");
-      }
-      for (String stylesheet : stylesheets) {
-        with(PropertyType.STYLESHEET, stylesheet);
+      for (String asset : assets) {
+        with(PropertyType.ASSET, asset);
       }
       return this;
     }

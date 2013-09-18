@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package plugin.asset.scope.superclazz;
 
-package plugin.asset.declared;
+import juzu.plugin.asset.WithAssets;
 
-import juzu.Response;
-import juzu.View;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-  @View
-  public Response.Content index() {
-    String content = "<a id='trigger' href='javascript:alert(foo)'>click</a>";
-    return Response.ok(content).withScripts("test").withStylesheets("main");
-  }
+/** @author Julien Viet */
+@WithAssets("test.js")
+public class Super {
 }

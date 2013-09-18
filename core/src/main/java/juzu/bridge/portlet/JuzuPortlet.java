@@ -343,23 +343,24 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
       AssetPlugin assetPlugin = (AssetPlugin)bridge.getApplication().getPlugin("asset");
       String contentType;
       InputStream in;
-      URL url = assetPlugin.getScriptManager().resolveAsset(path);
+      URL url = assetPlugin.getAssetManager().resolveAsset(path);
       if (url != null) {
-        contentType = "text/javascript";
+        if (path.endsWith(".css")) {
+          contentType = "text/css";
+        } else if (path.endsWith(".js")) {
+          contentType = "text/javascript";
+        } else {
+          contentType = null;
+        }
         in = url.openStream();
       } else {
         contentType = null;
         in = null;
       }
-      if (in == null) {
-        url = assetPlugin.getStylesheetManager().resolveAsset(path);
-        if (url != null) {
-          contentType = "text/css";
-          in = bridge.getApplication().getClassLoader().getResourceAsStream(path.substring(1));
-        }
-      }
       if (in != null) {
-        resp.setContentType(contentType);
+        if (contentType != null) {
+          resp.setContentType(contentType);
+        }
         Tools.copy(in, resp.getPortletOutputStream());
       } else {
         resp.addProperty(ResourceResponse.HTTP_STATUS_CODE, "404");

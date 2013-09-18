@@ -33,32 +33,11 @@ import java.lang.annotation.Target;
 public @interface Assets {
 
   /**
-   * The application scripts.
+   * The contained assets.
    *
-   * @return a list of scripts
+   * @return a list of assets
    */
-  Script[] scripts() default {};
-
-  /**
-   * Declare a set of scripts for the application, those scripts are not sent.
-   *
-   * @return the declared scripts
-   */
-  Script[] declaredScripts() default {};
-
-  /**
-   * The application stylesheets.
-   *
-   * @return a list of stylesheet
-   */
-  Stylesheet[] stylesheets() default {};
-
-  /**
-   * Declare a set of stylesheet for the application, those scripts are not sent.
-   *
-   * @return the declared stylesheets
-   */
-  Stylesheet[] declaredStylesheets() default {};
+  Asset[] value() default {};
 
   /**
    * The default asset location used by the contained assets when no location

@@ -16,12 +16,13 @@
 
 @Application()
 @Assets(
-    scripts = @Script(src = "/juzu/jquery.js", location = AssetLocation.SERVER),
-    stylesheets = @Stylesheet(src = "/juzu/main.css", location = AssetLocation.SERVER))
+    value = {
+        @Asset(id = "jquery.js", value = "/juzu/jquery.js", location = AssetLocation.SERVER),
+        @Asset(id = "main.css", value = "/juzu/main.css", location = AssetLocation.SERVER)
+    })
 package plugin.asset.location.serverabsolute;
 
 import juzu.Application;
 import juzu.asset.AssetLocation;
+import juzu.plugin.asset.Asset;
 import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
-import juzu.plugin.asset.Stylesheet;

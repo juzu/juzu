@@ -16,15 +16,17 @@
 
 @Application
 @Assets(
-    scripts = {
-        @Script(id = "test", src = "test.js"),
-        @Script(id = "absolute", src = "/asset/absolute/script.js"),
-        @Script(id = "url", src = "http://localhost:8080/foo.js", location = AssetLocation.URL)
+    value = {
+        @Asset(id = "test", value = "test.js"),
+        @Asset(id = "absolute", value = "/asset/absolute/script.js"),
+        @Asset(id = "url", value = "http://localhost:8080/foo.js", location = AssetLocation.URL)
     }
 )
+@WithAssets
 package asset;
 
 import juzu.Application;
 import juzu.asset.AssetLocation;
+import juzu.plugin.asset.Asset;
 import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.Script;
+import juzu.plugin.asset.WithAssets;
