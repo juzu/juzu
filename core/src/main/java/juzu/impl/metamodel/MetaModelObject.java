@@ -82,11 +82,28 @@ public class MetaModelObject implements Serializable {
     return list;
   }
 
-  public final <O extends MetaModelObject> O addChild(Key<O> key, O child) throws IllegalArgumentException, IllegalStateException {
+  /**
+   * Add a child to this object.
+   *
+   * @param key the child key
+   * @param child the child object
+   * @param <O> the child parameter type
+   * @return the child
+   * @throws NullPointerException if any argument is null
+   * @throws IllegalArgumentException when the child is already added or a child with the same name already exists
+   * @throws IllegalStateException when a cycle is detected when creating a graph
+   */
+  public final <O extends MetaModelObject> O addChild(Key<O> key, O child) throws NullPointerException, IllegalArgumentException, IllegalStateException {
     return (O)_addChild(key, child);
   }
 
-  private MetaModelObject _addChild(Key key, MetaModelObject child) throws IllegalArgumentException, IllegalStateException {
+  private MetaModelObject _addChild(Key key, MetaModelObject child) throws NullPointerException, IllegalArgumentException, IllegalStateException {
+    if (key == null) {
+      throw new NullPointerException("No null key accepted");
+    }
+    if (child == null) {
+      throw new NullPointerException("No null child accepted");
+    }
     if (closure(child, new HashSet<MetaModelObject>()).contains(this)) {
       throw new IllegalStateException("Cycle detected");
     }

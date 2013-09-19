@@ -22,7 +22,7 @@ import org.junit.Test;
 import java.util.LinkedList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MetaModelTestCase extends AbstractTestCase {
+public class MetaModelTestCase extends AbstractTestCase {
   
   /** . */
   private static final Key<MetaModelObject> A = Key.of("a", MetaModelObject.class);
@@ -129,6 +129,19 @@ public abstract class MetaModelTestCase extends AbstractTestCase {
     Simple b = context.create("b");
     a.addChild(B, b);
 
+  }
+
+  @Test
+  public void testCycleDetection() {
+    Simple a = context.create("a");
+    Simple b = context.create("b");
+    a.addChild(B, b);
+    try {
+      b.addChild(A, a);
+      fail("Was expecting cycle detection");
+    }
+    catch (IllegalStateException ok) {
+    }
   }
 
   static class Simple extends MetaModelObject {
