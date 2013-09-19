@@ -16,12 +16,42 @@
 
 package juzu.impl.plugin.template.metamodel;
 
-import juzu.impl.metamodel.MetaModelObject;
+import juzu.impl.common.JSON;
+import juzu.impl.common.Path;
+import juzu.impl.compiler.ElementHandle;
 
 /**
  * A reference to a template.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class TemplateRefMetaModel extends MetaModelObject {
+public class ElementTemplateRefMetaModel extends TemplateRefMetaModel {
+
+  /** . */
+  final ElementHandle.Field handle;
+
+  /** The path declaration. */
+  final Path.Relative path;
+
+  ElementTemplateRefMetaModel(
+      ElementHandle.Field handle,
+      Path.Relative path) {
+    this.handle = handle;
+    this.path = path;
+  }
+
+  public ElementHandle.Field getHandle() {
+    return handle;
+  }
+
+  public Path.Relative getPath() {
+    return path;
+  }
+
+  public JSON toJSON() {
+    JSON json = new JSON();
+    json.set("handle", handle);
+    json.set("template", getChild(TemplateMetaModel.KEY));
+    return json;
+  }
 }

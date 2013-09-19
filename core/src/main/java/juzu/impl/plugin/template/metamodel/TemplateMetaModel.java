@@ -16,22 +16,26 @@
 
 package juzu.impl.plugin.template.metamodel;
 
+import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
+import juzu.impl.template.spi.Template;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * A template.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class TemplateMetaModel extends MetaModelObject {
+public class TemplateMetaModel extends TemplateRefMetaModel {
 
   /** . */
   public static final MessageCode CANNOT_WRITE_TEMPLATE_STUB = new MessageCode("CANNOT_WRITE_TEMPLATE_STUB", "The template stub %1$s cannot be written");
@@ -70,12 +74,62 @@ public class TemplateMetaModel extends MetaModelObject {
   /** . */
   final Path.Relative path;
 
+  /** . */
+  int refCount;
+
+  /** The related template. */
+  Template<?> template;
+
   public TemplateMetaModel(Path.Relative path) {
     this.path = path;
+    this.template = null;
+    this.refCount = 0;
   }
 
   public TemplatesMetaModel getTemplates() {
     return templates;
+  }
+
+  /**
+   * Compute the element references to this template.
+   *
+   * @return the ancestors
+   */
+  public Collection<ElementTemplateRefMetaModel> getElementReferences() {
+    Collection<TemplateRefMetaModel> refs = getReferences();
+    for (Iterator<TemplateRefMetaModel> i = refs.iterator();i.hasNext();) {
+      if (i.next() instanceof TemplateMetaModel) {
+        i.remove();
+      }
+    }
+    // Safe cast as the collection now only contains instances of ElementTemplateRefMetaModel
+    return (Collection)refs;
+  }
+
+  /**
+   * Compute the references to this template.
+   *
+   * @return the ancestors
+   */
+  public Collection<TemplateRefMetaModel> getReferences() {
+    HashSet<TemplateRefMetaModel> refs = new HashSet<TemplateRefMetaModel>();
+    buildReferences(refs);
+    return refs;
+  }
+
+  private void buildReferences(HashSet<TemplateRefMetaModel> refs) {
+    for (MetaModelObject parent : getParents()) {
+      if (parent instanceof TemplateRefMetaModel) {
+        TemplateRefMetaModel parentRef = (TemplateRefMetaModel)parent;
+        if (!refs.contains(parentRef)) {
+          refs.add(parentRef);
+          if (parentRef instanceof TemplateMetaModel) {
+            TemplateMetaModel parentTemplate = (TemplateMetaModel)parentRef;
+            parentTemplate.buildReferences(refs);
+          }
+        }
+      }
+    }
   }
 
   public Path.Relative getPath() {
@@ -99,9 +153,6 @@ public class TemplateMetaModel extends MetaModelObject {
     return refs;
   }
 
-  /** . */
-  int refCount = 0;
-
   @Override
   protected void postAttach(MetaModelObject parent) {
     if (parent instanceof TemplatesMetaModel) {
@@ -116,9 +167,10 @@ public class TemplateMetaModel extends MetaModelObject {
   @Override
   protected void preDetach(MetaModelObject parent) {
     if (parent instanceof TemplatesMetaModel) {
-      templates.resolver.removeTemplate(path);
-      queue(MetaModelEvent.createRemoved(this, templates.application.getHandle()));
+      ElementHandle.Package handle = templates.application.getHandle();
       this.templates = null;
+      this.template = null;
+      queue(MetaModelEvent.createRemoved(this, handle));
     }
     else if (parent instanceof TemplateRefMetaModel) {
       refCount--;

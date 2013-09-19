@@ -19,9 +19,7 @@ package juzu.impl.plugin.template.metamodel;
 import juzu.impl.common.Timestamped;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingException;
-import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.plugin.controller.metamodel.ControllerMetaModel;
 import juzu.impl.plugin.controller.metamodel.MethodMetaModel;
 import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
 import juzu.impl.plugin.controller.metamodel.ParameterMetaModel;
@@ -35,55 +33,67 @@ import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.Path;
 
 import javax.tools.FileObject;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class ModelTemplateProcessContext extends ProcessContext {
+class MetaModelProcessContext extends ProcessContext {
 
   /** . */
-  private TemplateMetaModel templateMetaModel;
+  private TemplatesMetaModel owner;
 
   /** . */
   private final ProcessingContext env;
 
-  ModelTemplateProcessContext(
-    TemplateMetaModel templateMetaModel,
-    Map<Path, Template<?>> templates,
-    ProcessingContext env) {
-    super(templates);
-    this.templateMetaModel = templateMetaModel;
-    this.env = env;
+  MetaModelProcessContext(TemplatesMetaModel owner) {
+    this.owner = owner;
+    this.env = owner.application.getProcessingContext();
   }
 
-  Collection<Template<?>> resolve(final TemplateMetaModel metaModel) {
-    ElementHandle.Field handle = templateMetaModel.getRefs().iterator().next().getHandle();
-    return env.executeWithin(handle, new Callable<Collection<Template<?>>>() {
-      public Collection<Template<?>> call() throws Exception {
-        Set<Path> keys = new HashSet<Path>(templates.keySet());
-        resolveTemplate(metaModel.getPath());
-        Map<Path, Template<?>> copy = new HashMap<Path, Template<?>>(templates);
-        copy.keySet().removeAll(keys);
-        return copy.values();
-      }
-    });
+  void resolve(final TemplateMetaModel metaModel) {
+    resolveTemplate(metaModel.getPath());
+  }
+
+  @Override
+  protected <M extends Serializable> Template<M> getTemplate(Path.Relative path) {
+    TemplateMetaModel tmm = owner.get(path);
+    if (tmm != null) {
+      return (Template<M>)tmm.template;
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  protected <M extends Serializable> void registerTemplate(Template<M> template) {
+    TemplateMetaModel related = owner.add(template.getRelativePath());
+    if (related.template != null) {
+      throw new UnsupportedOperationException("todo");
+    } else {
+      related.template = template;
+    }
+  }
+
+  @Override
+  protected <M extends Serializable> void register(Path.Relative originPath, Template<M> template) {
+    if (originPath != null) {
+      TemplateMetaModel a = owner.get(template.getRelativePath());
+      TemplateMetaModel b = owner.get(originPath);
+      b.addChild(TemplateMetaModel.KEY, a);
+    }
   }
 
   @Override
   protected TemplateProvider resolverProvider(String ext) {
-    return templateMetaModel.getTemplates().plugin.providers.get(ext);
+    return owner.plugin.providers.get(ext);
   }
 
   @Override
   public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws ProcessingException {
-    MethodMetaModel method = templateMetaModel.getTemplates().getApplication().getChild(ControllersMetaModel.KEY).resolve(typeName, methodName, parameterMap.keySet());
+    MethodMetaModel method = owner.getApplication().getChild(ControllersMetaModel.KEY).resolve(typeName, methodName, parameterMap.keySet());
 
     //
     if (method == null) {
@@ -102,12 +112,11 @@ class ModelTemplateProcessContext extends ProcessContext {
   }
 
   @Override
-  protected Resource<Timestamped<Content>> resolveResource(Path.Relative path) {
-    TemplatesMetaModel tmm = templateMetaModel.getTemplates();
-    FileObject resource = tmm.application.resolveResource(TemplatesMetaModel.LOCATION, path);
+  public Resource<Timestamped<Content>> resolveResource(Path.Relative path) {
+    FileObject resource = owner.application.resolveResource(TemplatesMetaModel.LOCATION, path);
     if (resource != null) {
       try {
-        Path.Absolute foo = templateMetaModel.getTemplates().resolvePath(path);
+        Path.Absolute foo = owner.resolvePath(path);
         byte[] bytes = Tools.bytes(resource.openInputStream());
         long lastModified = resource.getLastModified();
         Timestamped<Content> content = new Timestamped<Content>(lastModified, new Content(bytes, Charset.defaultCharset()));

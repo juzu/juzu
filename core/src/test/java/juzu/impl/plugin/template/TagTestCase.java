@@ -18,10 +18,10 @@ package juzu.impl.plugin.template;
 
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.template.spi.EmitContext;
+import juzu.impl.template.spi.SimpleProcessContext;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateEmitter;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.impl.template.spi.juzu.compiler.EmitPhase;
-import juzu.impl.template.spi.ProcessContext;
 import juzu.impl.template.spi.juzu.compiler.ProcessPhase;
 import juzu.impl.template.spi.Template;
 import juzu.impl.plugin.template.metadata.TemplateDescriptor;
@@ -112,7 +112,6 @@ public class TagTestCase extends AbstractInjectTestCase {
     TemplateDescriptor desc = app.getLifeCycle().resolveBean(TemplatePlugin.class).getDescriptor().getTemplate("foo.gtmpl");
     assertNotNull(desc);
     Template<?> foo = new Template<ASTNode.Template>(
-      (Path.Relative)Path.parse("index.gtmpl"),
       new ASTNode.Template(),
       (Path.Relative)Path.parse(desc.getType().getName().replace('.', '/') + "/foo.gtmpl"),
       (Path.Absolute)Path.parse("/" + desc.getType().getName().replace('.', '/') + "/foo.gtmpl"),
@@ -121,13 +120,12 @@ public class TagTestCase extends AbstractInjectTestCase {
     //
     HashMap<Path, Template<?>> templates = new HashMap<Path, Template<?>>();
     templates.put(Path.parse("foo.gtmpl"), foo);
-    ProcessPhase process = new ProcessPhase(new ProcessContext(templates) {
+    ProcessPhase process = new ProcessPhase(new SimpleProcessContext(templates) {
       @Override
       public <A extends Serializable> Template<A> resolveTemplate(Path.Relative originPath, Path.Relative path) {
         if (path.getCanonical().equals("index.gtmpl")) {
           try {
             return (Template<A>)new Template<ASTNode.Template>(
-              path,
               ASTNode.Template.parse("#{decorate path=foo.gtmpl/}juu"),
               (Path.Relative)Path.parse("plugin/template/tag/decorate/templates/index.gtmpl"),
               (Path.Absolute)Path.parse("/plugin/template/tag/decorate/templates/index.gtmpl"),

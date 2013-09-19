@@ -16,18 +16,25 @@
 
 package juzu.impl.plugin.template.metamodel;
 
+import juzu.impl.common.Logger;
 import juzu.impl.common.Name;
+import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
+import juzu.impl.template.spi.Template;
 
+import javax.tools.FileObject;
 import java.util.Iterator;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TemplatesMetaModel extends MetaModelObject implements Iterable<TemplateMetaModel> {
+
+  /** . */
+  private static final Logger log = BaseProcessor.getLogger(TemplateEmitter.class);
 
   /** . */
   public final static Key<TemplatesMetaModel> KEY = Key.of(TemplatesMetaModel.class);
@@ -42,7 +49,7 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
   private Name qn;
 
   /** . */
-  TemplateResolver resolver;
+  TemplateEmitter emitter;
 
   /** . */
   TemplateMetaModelPlugin plugin;
@@ -85,14 +92,60 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
     }
   }
 
+  void resolve() {
+
+    // Evict templates that are out of date
+    log.log("Synchronizing existing templates");
+    for (TemplateMetaModel child : getChildren(TemplateMetaModel.class)) {
+      if (child.template != null) {
+        Template<?> template = child.template;
+        FileObject resource = application.resolveResource(TemplatesMetaModel.LOCATION, template.getRelativePath());
+        if (resource == null) {
+          // That will generate a template not found error
+          child.template = null;
+          log.log("Detected template removal " + template.getRelativePath());
+        }
+        else if (resource.getLastModified() > template.getLastModified()) {
+          // That will force the regeneration of the template
+          child.template = null;
+          log.log("Detected stale template " + template.getRelativePath());
+        }
+        else {
+          log.log("Template " + template.getRelativePath() + " is valid");
+        }
+      }
+    }
+
+    //
+    for (TemplateMetaModel child : getChildren(TemplateMetaModel.class)) {
+      if (child.template == null) {
+
+        MetaModelProcessContext processContext = new MetaModelProcessContext(this);
+
+        //
+        processContext.resolve(child);
+      }
+    }
+
+  }
+
   public TemplateRefMetaModel add(ElementHandle.Field handle, Path.Relative path) {
-    TemplateRefMetaModel ref = addChild(Key.of(handle, TemplateRefMetaModel.class), new TemplateRefMetaModel(handle, path));
+    TemplateRefMetaModel ref = addChild(Key.of(handle, TemplateRefMetaModel.class), new ElementTemplateRefMetaModel(handle, path));
+    return add(ref, path);
+  }
+
+  public TemplateMetaModel add(TemplateRefMetaModel ref, Path.Relative path) {
+    TemplateMetaModel template = add(path);
+    ref.addChild(TemplateMetaModel.KEY, template);
+    return template;
+  }
+
+  public TemplateMetaModel add(Path.Relative path) {
     TemplateMetaModel template = getChild(Key.of(path, TemplateMetaModel.class));
     if (template == null) {
       template = addChild(Key.of(path, TemplateMetaModel.class), new TemplateMetaModel(path));
     }
-    ref.addChild(TemplateMetaModel.KEY, template);
-    return ref;
+    return template;
   }
 
   public void remove(TemplateMetaModel template) {
@@ -107,7 +160,7 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
     if (parent instanceof ApplicationMetaModel) {
       this.application = (ApplicationMetaModel)parent;
       this.qn = application.getName().append(LOCATION);
-      this.resolver = new TemplateResolver(application);
+      this.emitter = new TemplateEmitter(this);
     }
   }
 }
