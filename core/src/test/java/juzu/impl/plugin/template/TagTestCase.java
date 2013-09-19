@@ -66,6 +66,17 @@ public class TagTestCase extends AbstractInjectTestCase {
   }
 
   @Test
+  public void testDecorateNested() throws Exception {
+    MockApplication<?> app = application("plugin.template.tag.decoratenested").init();
+
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    String out = render.assertStringResult();
+    assertEquals("<juu><foo>bar</foo></juu>", out);
+  }
+
+  @Test
   public void testInclude() throws Exception {
     MockApplication<?> app = application("plugin.template.tag.include").init();
 

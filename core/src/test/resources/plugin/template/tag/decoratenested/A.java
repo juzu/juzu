@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 
-package juzu.impl.tags;
+package plugin.template.tag.decoratenested;
 
-import juzu.template.Renderable;
-import juzu.template.TagHandler;
-import juzu.template.TemplateRenderContext;
+import juzu.Path;
+import juzu.Response;
+import juzu.View;
+import juzu.template.Template;
 
-import java.io.IOException;
-import java.util.Map;
+import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class InsertTag extends TagHandler {
+public class A {
 
-  @Override
-  public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException {
-    Renderable body_ = DecorateTag.current.get().peekLast();
-    if (body_ != null) {
-      DecorateTag.current.get().removeLast();
-      try {
-        body_.render(context);
-      }
-      finally {
-        DecorateTag.current.get().addLast(body);
-      }
-    }
+  @Path("index.gtmpl")
+  @Inject
+  Template index;
+
+  @View
+  public Response.Content index() {
+    return index.ok();
   }
 }
