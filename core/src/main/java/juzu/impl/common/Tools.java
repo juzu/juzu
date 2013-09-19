@@ -212,10 +212,11 @@ public class Tools {
     }
   }
 
-  public static <E> void addAll(Collection<? super E> collection, Iterable<E> elements) {
+  public static <C extends Collection<? super E>, E> C addAll(C collection, Iterable<E> elements) {
     for (E element : elements) {
       collection.add(element);
     }
+    return collection;
   }
 
   public static <T> List<T> safeUnmodifiableList(T... list) {

@@ -16,29 +16,30 @@
 
 package juzu.impl.plugin.asset;
 
-import juzu.impl.common.Tools;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import juzu.test.AbstractWebTestCase;
+import juzu.test.UserAgent;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 
-import java.net.HttpURLConnection;
+import java.util.Arrays;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class UnsatisfiedTestCase extends AbstractWebTestCase {
-
-  @Deployment(testable = false)
+public class TransitivityTestCase extends AbstractWebTestCase {
+  @Deployment
   public static WebArchive createDeployment() {
-    return createServletDeployment(true, "plugin.asset.unsatisfied");
+    return createServletDeployment(true, "plugin.asset.transitivity");
   }
 
   @Test
-  public void testWhat() throws Exception {
-    HttpURLConnection conn = (HttpURLConnection)applicationURL().openConnection();
-    conn.connect();
-    assertEquals(500, conn.getResponseCode());
-    String ret = Tools.read(conn.getErrorStream());
-    assertTrue(ret.contains("Cannot resolve asset"));
-    assertTrue(ret.contains("foo"));
+  @RunAsClient
+  public void testSatisfied() throws Exception {
+    UserAgent ua = assertInitialPage();
+    HtmlPage page = ua.getHomePage();
+    List<String> alerts = ua.getAlerts(page);
+    assertEquals(Arrays.asList("bar", "foo"), alerts);
   }
 }
