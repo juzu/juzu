@@ -36,14 +36,19 @@ import java.net.URL;
 @RunWith(Arquillian.class)
 public abstract class WeatherTestCase {
 
+  // tag::deploymentURL[]
   @ArquillianResource
   URL deploymentURL;
+  // end::deploymentURL[]
 
+  // tag::driver[]
   @Drone
   WebDriver driver;
+  // end::driver[]
 
   public abstract URL getApplicationURL(String application);
 
+  // tag::testWeather1[]
   @Test
   @RunAsClient
   public void testWeather1() throws Exception {
@@ -52,6 +57,7 @@ public abstract class WeatherTestCase {
     WebElement body = driver.findElement(By.tagName("body"));
     assertTrue(body.getText().contains("The weather application")); // <2> Check markup is correct
   }
+  // end::testWeather1[]
 
   @Test
   @RunAsClient

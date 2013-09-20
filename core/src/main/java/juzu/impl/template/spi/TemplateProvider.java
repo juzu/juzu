@@ -27,6 +27,7 @@ import java.io.Serializable;
  */
 public abstract class TemplateProvider<M extends Serializable> {
 
+  // tag::getSourceExtension[]
   /**
    * Returns the template source extension without the dot recognised by
    * this provider. For instance it should return <code>gtmpl</code>
@@ -35,14 +36,18 @@ public abstract class TemplateProvider<M extends Serializable> {
    * @return the source extension
    */
   public abstract String getSourceExtension();
+  // end::getSourceExtension[]
 
+  // tag::getTemplateStubType[]
   /**
    * Return the template stub type.
    *
    * @return the template stub class
    */
   public abstract Class<? extends TemplateStub> getTemplateStubType();
+  // end::getTemplateStubType[]
 
+  // tag::parse[]
   /**
    * Parse the provided char sequence and return the corresponding template model.
    *
@@ -54,7 +59,9 @@ public abstract class TemplateProvider<M extends Serializable> {
   public abstract M parse(
       ParseContext context,
       CharSequence source) throws TemplateException;
+  // end::parse[]
 
+  // tag::process[]
   /**
    * Process the template.
    *
@@ -65,7 +72,9 @@ public abstract class TemplateProvider<M extends Serializable> {
   public abstract void process(
       ProcessContext context,
       Template<M> template) throws TemplateException;
+  // end::process[]
 
+  // tag::emit[]
   /**
    * Provide an opportunity for emitting a file on the disk.
    *
@@ -77,5 +86,6 @@ public abstract class TemplateProvider<M extends Serializable> {
   public abstract void emit(
       EmitContext context,
       Template<M> template) throws TemplateException, IOException;
+  // end::emit[]
 
 }

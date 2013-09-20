@@ -1,0 +1,59 @@
+The next step is to make our application obtain real data instead of the hardcoded values we used in the
+previous section. For this matter we use a remote service that we encapsulate into the +WeatherService+.
+
+[source,java]
+----
+include::{sourcesdir}/examples/tutorial/WeatherService.java[tags=classdef]
+----
+
+Juzu uses dependency injection to interact with a service layer. The http://jcp.org/en/jsr/detail?id=330[JSR-330],
+ also knowns as +@Inject+, defines an API for dependency injection. The +WeatherService+ is injected in the
+ controller with the +weatherService+ field annotated with the +@Inject+ annotation:
+
+[source,java]
+----
+include::{sourcesdir}/examples/tutorial/weather3/Weather.java[tags=weatherService]
+----
+
+This service is then simply used into our controller +index()+ method:
+
+[source,java]
+----
+include::{sourcesdir}/examples/tutorial/weather3/Weather.java[tags=index]
+----
+
+As we can see, Juzu relies on the portable +@Inject+ annotation to declare sinjections. Injection is performed by the
+dependency injection container. At the moment the following containers are supported:
+
+  * http://www.springsource.org/[Spring Framework]
+  * http://seamframework.org/Weld[JBoss Weld]
+  * http://code.google.com/p/google-guice/wiki/Guice30[Google Guice 3.0]
+
+By default it uses the _Weld_ container, if you want instead to use _Spring_ container instead the configuration
+is done by a init param defined in the deployment descriptor:
+
+.Using Spring IOC in a servlet
+[source,xml]
+----
+<init-param>
+  <param-name>juzu.inject</param-name>
+  <param-value>spring</param-value>
+</init-param>
+----
+
+The same can be achieved for a portlet of course:
+
+.Using Spring IOC in a portlet
+[source,xml]
+----
+<init-param>
+  <name>juzu.inject</name>
+  <value>spring</value>
+</init-param>
+----
+
+In the case of _Spring_ injection, the file _spring.xml_ file is needed, it contains the service declarations for
+the Spring container.
+
+Juzu provides more advanced dependency injection, in particular it uses the +Qualifier+ and +Scope+ features defined
+  by the JSR-330 specification, however they are not covered in this tutorial.

@@ -1,0 +1,103 @@
+== Juzu Portlet Plugin
+
+The portlet plugin enhance Juzu portlet applications.
+
+=== Portlet class generation
+
+A Juzu portlet application is managed by a +JuzuPortlet+ configured with the application name. The
++@juzu.plugin.portlet.Portlet+ annotation can be used to generate a subclass of the +JuzuPortlet+ that configures
+the application name for you, easing the configuration of the _portlet.xml_ corresponding section.
+
+[source,java]
+----
+@Portlet
+package my;
+----
+
+[source,xml]
+----
+<portlet>
+  <portlet-name>MyApplication</portlet-name>
+  <display-name xml:lang="EN">My Application</display-name>
+  <portlet-class>myapp.MyPortlet</portlet-class>
+  <supports>
+    <mime-type>text/html</mime-type>
+  </supports>
+  <portlet-info>
+    <title>My Application</title>
+  </portlet-info>
+</portlet>
+----
+
+The plugin will generate the portlet using the application name with the first letter capitalized and the _Portlet_ suffix.
+In our example the _my_ application generates the +MyPortlet+ class. If you don't like it you can change the name of the
+generated class in the application:
+
+[source,java]
+----
+@Portlet(name "MyGreatPortlet")
+package my;
+----
+
+[source,xml]
+----
+<portlet>
+  <portlet-name>MyApplication</portlet-name>
+  <display-name xml:lang="EN">My Application</display-name>
+  <portlet-class>myapp.MyGreatPortlet</portlet-class>
+  <supports>
+    <mime-type>text/html</mime-type>
+  </supports>
+  <portlet-info>
+    <title>My Application</title>
+  </portlet-info>
+</portlet>
+----
+
+=== Portlet preferences injection
+
+During the various phase of an application, the current portlet preferences can be injected::
+
+.Injecting portlet preferences
+[source,java]
+----
+@Inject javax.portlet.PortletPreferences preferences;
+----
+
+NOTE: The same restriction defined in the portlet specification applies to the provided preferences object: i.e saving preferences
+can only be performed during an action phase.
+
+=== Resource bundle injection
+
+During the various phase of an application, the portlet resource bundle for the current locale can be injected:
+
+.Injecting the portlet resource bundle
+[source,java]
+----
+@Inject java.util.ResourceBundle bundle;
+----
+
+This is equivalent of doing:
+
+[source,java]
+----
+Locale locale = request.getLocale();
+ResourceBundle bundle = portlet.getConfig().getResourceBundle(locale);
+----
+
+This resource bundle can be configured in the _portlet.xml_ deployment descriptor.
+
+=== Building
+
+Add the Portlet plugin jar to your compilation classpath.
+
+In Maven it can achieved by adding the Less plugin dependency to your POM:
+
+[source,xml]
+----
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-plugins-portlet</artifactId>
+  <version>$[juzu.version]</version>
+</dependency>
+----

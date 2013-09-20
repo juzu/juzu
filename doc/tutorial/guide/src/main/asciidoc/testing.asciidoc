@@ -1,0 +1,98 @@
+The last chapter of our tutorial will teach you how to test a Juzu application. Juzu applications can be tested
+using existing tools, we will use in this chapter the following tools:
+
+* http://www.junit.org[JUnit 4]
+* http://arquillian.org[Arquillian] : a framework for managing web containers
+* http://www.jboss.org/shrinkwrap[ShrinkWrap]: Arquillian's little brother for creating Java archives easily
+* http://seleniumhq.org/docs/03_webdriver.html[Selenium WebDriver] : a simple API for simulating browser behavior
+
+For making testing easy, Juzu provides a  Maven dependencies containing all the required dependencies for
+testing an application:
+
+[source,xml]
+----
+<dependency>
+  <groupId>junit</groupId>
+  <artifactId>junit</artifactId>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-bom-arquillian</artifactId>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-bom-arquillian-tomcat7</artifactId>
+  <scope>test</scope>
+</dependency>
+----
+
+The _juzu-bom-arquillian_ and _juzu-bom-arquillian-tomcat7_ provides setup for Arquillian and Selenium for Tomcat7
+based testing.
+
+== Setting up the test
+
+Let's start by setting up our test class with Arquillian, the goal is to run the Weather application during the
+test. We will rely on the http://tomcat.apache.org[Tomcat] servlet container for running our application and
+on the Arquillian framework for starting and stopping Tomcat. Arquillian provides a JUnit runner for managing
+a web container during a unit test:
+
+.Using the Arquillian runner
+[source,java]
+----
+@RunWith(Arquillian.class)
+public class WeatherTestCase {
+}
+----
+
+NOTE: Arquillian supports also the TestNG framework
+
+This only setup Tomcat during the test, we need to deploy the Weather application and for this we use Arquillian
+ +@Deployment+ annotation and we return a ShrinkWrap +WebArchive+ object that will be deployed in Tomcat
+by Arquillian. +WebArchive+ are easy to build programmatically, however we will use an helper provided by Juzu
+to build the base archive:
+
+.Application deployment
+[source,java]
+----
+include::{sourcesdir}/examples/tutorial/WeatherServletTestCase.java[tags=deployment]
+----
+
+For testing our application we will use Selenium WebDriver managed by Arquillian. Arquillian can inject WebDriver
+thanks to the _Drone_ extension and it is quite easy to achieve. We also need the base URL of the Weather
+application after it is deployed:
+
+.Arquillian injection
+[source,java]
+----
+include::{sourcesdir}/examples/tutorial/WeatherTestCase.java[tags=driver]
+
+include::{sourcesdir}/examples/tutorial/WeatherTestCase.java[tags=deploymentURL]
+----
+
+The last step of the setup is a little helper method for creating application URL for our applications
+_weather1_, _weather2_, ...
+
+.Creating URL for an application
+[source,java]
+----
+include::{sourcesdir}/examples/tutorial/WeatherServletTestCase.java[tags=getApplicationURL]
+----
+
+This method simply generates an URL based on the application name, for example +getApplicationURL("weather1")+ returns
+ the URL for the _weather1_ application.
+
+== Testing the app
+
+Now that our test class is done we can write a few tests for the application:
+
+.Creating URL for an application
+[source,java]
+----
+include::{sourcesdir}/examples/tutorial/WeatherTestCase.java[tags=testWeather1]
+----
+
+
+
+

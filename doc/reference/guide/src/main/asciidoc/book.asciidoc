@@ -1,0 +1,81 @@
+= Juzu Reference Guide
+Julien Viet <http://www.julienviet.com>
+
+Juzu is a web framework based on MVC concepts for developing applications. Juzu is an
+open source project developed on https://github.com/juzu/juzu[GitHub] licensed under the
+http://www.apache.org/licenses/LICENSE-2.0[Apache 2 License].
+
+[[builddeployrun]]
+= Build, deploy and run =
+
+include::builddeployrun.asciidoc[]
+
+[[phases]]
+= Phases
+
+include::phases.asciidoc[]
+
+[[controllers]]
+= Controllers
+
+include::controllers.asciidoc[]
+
+[[responses]]
+= Responses
+
+include::responses.asciidoc[]
+
+[[bridges]]
+= Bridges
+
+include::bridges.asciidoc[]
+
+[[ioc]]
+== Inversion of Control
+
+include::ioc.asciidoc[]
+
+[[templating]]
+= Templating
+
+include::templating.asciidoc[]
+
+[[templatespi]]
+= Templating SPI
+
+include::templatespi.asciidoc[]
+
+[[taglib]]
+= Taglib
+
+include::taglib.asciidoc[]
+
+[[assets]]
+= Assets
+
+include::assets.asciidoc[]
+
+[[amd]]
+= Javascript modularity
+
+include::amd.asciidoc[]
+
+= File upload plugin
+
+include::fileupload.asciidoc[]
+
+= Less plugin
+
+include::less.asciidoc[]
+
+= WebJars plugin
+
+include::webjars.asciidoc[]
+
+= Servlet
+
+include::servlet.asciidoc[]
+
+= Portlet
+
+include::portlet.asciidoc[]

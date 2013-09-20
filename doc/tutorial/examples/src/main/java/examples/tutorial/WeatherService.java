@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+// tag::classdef[]
 public class WeatherService {
 
   /** A cache for temperatures. */
@@ -83,3 +84,4 @@ public class WeatherService {
     }
   }
 }
+// end::classdef[]

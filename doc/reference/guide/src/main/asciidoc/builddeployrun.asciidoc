@@ -1,0 +1,261 @@
+We will study in this chapter how to build and deploy a Juzu application.
+
+== Build
+
+Building a Juzu application is usually done in two steps:
+
+* Compile the application to its binary representation
+* Package the application as a war file
+
+Compiling an application requires a few jars to be present on the compilation classpath:
+
+* The Juzu core jar for the Juzu API
+* The JSR-330 jar for the @Inject API
+* Any Juzu extension jar such as plugins or additinal template engines
+
+After compilation, classes need to be packaged as a web application archive (_war_) and then deployed in a server. We
+will show several ways to package your Juzu application.
+
+NOTE: At the moment Juzu focuses on Maven because it is built with Maven, however that does not mean that Juzu is coupled
+to Maven, in the future we will provide additional examples or quickstart for alternative build systems.
+
+=== With Maven
+
+Juzu libraries are deployed in the >>http://search.maven.org/[Maven Central repository], compiling an application
+ require a few dependencies to find the correct jars.
+
+==== Using the Juzu Maven _bom_
+
+The _bom_ is a Juzu artifact that serves the purpose of building and packaging an application:
+
+. provide a set of dependencies that will be sufficient for compiling the application using its Maven transitive dependencies
+. provide a predefined assembly descriptor that creates a war file containing the application classes, resources and libraries
+
+To achieve the first step, we simply declare the following dependency in a Maven artifact:
+
+[source,xml]
+----
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-bom-core</artifactId>
+  <version>$[juzu.version]</version>
+</dependency>
+----
+
+Assembling the application requires more XML but is very straightforward:
+
+[source,xml]
+----
+<plugin>
+  <artifactId>maven-assembly-plugin</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-bom-core</artifactId>
+      <version>$[juzu.version]</version>
+    </dependency>
+  </dependencies>
+  <executions>
+    <execution>
+      <goals>
+        <goal>single</goal>
+      </goals>
+      <phase>package</phase>
+      <configuration>
+        <descriptorRefs>
+          <descriptorRef>tomcat-guice</descriptorRef>
+        </descriptorRefs>
+      </configuration>
+    </execution>
+  </executions>
+</plugin>
+----
+
+The _assembly_ plugin takes care of packaging the application:
+
+. The plugin dependency declares on the _juzu-bom-core_ artifact because it contains the predefined descriptors such
+ as the +tomcat-guice+ descriptor
+. The goal _single_ of the assembly plugin is executed during the _package_ phase
+. The predefined descriptor _tomcat-guice_ packages the application for the Tomcat server and with the Guice framework
+.. Any dependency on the application is packaged in _WEB-INF/lib_
+.. The application classes are copied in _WEB-INF/classes_
+.. The web application _src/main/webapp_ files are copied to the root of the archive
+.. Specific deployment descriptors may be copied in the war file depending on the predefined descriptor
+
+In this example we used the _tomcat-guice_ predefined descriptor. The bom relies on the
+http://maven.apache.org/plugins/maven-assembly-plugin/[Maven Assembly plugin], Juzu provides the
+http://maven.apache.org/plugins/maven-assembly-plugin/descriptor-refs.html[predefined assembly descriptors]
+that makes easy to package a Juzu application:
+
+
+.The predefined descriptors
+[cols="4*",options="header"]
+|===
+|
+|tomcat
+|gatein
+|liferay
+
+|all
+|tomcat
+|gatein
+|liferay
+
+|guice
+|tomcat-guice
+|gatein-guice
+|liferay-guice
+
+|spring
+|tomcat-spring
+|gatein-spring
+|liferay-spring
+
+|cdi
+|tomcat-cdi
+|gatein-cdi
+|liferay-cdi
+|===
+
+NOTE: The predefined assembly descriptor does a similar job to the Maven //war// packaging but with more flexibility. To achieve
+the same result, the usage of a war packaging with the overlay feature.
+
+==== Juzu archetype
+
+The following creates a base Juzu application for Tomcat with the Guice injection container:
+
+.Generating an application for the Tomcat server and the Guice injection container
+----
+mvn archetype:generate \\
+   -DarchetypeGroupId=org.juzu \\
+   -DarchetypeArtifactId=juzu-archetype \\
+   -DarchetypeVersion=$[juzu.version] \\
+   -DgroupId=org.example \\
+   -DartifactId=myapp \\
+   -DpackageName=org.example.myapp \\
+   -Dversion=1.0.0-SNAPSHOT
+----
+
+The generated application is a quickstart ready to can be customzed for developing more complex applications.
+The archetype uses the packager described in the previous section.
+
+It is possible to generate the application for a different server and injection container:
+
+.Generating an application for the Tomcat server and the Spring injection container
+----
+mvn archetype:generate \\
+   -DarchetypeGroupId=org.juzu \\
+   -DarchetypeArtifactId=juzu-archetype \\
+   -DarchetypeVersion=$[juzu.version] \\
+   -DgroupId=org.example \\
+   -DartifactId=myapp \\
+   -DpackageName=org.example.myapp \\
+   -Dversion=1.0.0-SNAPSHOT \\
+   -DjuzuServer=tomcat \\
+   -DjuzuInject=spring
+----
+
+=== Using a prepackaged application
+
+The Juzu distribution contains the Booking and Tutorial applications for GateIn and Liferay servers. They can be used
+as basis to create applications.
+
+=== Using an IDE
+
+Juzu uses Annotation Processing Tool to perform many tasks at compilation time. APT is a standard extension of a Java compiler.
+All Java IDE (Eclipse, Intellij and Netbeans) provide good support for APT, we will show in the section how to configure
+and uses APT within those IDEs.
+
+IDEs provide also Maven support, we will focus in this section on using APT without the Maven support. Indeed the APT support
+may work differently when using Maven in your project, the Maven and APT support within IDEs has a dedicated section.
+
+==== Intellij support
+
+todo
+
+==== Eclipse support
+
+todo
+
+==== Netbeans support
+
+todo
+
+== Deploy
+
+At the moment the supported (i.e tested) portal servers are
+
+* Tomcat 6.x and 7.x
+* GateIn 3.2 / 3.3 / 3.4 and 3.5
+* Liferay 6.1
+
+Other server may work but we are not aware of that as it was not tested in other environments.
+
+=== Tomcat
+
+No specific deployment instruction.
+
+=== GateIn
+
+==== GateIn on Tomcat 6/7
+
+No specific deployment instruction.
+
+==== GateIn on JBoss AS 7
+
+GateIn on JBoss AS7 requires a little modification to do:
+
+Open the file _modules/javax/api/main/module.xml_ and add _<path name="javax/annotation/processing"/>_ among the _paths_
+declaration:
+
+[source,xml]
+----
+<module xmlns="urn:jboss:module:1.1" name="javax.api">
+  <dependencies>
+    <system export="true">
+      <paths>
+        <path name="javax/annotation/processing"/>
+        ...
+      </paths>
+    </system>
+  </dependencies>
+</module>
+----
+
+This configuration exposes the +javax.annotation.processing+ package to the classes seen by Juzu.
+
+=== Liferay
+
+Liferay has been tested extensively with the Tomcat version, no specific deployment instruction is required.
+
+== Run
+
+=== Run modes
+
+Juzu defines three modes for running an application, called _run modes_:
+
+* Production (_prod_): error reporting is minimal
+* Development (_dev_): provides verbose error reporting
+* Live (_live_): allow to develop the application live with verbose error reporting
+
+=== How to choose the right run mode
+
+* When you are running an application use the _prod_ run mode
+* When you are developing an application with a build system use the _dev_ run mode
+* When you are live developing an application use the _live_ run mode
+
+=== Configuring the run mode
+
+Run mode is configured via servlet context parameters, by default the _prod_ mode is enabled:
+
+* _juzu.run_mode_ : possible values _prod_, _dev_ or _live_
+* _juzu.src_path_ : the source path of the source to compile for the live mode
+
+.Configuring the dev mode in web.xml
+[source,xml]
+----
+<context-param>
+  <param-name>juzu.run_mode</param-name>
+  <param-value>dev</param-value>
+</context-param>
+----

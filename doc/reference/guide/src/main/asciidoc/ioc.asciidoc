@@ -1,0 +1,330 @@
+Juzu provides native support for Injection of Control (known as _IOC_) and relies on the specification
+http://docs.oracle.com/javaee/6/api/javax/inject/package-summary.html[JSR 330] (known as _@Inject_).
+
+Although the JSR-330 is quite small it provides the necessary ground for building Juzu applications. Juzu relies
+on the injection container for wiring the entire Juzu runtime (controllers, templates, plugins, etc...).
+
+We will explain how Juzu uses IOC for its runtime, we suppose the reader is familliar with IOC and with the +@Inject+
+specification, in particular the notion of injection, scope and qualifier should be familliar.
+
+= Containers =
+
+At the moment Juzu supports three containers implementing the JSR 330:
+
+* http://static.springsource.org/spring/docs/3.1.x/spring-framework-reference/html/[Spring Core 3]
+* Context and Dependency Injection also know as _CDI_ implemented by the http://seamframework.org/Weld[Weld] project
+* http://code.google.com/p/google-guice/wiki/Guice30[Google Guice 3]
+
+NOTE: CDI is a specification that extends the _@Inject_ specification: CDI provides more features than @Inject, however
+this specification is only implemented by Weld. Nevertheless if your choice is to use CDI you will be leverage its specific
+features in your Juzu application
+
+Juzu can run with any of those implementation and leaves you the choice of the IOC implementation you want to use. The container
+to selection is done via the servlet context parameter _juzu.inject_:
+
+* _guice_ for Google Guice
+* _spring_ for Spring
+* _weld_ for JBoss Weld
+
+.Configuring the Spring container in web.xml
+[source,xml]
+----
+<context-param>
+  <param-name>juzu.inject</param-name>
+  <param-value>spring</param-value>
+</context-param>
+----
+
+WARNING: When no IOC container is specified the Guice container will be used
+
+== Inversion Of Control
+
+=== Beans
+
+Beans are simply object managed by the IOC container, any bean can be injected other beans:
+
+[source,java]
+----
+@java.inject.Inject
+Service service;
+----
+
+=== Scopes
+
+Scopes define how a instances of a bean are managed by the IOC container: for a given bean, shall it be instantiated
+ only one time and shared or shall it instantiated everty time it is required ? that's the kind of question
+ that scope answers.
+
+Juzu provides 4 scopes to use within your application:
+
+* +@javax.inject.Singleton+ scope: a single bean instance is the same for the whole application
+* +@juzu.RequestScoped+ scope: the bean is instantiated once per request
+* +@juzu.SessionScoped+ scope: the bean is instantiated once per session
+* +@juzu.FlashScoped+ scope: the bean is instantiated once per request but is reused if it was instantiated during
+an action request in the next render request and only in the first one
+
+=== Qualifiers
+
+Qualifier are designed to distinguish several instances of a same bean. How does a bean differ from another bean ?
+it's not really possible to tell, qualifiers simply answer this question, allowing to:
+
+* distinguish beans based upon the qualifier members
+* configure the bean instance for a particular usage
+
+The JSR-330 specification provides the +@Named+ qualifier whose purpose is to give a name to a bean, for instance
+
+[source,java]
+----
+@Named("john")
+@Inject Person john;
+
+@Named("peter")
+@Inject Person peter;
+----
+
+== Beans in action
+
+Beans are simply the objects managed by the IOC engine. In a Juzu applications we have several kind of beans:
+
+* Controllers
+* Template
+* Application beans
+* Plugin beans
+
+=== Template beans
+
+Every template has a corresponding +juzu.template.Template+ class at runtime. The template class allows
+applications to interact with templates, most of the time for creating a controller ok response:
+
+[source,java]
+----
+template.ok();
+----
+
+A template bean is always qualified by the +@Path+ qualifier. The path qualifier is simply the value of the path
+relative to the _templates_ package, for instance _index.gtmpl_ is a valid qualifier value. The qualifier allows
+to have several +Template+ instances and distinguish them.
+
+Templates have the +@Singleton+ scope: a single instance of the template object is created and shared in the IOC
+container.
+
+=== Controller beans
+
+Each controller class is turned into a bean, that's how controllers can be injected with other beans. As soon
+as Juzu finds a class annotated by +@View+, +@Action+ or +@Resource+, it is automatically turned into a bean.
+
+Controller have the +Request+ scope by default: every time a controller instance is required it will be created
+for the duration of the request. It is possible to change the scope of a controller by annotating it with another
+scope annotation managed by Juzu:
+
+[source,java]
+----
+@SessionScoped
+public class Controller {
+   @View
+   public void index() { }
+}
+----
+
+==== Injection a template into a controller
+
+Injecting a template bean into a controller bean is probably the most common Juzu pattern:
+
+[source,java]
+----
+@Inject
+@Path("index.gtmpl")
+Template index;
+----
+
+The template can then be used for creating a response:
+
+[source,java]
+----
+@View
+public Response.Content index() {
+   return index.ok();
+}
+----
+
+=== Application beans
+
+Application beans model the custom logic of an application, they are normally injected in controller beans that use
+them when they process requests. The _binding_ plugin allows an application to declare custom beans that can be used
+in the application.
+
+==== POJO bean binding
+
+Binding a Plain Old Java Object (POJO) is a very simple task to accomplish:
+
+[source,java]
+----
+@Bindings(@Binding(Mailer.class))
+package myapplication;
+----
+
+The bean will be entirely managed by the IOC container, the binding plugin will just declare it in the IOC container.
+The POJO will be created when needed, for instance when it is inserted in a controller.
+
+[source,java]
+----
+public class MyController {
+   @Inject Mailer mailer;
+   @Action
+   public void sendMail(String recipient, String subject, String message) {
+      mail.send(recipient, subject, message);
+   }
+}
+----
+
+==== Abstract bean binding
+
+Binding an abstract class or an interface type is also possible with the +implementation+ member of the +@Binding+
+annotation:
+
+[source,java]
+----
+@Bindings(@Binding(value=Mailer.class,implementation=MailerImpl.class))
+package myapplication;
+----
+
+==== Binding with a provider
+
+Sometimes the implementation cannot be created by the IOC container, for instance it may not have a correct
+constructor, it can only be retrieved using a factory or it should be configured before being used. For such scenarios
+the implementation can specify a class implementing the +javax.inject.Provider+ interface.
+
+[source,java]
+----
+public class ConfiguredMailerProvider implements javax.inject.Provider<Mailer> {
+
+   private String email
+   private String password;
+
+   public ConfiguredMailerProvider() {
+      this.email = System.getProperty("mailer.email");
+      this.password = System.getProperty("mailer.password");
+   }
+
+   public Mailer get() {
+      return new MailerImpl(email, password);
+   }
+}
+----
+
+Thanks to the provider, we have a +Mailer+ provider that returns a +MailerImpl+ configured before usage.
+
+==== Scoped binding
+
+The +@Binding+ annotation provides room for declaring a bean scope:
+
+[source,java]
+----
+@Bindings(@Binding(value=Mailer.class,scope=Scope.SINGLETON))
+----
+
+When the scope is not specified, the scope is determined from the bean or implementation that should be annotated
+with a scope annotation. When it is specified, it overrides the annotation scope the bean could declare.
+
+==== Qualifying provider
+
+A provider implementation can declare qualifiers on the +get+ method they implement in order to set the qualifiers
+of the returned bean:
+
+[source,java]
+----
+public class MailerProvider implements Provider<Mailer> {
+   @Named("mailer")
+   public Mailer get() {
+      return new MailerImpl();
+   }
+}
+----
+
+This is useful for declaring qualifiers on a class that is not annotated by qualifiers, because it is not possible
+to declare qualifiers in an +@Binding+ annotation due to limitations of the Java language.
+
+== Provider factories
+
+Provider factories provides plugability for integrating beans that are not managed by the IOC container. The provider
+factory is a factory for +javax.inject.Provider+ whose purpose is to return a provider for a specific class. Usually
+provider factories will lookup the service in a registry (like another IOC container) and returns a provider that
+return them lazily or not.
+
+The provider factory defines the +getProvider+ method:
+
+[source,java]
+----
+include::{sourcesdir}/juzu/inject/ProviderFactory.java[tags=getProvider]
+----
+
+The factory implementation must provide a public zero argument constructor and it will be instantiated
+during the application boostrap by Juzu to obtain the provider. The returned providers will then be bound into
+the IOC container.
+
+The IOC container uses the +java.util.ServiceLoader+ discovery mechanism for finding provider factories when
+ injection occurs.
+
+Let's study a simple example with a provider for the current time:
+
+.Time provider factory
+[source,java]
+----
+package my;
+
+public class TimeProviderFactory implements java.inject.ProviderFactory {
+  public <T> Provider<? extends T> getProvider(final Class<T> implementationType) throws Exception {
+    if (implementationType == java.util.Date.class) {
+      return new Provider<T>() {
+        public T get() {
+          return implementationType.cast(new java.util.Date());
+        }
+      };
+    }
+    else {
+      return null;
+    }
+  }
+}
+----
+
+This provider should be declared in the _META-INF/services/juzu.inject.ProviderFactory_ file:
+
+.Time provider configuration
+----
+my.TimeProvider
+----
+
+== Provided container
+
+Sometimes a Juzu application needs to run with a provided container, i.e a container whose life cycle is not
+managed by the framework, allowing Juzu to integratte with existing runtimes.
+
+=== Provided Spring
+
+A Juzu application can reuse an existing container scoped to a web application. In this case Juzu will create its
+own container with the provided container as parent, as a result, all beans available in the provided container
+will be available in the Juzu application.
+
+During the startup of the application, the web application attribute +org.springframework.web.context.WebApplicationContext.ROOT+
+is looked up, this is the provided container when it is not null. Such container is usually created by a Spring servlet
+or listener, for example:
+
+.A Spring web application provided by a servlet context listener
+[source,xml]
+----
+  ...
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  ...
+----
+
+This usually start the beans declared in the _/WEB-INF/applicationContext.xml_.
+
+NOTE: when using a bean from a provided container, you should not declare it with the +@Binding+ annotation or
+the bean will be duplicated and you will use the wrong bean instance
+
+=== Provided CDI
+
+todo

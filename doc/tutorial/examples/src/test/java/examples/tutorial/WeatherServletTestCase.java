@@ -30,6 +30,7 @@ import java.net.URL;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class WeatherServletTestCase extends WeatherTestCase {
 
+  // tag::deployment[]
   @Deployment
   public static WebArchive deployment() {
     String webXml = DescriptorBuilder.DEFAULT.
@@ -40,12 +41,11 @@ public class WeatherServletTestCase extends WeatherTestCase {
     war.setWebXML(new StringAsset(webXml));
     war.addAsWebInfResource(new File("src/test/resources/applicationContext.xml"));
     war.addPackages(true, "examples.tutorial");
-//    WebArchive war = Helper.createBaseServletDeployment(); // <1> Create the base servlet deployment
-//    war.addAsWebInfResource(new File("src/test/resources/spring.xml")); // <2> Add the spring.xml descriptor
-//    war.addPackages(true, "examples.tutorial"); // <3> Add the examples.tutorial package
     return war;
   }
+  // end::deployment[]
 
+  // tag::getApplicationURL[]
   public URL getApplicationURL(String application) {
     try {
       return deploymentURL.toURI().resolve(application).toURL();
@@ -56,4 +56,5 @@ public class WeatherServletTestCase extends WeatherTestCase {
       throw afe;
     }
   }
+  // end::getApplicationURL[]
 }

@@ -61,10 +61,12 @@ public class Weather {
     return index.with(parameters).ok();
   }
 
+  // tag::add[]
   @Action
   @Route("/add")
   public Response.View add(String location) {
     locations.add(location);
     return Weather_.index(location);
   }
+  // end::add[]
 }

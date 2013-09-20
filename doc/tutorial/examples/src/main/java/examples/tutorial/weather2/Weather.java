@@ -32,6 +32,7 @@ public class Weather {
   @Path("index.gtmpl")
   Template index;
 
+  // tag::index[]
   @View
   public Response.Content index() {
     Map<String, Object> parameters = new HashMap<String, Object>();
@@ -39,4 +40,5 @@ public class Weather {
     parameters.put("temperature", "20");
     return index.with(parameters).ok();
   }
+  // end::index[]
 }

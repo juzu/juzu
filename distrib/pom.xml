@@ -54,11 +54,6 @@
       <classifier>html</classifier>
       <type>zip</type>
     </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-doc-tutorial-guide</artifactId>
-      <type>pdf</type>
-    </dependency>
 
     <!-- Reference -->
     <dependency>
@@ -71,11 +66,6 @@
       <artifactId>juzu-doc-reference-guide</artifactId>
       <classifier>html</classifier>
       <type>zip</type>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-doc-reference-guide</artifactId>
-      <type>pdf</type>
     </dependency>
 
   </dependencies>
@@ -103,40 +93,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-
-    <profile>
-      <id>wikbook</id>
-      <dependencies>
-
-        <dependency>
-          <groupId>org.juzu</groupId>
-          <artifactId>juzu-doc-tutorial-guide</artifactId>
-          <classifier>html</classifier>
-          <type>zip</type>
-        </dependency>
-        <dependency>
-          <groupId>org.juzu</groupId>
-          <artifactId>juzu-doc-tutorial-guide</artifactId>
-          <type>pdf</type>
-        </dependency>
-
-        <dependency>
-          <groupId>org.juzu</groupId>
-          <artifactId>juzu-doc-reference-guide</artifactId>
-          <classifier>html</classifier>
-          <type>zip</type>
-        </dependency>
-        <dependency>
-          <groupId>org.juzu</groupId>
-          <artifactId>juzu-doc-reference-guide</artifactId>
-          <type>pdf</type>
-        </dependency>
-
-      </dependencies>
-    </profile>
-
-  </profiles>
 
 </project>

@@ -115,13 +115,16 @@ public abstract class TemplateStub {
     }
   }
 
+  // tag::doInit[]
   /**
    * Init the template with the associated resource.
    *
    * @param loader   the class loader
    */
   protected abstract void doInit(ClassLoader loader);
+  // end::doInit[]
 
+  // tag::doRender[]
   /**
    * Performs template rendering.
    *
@@ -131,5 +134,6 @@ public abstract class TemplateStub {
    */
   protected abstract void doRender(TemplateRenderContext renderContext)
       throws TemplateExecutionException, IOException;
+  // end::doRender[]
 
 }

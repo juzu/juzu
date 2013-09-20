@@ -1,0 +1,36 @@
+Now it's time to introduce action controllers, actions are method annotated by the +@Action+ annotation.
+
+The role of an action controller is to process actions parameters. Each parameter of an action controller method is
+mapped to the incoming request processed by Juzu, such parameters can be encoded directly in the URL or be
+present in the form that triggers the action.
+
+[source,java]
+----
+include::{sourcesdir}/examples/tutorial/weather5/templates/index.gtmpl[]
+----
+
+In this example, we use a form which contains the the +location+ action parameters. In order to create an action
+url we use the same syntax than view url +@{add()}+ but this time we don't need to set any parameter,
+instead the form parameters will be used when the form is submitted. However this is not mandatory and instead we
+could have url parameters such as +@{add(location = 'washington'}+, such syntax is valid specially when it is
+used without a form. Obviously there is the possibility to mix form and action parameters.
+
+When the url is processed, the following action controller method will be invoked:
+
+[source,java]
+----
+include::{sourcesdir}/examples/tutorial/weather5/Weather.java[tags=add]
+----
+
+The method is annotated with two annotations:
+
+* +@Action+ declares an action controller method
+* +@Route("/add")+ binds the action on the ///weather5/add// route
+
+The +location+ parameter is not declared in the route because it can be invoked by a form and the +location+
+parameter is part of it.
+
+The method returns a +Response.View+ object. This object instructs Juzu to use the +index(String location)+
+ controller view after the action. The +Weather_+ controller compagnion provides a type safe way for generating
+ the response: +Weather_.index(location)+. Our action just needs to return it, Juzu will take care of showing
+ the corresponding view after invoking the action.

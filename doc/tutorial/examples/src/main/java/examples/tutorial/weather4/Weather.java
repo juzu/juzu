@@ -37,11 +37,14 @@ public class Weather {
   @Path("index.gtmpl")
   Template index;
 
+  // tag::index1[]
   @View
   public Response.Content index() {
     return index("marseille");
   }
+  // end::index1[]
 
+  // tag::index2[]
   @View
   @Route("/show/{location}")
   public Response.Content index(String location) {
@@ -50,4 +53,5 @@ public class Weather {
     parameters.put("temperature", weatherService.getTemperature(location));
     return index.with(parameters).ok();
   }
+  // end::index2[]
 }

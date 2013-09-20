@@ -44,11 +44,14 @@ public class Weather {
   @Path("index.gtmpl")
   examples.tutorial.weather6.templates.index index;
 
+  // tag::index1[]
   @View
   public Response.Content index() {
     return index("marseille");
   }
+  // end::index1[]
 
+  // tag::index2[]
   @View
   public Response.Content index(String location) {
     return index.
@@ -58,6 +61,7 @@ public class Weather {
       locations(locations).
       ok();
   }
+  // end::index2[]
 
   @Action
   @Route("/add")

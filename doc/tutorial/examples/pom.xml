@@ -66,6 +66,7 @@
         </dependencies>
         <executions>
           <execution>
+            <id>packaging</id>
             <goals>
               <goal>single</goal>
             </goals>

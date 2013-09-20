@@ -24,6 +24,7 @@ import juzu.template.Template;
 import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+// tag::classdef[]
 public class Weather {
 
   @Inject
@@ -35,3 +36,4 @@ public class Weather {
     return index.ok();
   }
 }
+// end::classdef[]

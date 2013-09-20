@@ -25,6 +25,7 @@ import javax.inject.Provider;
  */
 public interface ProviderFactory {
 
+  // tag::getProvider[]
   /**
    * Returns a provider for a specific type or null if it cannot be produced.
    *
@@ -35,5 +36,6 @@ public interface ProviderFactory {
    */
   <T> Provider<? extends T> getProvider(Class<T> implementationType)
     throws Exception;
+  // end::getProvider[]
 
 }

@@ -10,7 +10,6 @@
     <version>0.7.0-beta22-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.juzu</groupId>
   <artifactId>juzu-plugins-servlet</artifactId>
   <version>0.7.0-beta22-SNAPSHOT</version>
 
@@ -51,40 +50,6 @@
         <configuration>
           <compilerArgument>-proc:none</compilerArgument>
         </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.wikbook</groupId>
-        <artifactId>wikbook.maven</artifactId>
-        <configuration>
-          <format>chapter</format>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>org.juzu</groupId>
-            <artifactId>juzu-bom-plugin</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <attach>true</attach>
-        </configuration>
-        <executions>
-          <execution>
-            <id>gatein</id>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <descriptorRefs>
-                <descriptorRef>wikbook</descriptorRef>
-              </descriptorRefs>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
     <pluginManagement>

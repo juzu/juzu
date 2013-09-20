@@ -46,9 +46,11 @@ public class Weather {
   @Path("index.gtmpl")
   examples.tutorial.weather8.templates.index index;
 
+  // tag::fragment[]
   @Inject
   @Path("fragment.gtmpl")
   examples.tutorial.weather8.templates.fragment fragment;
+  // end::fragment[]
 
   @View
   public Response.Content index() {
@@ -75,6 +77,7 @@ public class Weather {
     return Weather_.index(location);
   }
 
+  // tag::getFragment[]
   @Ajax
   @Resource
   @Route("/fragment")
@@ -85,4 +88,5 @@ public class Weather {
       temperature(weatherService.getTemperature(location)).
       ok();
   }
+  // end::getFragment[]
 }

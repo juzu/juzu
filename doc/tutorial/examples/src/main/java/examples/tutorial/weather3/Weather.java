@@ -29,13 +29,16 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Weather {
 
+  // tag::weatherService[]
   @Inject
   WeatherService weatherService;
+  // end::weatherService[]
 
   @Inject
   @Path("index.gtmpl")
   Template index;
 
+  // tag::index[]
   @View
   public Response.Content index() {
     Map<String, Object> parameters = new HashMap<String, Object>();
@@ -43,4 +46,5 @@ public class Weather {
     parameters.put("temperature", weatherService.getTemperature("marseille"));
     return index.with(parameters).ok();
   }
+  // end::index[]
 }

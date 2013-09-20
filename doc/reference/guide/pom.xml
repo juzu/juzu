@@ -8,7 +8,6 @@
     <version>0.7.0-beta22-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.juzu</groupId>
   <artifactId>juzu-doc-reference-guide</artifactId>
   <version>0.7.0-beta22-SNAPSHOT</version>
 
@@ -19,113 +18,51 @@
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
-      <version>0.7.0-beta22-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-core</artifactId>
       <classifier>sources</classifier>
       <version>0.7.0-beta22-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
   <build>
-
     <plugins>
       <plugin>
-        <artifactId>maven-dependency-plugin</artifactId>
+        <groupId>com.goldin.plugins</groupId>
+        <artifactId>maven-copy-plugin</artifactId>
         <executions>
           <execution>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <phase>prepare-package</phase>
-            <configuration>
-              <artifactItems>
-
-                <!-- Less -->
-                <artifactItem>
-                  <groupId>org.juzu</groupId>
-                  <artifactId>juzu-plugins-less</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>wikbook</classifier>
-                  <type>zip</type>
-                  <outputDirectory>${wikbook.target}/src</outputDirectory>
-				</artifactItem>
-
-				<!-- WebJars -->
-
-                <artifactItem>
-                  <groupId>org.juzu</groupId>
-                  <artifactId>juzu-plugins-webjars</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>wikbook</classifier>
-                  <type>zip</type>
-                  <outputDirectory>${wikbook.target}/src</outputDirectory>
-				</artifactItem>
-
-                <!-- Servlet -->
-                <artifactItem>
-                  <groupId>org.juzu</groupId>
-                  <artifactId>juzu-plugins-servlet</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>wikbook</classifier>
-                  <type>zip</type>
-                  <outputDirectory>${wikbook.target}/src</outputDirectory>
-                </artifactItem>
-
-                <!-- Portlet -->
-                <artifactItem>
-                  <groupId>org.juzu</groupId>
-                  <artifactId>juzu-plugins-portlet</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>wikbook</classifier>
-                  <type>zip</type>
-                  <outputDirectory>${wikbook.target}/src</outputDirectory>
-                </artifactItem>
-
-                <!-- File upload-->
-                <artifactItem>
-                  <groupId>org.juzu</groupId>
-                  <artifactId>juzu-plugins-upload</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>wikbook</classifier>
-                  <type>zip</type>
-                  <outputDirectory>${wikbook.target}/src</outputDirectory>
-                </artifactItem>
-
-              </artifactItems>
-            </configuration>
+            <id>unpack</id>
           </execution>
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.wikbook</groupId>
-        <artifactId>wikbook.maven</artifactId>
-        <configuration>
-          <afterBookBodyXML><![CDATA[
-          <xi:include href="juzu-plugins-servlet.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-          <xi:include href="juzu-plugins-portlet.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-          <xi:include href="juzu-plugins-upload.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-          <xi:include href="juzu-plugins-less.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-          <xi:include href="juzu-plugins-webjars.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
-          ]]>
-          </afterBookBodyXML>
-        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-asciidoc</id>
+          </execution>
+          <execution>
+            <id>copy-stylesheets</id>
+          </execution>
+          <execution>
+            <id>copy-images</id>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
-        <groupId>org.wikbook</groupId>
-        <artifactId>wikbook.docbkxstyle</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.wikbook</groupId>
-        <artifactId>wikbook.html2pdf</artifactId>
+        <groupId>org.asciidoctor</groupId>
+        <artifactId>asciidoctor-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-html</id>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
           <execution>
-            <id>zip-html</id>
+            <id>assemble-html</id>
             <phase>package</phase>
             <goals>
               <goal>single</goal>
@@ -134,27 +71,7 @@
               <descriptors>
                 <descriptor>src/main/assembly/html.xml</descriptor>
               </descriptors>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>attach-artifacts</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attach-artifact</goal>
-            </goals>
-            <configuration>
-              <artifacts>
-                <artifact>
-                  <file>${wikbook.target}/output/pdf/index.pdf</file>
-                  <type>pdf</type>
-                </artifact>
-              </artifacts>
+              <attach>true</attach>
             </configuration>
           </execution>
         </executions>

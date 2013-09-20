@@ -1,0 +1,118 @@
+Our application is almost complete, in this section we will work on the look and feel to make the application
+appealing. We will use the famous http://twitter.github.com/bootstrap/[Twitter Bootstrap] framework and show how
+it integrates well in Juzu applications.
+
+== The style
+
+Bootstrap provides a solid fundation for building quickly attractive applications.  Bootstrap is based on the dynamic
+stylesheet language http://lesscss.org/[Less] and provides a very modular organization. We will perform trivial
+modifications to a subset of the Less files and integrate them in our application.
+
+=== A la carte
+
+We will then modify the +bootstrap.less+ file to keep only what is necessary for our application:
+
+.The necessary Bootstrap less files
+[source,java]
+----
+include::{sourcesdir}/examples/tutorial/assets/bootstrap.less[]
+----
+
+This version of bootstrap.less is a trimmed down of the original files.
+
+== Plugins in action
+
+Juzu can be extended with plugins, in this section we will use two of them
+
+* The Less plugin compiles less files into css files
+* The Asset plugin inject asset such as stylesheet or javascript in the application page
+
+=== Less compilation
+
+Juzu provides native support for the Less language via the Less plugin and the +@Less+ annotation. It allows a set of less
+files to be transformed into the corresponding css files during the java compilation, achieving two important steps during
+the compilation phase:
+
+* The less files are transformed into ready to use css files
+* It ensures a maximum of safety: the Less parser will report any error in the source
+
+Our first step is to create the +examples.tutorial.assets+ package, we copy the Bootstrap Less files into this package and
+annotate the +examples.tutorial+ package with the +@Less+ annotation to trigger the compilation of the stylesheet
+ in the +assets+ package:
+
+[source,java]
+----
+@Less(value = "bootstrap.less", minify = true)
+package examples.tutorial;
+
+import juzu.plugin.less.Less;
+----
+
+This annotation triggers the compilation of the +bootstrap.less+ in the +assets+ package, the +minified+ parameter
+instruct Less to minify the resulting css.
+
+=== Serving Stylesheet
+
+Now that we have worked out the CSS details we need to make our stylesheet available in the application page. The _asset_
+plugin will achieve this result for us. This plugin provides declarative configuration for the various assets required
+by an application. It works both for stylesheets and javascript, in this section we use it for stylesheet:
+
+.Declaring and serving Bootstrap CSS in our application
+[source,java]
+----
+@Application
+@Assets(@Asset(
+  value = "/examples/tutorial/assets/bootstrap.css",
+  location = AssetLocation.CLASSPATH)
+)
+@WithAssets
+package examples.tutorial.weather7;
+----
+
+The usage is fairly straightforward with the +@Assets+ and +WithAssets+ annotations:
+
+* The +@Assets+ annotation declares the application assets
+* The +@WithAssets+ annotation declares the application to serve during a request
+
+We configure the +location+ parameter to be +CLASSPATH+ because the Less plugin created it there.
+
+=== Bringing CSS to life
+
+After this step we need to modify our application template to use the various styles provided by Bootstrap:
+
+image::images/bootstrap.png[Bootstrapized application cycle,400,align="center"]
+
+We will not explain that in details, however we will study the important modifications:
+
+==== Accordion
+
+The Bootstrap provides the [[Collapse component>>http://twitter.github.com/bootstrap/javascript.html#collapse]]. We will
+not use the entire Collapse component here but instead reuse the CSS rules to display the available cities:
+
+[source,xml]
+----
+<div class="accordion-group">
+  <div class="accordion-heading"><a class="accordion-toggle" href="@{index(location = current)}">${current}</a></div>
+  <div class="accordion-body">
+    <div class="accordion-inner">The weather temperature in ${current} is ${temperature}&deg; ${grade.toUpperCase()}.</div>
+  </div>
+</div>
+----
+
+==== Adding a city
+
+Finally the form for adding is modified to reuse [[Bootstrap form support>>http://twitter.github.com/bootstrap/base-css.html#forms]]:
+
+[source,xml]
+----
+<form action="@{add()}" method="post">
+  <fieldset>
+    <div class="controls">
+      <div class="input-append">
+         <input class="span2" type="text" size="16"name="location" value=""/>
+         <button type="submit" class="btn">Add</button>
+      </div>
+    </div>
+  </fieldset>
+</form>
+----

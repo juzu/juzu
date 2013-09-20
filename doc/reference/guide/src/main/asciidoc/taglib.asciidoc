@@ -1,0 +1,87 @@
+A tag library is an essential component of a templating system, allowing to enrich a templating with encapsulated programmable
+logic.
+
+IMPORTANT:
+Juzu does not yet allow application to define their own tags, it will be added a a new feature in a future version.
+
+== Taglib syntax
+
+Like most taglib syntaxes, Juzu provides two syntaxes for invoking a tag:
+
+.Start and end tag syntax
+----
+#{foo}bar#{/foo}
+----
+
+The start/end syntax opens the tag with +#{foo}+ and ends it with +#{/foo}+.
+
+A tag can also be empty:
+
+.Empty tag syntax
+----
+#{foo/}
+----
+
+A tag can also be invoked empty with the +#{foo/}+ syntax.
+
+== Include tag
+
+The _include_ tag simply includes a template inside the current template. The inclusion is dynamic and not static, meaning
+ that the content of the included template is not _inserted_ in the calling template, instead when inclusion is performed
+ the control is passed to the included template.
+
+.The include tag
+----
+#{include path=dispatched.gtmpl/}
+----
+
+The _path_ attribute determines the template to include, the path value is relative to the templates package.
+
+== Decorate / Insert tag
+
+The _decorate_ tag allows the content of the decorating template to wrap the content of the template invoking the tag.
+ The _insert_ tag should be used in the decorating template to specify the place where to insert the markup produced
+ by the template to decorate.
+
+.The wrapped template
+----
+#{decorate path=box.gtmpl/}
+----
+
+.The decoraring template
+----
+<div style="border: 1px solid black">
+#{insert/}
+</div>
+----
+
+== Title tag
+
+The _title_ tag specifies a title to insert in the +juzu.Response.Content+ object the template will produce.
+
+.Setting the title
+----
+#{title value=Home/}
+----
+
+== Param tag
+
+The _param_ tag enhances the type safety of templates, allowing to declare parameters for executing a template. When
+such a parameter is declared, the generated template class companion will have a fluent parameter for setting the
+value of the parameter:
+
+.Declaring a template parameter
+----
+#{param name=color/}
+----
+
+.Using the template parameter
+[source,java]
+----
+@Inject my.templates.index index;
+
+@View
+public Content.Response index() {
+  return index.with().color("red").ok();
+}
+----

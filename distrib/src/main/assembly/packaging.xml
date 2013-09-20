@@ -41,13 +41,6 @@
       <unpack>true</unpack>
       <outputDirectory>/tutorial/html/</outputDirectory>
     </dependencySet>
-    <dependencySet>
-      <includes>
-        <include>org.juzu:juzu-doc-tutorial-guide:pdf</include>
-      </includes>
-      <outputDirectory>/tutorial/</outputDirectory>
-      <outputFileNameMapping>tutorial-guide.pdf</outputFileNameMapping>
-    </dependencySet>
 
     <!-- Reference -->
     <dependencySet>
@@ -56,13 +49,6 @@
       </includes>
       <unpack>true</unpack>
       <outputDirectory>/reference/html/</outputDirectory>
-    </dependencySet>
-    <dependencySet>
-      <includes>
-        <include>org.juzu:juzu-doc-reference-guide:pdf</include>
-      </includes>
-      <outputDirectory>/reference/</outputDirectory>
-      <outputFileNameMapping>reference-guide.pdf</outputFileNameMapping>
     </dependencySet>
     <dependencySet>
       <includes>
