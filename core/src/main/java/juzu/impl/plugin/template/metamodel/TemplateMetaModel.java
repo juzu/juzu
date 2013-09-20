@@ -139,18 +139,7 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
   public JSON toJSON() {
     JSON json = new JSON();
     json.set("path", path.getCanonical());
-    json.map("refs", getKeys(TemplateRefMetaModel.class));
     return json;
-  }
-
-  public Collection<TemplateRefMetaModel> getRefs() {
-    ArrayList<TemplateRefMetaModel> refs = new ArrayList<TemplateRefMetaModel>();
-    for (MetaModelObject parent : getParents()) {
-      if (parent instanceof TemplateRefMetaModel) {
-        refs.add((TemplateRefMetaModel)parent);
-      }
-    }
-    return refs;
   }
 
   @Override

@@ -20,6 +20,7 @@ import juzu.impl.common.Timestamped;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ProcessingContext;
+import juzu.impl.metamodel.Key;
 import juzu.impl.plugin.controller.metamodel.MethodMetaModel;
 import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
 import juzu.impl.plugin.controller.metamodel.ParameterMetaModel;
@@ -82,7 +83,11 @@ class MetaModelProcessContext extends ProcessContext {
     if (originPath != null) {
       TemplateMetaModel a = owner.get(template.getRelativePath());
       TemplateMetaModel b = owner.get(originPath);
-      b.addChild(TemplateMetaModel.KEY, a);
+      Key<TemplateMetaModel> key = Key.of(template.getAbsolutePath(), TemplateMetaModel.class);
+      // It may already be here (in case of double include for instance)
+      if (b.getChild(key) == null) {
+        b.addChild(key, a);
+      }
     }
   }
 

@@ -88,6 +88,28 @@ public class TagTestCase extends AbstractInjectTestCase {
   }
 
   @Test
+  public void testIncludeDouble() throws Exception {
+    MockApplication<?> app = application("plugin.template.tag.includedouble").init();
+
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    String out = render.assertStringResult();
+    assertEquals("foobar", out);
+  }
+
+  @Test
+  public void testIncludeTwice() throws Exception {
+    MockApplication<?> app = application("plugin.template.tag.includetwice").init();
+
+    //
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    String out = render.assertStringResult();
+    assertEquals("foofoo", out);
+  }
+
+  @Test
   public void testTitle() throws Exception {
     MockApplication<?> app = application("plugin.template.tag.title").init();
 

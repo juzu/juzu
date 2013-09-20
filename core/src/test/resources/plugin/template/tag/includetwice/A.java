@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package plugin.template.tag.include;
+package plugin.template.tag.includetwice;
 
 import juzu.Path;
 import juzu.Response;
