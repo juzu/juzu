@@ -28,16 +28,24 @@ import juzu.template.TemplateRenderContext;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class DecorateTag extends ExtendedTagHandler {
 
   /** . */
-  static final ThreadLocal<Renderable> current = new ThreadLocal<Renderable>();
+  static final ThreadLocal<LinkedList<Renderable>> current = new ThreadLocal<LinkedList<Renderable>>() {
+    @Override
+    protected LinkedList<Renderable> initialValue() {
+      return new LinkedList<Renderable>();
+    }
+  };
 
   @Override
   public void process(ProcessPhase phase, ASTNode.Tag tag, Template t) {
+
+    // Find the root template tag
     ASTNode current = tag;
     while (true) {
       if (current instanceof ASTNode.Block) {
@@ -47,16 +55,16 @@ public class DecorateTag extends ExtendedTagHandler {
         break;
       }
     }
-
-    //
     ASTNode.Template template = (ASTNode.Template)current;
+
+    // Move the children of the template node as child of the decorate tag
     for (ASTNode.Block child : new ArrayList<ASTNode.Block<?>>(template.getChildren())) {
       if (child != tag) {
         tag.addChild(child);
       }
     }
 
-    //
+    // Set decorate tag as unique child of the template node
     if (tag.getParent() != template) {
       template.addChild(tag);
     }
@@ -73,14 +81,14 @@ public class DecorateTag extends ExtendedTagHandler {
 
   @Override
   public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException {
-    current.set(body);
+    current.get().addLast(body);
     try {
       String path = args.get("path");
       TemplateStub template = context.resolveTemplate(path);
       template.render(context);
     }
     finally {
-      current.set(null);
+      current.get().removeLast();
     }
   }
 }

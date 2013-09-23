@@ -229,7 +229,7 @@ public abstract class WebStream implements AsyncStream {
           stream.provide(Chunk.create(ext));
           stream.provide(Chunk.create("\" href=\""));
           stream.provide(Chunk.create(url));
-          stream.provide(Chunk.create("\"></link>\n"));
+          stream.provide(Chunk.create("\"/>\n"));
         }
       }
       if (!modules.isEmpty()) {

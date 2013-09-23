@@ -16,12 +16,11 @@
 
 package juzu.impl.plugin.template.metamodel;
 
-import juzu.impl.common.Name;
 import juzu.impl.common.FileKey;
-import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
+import juzu.impl.common.Name;
 import juzu.impl.compiler.BaseProcessor;
-import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ElementHandle;
+import juzu.impl.compiler.ProcessingException;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.Template;
@@ -42,27 +41,23 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
 /**
- * The template repository.
+ * The template emitter.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class TemplateResolver implements Serializable {
+class TemplateEmitter implements Serializable {
 
   /** . */
-  private static final Logger log = BaseProcessor.getLogger(TemplateResolver.class);
+  private static final Logger log = BaseProcessor.getLogger(TemplateEmitter.class);
 
   /** . */
-  private final ApplicationMetaModel application;
-
-  /** . */
-  private Map<Path.Relative, Template<?>> templates;
+  final TemplatesMetaModel owner;
 
   /** . */
   private Set<Path.Relative> emitted;
@@ -70,91 +65,36 @@ public class TemplateResolver implements Serializable {
   /** . */
   private Map<Path.Relative, FileObject> classCache;
 
-  public TemplateResolver(ApplicationMetaModel application) {
-    if (application == null) {
-      throw new NullPointerException();
-    }
-
-    //
-    this.application = application;
-    this.templates = new HashMap<Path.Relative, Template<?>>();
+  TemplateEmitter(TemplatesMetaModel owner) {
+    this.owner = owner;
     this.emitted = new HashSet<Path.Relative>();
     this.classCache = new HashMap<Path.Relative, FileObject>();
   }
 
-  public Collection<Template<?>> getTemplates() {
-    return templates.values();
-  }
-
-  public void removeTemplate(Path.Relative path) {
-    // Shall we do something else ?
-    templates.remove(path);
-  }
-
-  public void prePassivate() {
+  void prePassivate() {
     log.log("Evicting cache " + emitted);
     emitted.clear();
     classCache.clear();
   }
 
-  public void process(TemplateMetaModelPlugin plugin) throws ProcessingException {
-
-    //
-    TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
-
-    // Evict templates that are out of date
-    log.log("Synchronizing existing templates " + templates.keySet());
-    for (Iterator<Template<?>> i = templates.values().iterator();i.hasNext();) {
-      Template<?> template = i.next();
-      FileObject resource = application.resolveResource(TemplatesMetaModel.LOCATION, template.getRelativePath());
-      if (resource == null) {
-        // That will generate a template not found error
-        i.remove();
-        log.log("Detected template removal " + template.getRelativePath());
-      }
-      else if (resource.getLastModified() > template.getLastModified()) {
-        // That will force the regeneration of the template
-        i.remove();
-        log.log("Detected stale template " + template.getRelativePath());
-      }
-      else {
-        log.log("Template " + template.getRelativePath() + " is valid");
-      }
-    }
-
-    // Build missing templates
-    log.log("Building missing templates");
-    Map<Path.Relative, Template<?>> copy = new HashMap<Path.Relative, Template<?>>(templates);
-    for (TemplateMetaModel templateMeta : metaModel) {
-      Template<?> template = copy.get(templateMeta.getPath());
-      if (template == null) {
-        log.log("Compiling template " + templateMeta.getPath());
-        ModelTemplateProcessContext compiler = new ModelTemplateProcessContext(templateMeta, new HashMap<Path, Template<?>>(copy), application.getProcessingContext());
-        Collection<Template<?>> resolved = compiler.resolve(templateMeta);
-        for (Template<?> added : resolved) {
-          copy.put(added.getRelativePath(), added);
-        }
-      }
-    }
-    templates = copy;
+  void process(TemplateMetaModelPlugin plugin) throws ProcessingException {
 
     // Generate missing files from template
-    for (Template<?> template : templates.values()) {
-      //
-      Path originPath = template.getOrigin();
-      TemplateMetaModel templateMeta = metaModel.get(originPath);
+    for (TemplateMetaModel templateMM : owner.getChildren(TemplateMetaModel.class)) {
 
       //
+      Template<?> template = templateMM.template;
+
       // We compute the class elements from the field elements (as eclipse will make the relationship)
       Set<Name> types = new LinkedHashSet<Name>();
-      for (TemplateRefMetaModel ref : templateMeta.getRefs()) {
+      for (ElementTemplateRefMetaModel ref : templateMM.getElementReferences()) {
         ElementHandle.Field handle = ref.getHandle();
         types.add(handle.getFQN());
       }
       final Element[] elements = new Element[types.size()];
       int index = 0;
       for (Name type : types) {
-        elements[index++] = application.getProcessingContext().getTypeElement(type);
+        elements[index++] = owner.application.getProcessingContext().getTypeElement(type);
       }
 
       // If CCE that would mean there is an internal bug
@@ -169,11 +109,8 @@ public class TemplateResolver implements Serializable {
   }
 
   private <M extends Serializable> void resolveScript(final Template<M> template, final TemplateMetaModelPlugin plugin, final Element[] elements) {
-    application.getProcessingContext().executeWithin(elements[0], new Callable<Void>() {
+    owner.application.getProcessingContext().executeWithin(elements[0], new Callable<Void>() {
       public Void call() throws Exception {
-
-        //
-        final TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
 
         // If CCE that would mean there is an internal bug
         TemplateProvider<M> provider = (TemplateProvider<M>)plugin.providers.get(template.getRelativePath().getExt());
@@ -188,9 +125,9 @@ public class TemplateResolver implements Serializable {
             EmitContext emitCtx = new EmitContext() {
               public void createResource(String rawName, String ext, CharSequence content) throws IOException {
                 Path.Relative bar = template.getRelativePath().as(rawName, ext);
-                Path.Absolute absolute = metaModel.resolvePath(bar);
+                Path.Absolute absolute = owner.resolvePath(bar);
                 FileKey key = FileKey.newName(absolute);
-                FileObject scriptFile = application.getProcessingContext().createResource(StandardLocation.CLASS_OUTPUT, key, elements);
+                FileObject scriptFile = owner.application.getProcessingContext().createResource(StandardLocation.CLASS_OUTPUT, key, elements);
                 Writer writer = null;
                 try {
                   writer = scriptFile.openWriter();
@@ -210,15 +147,13 @@ public class TemplateResolver implements Serializable {
             // Put it in cache
             emitted.add(path);
           }
-          catch (IOException e) {
+          catch (Exception e) {
             throw TemplateMetaModel.CANNOT_WRITE_TEMPLATE_SCRIPT.failure(e, template.getRelativePath());
           }
         }
         else {
           log.log("Template " + template.getRelativePath() + " was found in cache");
         }
-
-        //
         return null;
       }
     });
@@ -230,9 +165,6 @@ public class TemplateResolver implements Serializable {
       Element[] elements) {
 
     //
-    TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
-
-    //
     Path.Relative path = template.getRelativePath();
     if (classCache.containsKey(path)) {
       log.log("Template class " + path + " was found in cache");
@@ -240,13 +172,13 @@ public class TemplateResolver implements Serializable {
     }
 
     //
-    Path.Absolute resolvedPath = metaModel.resolvePath(path);
+    Path.Absolute resolvedPath = owner.resolvePath(path);
 
     //
     Writer writer = null;
     try {
       // Template qualified class
-      FileObject classFile = application.getProcessingContext().createSourceFile(resolvedPath.getName(), elements);
+      FileObject classFile = owner.application.getProcessingContext().createSourceFile(resolvedPath.getName(), elements);
       writer = classFile.openWriter();
       writer.append("package ").append(resolvedPath.getDirs()).append(";\n");
       writer.append("import ").append(TemplateDescriptor.class.getCanonicalName()).append(";\n");

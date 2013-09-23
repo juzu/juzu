@@ -18,8 +18,11 @@ package juzu.impl.metamodel;
 
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.FieldDeclaration;
+import juzu.impl.common.Path;
+import juzu.impl.compiler.ElementHandle;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.common.Tools;
+import juzu.impl.plugin.template.metamodel.ElementTemplateRefMetaModel;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModelPlugin;
 import juzu.test.AbstractTestCase;
@@ -28,6 +31,9 @@ import juzu.test.JavaFile;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.StringReader;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -98,5 +104,73 @@ public class TemplateTestCase extends AbstractTestCase {
     assertEquals(1, events.size());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
     assertInstanceOf(TemplateMetaModel.class, events.get(0).getObject());
+  }
+
+  @Test
+  public void testReferences() throws Exception {
+    ElementHandle.Field templateField = ElementHandle.Field.create("metamodel.template.A", "template");
+    CompilerAssert<File, File> helper = compiler("metamodel.template");
+    File templates = helper.getSourcePath().getPath("metamodel", "template", "templates");
+    File index = new File(templates, "index.gtmpl");
+    helper.assertCompile();
+
+    //
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;
+    List<MetaModelEvent> events = mm.getQueue().clear();
+    Tools.serialize(unserialize, ser);
+
+    //
+    assertEquals(2, events.size());
+    assertEquals(MetaModelEvent.AFTER_ADD, events.get(1).getType());
+    TemplateMetaModel indexTemplate = (TemplateMetaModel)events.get(1).getObject();
+    assertEquals(Path.parse("index.gtmpl"), indexTemplate.getPath());
+    Collection<ElementTemplateRefMetaModel> indexRefs = indexTemplate.getElementReferences();
+    assertEquals(1, indexRefs.size());
+    assertEquals(templateField, indexRefs.iterator().next().getHandle());
+
+    // Create an inclusion
+    File foo = new File(templates, "foo.gtmpl");
+    assertTrue(foo.createNewFile());
+    Tools.safeClose(Tools.copy(new StringReader("#{include path=foo.gtmpl}#{/include}"), new FileWriter(index)));
+    assertTrue(index.setLastModified(index.lastModified() + 1000));
+
+    // Compile
+    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    unserialize = Tools.unserialize(MetaModelState.class, ser);
+    mm = (ModuleMetaModel)unserialize.metaModel;
+    events = mm.getQueue().clear();
+    Tools.serialize(unserialize, ser);
+
+    //
+    assertEquals(1, events.size());
+    assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
+    TemplateMetaModel fooTemplate = (TemplateMetaModel)events.get(0).getObject();
+    assertEquals(Path.parse("foo.gtmpl"), fooTemplate.getPath());
+    Collection<ElementTemplateRefMetaModel> fooRefs = fooTemplate.getElementReferences();
+    assertEquals(1, fooRefs.size());
+    assertEquals(templateField, fooRefs.iterator().next().getHandle());
+
+    // Create an neted inclusion
+    File bar = new File(templates, "bar.gtmpl");
+    assertTrue(bar.createNewFile());
+    Tools.safeClose(Tools.copy(new StringReader("#{include path=bar.gtmpl}#{/include}"), new FileWriter(foo)));
+    assertTrue(foo.setLastModified(index.lastModified() + 1000));
+
+    // Compile
+    helper.assertCompile();
+    unserialize = Tools.unserialize(MetaModelState.class, ser);
+    mm = (ModuleMetaModel)unserialize.metaModel;
+    events = mm.getQueue().clear();
+
+    //
+    assertEquals(1, events.size());
+    assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
+    TemplateMetaModel barTemplate = (TemplateMetaModel)events.get(0).getObject();
+    assertEquals(Path.parse("bar.gtmpl"), barTemplate.getPath());
+    Collection<ElementTemplateRefMetaModel> barRefs = fooTemplate.getElementReferences();
+    assertEquals(1, barRefs.size());
+    assertEquals(templateField, barRefs.iterator().next().getHandle());
   }
 }

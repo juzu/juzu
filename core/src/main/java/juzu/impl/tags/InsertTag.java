@@ -28,9 +28,15 @@ public class InsertTag extends TagHandler {
 
   @Override
   public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException {
-    Renderable body_ = DecorateTag.current.get();
+    Renderable body_ = DecorateTag.current.get().peekLast();
     if (body_ != null) {
-      body_.render(context);
+      DecorateTag.current.get().removeLast();
+      try {
+        body_.render(context);
+      }
+      finally {
+        DecorateTag.current.get().addLast(body);
+      }
     }
   }
 }

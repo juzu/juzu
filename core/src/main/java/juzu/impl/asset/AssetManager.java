@@ -102,26 +102,34 @@ public class AssetManager {
   /**
    * Perform a topological sort of the provided asset script values.
    *
-   * @param scripts the asset id to resolve
+   * @param ids the asset ids to resolve
    * @return the resolved asset or null
-   * @throws NullPointerException     if the asset id argument is null
-   * @throws IllegalArgumentException when script dependencies cannot be resolved
+   * @throws NullPointerException if the asset ids argument is null
+   * @throws IllegalArgumentException when asset dependencies cannot be resolved
    */
-  public Iterable<Asset> resolveAssets(Iterable<String> scripts) throws
+  public Iterable<Asset> resolveAssets(Iterable<String> ids) throws
     NullPointerException,
     IllegalArgumentException {
+
+    // Compute the closure
     LinkedHashMap<String, HashSet<String>> sub = new LinkedHashMap<String, HashSet<String>>();
-    for (String script : scripts) {
-      AssetNode asset = assets.get(script);
+    for (LinkedList<String> queue = Tools.addAll(new LinkedList<String>(), ids);!queue.isEmpty();) {
+      String id = queue.removeFirst();
+      AssetNode asset = this.assets.get(id);
       if (asset != null) {
         sub.put(asset.id, new HashSet<String>(asset.iDependOn));
+        for (String depend : asset.iDependOn) {
+          if (!sub.containsKey(depend)) {
+            queue.addLast(depend);
+          }
+        }
       }
       else {
-        throw new IllegalArgumentException("Cannot resolve asset " + script);
+        throw new IllegalArgumentException("Cannot resolve asset " + id);
       }
     }
 
-    //
+    // Perform the topological sort
     LinkedList<Asset> resolved = new LinkedList<Asset>();
     while (sub.size() > 0) {
       boolean found = false;
@@ -129,7 +137,7 @@ public class AssetManager {
         Map.Entry<String, HashSet<String>> entry = i.next();
         if (entry.getValue().isEmpty()) {
           i.remove();
-          AssetNode asset = assets.get(entry.getKey());
+          AssetNode asset = this.assets.get(entry.getKey());
           resolved.addLast(Asset.of(asset.getLocation(), asset.getValue()));
           for (String dependency : asset.dependsOnMe) {
             HashSet<String> foo = sub.get(dependency);

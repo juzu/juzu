@@ -38,7 +38,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.io.Serializable;
+import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
@@ -212,10 +214,11 @@ public class Tools {
     }
   }
 
-  public static <E> void addAll(Collection<? super E> collection, Iterable<E> elements) {
+  public static <C extends Collection<? super E>, E> C addAll(C collection, Iterable<E> elements) {
     for (E element : elements) {
       collection.add(element);
     }
+    return collection;
   }
 
   public static <T> List<T> safeUnmodifiableList(T... list) {
@@ -299,6 +302,14 @@ public class Tools {
 
   public static <O extends OutputStream> O copy(InputStream in, O out) throws IOException {
     byte[] buffer = new byte[256];
+    for (int l;(l = in.read(buffer)) != -1;) {
+      out.write(buffer, 0, l);
+    }
+    return out;
+  }
+
+  public static <O extends Writer> O copy(Reader in, O out) throws IOException {
+    char[] buffer = new char[256];
     for (int l;(l = in.read(buffer)) != -1;) {
       out.write(buffer, 0, l);
     }

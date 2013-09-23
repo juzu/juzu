@@ -89,7 +89,7 @@ PARSER_END(TemplateParser)
 < OPEN_EXPR : "<%=" > : IN_EXPR |
 < OPEN_CURLY_EXPR : "${" > : IN_CURLY_EXPR |
 < OPEN_MESSAGE : "&{" > : IN_MESSAGE |
-< OPEN_URL : "@{" > : IN_URL |
+< OPEN_URL : "@{" ( [" ","\t","\r","\n"] ) * > : IN_URL |
 < OPEN_START_OR_EMPTY_TAG : "#{" > : IN_START_OR_EMPTY_TAG |
 < STOP_TAG : "#{/" ["$","A"-"Z","_","a"-"z"] ( ["$","0"-"9","A"-"Z","_","a"-"z"] ) * "}" > |
 < DATA : ~[] >
@@ -124,7 +124,7 @@ PARSER_END(TemplateParser)
 < METHOD_NAME : ["$","A"-"Z","_","a"-"z"] ( ["$","0"-"9","A"-"Z","_","a"-"z"] ) * > |
 < DOT : "." > |
 < OPEN_METHOD : "(" > : IN_URL_ARGS |
-< CLOSE_URL : "}" > : DEFAULT
+< CLOSE_URL : ( [" ","\t","\r","\n"] ) * "}" > : DEFAULT
 }
 
 <IN_URL_ARGS> TOKEN :

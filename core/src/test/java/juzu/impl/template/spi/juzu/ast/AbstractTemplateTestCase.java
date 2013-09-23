@@ -20,7 +20,7 @@ import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.template.spi.EmitContext;
-import juzu.impl.template.spi.ProcessContext;
+import juzu.impl.template.spi.SimpleProcessContext;
 import juzu.impl.template.spi.Template;
 import juzu.impl.template.spi.juzu.compiler.ProcessPhase;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateEmitter;
@@ -52,7 +52,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
     Path.Relative relative = Path.relative(name, ".gtmpl");
     GroovyTemplateEmitter generator = new GroovyTemplateEmitter(fqn);
     try {
-      ProcessPhase processPhase = new ProcessPhase(new ProcessContext(Collections.<Path, Template<?>>emptyMap()) {
+      ProcessPhase processPhase = new ProcessPhase(new SimpleProcessContext(Collections.<Path, Template<?>>emptyMap()) {
         @Override
         public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws ProcessingException {
           if (parameterMap.size() > 0) {
@@ -70,7 +70,6 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
         }
       });
       Template<ASTNode.Template> template = new Template<ASTNode.Template>(
-          relative,
           ASTNode.Template.parse(text),
           relative,
           absolute,

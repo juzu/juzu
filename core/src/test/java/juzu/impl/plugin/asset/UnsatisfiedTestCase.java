@@ -38,7 +38,7 @@ public class UnsatisfiedTestCase extends AbstractWebTestCase {
     conn.connect();
     assertEquals(500, conn.getResponseCode());
     String ret = Tools.read(conn.getErrorStream());
-    assertTrue(ret.contains("Cannot satisfy asset dependencies"));
-    assertTrue(ret.contains("jquery"));
+    assertTrue(ret.contains("Cannot resolve asset"));
+    assertTrue(ret.contains("foo"));
   }
 }

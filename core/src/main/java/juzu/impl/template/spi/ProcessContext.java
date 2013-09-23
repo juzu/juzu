@@ -28,25 +28,29 @@ import java.io.Serializable;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ProcessContext {
+public abstract class ProcessContext {
 
-  /** . */
-  protected final Map<Path, Template<?>> templates;
+  /**
+   * Resolve a resource for the provided relative path.
+   *
+   * @param path the resource path
+   * @return the resource or null if the resource could not be resolved
+   */
+  public abstract Resource<Timestamped<Content>> resolveResource(Path.Relative path);
 
-  public ProcessContext(Map<Path, Template<?>> templates) {
-    this.templates = templates;
-  }
+  public abstract MethodInvocation resolveMethodInvocation( String typeName, String methodName, Map<String, String> parameterMap) throws ProcessingException;
 
-  protected Resource<Timestamped<Content>> resolveResource(Path.Relative path) {
-    return null;
-  }
+  protected abstract TemplateProvider resolverProvider(String ext);
 
-  protected TemplateProvider resolverProvider(String ext) {
-    return null;
-  }
+  protected abstract <M extends Serializable> Template<M> getTemplate(Path.Relative path);
+
+  protected abstract <M extends Serializable> void registerTemplate(Template<M> template);
+
+  protected abstract <M extends Serializable> void register(Path.Relative originPath, Template<M> template);
+
 
   public Template resolveTemplate(Path.Relative path) {
-    return resolveTemplate(path, path);
+    return resolveTemplate(null, path);
   }
 
   public <M extends Serializable> Template<? extends M> resolveTemplate(
@@ -54,7 +58,7 @@ public class ProcessContext {
       Path.Relative path) {
 
     // A class cast here would mean a terrible issue
-    Template<M> template = (Template<M>)templates.get(path);
+    Template<M> template = getTemplate(path);
 
     //
     if (template == null) {
@@ -79,14 +83,13 @@ public class ProcessContext {
 
       // Add template to application
       template =  new Template<M>(
-        originPath,
         templateAST,
         path,
         resolved.path,
         resolved.content.getTime());
 
-      //
-      templates.put(path, template);
+      // Register template
+      registerTemplate(template);
 
       // Process template
       try {
@@ -97,14 +100,10 @@ public class ProcessContext {
       }
     }
 
+    // Register relationship
+    register(originPath, template);
+
     //
     return template;
-  }
-
-  public MethodInvocation resolveMethodInvocation(
-    String typeName,
-    String methodName,
-    Map<String, String> parameterMap) throws ProcessingException {
-    return null;
   }
 }

@@ -1,0 +1,1 @@
+#{decorate path=juu.gtmpl/}<foo>#{insert/}</foo>

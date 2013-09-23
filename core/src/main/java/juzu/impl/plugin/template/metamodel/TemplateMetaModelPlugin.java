@@ -27,7 +27,6 @@ import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.MetaModelProcessor;
 import juzu.impl.template.spi.TemplateProvider;
-import juzu.impl.template.spi.Template;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
 
@@ -131,7 +130,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void prePassivate(ApplicationMetaModel application) {
     application.processingContext.log("Passivating template resolver for " + application.getHandle());
     TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
-    metaModel.resolver.prePassivate();
+    metaModel.emitter.prePassivate();
     metaModel.plugin = null;
   }
 
@@ -144,7 +143,12 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void postProcessEvents(ApplicationMetaModel application) {
     application.processingContext.log("Processing templates of " + application.getHandle());
-    application.getChild(TemplatesMetaModel.KEY).resolver.process(this);
+
+    //
+    application.getChild(TemplatesMetaModel.KEY).resolve();
+
+    //
+    application.getChild(TemplatesMetaModel.KEY).emitter.process(this);
   }
 
   @Override
@@ -237,8 +241,8 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
     JSON config = new JSON();
     ArrayList<String> list = new ArrayList<String>();
     TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
-    for (Template template : metaModel.resolver.getTemplates()) {
-      Path.Absolute resolved = metaModel.resolvePath(template.getRelativePath());
+    for (TemplateMetaModel template : metaModel.getChildren(TemplateMetaModel.class)) {
+      Path.Absolute resolved = metaModel.resolvePath(template.getPath());
       list.add(resolved.getName().toString());
     }
     config.map("templates", list);

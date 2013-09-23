@@ -30,10 +30,6 @@ public class A {
   @Inject
   Template index;
 
-  @Path("foo.gtmpl")
-  @Inject
-  Template foo;
-
   @View
   public Response.Content index() {
     return index.ok();

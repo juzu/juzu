@@ -103,7 +103,11 @@ public class TemplateParserTestCase extends AbstractTestCase {
 
   @Test
   public void testParseURL() throws IOException {
-    assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.<String, String>emptyMap())), parse("@{a()}"));
+    for (String s : new String[]{"@{a()}","@{ a()}","@{a() }","@{\ta()}","@{a()\t}","@{\ra()}","@{a()\r}","@{\na()}","@{a()\n}"}) {
+      assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.<String, String>emptyMap())), parse(s));
+    }
+
+    //
     assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Collections.singletonMap("a", "b"))), parse("@{a(a=b)}"));
     assertEquals(Arrays.<ASTNode.Block<?>>asList(new ASTNode.URL(null, "a", Builder.map("a", "b").map("c", "d").build())), parse("@{a(a=b,c=d)}"));
 
