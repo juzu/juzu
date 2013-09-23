@@ -16,6 +16,7 @@
 
 package juzu.impl.plugin.template.metamodel;
 
+import juzu.impl.common.CycleDetectionException;
 import juzu.impl.common.Timestamped;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingException;
@@ -86,7 +87,26 @@ class MetaModelProcessContext extends ProcessContext {
       Key<TemplateMetaModel> key = Key.of(template.getAbsolutePath(), TemplateMetaModel.class);
       // It may already be here (in case of double include for instance)
       if (b.getChild(key) == null) {
-        b.addChild(key, a);
+        try {
+          b.addChild(key, a);
+        }
+        catch (CycleDetectionException e) {
+          // We have a template cycle and we want to prevent it
+          StringBuilder path = new StringBuilder();
+          for (Object node : e.getPath()) {
+            if (path.length() > 0) {
+              path.append("->");
+            }
+            if (node instanceof TemplateMetaModel) {
+              TemplateMetaModel templateNode = (TemplateMetaModel)node;
+              path.append(templateNode.getPath().getValue());
+            } else {
+              // WTF ?
+              path.append(node);
+            }
+          }
+          throw TemplateMetaModel.TEMPLATE_CYCLE.failure(template.getRelativePath(), path);
+        }
       }
     }
   }

@@ -1,0 +1,1 @@
+#{include path=index.gtmpl}#{/include}

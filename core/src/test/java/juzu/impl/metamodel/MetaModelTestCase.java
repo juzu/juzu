@@ -16,9 +16,11 @@
 
 package juzu.impl.metamodel;
 
+import juzu.impl.common.CycleDetectionException;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -135,12 +137,15 @@ public class MetaModelTestCase extends AbstractTestCase {
   public void testCycleDetection() {
     Simple a = context.create("a");
     Simple b = context.create("b");
+    Simple c = context.create("c");
     a.addChild(B, b);
+    b.addChild(C, c);
     try {
-      b.addChild(A, a);
+      c.addChild(A, a);
       fail("Was expecting cycle detection");
     }
-    catch (IllegalStateException ok) {
+    catch (CycleDetectionException ok) {
+      assertEquals(Arrays.asList(a, b, c), ok.getPath());
     }
   }
 

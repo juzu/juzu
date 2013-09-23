@@ -16,17 +16,16 @@
 
 package juzu.impl.metamodel;
 
+import juzu.impl.common.CycleDetectionException;
 import juzu.impl.common.JSON;
-import juzu.impl.compiler.ProcessingContext;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MetaModelObject implements Serializable {
@@ -104,8 +103,10 @@ public class MetaModelObject implements Serializable {
     if (child == null) {
       throw new NullPointerException("No null child accepted");
     }
-    if (closure(child, new HashSet<MetaModelObject>()).contains(this)) {
-      throw new IllegalStateException("Cycle detected");
+    LinkedList<MetaModelObject> path = child.findPath(this);
+    if (path != null) {
+      path.addLast(this);
+      throw new CycleDetectionException(path);
     }
     else {
       if (child.parents.containsKey(this)) {
@@ -204,6 +205,16 @@ public class MetaModelObject implements Serializable {
     }
   }
 
+  /**
+   * Compute the shortest path from this object to the destination object.
+   * @param to the destination
+   */
+  public final void getPath(MetaModelObject to) {
+
+
+
+  }
+
   public void queue(MetaModelEvent event) {
     metaModel.queue(event);
   }
@@ -229,13 +240,26 @@ public class MetaModelObject implements Serializable {
     return getClass().getSimpleName() + "[" + toJSON() + "]";
   }
 
-  private Set<MetaModelObject> closure(MetaModelObject node, Set<MetaModelObject> closure) {
-    if (!closure.contains(node)) {
-      closure.add(node);
-      for (MetaModelObject child : node.children.values()) {
-        closure(child, closure);
+  /**
+   * Find a path between this object and the target.
+   *
+   * @param to the target object
+   * @return the path or null when no path exists
+   */
+  private LinkedList<MetaModelObject> findPath(MetaModelObject to) {
+    if (children.values().contains(to)) {
+      LinkedList<MetaModelObject> ret = new LinkedList<MetaModelObject>();
+      ret.addFirst(this);
+      return ret;
+    } else {
+      for (MetaModelObject child : children.values()) {
+        LinkedList<MetaModelObject> found = child.findPath(to);
+        if (found != null) {
+          found.addFirst(this);
+          return found;
+        }
       }
+      return null;
     }
-    return closure;
   }
 }

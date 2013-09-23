@@ -16,7 +16,9 @@
 
 package juzu.impl.plugin.template;
 
+import juzu.impl.compiler.CompilationError;
 import juzu.impl.inject.spi.InjectorProvider;
+import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.SimpleProcessContext;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateEmitter;
@@ -35,6 +37,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TagTestCase extends AbstractInjectTestCase {
@@ -107,6 +110,15 @@ public class TagTestCase extends AbstractInjectTestCase {
     MockRenderBridge render = client.render();
     String out = render.assertStringResult();
     assertEquals("foofoo", out);
+  }
+
+  @Test
+  public void testIncludeCircular() throws Exception {
+    List<CompilationError> errors = compiler("plugin.template.tag.includecircular").formalErrorReporting(true).failCompile();
+    assertEquals(1, errors.size());
+    CompilationError error = errors.get(0);
+    assertEquals(TemplateMetaModel.TEMPLATE_CYCLE, error.getCode());
+    assertEquals("[TEMPLATE_CYCLE](Path[foo.gtmpl],foo.gtmpl->index.gtmpl)", error.getMessage());
   }
 
   @Test
