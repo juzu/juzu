@@ -225,23 +225,17 @@ public class Application {
             };
 
             //
-            Bridge bridge = new ApplicationBridge(
+            Injector injector = config.injectorProvider.get();
+            injector.bindBean(Vertx.class, null, vertx);
+
+            //
+            this.bridge = new ApplicationBridge(
                 context,
                 log,
                 config,
                 null,
-                r) {
-              @Override
-              protected Injector createInjector(InjectorProvider provider) {
-                Injector injector = super.createInjector(provider);
-                // Bind vertx singleton
-                injector.bindBean(Vertx.class, null, vertx);
-                return injector;
-              }
-            };
-
-            //
-            this.bridge = bridge;
+                r,
+                injector);
           }
           catch (CompilationException e) {
             try {

@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package juzu.test.protocol.portlet;
+package bridge.inject.spring;
 
-import juzu.test.AbstractWebTestCase;
+/** @author Julien Viet */
+public class SpringBean {
 
-import javax.portlet.PortletConfig;
+  final String value;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class JuzuPortlet extends juzu.bridge.portlet.JuzuPortlet {
-
-  @Override
-  protected String getApplicationName(PortletConfig config) {
-    return AbstractWebTestCase.getApplicationName().toString();
+  public SpringBean(String value) {
+    this.value = value;
   }
 }

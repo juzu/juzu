@@ -389,7 +389,7 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
-        <version>3.1.1.RELEASE</version>
+        <version>3.2.4.RELEASE</version>
         <exclusions>
           <exclusion>
             <groupId>commons-logging</groupId>
@@ -400,18 +400,23 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
-        <version>3.1.1.RELEASE</version>
+        <version>3.2.4.RELEASE</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
-        <version>3.1.1.RELEASE</version>
+        <version>3.2.4.RELEASE</version>
         <exclusions>
           <exclusion>
             <groupId>aopalliance</groupId>
             <artifactId>aopalliance</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>3.2.4.RELEASE</version>
       </dependency>
 
       <dependency>

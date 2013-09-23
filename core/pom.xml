@@ -179,6 +179,13 @@
       <scope>test</scope>
     </dependency>
 
+    <!-- -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <scope>test</scope>
+    </dependency>
+
     <!-- Arquillian container -->
     <dependency>
       <groupId>org.jboss.arquillian.container</groupId>

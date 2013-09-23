@@ -16,10 +16,11 @@
 
 package bridge.portlet.event.consume;
 
-import juzu.test.protocol.portlet.JuzuPortlet;
+import juzu.bridge.portlet.JuzuPortlet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import java.io.IOException;
 
@@ -35,5 +36,10 @@ public class TestPortlet extends JuzuPortlet {
     resp.setEvent("event1", "4");
     resp.setEvent("event2", 5);
     resp.setEvent("event3", "6");
+  }
+
+  @Override
+  protected String getApplicationName(PortletConfig config) {
+    return "bridge.portlet.event.consume";
   }
 }

@@ -19,17 +19,16 @@ package juzu.test;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
+import juzu.impl.bridge.DescriptorBuilder;
 import juzu.impl.common.Name;
 import juzu.impl.common.RunMode;
-import juzu.impl.common.Tools;
 import juzu.impl.fs.Visitor;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.inject.spi.InjectorProvider;
-import juzu.test.protocol.portlet.JuzuPortlet;
-import juzu.test.protocol.servlet.JuzuServlet;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.arquillian.test.api.ArquillianResource;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.Asset;
 import org.jboss.shrinkwrap.api.asset.ByteArrayAsset;
 import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.asset.UrlAsset;
@@ -41,6 +40,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @RunWith(Arquillian.class)
@@ -88,14 +88,14 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     return compiler;
   }
 
-  private static WebArchive createDeployment(boolean asDefault, String... applicationNames) {
+  private static WebArchive createDeployment(boolean asDefault, Iterable<String> applicationNames) {
 
     //
-    Name[] applicationQNs = new Name[applicationNames.length];
+    ArrayList<Name> applicationQNs = new ArrayList<Name>();
     Name packageQN = null;
-    for (int i = 0;i < applicationNames.length;i++) {
-      Name applicationQN = Name.parse(applicationNames[i]);
-      applicationQNs[i] = applicationQN;
+    for (String applicationName : applicationNames) {
+      Name applicationQN = Name.parse(applicationName);
+      applicationQNs.add(applicationQN);
       packageQN = packageQN == null ? applicationQN : packageQN.getPrefix(applicationQN);
     }
 
@@ -148,7 +148,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     }
 
     // Set static state that we may need later
-    AbstractWebTestCase.applicationName = applicationQNs.length > 0 ? applicationQNs[0] : null;
+    AbstractWebTestCase.applicationName = applicationQNs.size() > 0 ? applicationQNs.get(0) : null;
     AbstractWebTestCase.asDefault = asDefault;
     AbstractWebTestCase.compiler = compiler;
 
@@ -161,48 +161,41 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   }
   
   public static WebArchive createServletDeployment(InjectorProvider injector, String applicationName) {
-    return createServletDeployment(new TestConfig().injector(injector), false, applicationName);
+    return createServletDeployment(DescriptorBuilder.DEFAULT.injector(injector).servletApp(applicationName), false);
   }
   
-  public static WebArchive createServletDeployment(boolean asDefault, String... applicationNames) {
-    return createServletDeployment(RunMode.PROD, asDefault, applicationNames);
+  public static WebArchive createServletDeployment(boolean asDefault, String applicationName) {
+    return createServletDeployment(RunMode.PROD, asDefault, applicationName);
   }
   
-  public static WebArchive createServletDeployment(String urlPattern, boolean asDefault, String... applicationNames) {
-    return createServletDeployment(new TestConfig().urlPattern(urlPattern), asDefault, applicationNames);
+  public static WebArchive createServletDeployment(String urlPattern, boolean asDefault, String applicationName) {
+    return createServletDeployment(DescriptorBuilder.DEFAULT.servletApp(applicationName, urlPattern), asDefault);
   }
   
-  public static WebArchive createServletDeployment(InjectorProvider injector, String urlPattern, boolean asDefault, String... applicationNames) {
-    return createServletDeployment(new TestConfig().injector(injector).urlPattern(urlPattern), asDefault, applicationNames);
+  public static WebArchive createServletDeployment(InjectorProvider injector, String urlPattern, boolean asDefault, String applicationName) {
+    return createServletDeployment(DescriptorBuilder.DEFAULT.injector(injector).servletApp(applicationName, urlPattern), asDefault);
   }
 
   public static WebArchive createServletDeployment(
       RunMode runMode,
       boolean asDefault,
-      String... applicationNames) {
-    return createServletDeployment(new TestConfig().runMode(runMode), asDefault, applicationNames);
+      String applicationName) {
+    return createServletDeployment(DescriptorBuilder.DEFAULT.runMode(runMode).servletApp(applicationName), asDefault);
   }
   
   public static WebArchive createServletDeployment(
     InjectorProvider injector,
     RunMode runMode,
     boolean asDefault,
-    String... applicationNames) {
-  return createServletDeployment(new TestConfig().runMode(runMode).injector(injector), asDefault, applicationNames);
-}
-  
-  public static WebArchive createServletDeployment(
-      TestConfig config,
-      boolean asDefault,
-      String... applicationNames) {
+    String applicationName) {
+    return createServletDeployment(DescriptorBuilder.DEFAULT.runMode(runMode).injector(injector).servletApp(applicationName), asDefault);
+  }
 
-    //
-    String urlPattern = config.getURLPattern();
-    RunMode runMode = config.getRunMode();
-    InjectorProvider injector = config.getInjector();
+  public static WebArchive createServletDeployment(DescriptorBuilder config, boolean asDefault) {
 
     // Create war
     String path;
+    String urlPattern = config.getURLPattern();
     if ("/".equals(urlPattern)) {
       path = "";
     } else if ("/*".equals(urlPattern)) {
@@ -214,11 +207,12 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     }
 
     //
-    WebArchive war = createDeployment(asDefault, applicationNames);
+    WebArchive war = createDeployment(asDefault, config.getApplications());
     AbstractWebTestCase.path = path;
     AbstractWebTestCase.servlet = true;
 
     //
+    RunMode runMode = config.getRunMode();
     String sourcePath;
     try {
       sourcePath = runMode.isDynamic() ? getCompiler().getSourcePath().getRoot().getCanonicalFile().getAbsolutePath() : "";
@@ -226,28 +220,22 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     catch (IOException e) {
       throw failure("Could not read obtain source path", e);
     }
+    if (sourcePath != null) {
+      config = config.sourcePath(sourcePath);
+    }
 
     // Descriptor
-    String servlet;
-    try {
-      servlet = Tools.read(JuzuServlet.class.getResourceAsStream("web.xml"));
-    }
-    catch (IOException e) {
-      throw failure("Could not read web xml deployment descriptor", e);
-    }
-    servlet = String.format(
-        servlet,
-        runMode.getValue(),
-        sourcePath,
-        injector.getValue(),
-        config.getRequestEncoding().name(),
-        urlPattern);
+    String servlet = config.toWebXml();
 
     // Descriptor
     war.setWebXML(new StringAsset(servlet));
 
     //
     return war;
+  }
+
+  public static WebArchive createPortletDeployment(String packageName, URL portletXML) {
+    return createPortletDeployment(DescriptorBuilder.DEFAULT.portletApp(packageName, "JuzuPortlet"), new UrlAsset(portletXML));
   }
 
   public static WebArchive createPortletDeployment(String packageName) {
@@ -260,61 +248,44 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   
   public static WebArchive createPortletDeployment(RunMode runMode, String packageName) {
     return createPortletDeployment(InjectorProvider.INJECT_GUICE, runMode, packageName);
-  } 
+  }
 
   public static WebArchive createPortletDeployment(InjectorProvider injector, RunMode runMode, String packageName) {
+    return createPortletDeployment(DescriptorBuilder.DEFAULT.injector(injector).runMode(runMode), packageName);
+  }
+
+  public static WebArchive createPortletDeployment(DescriptorBuilder config, String packageName) {
+    config = config.portletApp(packageName, "JuzuPortlet");
+    return createPortletDeployment(config, new StringAsset(config.toPortletXml()));
+  }
+
+  public static WebArchive createPortletDeployment(DescriptorBuilder config, Asset portletXML) {
 
     //
-    WebArchive war = createDeployment(asDefault, packageName);
+    WebArchive war = createDeployment(asDefault, config.getApplications());
     AbstractWebTestCase.path = null;
     AbstractWebTestCase.servlet = false;
 
     //
     String sourcePath;
     try {
-      sourcePath = runMode.isDynamic() ? getCompiler().getSourcePath().getRoot().getCanonicalFile().getAbsolutePath() : "";
+      sourcePath = config.getRunMode().isDynamic() ? getCompiler().getSourcePath().getRoot().getCanonicalFile().getAbsolutePath() : "";
     }
     catch (IOException e) {
       throw failure("Could not read obtain source path", e);
     }
 
-    // portlet.xml descriptor
-    String portlet;
-    try {
-      portlet = Tools.read(JuzuPortlet.class.getResourceAsStream("portlet.xml"));
+    //
+    if (sourcePath != null) {
+      config = config.sourcePath(sourcePath);
     }
-    catch (IOException e) {
-      throw failure("Could not read portlet xml deployment descriptor", e);
-    }
-    portlet = String.format(
-        portlet,
-        injector.getValue());
 
     // web.xml descriptor
-    String web;
-    try {
-      web = Tools.read(JuzuPortlet.class.getResourceAsStream("web.xml"));
-    }
-    catch (IOException e) {
-      throw failure("Could not read portlet xml deployment descriptor", e);
-    }
-    web = String.format(
-        web,
-        runMode.getValue(),
-        sourcePath);
+    config = config.embedPortletContainer();
+    war.setWebXML(new StringAsset(config.toWebXml()));
+    war.addAsWebInfResource(portletXML, "portlet.xml");
 
     //
-    war.setWebXML(new StringAsset(web));
-    war.addAsWebInfResource(new StringAsset(portlet), "portlet.xml");
-
-    //
-    return war;
-  }
-
-  public static WebArchive createPortletDeployment(String packageName, URL portletXML) {
-    WebArchive war = createDeployment(true, packageName);
-    war.setWebXML(JuzuPortlet.class.getResource("web.xml"));
-    war.addAsWebInfResource(new UrlAsset(portletXML), "portlet.xml");
     return war;
   }
 

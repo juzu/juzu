@@ -16,9 +16,9 @@
 
 package juzu.impl.bridge.request;
 
+import juzu.impl.bridge.DescriptorBuilder;
 import juzu.impl.common.Tools;
 import juzu.test.AbstractTestCase;
-import juzu.test.TestConfig;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
@@ -27,7 +27,7 @@ public class RequestFormParamUTF8DefaultEncodingViewServletTestCase extends Abst
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment(new TestConfig().requestEncoding(Tools.UTF_8), true, "bridge.request.formparamdefaultencoding.view");
+    return createServletDeployment(DescriptorBuilder.DEFAULT.requestEncoding(Tools.UTF_8).servletApp("bridge.request.formparamdefaultencoding.view"), true);
   }
 
   @Override

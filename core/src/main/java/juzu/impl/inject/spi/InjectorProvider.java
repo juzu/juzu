@@ -21,6 +21,8 @@ import juzu.impl.inject.spi.cdi.weld.WeldInjector;
 import juzu.impl.inject.spi.guice.GuiceInjector;
 import juzu.impl.inject.spi.spring.SpringInjector;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,37 +30,31 @@ import java.util.Map;
 public enum InjectorProvider {
 
   CDI_WELD("weld") {
-    public Injector get(boolean provided) {
-      if (provided) {
-        ClassLoader key = Thread.currentThread().getContextClassLoader();
-        return ProvidedCDIInjector.get(key);
-      } else {
-        return new WeldInjector();
+    public Injector get() {
+      try {
+        Object manager = new InitialContext().lookup("java:comp/BeanManager");
+        return ProvidedCDIInjector.get(manager);
       }
+      catch (NamingException e) {
+        // Not found
+      }
+      return new WeldInjector();
     }
   },
 
   INJECT_GUICE("guice") {
-    public Injector get(boolean provided) {
-      if (provided) {
-        throw new UnsupportedOperationException("No provided mode for Guice");
-      } else {
-        return new GuiceInjector();
-      }
+    public Injector get() {
+      return new GuiceInjector();
     }
   },
 
   INJECT_SPRING("spring") {
-    public Injector get(boolean provided) {
-      if (provided) {
-        throw new UnsupportedOperationException("No provided mode for Spring");
-      } else {
-        return new SpringInjector();
-      }
+    public Injector get() {
+      return new SpringInjector();
     }
   };
 
-  public abstract Injector get(boolean provided);
+  public abstract Injector get();
 
   /** . */
   final String value;
@@ -81,6 +77,14 @@ public enum InjectorProvider {
   }
 
   public static InjectorProvider find(String value) {
-    return LOOKUP.get(value);
+    if ("guice".equals(value)) {
+      return INJECT_GUICE;
+    } else if ("spring".equals(value)) {
+      return INJECT_SPRING;
+    } else if ("weld".equals(value)) {
+      return CDI_WELD;
+    } else {
+      return null;
+    }
   }
 }

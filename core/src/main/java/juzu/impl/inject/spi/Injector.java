@@ -36,6 +36,8 @@ public abstract class Injector implements Provider<Injector> {
     }
   };
 
+  public abstract boolean isProvided();
+
   /**
    * Declares a bean, bound to an optional implementation.
    *

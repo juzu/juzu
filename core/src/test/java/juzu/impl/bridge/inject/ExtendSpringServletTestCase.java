@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package inject.configuration;
+package juzu.impl.bridge.inject;
 
-import javax.inject.Inject;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Injected {
+/** @author Julien Viet */
+public class ExtendSpringServletTestCase extends AbstractExtendSpringTestCase {
 
-  @Inject
-  private Bean declared;
-
-  public Bean getDeclared() {
-    return declared;
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return configure(createServletDeployment(CONFIG.servletApp("bridge.inject.spring"), true));
   }
 }

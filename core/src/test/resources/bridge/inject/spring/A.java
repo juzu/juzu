@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package juzu.test.protocol.servlet;
+package bridge.inject.spring;
 
-import juzu.impl.bridge.spi.servlet.ServletBridge;
-import juzu.test.AbstractWebTestCase;
+import juzu.Response;
 
-import javax.servlet.ServletConfig;
+import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class JuzuServlet extends ServletBridge {
-  @Override
-  protected String getApplicationName(ServletConfig config) {
-    return AbstractWebTestCase.asDefault() ? AbstractWebTestCase.getApplicationName().toString() : null;
+public class A {
+
+
+  @Inject
+  SpringBean bean;
+
+  @juzu.View
+  public Response.Content index() {
+    return Response.ok("<span id='spring'>" + bean.value + "<span>");
   }
 }

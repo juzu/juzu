@@ -70,9 +70,8 @@ public class MockApplication<P> implements Closeable, ApplicationContext {
     ApplicationRuntime<P, P> lifeCycle = new ApplicationRuntime<P, P>(
         Logger.SYSTEM,
         module,
-        implementation.get(false),
+        implementation.get(),
         name,
-        classes,
         null,
         new ResourceResolver() {
           public URL resolve(String uri) {

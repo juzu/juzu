@@ -23,6 +23,7 @@ import juzu.impl.inject.ScopeController;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.Injector;
 import juzu.impl.inject.spi.InjectionContext;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor;
 import org.springframework.beans.factory.annotation.CustomAutowireConfigurer;
 import org.springframework.beans.factory.annotation.QualifierAnnotationAutowireCandidateResolver;
@@ -63,6 +64,9 @@ public class SpringInjector extends Injector {
   private URL configurationURL;
 
   /** . */
+  private BeanFactory parent;
+
+  /** . */
   final ScopeMetadataResolverImpl scopeResolver;
 
   /** . */
@@ -76,6 +80,7 @@ public class SpringInjector extends Injector {
     this.configurationURL = null;
     this.scopeResolver = new ScopeMetadataResolverImpl(scopes);
     this.scopeController = new ScopeController();
+    this.parent = null;
   }
 
   private SpringInjector(SpringInjector that) {
@@ -86,14 +91,11 @@ public class SpringInjector extends Injector {
     this.configurationURL = that.configurationURL;
     this.scopeResolver = new ScopeMetadataResolverImpl(scopes);
     this.scopeController = new ScopeController();
+    this.parent = that.parent;
   }
 
-  public URL getConfigurationURL() {
-    return configurationURL;
-  }
-
-  public void setConfigurationURL(URL configurationURL) {
-    this.configurationURL = configurationURL;
+  public void setParent(Object parent) {
+    this.parent = (BeanFactory)parent;
   }
 
   public <T> Injector declareBean(AbstractBean bean) {
@@ -107,6 +109,11 @@ public class SpringInjector extends Injector {
     }
     beans.put(name, bean);
     return this;
+  }
+
+  @Override
+  public boolean isProvided() {
+    return false;
   }
 
   @Override
@@ -151,12 +158,18 @@ public class SpringInjector extends Injector {
 
   @Override
   public InjectionContext<?, ?> create(Filter<Class<?>> filter) throws Exception {
+
+    //
     DefaultListableBeanFactory factory;
-    if (configurationURL != null) {
-      factory = new XmlBeanFactory(new UrlResource(configurationURL));
-    }
-    else {
-      factory = new DefaultListableBeanFactory();
+    if (parent != null) {
+      factory = new DefaultListableBeanFactory(parent);
+    } else {
+      if (configurationURL != null) {
+        factory = new XmlBeanFactory(new UrlResource(configurationURL));
+      }
+      else {
+        factory = new DefaultListableBeanFactory();
+      }
     }
 
     //

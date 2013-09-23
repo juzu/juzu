@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-package inject.configuration;
+package juzu.impl.bridge.inject;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Bean {
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+
+/** @author Julien Viet */
+public class ExtendSpringPortletTestCase extends AbstractExtendSpringTestCase {
+
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return configure(createPortletDeployment(CONFIG , "bridge.inject.spring"));
+  }
 }

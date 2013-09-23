@@ -107,21 +107,31 @@ public class Helper {
    * @return the portlet deployment
    */
   public static WebArchive createBasePortletDeployment(WebArchive war, String injectorVendor, Class... baseClasses) {
-    WebArchive deployment = createBaseDeployment(war, "portlet/web.xml", injectorVendor);
+    war = createBaseDeployment(war, "portlet/web.xml", injectorVendor);
+    addClasses(war, baseClasses);
+    return war;
+  }
+
+  /**
+   * Add the classes hierarchies in the web archive.
+   *
+   * @param war the archive
+   * @param baseClasses the base classes
+   */
+  public static void addClasses(WebArchive war, Class... baseClasses) {
     for (Class<?> baseClass : baseClasses) {
       try {
         URL root = baseClass.getClassLoader().getResource(baseClass.getName().replace('.', '/') + ".class");
         if (root != null) {
           File f = new File(root.toURI()).getParentFile();
           StringBuilder path = new StringBuilder(baseClass.getPackage().getName().replace('.', '/'));
-          add(deployment, f, path);
+          add(war, f, path);
         }
       }
       catch (URISyntaxException e) {
         throw new AssertionError("Could not create portlet deployment for class " + baseClass.getName(), e);
       }
     }
-    return deployment;
   }
 
   private static void add(WebArchive war, File f, StringBuilder path) {

@@ -17,7 +17,6 @@
 package juzu.impl.plugin.asset;
 
 import juzu.test.AbstractWebTestCase;
-import juzu.test.protocol.servlet.JuzuServlet;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -33,10 +32,10 @@ public class AjaxTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    URL jquery = JuzuServlet.class.getResource("jquery-1.7.1.js");
-    URL test = JuzuServlet.class.getResource("test.js");
-    URL css = JuzuServlet.class.getResource("main.css");
-    URL less = JuzuServlet.class.getResource("main.less");
+    URL jquery = AbstractWebTestCase.class.getResource("jquery-1.7.1.js");
+    URL test = AbstractWebTestCase.class.getResource("test.js");
+    URL css = AbstractWebTestCase.class.getResource("main.css");
+    URL less = AbstractWebTestCase.class.getResource("main.less");
     return createServletDeployment(true, "plugin.asset.ajax").
         addAsWebResource(jquery, "jquery.js").
         addAsWebResource(test, "test.js").
