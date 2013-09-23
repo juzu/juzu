@@ -133,7 +133,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
         log.log("Found sourcepath " + sp);
         if (sp != null) {
           // We take the first value
-          Spliterator split = new Spliterator(sp, ':');
+          Spliterator split = new Spliterator(sp, File.pathSeparatorChar);
           if (split.hasNext()) {
             File root = new File(split.next());
             if (root.isDirectory()) {
@@ -148,7 +148,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
         log.log("Found classpath " + cp);
         if (cp != null) {
           ArrayList<URL> urls = new ArrayList<URL>();
-          for (String s : Spliterator.split(cp, ':')) {
+          for (String s : Spliterator.split(cp, File.pathSeparatorChar)) {
             File f = new File(s);
             if (f.exists()) {
               if (f.isFile() && f.getName().endsWith(".jar") || f.isDirectory()) {
