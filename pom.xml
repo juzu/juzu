@@ -661,6 +661,25 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>reserve-network-port</id>
+            <goals>
+              <goal>reserve-network-port</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <portNames>
+                <portName>tomcat.http.port</portName>
+              </portNames>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
 
     <pluginManagement>
@@ -749,6 +768,7 @@
             <juzu.test.compiler>${juzu.test.compiler}</juzu.test.compiler>
             <juzu.test.resources.path>${basedir}/src/test/resources</juzu.test.resources.path>
             <juzu.test.workspace.path>${project.build.directory}/workspace</juzu.test.workspace.path>
+            <tomcat.http.port>${tomcat.http.port}</tomcat.http.port>
           </systemPropertyVariables>
           </configuration>
         </plugin>

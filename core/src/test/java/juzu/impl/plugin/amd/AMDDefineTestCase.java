@@ -67,10 +67,10 @@ public class AMDDefineTestCase extends AbstractAMDTestCase {
         "/juzu/assets/plugin/amd/define/assets/bar.js",
         "/juzu/assets/plugin/amd/define/assets/foo.js"), sources);
     
-    String foo = Tools.read(new URL("http://localhost:8080/juzu/assets/plugin/amd/define/assets/foo.js")).trim();
+    String foo = Tools.read(new URL("http://localhost:"+System.getProperty("tomcat.http.port")+"/juzu/assets/plugin/amd/define/assets/foo.js")).trim();
     assertTrue(foo.startsWith("define('Foo', [], function() {"));
     
-    String bar = Tools.read(new URL("http://localhost:8080/juzu/assets/plugin/amd/define/assets/bar.js")).trim();
+    String bar = Tools.read(new URL("http://localhost:"+System.getProperty("tomcat.http.port")+"/juzu/assets/plugin/amd/define/assets/bar.js")).trim();
     assertTrue(bar.startsWith("define('Bar', ['Foo'], function(foo) {"));
   }
 }

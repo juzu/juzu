@@ -9,4 +9,10 @@
     <property name="useJavaScript">true</property>
   </extension>
 
+  <container qualifier="tomcat" default="true">
+    <configuration>
+      <property name="bindHttpPort">${tomcat.http.port}</property>
+    </configuration>
+  </container>
+
 </arquillian>

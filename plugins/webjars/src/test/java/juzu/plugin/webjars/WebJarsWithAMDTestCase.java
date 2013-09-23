@@ -73,7 +73,7 @@ public class WebJarsWithAMDTestCase extends AbstractAMDTestCase {
         "/juzu/assets/juzu/amd/webjars/assets/foo.js",
         "/juzu/assets/juzu/amd/webjars/assets/jquery.js"), sources);
     
-    String jquery = Tools.read(new URL("http://localhost:8080/juzu/assets/juzu/amd/webjars/assets/jquery.js"));
+    String jquery = Tools.read(new URL("http://localhost:"+System.getProperty("tomcat.http.port")+"/juzu/assets/juzu/amd/webjars/assets/jquery.js"));
     boolean actual = jquery.endsWith("})( window );\n return jQuery.noConflict(true);})();\n});");
     assertTrue(actual);
   }
