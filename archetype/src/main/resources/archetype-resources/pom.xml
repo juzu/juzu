@@ -30,6 +30,14 @@
       <version>${pom.version}</version>
     </dependency>
 
+    <!-- Servlet 3.x API -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.0.1</version>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- Junit for testing -->
     <dependency>
       <groupId>junit</groupId>
@@ -59,11 +67,6 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.3.2</version>
-        <configuration>
-          <compilerArguments>
-            <sourcepath>\${project.basedir}/src/main/java</sourcepath>
-          </compilerArguments>
-        </configuration>
       </plugin>
 
       <plugin>
