@@ -382,4 +382,18 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
       throw failure("Cannot invoke portlet test with a path: " + path);
     }
   }
+
+  public static int getContainerPort() {
+    String port = System.getProperty("tomcat.http.port");
+    if (port == null) {
+      throw failure("No port set");
+    } else {
+      try {
+        return Integer.parseInt(port);
+      }
+      catch (NumberFormatException e) {
+        throw failure("Could not parse port " + port);
+      }
+    }
+  }
 }
