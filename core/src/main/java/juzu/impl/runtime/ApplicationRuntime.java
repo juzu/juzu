@@ -51,9 +51,6 @@ public class ApplicationRuntime<P, R> implements Closeable {
   /** Contextual: logger. */
   private final Logger log;
 
-  /** Contextual: resources. */
-  private final ReadFileSystem<R> resources;
-
   /** Contextual: resoure resolver. */
   private final ResourceResolver resourceResolver;
 
@@ -83,7 +80,6 @@ public class ApplicationRuntime<P, R> implements Closeable {
       ModuleRuntime<?> moduleLifeCycle,
       Injector injectorProvider,
       Name name,
-      ReadFileSystem<R> resources,
       AssetServer assetServer,
       ResourceResolver resourceResolver) {
 
@@ -92,7 +88,6 @@ public class ApplicationRuntime<P, R> implements Closeable {
     this.moduleLifeCycle = moduleLifeCycle;
     this.injectorProvider = injectorProvider;
     this.name = name;
-    this.resources = resources;
     this.assetServer = assetServer;
     this.resourceResolver = resourceResolver;
   }
@@ -152,15 +147,6 @@ public class ApplicationRuntime<P, R> implements Closeable {
     Injector injector = injectorProvider.get();
     injector.addFileSystem(classes);
     injector.setClassLoader(moduleLifeCycle.getClassLoader());
-
-    //
-    if (injector instanceof SpringInjector) {
-      R springName = resources.getPath("spring.xml");
-      if (springName != null) {
-        URL configurationURL = resources.getURL(springName);
-        ((SpringInjector)injector).setConfigurationURL(configurationURL);
-      }
-    }
 
     //
     log.log("Starting " + descriptor.getName());

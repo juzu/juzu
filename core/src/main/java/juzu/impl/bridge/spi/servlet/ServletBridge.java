@@ -30,11 +30,10 @@ import juzu.impl.compiler.CompilationException;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
-import juzu.impl.inject.spi.InjectorProvider;
+import juzu.impl.inject.spi.Injector;
+import juzu.impl.inject.spi.spring.SpringInjector;
 import juzu.impl.resource.ResourceResolver;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -218,17 +217,6 @@ public class ServletBridge extends HttpServlet {
       };
 
       //
-      boolean provided = false;
-      if (config.injectorProvider == InjectorProvider.CDI_WELD) {
-        try {
-          provided = new InitialContext().lookup("java:comp/BeanManager") != null;
-        }
-        catch (NamingException e) {
-          // Not found
-        }
-      }
-
-      //
       ResourceResolver resolver = new ResourceResolver() {
         public URL resolve(String uri) {
           try {
@@ -241,10 +229,20 @@ public class ServletBridge extends HttpServlet {
       };
 
       // Create and configure bridge
-      if (provided) {
-        bridge = new ProvidedBridge(bridgeContext, log, this.config, server, resolver);
+      Injector injector = config.injectorProvider.get();
+      if (injector instanceof SpringInjector) {
+        SpringInjector springInjector = (SpringInjector)injector;
+        Object parent = getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
+        if (parent != null) {
+          springInjector.setParent(parent);
+        }
+      }
+
+      //
+      if (injector.isProvided()) {
+        bridge = new ProvidedBridge(bridgeContext, log, this.config, server, resolver, injector);
       } else {
-        bridge = new ApplicationBridge(bridgeContext, log, this.config, server, resolver);
+        bridge = new ApplicationBridge(bridgeContext, log, this.config, server, resolver, injector);
       }
     }
 

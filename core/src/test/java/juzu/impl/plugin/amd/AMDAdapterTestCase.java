@@ -67,7 +67,7 @@ public class AMDAdapterTestCase extends AbstractAMDTestCase {
     		"/juzu/assets/plugin/amd/adapter/assets/foo.js",
     		"/juzu/assets/plugin/amd/adapter/assets/jquery-1.7.1.js"), sources);
     
-    String jquery = Tools.read(new URL("http://localhost:8080/juzu/assets/plugin/amd/adapter/assets/jquery-1.7.1.js"));
+    String jquery = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/adapter/assets/jquery-1.7.1.js"));
     boolean actual = jquery.endsWith("})( window );\n return jQuery.noConflict(true);})();\n});");
     assertTrue(actual);
   }

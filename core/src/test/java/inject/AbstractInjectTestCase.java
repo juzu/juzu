@@ -131,6 +131,6 @@ public abstract class AbstractInjectTestCase<B, I> extends juzu.test.AbstractInj
   }
 
   protected final Injector getManager() throws Exception {
-    return getDI().get(false);
+    return getDI().get();
   }
 }

@@ -19,6 +19,7 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.BridgeContext;
 import juzu.impl.common.Tools;
+import juzu.impl.inject.spi.Injector;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.common.Logger;
@@ -38,8 +39,20 @@ public class ProvidedBridge extends Bridge {
   /** . */
   private BeanLifeCycle applicationLifeCycle;
 
-  public ProvidedBridge(BridgeContext context, Logger log, BridgeConfig config, AssetServer server, ResourceResolver resolver) {
+  /** . */
+  private final Injector injector;
+
+  public ProvidedBridge(
+      BridgeContext context,
+      Logger log,
+      BridgeConfig config,
+      AssetServer server,
+      ResourceResolver resolver,
+      Injector injector) {
     super(context, log, config, server, resolver);
+
+    //
+    this.injector = injector;
   }
 
   @Override
@@ -53,7 +66,7 @@ public class ProvidedBridge extends Bridge {
     if (application == null) {
 
       // For now only works with CDI
-      ProvidedCDIInjector injector = (ProvidedCDIInjector)config.injectorProvider.get(true);
+      ProvidedCDIInjector injector = (ProvidedCDIInjector)this.injector;
 
       // Get App
       application = injector.getApplication();

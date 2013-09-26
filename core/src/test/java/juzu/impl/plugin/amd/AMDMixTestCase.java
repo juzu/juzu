@@ -69,11 +69,11 @@ public class AMDMixTestCase extends AbstractAMDTestCase {
         "/juzu/assets/plugin/amd/mix/assets/bar.js",
         "/juzu/assets/plugin/amd/mix/assets/foo.js"), sources);
     
-    String foo = Tools.read(new URL("http://localhost:8080/juzu/assets/plugin/amd/mix/assets/foo.js")).trim();
+    String foo = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/mix/assets/foo.js")).trim();
     URL fooURL = Thread.currentThread().getContextClassLoader().getResource("plugin/amd/mix/assets/foo.js");
     assertEquals(Tools.read(fooURL), foo);
     
-    String bar = Tools.read(new URL("http://localhost:8080/juzu/assets/plugin/amd/mix/assets/bar.js")).trim();
+    String bar = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/mix/assets/bar.js")).trim();
     assertTrue(bar.startsWith("define('Bar', ['Foo'], function(foo) {"));
   }
 }

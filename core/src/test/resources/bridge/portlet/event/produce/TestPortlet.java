@@ -16,11 +16,12 @@
 
 package bridge.portlet.event.produce;
 
+import juzu.bridge.portlet.JuzuPortlet;
 import juzu.impl.bridge.portlet.ProduceEventTestCase;
-import juzu.test.protocol.portlet.JuzuPortlet;
 
 import javax.portlet.EventRequest;
 import javax.portlet.EventResponse;
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 import java.io.IOException;
 
@@ -32,5 +33,10 @@ public class TestPortlet extends JuzuPortlet {
     ProduceEventTestCase.eventNames.add(request.getEvent().getName());
     ProduceEventTestCase.eventQNames.add(request.getEvent().getQName());
     ProduceEventTestCase.eventPayloads.add(request.getEvent().getValue());
+  }
+
+  @Override
+  protected String getApplicationName(PortletConfig config) {
+    return "bridge.portlet.event.produce";
   }
 }

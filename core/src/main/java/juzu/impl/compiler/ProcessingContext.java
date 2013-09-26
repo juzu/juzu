@@ -97,6 +97,8 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
 
   /** The resources accessed, we need to have this map because some resources may only open one time (cf eclipse filer). */
   private Map<Key, FileObject> resources;
+  
+  private static final char PATH_SEPARATOR_CHAR = System.getProperty("path.separator").charAt(0);
 
   public ProcessingContext(ProcessingEnvironment env) {
     ProcessingTool tool;
@@ -133,7 +135,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
         log.log("Found sourcepath " + sp);
         if (sp != null) {
           // We take the first value
-          Spliterator split = new Spliterator(sp, ':');
+          Spliterator split = new Spliterator(sp, PATH_SEPARATOR_CHAR);
           if (split.hasNext()) {
             File root = new File(split.next());
             if (root.isDirectory()) {
@@ -148,7 +150,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
         log.log("Found classpath " + cp);
         if (cp != null) {
           ArrayList<URL> urls = new ArrayList<URL>();
-          for (String s : Spliterator.split(cp, ':')) {
+          for (String s : Spliterator.split(cp, PATH_SEPARATOR_CHAR)) {
             File f = new File(s);
             if (f.exists()) {
               if (f.isFile() && f.getName().endsWith(".jar") || f.isDirectory()) {

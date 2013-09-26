@@ -50,6 +50,11 @@ public class WeldInjector extends CDIInjector {
   }
 
   @Override
+  public boolean isProvided() {
+    return false;
+  }
+
+  @Override
   public <P> Injector addFileSystem(ReadFileSystem<P> fs) {
     fileSystems.add(fs);
     return this;

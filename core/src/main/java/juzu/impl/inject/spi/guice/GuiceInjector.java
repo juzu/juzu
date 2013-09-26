@@ -52,6 +52,11 @@ public class GuiceInjector extends Injector {
   }
 
   @Override
+  public boolean isProvided() {
+    return false;
+  }
+
+  @Override
   public <T> Injector declareBean(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends T> implementationType) {
     bindings.add(new BeanBinding.ToType<T>(type, beanScope, qualifiers, implementationType));
     return this;

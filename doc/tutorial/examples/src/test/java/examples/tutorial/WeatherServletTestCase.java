@@ -17,8 +17,11 @@
 package examples.tutorial;
 
 import junit.framework.AssertionFailedError;
-import juzu.arquillian.Helper;
+import juzu.impl.bridge.DescriptorBuilder;
+import juzu.impl.inject.spi.InjectorProvider;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 import java.io.File;
@@ -29,9 +32,17 @@ public class WeatherServletTestCase extends WeatherTestCase {
 
   @Deployment
   public static WebArchive deployment() {
-    WebArchive war = Helper.createBaseServletDeployment(); // <1> Create the base servlet deployment
-    war.addAsWebInfResource(new File("src/test/resources/spring.xml")); // <2> Add the spring.xml descriptor
-    war.addPackages(true, "examples.tutorial"); // <3> Add the examples.tutorial package
+    String webXml = DescriptorBuilder.DEFAULT.
+        injector(InjectorProvider.INJECT_SPRING).
+        listener("org.springframework.web.context.ContextLoaderListener").
+        toWebXml();
+    WebArchive war = ShrinkWrap.create(WebArchive.class);
+    war.setWebXML(new StringAsset(webXml));
+    war.addAsWebInfResource(new File("src/test/resources/applicationContext.xml"));
+    war.addPackages(true, "examples.tutorial");
+//    WebArchive war = Helper.createBaseServletDeployment(); // <1> Create the base servlet deployment
+//    war.addAsWebInfResource(new File("src/test/resources/spring.xml")); // <2> Add the spring.xml descriptor
+//    war.addPackages(true, "examples.tutorial"); // <3> Add the examples.tutorial package
     return war;
   }
 

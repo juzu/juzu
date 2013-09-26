@@ -68,11 +68,11 @@ public class AMDRequireTestCase extends AbstractAMDTestCase {
         "/juzu/assets/plugin/amd/require/assets/bar.js",
         "/juzu/assets/plugin/amd/require/assets/foo.js"), sources);
     
-    String foo = Tools.read(new URL("http://localhost:8080/juzu/assets/plugin/amd/require/assets/foo.js")).trim();
+    String foo = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/require/assets/foo.js")).trim();
     URL fooURL = Thread.currentThread().getContextClassLoader().getResource("plugin/amd/require/assets/foo.js");
     assertEquals(Tools.read(fooURL), foo);
     
-    String bar = Tools.read(new URL("http://localhost:8080/juzu/assets/plugin/amd/require/assets/bar.js")).trim();
+    String bar = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/require/assets/bar.js")).trim();
     URL barURL = Thread.currentThread().getContextClassLoader().getResource("plugin/amd/require/assets/bar.js");
     assertEquals(Tools.read(barURL), bar);
   }

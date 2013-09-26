@@ -17,8 +17,11 @@
 package examples.tutorial;
 
 import junit.framework.AssertionFailedError;
-import juzu.arquillian.Helper;
+import juzu.impl.bridge.DescriptorBuilder;
+import juzu.impl.inject.spi.InjectorProvider;
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 import java.io.File;
@@ -29,10 +32,19 @@ public class WeatherPortletTestCase extends WeatherTestCase {
 
   @Deployment
   public static WebArchive deployment() {
-    WebArchive war = Helper.createBasePortletDeployment("spring");
+    DescriptorBuilder desc = DescriptorBuilder.DEFAULT.
+        injector(InjectorProvider.INJECT_SPRING).
+        embedPortletContainer().
+        listener("org.springframework.web.context.ContextLoaderListener");
+    String webXml = desc.toWebXml();
+    WebArchive war = ShrinkWrap.create(WebArchive.class);
+    war.setWebXML(new StringAsset(webXml));
+    war.addAsWebInfResource(new File("src/test/resources/applicationContext.xml"));
     war.addAsWebInfResource(new File("src/main/webapp/WEB-INF/portlet.xml"));
-    war.addAsWebInfResource(new File("src/test/resources/spring.xml"));
     war.addPackages(true, "examples.tutorial");
+//    WebArchive war = Helper.createBasePortletDeployment("spring");
+//    war.addAsWebInfResource(new File("src/test/resources/spring.xml"));
+//    war.addPackages(true, "examples.tutorial");
     return war;
   }
 

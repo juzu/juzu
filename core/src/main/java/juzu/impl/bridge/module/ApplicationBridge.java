@@ -18,7 +18,6 @@ package juzu.impl.bridge.module;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.BridgeContext;
-import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.common.Logger;
@@ -42,16 +41,22 @@ public class ApplicationBridge extends Bridge {
   private ApplicationRuntime<?, ?> application;
 
   /** . */
-  private Injector injector;
+  private final Injector injector;
 
   /** . */
   private RunMode runMode;
 
-  public ApplicationBridge(BridgeContext context, Logger log, BridgeConfig config, AssetServer server, ResourceResolver resolver) {
+  public ApplicationBridge(
+      BridgeContext context,
+      Logger log,
+      BridgeConfig config,
+      AssetServer server,
+      ResourceResolver resolver,
+      Injector injector) {
     super(context, log, config, server, resolver);
 
     //
-    this.injector = null;
+    this.injector = injector;
   }
 
   public RunMode getRunMode() {
@@ -70,18 +75,9 @@ public class ApplicationBridge extends Bridge {
     return runMode;
   }
 
-  protected Injector createInjector(InjectorProvider provider) {
-    return provider.get(false);
-  }
-
   public boolean refresh(boolean recompile) throws Exception {
 
     if (module == null) {
-
-      //
-      if (injector == null) {
-        injector = createInjector(config.injectorProvider);
-      }
 
       //
       module = (ModuleContextImpl)context.getAttribute("juzu.module");
@@ -102,7 +98,6 @@ public class ApplicationBridge extends Bridge {
           module.runtime,
           injector,
           config.name,
-          context.getResourcePath(),
           server,
           resolver);
     }

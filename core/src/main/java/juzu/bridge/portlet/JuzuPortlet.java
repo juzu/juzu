@@ -34,6 +34,8 @@ import juzu.impl.bridge.spi.portlet.PortletResourceBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
 import juzu.impl.common.Tools;
+import juzu.impl.inject.spi.Injector;
+import juzu.impl.inject.spi.spring.SpringInjector;
 import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.ControllerResolver;
@@ -179,6 +181,16 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     };
 
     //
+    Injector injector = bridgeConfig.injectorProvider.get();
+    if (injector instanceof SpringInjector) {
+      SpringInjector springInjector = (SpringInjector)injector;
+      Object parent = config.getPortletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
+      if (parent != null) {
+        springInjector.setParent(parent);
+      }
+    }
+
+    //
     Bridge bridge = new ApplicationBridge(
         bridgeContext,
         log,
@@ -193,7 +205,8 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
               return null;
             }
           }
-        });
+        },
+        injector);
 
     //
     this.config = config;

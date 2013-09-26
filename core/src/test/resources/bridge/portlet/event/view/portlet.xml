@@ -8,7 +8,11 @@
 
      <portlet-name>JuzuPortlet</portlet-name>
      <display-name xml:lang="EN">Integration Test</display-name>
-     <portlet-class>juzu.test.protocol.portlet.JuzuPortlet</portlet-class>
+     <portlet-class>juzu.bridge.portlet.JuzuPortlet</portlet-class>
+     <init-param>
+       <name>juzu.app_name</name>
+       <value>bridge.portlet.event.view</value>
+     </init-param>
      <supports>
        <mime-type>text/html</mime-type>
      </supports>

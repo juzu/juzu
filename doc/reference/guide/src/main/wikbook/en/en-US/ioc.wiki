@@ -281,3 +281,34 @@ This provider should be declared in the //META-INF/services/juzu.inject.Provider
 {{example title="Time provider configuration"}}
 {{code}}my.TimeProvider{{/code}}
 {{/example}}
+
+= Provided container =
+
+Sometimes a Juzu application needs to run with a provided container, i.e a container whose life cycle is not
+managed by the framework, allowing Juzu to integratte with existing runtimes.
+
+== Provided Spring ==
+
+A Juzu application can reuse an existing container scoped to a web application. In this case Juzu will create its
+own container with the provided container as parent, as a result, all beans available in the provided container
+will be available in the Juzu application.
+
+During the startup of the application, the web application attribute ##org.springframework.web.context.WebApplicationContext.ROOT##
+is looked up, this is the provided container when it is not null. Such container is usually created by a Spring servlet
+or listener, for example:
+
+{{example title="A Spring web application provided by a servlet context listener"}}
+{{xml}}
+  ...
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  ...
+{{/xml}}
+{{/example}}
+
+This usually start the beans declared in the ///WEB-INF/applicationContext.xml//.
+
+== Provided CDI ==
+
+todo

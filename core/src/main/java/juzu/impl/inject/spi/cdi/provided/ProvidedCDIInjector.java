@@ -34,10 +34,10 @@ import java.util.Map;
 public class ProvidedCDIInjector extends CDIInjector {
 
   /** . */
-  private static final Map<ClassLoader, ProvidedCDIInjector> REGISTRY = Collections.synchronizedMap(new IdentityHashMap<ClassLoader, ProvidedCDIInjector>());
+  private static final Map<BeanManager, ProvidedCDIInjector> REGISTRY = Collections.synchronizedMap(new IdentityHashMap<BeanManager, ProvidedCDIInjector>());
 
   /** . */
-  public static CDIInjector get(ClassLoader loader) {
+  public static CDIInjector get(Object loader) {
     return REGISTRY.get(loader);
   }
 
@@ -60,7 +60,7 @@ public class ProvidedCDIInjector extends CDIInjector {
       ResourceResolver resolver) {
 
     // Register for later lookup
-    REGISTRY.put(classLoader, this);
+    REGISTRY.put(beanManager, this);
 
     Application application = new Application(this, descriptor, resolver);
 
@@ -73,6 +73,11 @@ public class ProvidedCDIInjector extends CDIInjector {
 
   public Application getApplication() {
     return application;
+  }
+
+  @Override
+  public boolean isProvided() {
+    return true;
   }
 
   @Override
