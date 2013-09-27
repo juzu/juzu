@@ -191,6 +191,14 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
   public ProcessingEnvironment getEnv() {
     return env;
   }
+  
+  /**
+   * Returns true if we should not copy manually the resources from the source folder to the output folder.
+   * @return
+   */
+  public boolean isCopyFromSourcesExternallyManaged() {
+      return ProcessingTool.ECLIPSE_IDE.equals(tool);
+  }
 
   public <E extends Element> E get(ElementHandle<E> handle) {
     return handle.get(env);
