@@ -42,13 +42,13 @@ public class LifeCycleScopedTestCase<B, I> extends AbstractInjectTestCase<B, I> 
     beginScoping();
     try {
       B bean = mgr.resolveBean(Bean.class);
-      I instance = mgr.create(bean);
-      Bean o = (Bean)mgr.get(bean, instance);
+      I instance = mgr.createContext(bean);
+      Bean o = (Bean)mgr.getInstance(bean, instance);
       assertNotNull(o);
       o.m();
       assertEquals(1, Bean.construct);
       assertEquals(0, Bean.destroy);
-      mgr.release(bean, instance);
+      mgr.releaseContext(bean, instance);
       assertEquals(1, Bean.construct);
       assertEquals(0, Bean.destroy);
     }

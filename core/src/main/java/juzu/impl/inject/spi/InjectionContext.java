@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class InjectionContext<B, I> implements Closeable {
+public abstract class InjectionContext<B, C> implements Closeable {
 
   public abstract ScopeController getScopeController();
 
@@ -44,25 +44,31 @@ public abstract class InjectionContext<B, I> implements Closeable {
   public abstract Iterable<B> resolveBeans(Class<?> type);
 
   /**
-   * Create a bean instance for the specified bean.
+   * Create a bean context for the specified bean.
    *
    * @param bean the bean
-   * @return the bean instance
-   * @throws InvocationTargetException wrap any exception throws,by the bean class during its creation.
+   * @return the bean context
+   * @throws InvocationTargetException wrap any exception thrown by the bean class during its creation.
    */
-  public abstract I create(B bean) throws InvocationTargetException;
+  public abstract C createContext(B bean) throws InvocationTargetException;
+
+  /**
+   * Resolve the specified bean context.
+   *
+   * @param bean the bean
+   * @param context the bean context
+   */
+  public abstract void releaseContext(B bean, C context);
 
   /**
    * Get the bean object associated the bean instance.
    *
    * @param bean     the bean
-   * @param instance the bean instance
+   * @param context the bean instance
    * @return the bean instance
    * @throws InvocationTargetException wrap any exception throws,by the bean class during its creation.
    */
-  public abstract Object get(B bean, I instance) throws InvocationTargetException;
-
-  public abstract void release(B bean, I instance);
+  public abstract Object getInstance(B bean, C context) throws InvocationTargetException;
 
   /**
    * Close the manager. The implementation should care bout shutting down the existing bean in particular the
@@ -70,35 +76,35 @@ public abstract class InjectionContext<B, I> implements Closeable {
    */
   public abstract void close();
 
-  private static class BeanLifeCycleImpl<B,I,T> implements BeanLifeCycle<T> {
+  private static class BeanLifeCycleImpl<B,C,I> implements BeanLifeCycle<I> {
 
-    final Class<T> type;
-    final InjectionContext<B, I> manager;
+    final Class<I> type;
+    final InjectionContext<B, C> manager;
     final B a;
+    private C context;
     private I instance;
-    private T o;
 
-    private BeanLifeCycleImpl(Class<T> type, InjectionContext<B, I> manager, B a) {
+    private BeanLifeCycleImpl(Class<I> type, InjectionContext<B, C> manager, B a) {
       this.type = type;
       this.manager = manager;
       this.a = a;
     }
 
-    public T get() throws InvocationTargetException {
-      if (o == null) {
-        instance = manager.create(a);
-        o = type.cast(manager.get(a, instance));
+    public I get() throws InvocationTargetException {
+      if (instance == null) {
+        context = manager.createContext(a);
+        instance = type.cast(manager.getInstance(a, context));
       }
-      return o;
+      return instance;
     }
 
-    public T peek() {
-      return o;
+    public I peek() {
+      return instance;
     }
 
     public void close() {
-      if (instance != null) {
-        manager.release(a, instance);
+      if (context != null) {
+        manager.releaseContext(a, context);
       }
     }
   }
@@ -108,7 +114,7 @@ public abstract class InjectionContext<B, I> implements Closeable {
     if (a == null) {
       return null;
     } else {
-      return new BeanLifeCycleImpl<B,I,T>(type, this, a);
+      return new BeanLifeCycleImpl<B, C,T>(type, this, a);
     }
   }
 
@@ -123,7 +129,7 @@ public abstract class InjectionContext<B, I> implements Closeable {
           }
           public BeanLifeCycle<T> next() {
             B b = i.next();
-            return new BeanLifeCycleImpl<B,I,T>(type, InjectionContext.this, b);
+            return new BeanLifeCycleImpl<B, C,T>(type, InjectionContext.this, b);
           }
           public void remove() {
             throw new UnsupportedOperationException();

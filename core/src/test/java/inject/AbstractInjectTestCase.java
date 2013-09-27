@@ -97,9 +97,9 @@ public abstract class AbstractInjectTestCase<B, I> extends juzu.test.AbstractInj
   protected static <B, I, T> T getBean(InjectionContext<B, I> context, Class<T> beanType) throws Exception {
     B bean = context.resolveBean(beanType);
     assertNotNull("Could not resolve bean of type " + beanType, bean);
-    I beanInstance = context.create(bean);
+    I beanInstance = context.createContext(bean);
     assertNotNull("Could not create bean instance of type " + beanType + " from bean " + bean, beanInstance);
-    Object o = context.get(bean, beanInstance);
+    Object o = context.getInstance(bean, beanInstance);
     assertNotNull("Could not obtain bean object from bean instance " + beanInstance + " of type " + beanType, o);
     return beanType.cast(o);
   }
@@ -107,9 +107,9 @@ public abstract class AbstractInjectTestCase<B, I> extends juzu.test.AbstractInj
   protected final Object getBean(String beanName) throws Exception {
     B bean = mgr.resolveBean(beanName);
     assertNotNull("Could not find bean " + beanName, bean);
-    I beanInstance = mgr.create(bean);
+    I beanInstance = mgr.createContext(bean);
     assertNotNull(beanInstance);
-    return mgr.get(bean, beanInstance);
+    return mgr.getInstance(bean, beanInstance);
   }
 
   protected final void beginScoping() throws Exception {

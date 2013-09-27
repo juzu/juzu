@@ -46,7 +46,7 @@ public abstract class AbstractExtendSpringTestCase extends AbstractWebTestCase {
             "xsi:schemaLocation=\"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd\n" +
             "http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd \n" +
             "http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd\">\n" +
-            "<bean class=\"bridge.inject.spring.SpringBean\"><constructor-arg index=\"0\" value=\"foo\"/></bean>" +
+            "<bean name=\"foo\" scope=\"singleton\" class=\"bridge.inject.spring.SpringBean\"><constructor-arg index=\"0\" value=\"foo\"/></bean>" +
             "</beans>"), "applicationContext.xml");
     return war;
   }

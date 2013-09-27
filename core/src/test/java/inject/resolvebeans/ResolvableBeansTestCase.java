@@ -43,8 +43,8 @@ public class ResolvableBeansTestCase<B, I> extends AbstractInjectTestCase<B, I> 
     assertEquals(2, beans.size());
     HashSet<Class<?>> classes = new HashSet<Class<?>>();
     for (B bean : beans) {
-      I instance = mgr.create(bean);
-      Object o = mgr.get(bean, instance);
+      I instance = mgr.createContext(bean);
+      Object o = mgr.getInstance(bean, instance);
       classes.add(o.getClass());
     }
     assertEquals(Tools.<Class<?>>set(Bean1.class, Bean2.class), classes);

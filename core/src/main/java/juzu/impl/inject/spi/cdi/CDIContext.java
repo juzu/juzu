@@ -108,19 +108,19 @@ public abstract class CDIContext extends InjectionContext<Bean<?>, CreationalCon
     }
   }
 
-  public CreationalContext<?> create(Bean<?> bean) {
+  public CreationalContext<?> createContext(Bean<?> bean) {
     BeanManager manager = getBeanManager();
     return manager.createCreationalContext(bean);
   }
 
-  public void release(Bean<?> bean, CreationalContext<?> instance) {
-    instance.release();
+  public void releaseContext(Bean<?> bean, CreationalContext<?> context) {
+    context.release();
   }
 
-  public Object get(Bean<?> bean, CreationalContext<?> instance) throws InvocationTargetException {
+  public Object getInstance(Bean<?> bean, CreationalContext<?> context) throws InvocationTargetException {
     try {
       BeanManager manager = getBeanManager();
-      return manager.getReference(bean, bean.getBeanClass(), instance);
+      return manager.getReference(bean, bean.getBeanClass(), context);
     }
     catch (CreationException e) {
       e.printStackTrace();

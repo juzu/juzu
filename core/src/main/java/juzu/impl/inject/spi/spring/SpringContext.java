@@ -23,7 +23,9 @@ import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.InjectionContext;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 import java.lang.reflect.InvocationTargetException;
@@ -84,7 +86,7 @@ public class SpringContext extends InjectionContext<String, Object> {
 
   public String resolveBean(String name) {
     try {
-      factory.getBeanDefinition(name);
+      factory.getBean(name);
       return name;
     }
     catch (NoSuchBeanDefinitionException e) {
@@ -92,11 +94,23 @@ public class SpringContext extends InjectionContext<String, Object> {
     }
   }
 
+/*
+  public static String resolveBean(BeanFactory factory, String name) {
+    try {
+      BeanDefinition i = factory.getBeanDefinition(name);
+      return name;
+    }
+    catch (NoSuchBeanDefinitionException e) {
+      return null;
+    }
+  }
+*/
+
   public Iterable<String> resolveBeans(Class<?> type) {
     return factory.getBeansOfType(type).keySet();
   }
 
-  public Object create(String bean) throws InvocationTargetException {
+  public Object createContext(String bean) throws InvocationTargetException {
     try {
       return factory.getBean(bean);
     }
@@ -110,13 +124,13 @@ public class SpringContext extends InjectionContext<String, Object> {
     }
   }
 
-  public Object get(String bean, Object instance) {
-    return instance;
+  public Object getInstance(String bean, Object context) {
+    return context;
   }
 
-  public void release(String bean, Object instance) {
+  public void releaseContext(String bean, Object context) {
     if (factory.isPrototype(bean)) {
-      factory.destroyBean(bean, instance);
+      factory.destroyBean(bean, context);
     }
   }
 

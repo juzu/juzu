@@ -17,6 +17,7 @@
 package bridge.inject.spring;
 
 import juzu.Response;
+import juzu.impl.inject.spi.InjectionContext;
 
 import javax.inject.Inject;
 
@@ -27,8 +28,22 @@ public class A {
   @Inject
   SpringBean bean;
 
+  @Inject
+  InjectionContext ioc;
+
   @juzu.View
-  public Response.Content index() {
-    return Response.ok("<span id='spring'>" + bean.value + "<span>");
+  public Response.Content index() throws Exception {
+    Object bean = ioc.resolveBean("foo");
+    if (this.bean != null) {
+      Object context = ioc.createContext(bean);
+      Object instance = ioc.getInstance(bean, context);
+      if (instance == this.bean) {
+        return Response.ok("<span id='spring'>" + this.bean.value + "<span>");
+      } else {
+        return Response.ok("fail not same bean");
+      }
+    } else {
+      return Response.ok("fail no bean");
+    }
   }
 }

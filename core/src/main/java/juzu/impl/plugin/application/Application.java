@@ -236,8 +236,8 @@ public class Application {
   private <B, I> Object resolveBean(InjectionContext<B, I> manager, String name) throws InvocationTargetException {
     B bean = manager.resolveBean(name);
     if (bean != null) {
-      I cc = manager.create(bean);
-      return manager.get(bean, cc);
+      I cc = manager.createContext(bean);
+      return manager.getInstance(bean, cc);
     }
     else {
       return null;

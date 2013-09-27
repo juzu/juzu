@@ -217,7 +217,7 @@ public class GuiceContext extends InjectionContext<GuiceBean, Object> {
     return bean;
   }
 
-  public Object create(GuiceBean bean) throws InvocationTargetException {
+  public Object createContext(GuiceBean bean) throws InvocationTargetException {
     try {
       return bean.binding.getProvider().get();
     }
@@ -226,14 +226,14 @@ public class GuiceContext extends InjectionContext<GuiceBean, Object> {
     }
   }
 
-  public Object get(GuiceBean bean, Object instance) throws InvocationTargetException {
-    return instance;
+  public Object getInstance(GuiceBean bean, Object context) throws InvocationTargetException {
+    return context;
   }
 
-  public void release(GuiceBean bean, Object instance) {
+  public void releaseContext(GuiceBean bean, Object context) {
     Scoping scoping = ((BindingImpl)bean.binding).getScoping();
     if (scoping.isNoScope()) {
-      invokePreDestroy(instance);
+      invokePreDestroy(context);
     }
   }
 

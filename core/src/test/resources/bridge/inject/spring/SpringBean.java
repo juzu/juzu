@@ -16,7 +16,12 @@
 
 package bridge.inject.spring;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 /** @author Julien Viet */
+@Named("foo")
+@Singleton
 public class SpringBean {
 
   final String value;
