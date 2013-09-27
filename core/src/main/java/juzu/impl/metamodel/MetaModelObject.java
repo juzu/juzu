@@ -205,16 +205,6 @@ public class MetaModelObject implements Serializable {
     }
   }
 
-  /**
-   * Compute the shortest path from this object to the destination object.
-   * @param to the destination
-   */
-  public final void getPath(MetaModelObject to) {
-
-
-
-  }
-
   public void queue(MetaModelEvent event) {
     metaModel.queue(event);
   }
