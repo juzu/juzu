@@ -20,6 +20,7 @@ import juzu.impl.bridge.spi.web.HttpStream;
 import juzu.impl.bridge.spi.web.WebRequestContext;
 import juzu.impl.common.FormURLEncodedParser;
 import juzu.impl.common.Lexers;
+import juzu.impl.common.Spliterator;
 import juzu.impl.common.Tools;
 import juzu.impl.io.BinaryOutputStream;
 import juzu.io.Stream;
@@ -78,20 +79,33 @@ public class ServletRequestContext extends WebRequestContext {
     }
 
     //
-    if ("POST".equals(req.getMethod()) && "application/x-www-form-urlencoded".equals(req.getContentType())) {
-      try {
-        byte[] bytes = Tools.copy(req.getInputStream(), new ByteArrayOutputStream()).toByteArray();
-        String form = new String(bytes, defaultEncoding);
-        FormURLEncodedParser parser = new FormURLEncodedParser(defaultEncoding, form, 0, form.length());
-        for (RequestParameter parameter : parser) {
-          if (requestParameters.isEmpty()) {
-            requestParameters = new HashMap<String, RequestParameter>();
+    if ("POST".equals(req.getMethod())) {
+      String contentType = req.getContentType();
+      if (contentType != null && contentType.length() > 0) {
+        Spliterator i = new Spliterator(contentType, ';');
+        if ("application/x-www-form-urlencoded".equals(i.next().trim())) {
+          Charset charset = defaultEncoding;
+          while (i.hasNext()) {
+            String v = i.next().trim();
+            if (v.startsWith("charset=")) {
+              charset = Charset.forName(v.substring("charset=".length()));
+            }
           }
-          parameter.appendTo(requestParameters);
+          try {
+            byte[] bytes = Tools.copy(req.getInputStream(), new ByteArrayOutputStream()).toByteArray();
+            String form = new String(bytes, charset);
+            FormURLEncodedParser parser = new FormURLEncodedParser(defaultEncoding, form, 0, form.length());
+            for (RequestParameter parameter : parser) {
+              if (requestParameters.isEmpty()) {
+                requestParameters = new HashMap<String, RequestParameter>();
+              }
+              parameter.appendTo(requestParameters);
+            }
+          }
+          catch (IOException e) {
+            e.printStackTrace();
+          }
         }
-      }
-      catch (IOException e) {
-        e.printStackTrace();
       }
     }
 
