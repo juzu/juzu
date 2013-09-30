@@ -97,7 +97,8 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
 
   /** The resources accessed, we need to have this map because some resources may only open one time (cf eclipse filer). */
   private Map<Key, FileObject> resources;
-  
+
+  /** . */
   private static final char PATH_SEPARATOR_CHAR = System.getProperty("path.separator").charAt(0);
 
   public ProcessingContext(ProcessingEnvironment env) {
@@ -190,6 +191,10 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
 
   public ProcessingEnvironment getEnv() {
     return env;
+  }
+  
+  public boolean isCopyFromSourcesExternallyManaged() {
+      return tool.isCopyFromSourcesExternallyManaged();
   }
 
   public <E extends Element> E get(ElementHandle<E> handle) {

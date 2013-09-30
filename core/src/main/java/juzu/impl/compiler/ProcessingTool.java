@@ -55,6 +55,11 @@ public enum ProcessingTool {
     public boolean getOverwriteReadingResource() {
       return false;
     }
+
+    @Override
+    public boolean isCopyFromSourcesExternallyManaged() {
+      return false;
+    }
   },
 
   ECLIPSE_IDE() {
@@ -261,6 +266,11 @@ public enum ProcessingTool {
     public boolean getOverwriteReadingResource() {
       return true;
     }
+
+    @Override
+    public boolean isCopyFromSourcesExternallyManaged() {
+      return true;
+    }
   };
 
   /** . */
@@ -281,4 +291,8 @@ public enum ProcessingTool {
    */
   public abstract boolean getOverwriteReadingResource();
 
+  /**
+   * @return true if we should not copy manually the resources from the source folder to the output folder.
+   */
+  public abstract boolean isCopyFromSourcesExternallyManaged();
 }
