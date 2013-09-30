@@ -17,15 +17,14 @@
 package juzu.impl.inject;
 
 import juzu.Scope;
+import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.Injector;
 
 import javax.inject.Provider;
 import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -86,7 +85,7 @@ public abstract class BeanDescriptor {
         builder.declareProvider(
             declaredType,
             getScope(),
-            determineQualifiers(getQualifiers(), implementationType),
+            getQualifiers(),
             implementationType);
       }
     };
@@ -104,7 +103,7 @@ public abstract class BeanDescriptor {
         builder.bindProvider(
             declaredType,
             getScope(),
-            determineQualifiers(getQualifiers(), implementationType.getClass()),
+            getQualifiers(),
             implementationType);
       }
     };
@@ -159,29 +158,59 @@ public abstract class BeanDescriptor {
 
   public abstract void bind(Injector builder);
 
-  private static Collection<Annotation> determineQualifiers(Collection<Annotation> qualifiers, Class<?> implementation) {
-    Collection<Annotation> overridenQualifiers = null;
+  /**
+   * Utils method that happens the qualifiers provided by the {@link javax.inject.Provider} <code>get</code> method to the list
+   * of existing qualifiers
+   *
+   * @param qualifiers the original qualifiers
+   * @param providerClass the provided class
+   * @return the annotations
+   */
+  public static Iterable<Annotation> appendProvidedQualifiers(Iterable<Annotation> qualifiers, Class<? extends Provider> providerClass) {
     try {
-      Method get = implementation.getMethod("get");
-      for (Annotation annotation : get.getAnnotations()) {
-        if (annotation.annotationType().getAnnotation(Qualifier.class) != null) {
-          if (overridenQualifiers == null) {
-            overridenQualifiers = new ArrayList<Annotation>();
-          }
-          overridenQualifiers.add(annotation);
-        }
-      }
+      Method getMethod = providerClass.getMethod("get");
+      Annotation[] annotations = getMethod.getAnnotations();
+      return appendQualifiers(qualifiers, annotations);
     }
     catch (NoSuchMethodException e) {
-      throw new UndeclaredThrowableException(e);
+      // ?
+      return qualifiers;
     }
+  }
 
-    // Override all qualifiers
-    if (overridenQualifiers != null) {
-      qualifiers = overridenQualifiers;
+  /**
+   * Utils method that happens the qualifiers of the bean class to the list
+   * of existing qualifiers
+   *
+   * @param qualifiers the original qualifiers
+   * @param beanClass the bean class
+   * @return the annotations
+   */
+  public static Iterable<Annotation> appendQualifiers(Iterable<Annotation> qualifiers, Class<?> beanClass) {
+    return appendQualifiers(qualifiers, beanClass.getAnnotations());
+  }
+
+  /**
+   * Utils method that happens the qualifiers of the bean class to the list
+   * of existing qualifiers
+   *
+   * @param qualifiers the original qualifiers
+   * @param annotations the the annotations
+   * @return the annotations
+   */
+  private static Iterable<Annotation> appendQualifiers(Iterable<Annotation> qualifiers, Annotation[] annotations) {
+    List<Annotation> next = null;
+    for (Annotation annotation : annotations) {
+      if (annotation.annotationType().isAnnotationPresent(Qualifier.class)) {
+        if (next == null) {
+          next = new ArrayList<Annotation>();
+          if (qualifiers != null) {
+            Tools.addAll(next, qualifiers);
+          }
+        }
+        next.add(annotation);
+      }
     }
-
-    //
-    return qualifiers;
+    return next != null ? next : qualifiers;
   }
 }

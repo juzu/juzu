@@ -16,11 +16,14 @@
 
 package plugin.binding.provider.qualified;
 
+import javax.enterprise.inject.Produces;
 import javax.inject.Named;
 import javax.inject.Provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class BarServiceProvider implements Provider<Service> {
+
+  @Produces
   @Named("bar")
   public Service get() {
     return new Service() {

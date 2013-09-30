@@ -17,6 +17,7 @@
 package juzu.impl.inject.spi.spring;
 
 import juzu.Scope;
+import juzu.impl.inject.BeanDescriptor;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -31,7 +32,7 @@ class DeclaredBean extends AbstractBean {
   private final Scope scope;
 
   DeclaredBean(Class<?> type, Scope scope, Iterable<Annotation> qualifiers) {
-    super(type, qualifiers);
+    super(type, BeanDescriptor.appendQualifiers(qualifiers, type));
 
     //
     this.scope = scope;

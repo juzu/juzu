@@ -14,18 +14,27 @@
  * limitations under the License.
  */
 
-package inject.named;
+package inject.named.provider;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class Bean {
+public class Injected {
 
+  @Inject
   @Named("foo")
-  public static class Foo extends Bean {
+  private Bean foo;
+
+  @Inject
+  @Named("bar")
+  private Bean bar;
+
+  public Bean getFoo() {
+    return foo;
   }
 
-  @Named("bar")
-  public static class Bar extends Bean {
+  public Bean getBar() {
+    return bar;
   }
 }

@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-package inject.named;
+package inject.named.provider;
 
-import javax.inject.Inject;
+import javax.enterprise.inject.Produces;
 import javax.inject.Named;
+import javax.inject.Provider;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Injected {
+/** @author Julien Viet */
+public class BarBeanProvider implements Provider<Bean> {
 
-  @Inject
-  @Named("foo")
-  private Bean foo;
-
-  @Inject
+  @Produces
   @Named("bar")
-  private Bean bar;
-
-  public Bean getFoo() {
-    return foo;
-  }
-
-  public Bean getBar() {
-    return bar;
+  public Bean get() {
+    return Bean.BAR;
   }
 }

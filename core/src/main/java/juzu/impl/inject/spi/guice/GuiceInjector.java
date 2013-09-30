@@ -19,6 +19,7 @@ package juzu.impl.inject.spi.guice;
 import juzu.Scope;
 import juzu.impl.common.Filter;
 import juzu.impl.fs.spi.ReadFileSystem;
+import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.inject.spi.Injector;
 import juzu.impl.inject.spi.InjectionContext;
 
@@ -64,7 +65,7 @@ public class GuiceInjector extends Injector {
 
   @Override
   public <T> Injector declareProvider(Class<T> type, Scope beanScope, Iterable<Annotation> qualifiers, Class<? extends Provider<T>> provider) {
-    bindings.add(new BeanBinding.ToProviderType<T>(type, beanScope, Injector.appendProvidedQualifiers(qualifiers, provider), provider));
+    bindings.add(new BeanBinding.ToProviderType<T>(type, beanScope, BeanDescriptor.appendProvidedQualifiers(qualifiers, provider), provider));
     return this;
   }
 

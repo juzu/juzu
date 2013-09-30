@@ -18,15 +18,10 @@ package juzu.impl.inject.spi;
 
 import juzu.Scope;
 import juzu.impl.common.Filter;
-import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadFileSystem;
 
 import javax.inject.Provider;
-import javax.inject.Qualifier;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A builder for configuring an {@link InjectionContext} implementation.
@@ -40,36 +35,6 @@ public abstract class Injector implements Provider<Injector> {
       return true;
     }
   };
-
-  /**
-   * Utils method that happens the qualifiers provided by the {@link Provider} <code>get</code> method to the list
-   * of existing qualifiers
-   *
-   * @param qualifiers the original qualifiers
-   * @param providerType the provided generic type
-   * @return the annotations
-   */
-  public static Iterable<Annotation> appendProvidedQualifiers(Iterable<Annotation> qualifiers, Class<? extends Provider> providerType) {
-    List<Annotation> next = null;
-    try {
-      Method getMethod = providerType.getMethod("get");
-      for (Annotation annotation : getMethod.getAnnotations()) {
-        if (annotation.annotationType().isAnnotationPresent(Qualifier.class)) {
-          if (next == null) {
-            next = new ArrayList<Annotation>();
-            if (qualifiers != null) {
-              Tools.addAll(next, qualifiers);
-            }
-          }
-          next.add(annotation);
-        }
-      }
-    }
-    catch (NoSuchMethodException e) {
-      // ?
-    }
-    return next != null ? next : qualifiers;
-  }
 
   public abstract boolean isProvided();
 

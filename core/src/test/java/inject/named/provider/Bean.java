@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package plugin.binding.provider.qualified;
-
-import javax.enterprise.inject.Produces;
-import javax.inject.Named;
-import javax.inject.Provider;
+package inject.named.provider;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FooServiceProvider implements Provider<Service> {
+public abstract class Bean {
 
-  @Produces
-  @Named("foo")
-  public Service get() {
-    return new Service() {
-      public String getName() {
-        return "foo";
-      }
-    };
-  }
+  /** . */
+  public static final Bean FOO = new Bean() {};
+
+  /** . */
+  public static final Bean BAR = new Bean() {};
+
 }

@@ -16,10 +16,12 @@
 
 package juzu.impl.inject.spi.spring;
 
+import juzu.impl.common.Tools;
 import org.springframework.beans.BeanMetadataAttribute;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
+import javax.inject.Named;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -34,11 +36,19 @@ abstract class AbstractBean {
   /** . */
   final List<AutowireCandidateQualifier> qualifiers;
 
+  /** . */
+  final String name;
+
   AbstractBean(Class<?> type, Iterable<Annotation> qualifiers) {
+
+    String name = null;
     List<AutowireCandidateQualifier> list = null;
     if (qualifiers != null) {
       list = new ArrayList<AutowireCandidateQualifier>();
       for (Annotation annotation : qualifiers) {
+        if (annotation instanceof Named) {
+          name = ((Named) annotation).value();
+        }
         Class<? extends Annotation> annotationType = annotation.annotationType();
         AutowireCandidateQualifier md = new AutowireCandidateQualifier(annotationType.getName());
         for (Method method : annotationType.getMethods()) {
@@ -58,8 +68,14 @@ abstract class AbstractBean {
     }
 
     //
+    if (name == null) {
+      name = Tools.nextUUID();
+    }
+
+    //
     this.type = type;
     this.qualifiers = list;
+    this.name = name;
   }
 
   abstract void configure(String name, SpringInjector builder, DefaultListableBeanFactory factory);

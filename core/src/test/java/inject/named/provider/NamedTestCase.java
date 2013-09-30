@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package inject.named;
+package inject.named.provider;
 
 import inject.AbstractInjectTestCase;
 import juzu.impl.inject.spi.InjectorProvider;
@@ -31,17 +31,17 @@ public class NamedTestCase<B, I> extends AbstractInjectTestCase<B, I> {
   public void test() throws Exception {
     init();
     bootstrap.declareBean(Injected.class, null, null, null);
-    bootstrap.declareBean(Bean.class, null, null, Bean.Foo.class);
-    bootstrap.declareBean(Bean.class, null, null, Bean.Bar.class);
+    bootstrap.declareProvider(Bean.class, null, null, FooBeanProvider.class);
+    bootstrap.declareProvider(Bean.class, null, null, BarBeanProvider.class);
     boot();
 
     //
     Injected beanObject = getBean(Injected.class);
     assertNotNull(beanObject);
     assertNotNull(beanObject.getFoo());
-    assertEquals(Bean.Foo.class, beanObject.getFoo().getClass());
+    assertEquals(Bean.FOO, beanObject.getFoo());
     assertNotNull(beanObject.getBar());
-    assertEquals(Bean.Bar.class, beanObject.getBar().getClass());
+    assertEquals(Bean.BAR, beanObject.getBar());
 
     //
     Object foo = getBean("foo");
