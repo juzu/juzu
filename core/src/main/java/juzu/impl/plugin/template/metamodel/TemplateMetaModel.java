@@ -16,6 +16,7 @@
 
 package juzu.impl.plugin.template.metamodel;
 
+import juzu.impl.common.Name;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.metamodel.Key;
@@ -25,10 +26,13 @@ import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
 import juzu.impl.template.spi.Template;
 
+import javax.lang.model.element.Element;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * A template.
@@ -94,9 +98,28 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
   }
 
   /**
+   * Compute and return the {@link Element} referencing this template.
+   *
+   * @return the elements referencing this template
+   */
+  public Element[] getReferencingElements() {
+    Set<Name> types = new LinkedHashSet<Name>();
+    for (ElementTemplateRefMetaModel ref : getElementReferences()) {
+      ElementHandle.Field handle = ref.getHandle();
+      types.add(handle.getFQN());
+    }
+    final Element[] elements = new Element[types.size()];
+    int index = 0;
+    for (Name type : types) {
+      elements[index++] = templates.application.getProcessingContext().getTypeElement(type);
+    }
+    return elements;
+  }
+
+  /**
    * Compute the element references to this template.
    *
-   * @return the ancestors
+   * @return the metamodel elements referencing this template
    */
   public Collection<ElementTemplateRefMetaModel> getElementReferences() {
     Collection<TemplateRefMetaModel> refs = getReferences();

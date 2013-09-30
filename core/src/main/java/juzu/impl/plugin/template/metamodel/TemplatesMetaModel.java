@@ -29,6 +29,7 @@ import juzu.impl.template.spi.Template;
 
 import javax.tools.FileObject;
 import java.util.Iterator;
+import java.util.concurrent.Callable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TemplatesMetaModel extends MetaModelObject implements Iterable<TemplateMetaModel> {
@@ -117,16 +118,17 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
     }
 
     //
-    for (TemplateMetaModel child : getChildren(TemplateMetaModel.class)) {
+    for (final TemplateMetaModel child : getChildren(TemplateMetaModel.class)) {
       if (child.template == null) {
-
-        MetaModelProcessContext processContext = new MetaModelProcessContext(this);
-
-        //
-        processContext.resolve(child);
+        final MetaModelProcessContext processContext = new MetaModelProcessContext(this);
+        application.getProcessingContext().executeWithin(child.getReferencingElements()[0], new Callable<Void>() {
+          public Void call() throws Exception {
+            processContext.resolve(child);
+            return null;
+          }
+        });
       }
     }
-
   }
 
   public TemplateRefMetaModel add(ElementHandle.Field handle, Path.Relative path) {

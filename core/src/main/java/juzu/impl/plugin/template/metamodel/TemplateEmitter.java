@@ -17,9 +17,7 @@
 package juzu.impl.plugin.template.metamodel;
 
 import juzu.impl.common.FileKey;
-import juzu.impl.common.Name;
 import juzu.impl.compiler.BaseProcessor;
-import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.TemplateProvider;
@@ -38,10 +36,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.Writer;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -86,16 +82,7 @@ class TemplateEmitter implements Serializable {
       Template<?> template = templateMM.template;
 
       // We compute the class elements from the field elements (as eclipse will make the relationship)
-      Set<Name> types = new LinkedHashSet<Name>();
-      for (ElementTemplateRefMetaModel ref : templateMM.getElementReferences()) {
-        ElementHandle.Field handle = ref.getHandle();
-        types.add(handle.getFQN());
-      }
-      final Element[] elements = new Element[types.size()];
-      int index = 0;
-      for (Name type : types) {
-        elements[index++] = owner.application.getProcessingContext().getTypeElement(type);
-      }
+      Element[] elements = templateMM.getReferencingElements();
 
       // If CCE that would mean there is an internal bug
       TemplateProvider<?> provider = (TemplateProvider<?>)plugin.providers.get(template.getRelativePath().getExt());
