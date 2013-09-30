@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package inject.qualifier;
+package inject.qualifier.provider;
 
 import inject.AbstractInjectTestCase;
 import juzu.impl.inject.spi.InjectorProvider;
@@ -31,16 +31,16 @@ public class QualifierTestCase<B, I> extends AbstractInjectTestCase<B, I> {
   public void test() throws Exception {
     init();
     bootstrap.declareBean(Injected.class, null, null, (Class<Injected>)null);
-    bootstrap.declareBean(Bean.class, null, null, Bean.Red.class);
-    bootstrap.declareBean(Bean.class, null, null, Bean.Green.class);
+    bootstrap.declareProvider(Bean.class, null, null, RedBeanProvider.class);
+    bootstrap.declareProvider(Bean.class, null, null, GreenBeanProvider.class);
     boot();
 
     //
     Injected beanObject = getBean(Injected.class);
     assertNotNull(beanObject);
     assertNotNull(beanObject.getRed());
-    assertEquals(Bean.Red.class, beanObject.getRed().getClass());
+    assertEquals(Bean.RED, beanObject.getRed());
     assertNotNull(beanObject.getGreen());
-    assertEquals(Bean.Green.class, beanObject.getGreen().getClass());
+    assertEquals(Bean.GREEN, beanObject.getGreen());
   }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package inject.qualifier;
+package inject.qualifier.provider;
 
 import inject.Color;
 import inject.Colorized;

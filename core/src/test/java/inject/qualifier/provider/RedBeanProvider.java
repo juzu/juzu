@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package inject.qualifier;
+package inject.qualifier.provider;
 
 import inject.Color;
 import inject.Colorized;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Bean {
+import javax.enterprise.inject.Produces;
+import javax.inject.Provider;
 
+/** @author Julien Viet */
+public class RedBeanProvider implements Provider<Bean> {
+
+  @Produces
   @Colorized(Color.RED)
-  public static class Red extends Bean {
-  }
-
-  @Colorized(Color.GREEN)
-  public static class Green extends Bean {
+  public Bean get() {
+    return Bean.RED;
   }
 }

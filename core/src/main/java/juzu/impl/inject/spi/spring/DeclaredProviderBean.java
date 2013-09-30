@@ -18,6 +18,7 @@ package juzu.impl.inject.spi.spring;
 
 import juzu.Scope;
 import juzu.impl.common.Tools;
+import juzu.impl.inject.spi.Injector;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.support.AutowireCandidateQualifier;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -40,7 +41,7 @@ class DeclaredProviderBean extends AbstractBean {
     Scope scope,
     Iterable<Annotation> qualifiers,
     Class<? extends Provider> providerType) {
-    super(type, qualifiers);
+    super(type, Injector.appendProvidedQualifiers(qualifiers, providerType));
 
     //
     this.scope = scope;
