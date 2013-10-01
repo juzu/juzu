@@ -18,6 +18,7 @@ package juzu.impl.plugin.application.metamodel;
 
 import juzu.Application;
 import juzu.impl.common.Name;
+import juzu.impl.common.Path;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
@@ -133,14 +134,19 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
     if (key.getType().equals(APPLICATION)) {
       ElementHandle.Package pkg = (ElementHandle.Package)key.getElement();
       String name = (String)added.get("name");
-      Map<String, String> resourceAliases;
+      Map<Path, Path.Absolute> resourceAliases;
       List<Map<String, Object>> resourceAliasesDecl = (List<Map<String, Object>>)added.get("resourceAliases");
       if (resourceAliasesDecl != null && resourceAliasesDecl.size() > 0) {
-        resourceAliases = new HashMap<String, String>(resourceAliasesDecl.size());
+        resourceAliases = new HashMap<Path, Path.Absolute>(resourceAliasesDecl.size());
         for (Map<String, Object> _import : resourceAliasesDecl) {
-          String from = (String)_import.get("of");
-          String as = (String)_import.get("as");
-          resourceAliases.put(as, from);
+          Path of = Path.parse((String)_import.get("of"));
+          Path as = Path.parse((String)_import.get("as"));
+          if (of instanceof Path.Absolute) {
+            resourceAliases.put(as, (Path.Absolute)of);
+          } else {
+            PackageElement pkgElt = metaModel.processingContext.get(pkg);
+            throw ApplicationMetaModel.ALIAS_INVALID_OF.failure(pkgElt);
+          }
         }
       } else {
         resourceAliases = Collections.emptyMap();

@@ -16,8 +16,10 @@
 
 package juzu.impl.plugin.template.metamodel;
 
+import juzu.Application;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadFileSystem;
+import juzu.impl.metamodel.Key;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
@@ -26,11 +28,6 @@ import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.MetaModelProcessor;
-import juzu.impl.tags.DecorateTag;
-import juzu.impl.tags.IncludeTag;
-import juzu.impl.tags.InsertTag;
-import juzu.impl.tags.ParamTag;
-import juzu.impl.tags.TitleTag;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
@@ -40,6 +37,7 @@ import javax.annotation.processing.Completion;
 import javax.annotation.processing.Completions;
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,12 +50,18 @@ import java.util.regex.Pattern;
 public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
+  private List<Key<? extends AbstractContainerMetaModel>> KEYS = Tools.list(TemplateContainerMetaModel.KEY, TagContainerMetaModel.KEY);
+
+  /** . */
+  private static final Set<Class<? extends Annotation>> PROCESSED = Collections.unmodifiableSet(Tools.<Class<? extends Annotation>>set(juzu.Path.class, juzu.Application.class));
+
+  /** . */
   public static final Pattern PATH_PATTERN = Pattern.compile("([^/].*/|)([^./]+)\\.([a-zA-Z]+)");
 
   /** . */
   Map<String, TemplateProvider> providers;
 
-  /** . */
+  /** The tag loaded from the classpath. */
   final Map<String, TagHandler> tags = new HashMap<String, TagHandler>();
 
   public TemplateMetaModelPlugin() {
@@ -66,7 +70,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public Set<Class<? extends java.lang.annotation.Annotation>> init(ProcessingContext env) {
-    return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(juzu.Path.class);
+    return PROCESSED;
   }
 
   @Override
@@ -91,63 +95,92 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void init(ApplicationMetaModel application) {
-    TemplatesMetaModel templates = new TemplatesMetaModel();
+    TemplateContainerMetaModel templates = new TemplateContainerMetaModel();
     templates.plugin = this;
-    application.addChild(TemplatesMetaModel.KEY, templates);
+    application.addChild(TemplateContainerMetaModel.KEY, templates);
+    TagContainerMetaModel tags = new TagContainerMetaModel();
+    tags.plugin = this;
+    application.addChild(TagContainerMetaModel.KEY, tags);
   }
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    if (key.getElement() instanceof ElementHandle.Field) {
-      ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
-      Path removedPath = Path.parse((String)removed.get("value"));
-      TemplatesMetaModel templates = metaModel.getChild(TemplatesMetaModel.KEY);
-      metaModel.processingContext.log("Removing template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath);
-      templates.remove(variableElt);
+    if (key.getType().toString().equals(Application.class.getName())) {
+      // throw new UnsupportedOperationException("todo");
+    } else if (key.getType().toString().equals(juzu.Path.class.getName())) {
+      if (key.getElement() instanceof ElementHandle.Field) {
+        ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
+        Path removedPath = Path.parse((String)removed.get("value"));
+        TemplateContainerMetaModel templates = metaModel.getChild(TemplateContainerMetaModel.KEY);
+        metaModel.processingContext.log("Removing template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath);
+        templates.remove(variableElt);
+      }
     }
   }
 
   @Override
   public void processAnnotationUpdated(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
-    if (key.getElement() instanceof ElementHandle.Field) {
-      ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
-      Path.Relative addedPath = (Path.Relative)Path.parse((String)added.get("value"));
-      Path removedPath = Path.parse((String)removed.get("value"));
-      TemplatesMetaModel templates = metaModel.getChild(TemplatesMetaModel.KEY);
-      metaModel.processingContext.log("Updating template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath + "->" + addedPath);
-      templates.remove(variableElt);
-      templates.add(variableElt, addedPath);
+    if (key.getType().toString().equals(Application.class.getName())) {
+      // throw new UnsupportedOperationException("todo");
+    } else if (key.getType().toString().equals(juzu.Path.class.getName())) {
+      if (key.getElement() instanceof ElementHandle.Field) {
+        ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
+        Path.Relative addedPath = (Path.Relative)Path.parse((String)added.get("value"));
+        Path removedPath = Path.parse((String)removed.get("value"));
+        TemplateContainerMetaModel templates = metaModel.getChild(TemplateContainerMetaModel.KEY);
+        metaModel.processingContext.log("Updating template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath + "->" + addedPath);
+        templates.remove(variableElt);
+        templates.add(variableElt, addedPath);
+      }
     }
   }
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel application, AnnotationKey key, AnnotationState added) {
-    if (key.getElement() instanceof ElementHandle.Field) {
-      ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
-      TemplatesMetaModel templates = application.getChild(TemplatesMetaModel.KEY);
-      Path.Relative addedPath = (Path.Relative)Path.parse((String)added.get("value"));
-      application.processingContext.log("Adding template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + addedPath);
-      templates.add(variableElt, addedPath);
-    }
-    else if (key.getElement() instanceof ElementHandle.Class) {
-      // We ignore it on purpose
-    }
-    else {
-      throw MetaModelProcessor.ANNOTATION_UNSUPPORTED.failure(key);
+    if (key.getType().toString().equals(Application.class.getName())) {
+      List<AnnotationState> tags = (List<AnnotationState>)added.get("tags");
+      if (tags != null) {
+        TagContainerMetaModel tagsMM = application.getChild(TagContainerMetaModel.KEY);
+        for (AnnotationState tag : tags) {
+          String nameValue = (String)tag.get("name");
+          String pathValue = (String)tag.get("path");
+          Path.Relative path = (Path.Relative)Path.parse(pathValue);
+          tagsMM.add(nameValue, path);
+        }
+      }
+    } else if (key.getType().toString().equals(juzu.Path.class.getName())) {
+      if (key.getElement() instanceof ElementHandle.Field) {
+        ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
+        TemplateContainerMetaModel templates = application.getChild(TemplateContainerMetaModel.KEY);
+        Path.Relative addedPath = (Path.Relative)Path.parse((String)added.get("value"));
+        application.processingContext.log("Adding template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + addedPath);
+        templates.add(variableElt, addedPath);
+      }
+      else if (key.getElement() instanceof ElementHandle.Class) {
+        // We ignore it on purpose
+      }
+      else {
+        throw MetaModelProcessor.ANNOTATION_UNSUPPORTED.failure(key);
+      }
     }
   }
 
   @Override
   public void postActivate(ApplicationMetaModel application) {
-    application.getChild(TemplatesMetaModel.KEY).plugin = this;
+    for (Key<? extends AbstractContainerMetaModel> key : KEYS) {
+      AbstractContainerMetaModel container = application.getChild(key);
+      container.plugin = this;
+    }
   }
 
   @Override
   public void prePassivate(ApplicationMetaModel application) {
     application.processingContext.log("Passivating template resolver for " + application.getHandle());
-    TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
-    metaModel.emitter.prePassivate();
-    metaModel.plugin = null;
+    for (Key<? extends AbstractContainerMetaModel> key : KEYS) {
+      AbstractContainerMetaModel container = application.getChild(key);
+      container.emitter.prePassivate();
+      container.plugin = null;
+    }
   }
 
   @Override
@@ -160,12 +193,11 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void postProcessEvents(ApplicationMetaModel application) {
     application.processingContext.log("Processing templates of " + application.getHandle());
-
-    //
-    application.getChild(TemplatesMetaModel.KEY).resolve();
-
-    //
-    application.getChild(TemplatesMetaModel.KEY).emitter.process(this);
+    for (Key<? extends AbstractContainerMetaModel> key : KEYS) {
+      AbstractContainerMetaModel container = application.getChild(key);
+      container.resolve();
+      container.emit();
+    }
   }
 
   @Override
@@ -179,7 +211,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
     ReadFileSystem<File> sourcePath = metaModel.getProcessingContext().getSourcePath(metaModel.getHandle());
     if (sourcePath != null) {
       try {
-        final File root = sourcePath.getPath(metaModel.getChild(TemplatesMetaModel.KEY).getQN());
+        final File root = sourcePath.getPath(metaModel.getChild(TemplateContainerMetaModel.KEY).getQN());
         if (root.isDirectory()) {
           File[] children = root.listFiles();
           if (children != null) {
@@ -257,7 +289,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   public JSON getDescriptor(ApplicationMetaModel application) {
     JSON config = new JSON();
     ArrayList<String> list = new ArrayList<String>();
-    TemplatesMetaModel metaModel = application.getChild(TemplatesMetaModel.KEY);
+    AbstractContainerMetaModel metaModel = application.getChild(TemplateContainerMetaModel.KEY);
     for (TemplateMetaModel template : metaModel.getChildren(TemplateMetaModel.class)) {
       Path.Absolute resolved = metaModel.resolvePath(template.getPath());
       list.add(resolved.getName().toString());

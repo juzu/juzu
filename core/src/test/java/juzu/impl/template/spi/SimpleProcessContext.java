@@ -30,25 +30,32 @@ import java.util.Map;
 public class SimpleProcessContext extends ProcessContext {
 
   /** . */
-  protected final Map<Path, Template<?>> templates;
+  protected final Map<Path.Absolute, Template<?>> templates;
 
-  public SimpleProcessContext(Map<Path, Template<?>> templates) {
+  public SimpleProcessContext(Map<Path.Absolute, Template<?>> templates) {
     this.templates = templates;
   }
 
-  protected <M extends Serializable> Template<M> getTemplate(Path.Relative path) {
+  protected <M extends Serializable> Template<M> getTemplate(Path.Absolute path) {
     return (Template<M>)templates.get(path);
   }
 
-  protected <M extends Serializable> void registerTemplate(Template<M> template) {
-    templates.put(template.getRelativePath(), template);
-  }
-
-  protected <M extends Serializable> void register(Path.Relative originPath, Template<M> template) {
+  @Override
+  protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, Template<M> template) throws TemplateException {
+    templates.put(template.getAbsolutePath(), template);
+    super.processTemplate(provider, template);
   }
 
   @Override
-  public Resource<Timestamped<Content>> resolveResource(Path.Relative path) {
+  protected Path.Absolute resolvePath(Path.Relative path) {
+    return Path.Absolute.absolute(path.getName(), path.getExt());
+  }
+
+  protected <M extends Serializable> void registerTemplate(Template<M> template) {
+  }
+
+  @Override
+  public Resource<Timestamped<Content>> resolveResource(Path.Absolute path) {
     return null;
   }
 

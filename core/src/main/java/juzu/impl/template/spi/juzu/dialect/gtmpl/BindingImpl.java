@@ -65,7 +65,10 @@ class BindingImpl extends Binding {
         }
       }
       if (value == null) {
-        value = super.getVariable(name);
+        value = renderContext.getAttribute(name);
+        if (value == null) {
+          value = super.getVariable(name);
+        }
       }
     }
     return value;

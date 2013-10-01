@@ -16,7 +16,7 @@
 
 package juzu.impl.template.spi;
 
-import juzu.impl.template.spi.juzu.PhaseContext;
+import juzu.impl.common.Path;
 
 import java.io.IOException;
 
@@ -26,10 +26,10 @@ public abstract class EmitContext extends PhaseContext {
   /**
    * Create a resource.
    *
-   * @param rawName
-   * @param ext
-   * @param content the content  @throws IOException any io exception preventing the resource creation
+   * @param path the resource path
+   * @param content the content
+   * @throws IOException any io exception preventing the resource creation
    */
-  public abstract void createResource(String rawName, String ext, CharSequence content) throws IOException;
+  public abstract void createResource(Path.Absolute path, CharSequence content) throws IOException;
 
 }

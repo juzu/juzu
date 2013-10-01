@@ -16,6 +16,7 @@
 
 package juzu.impl.template.spi.juzu.dialect.gtmpl;
 
+import juzu.impl.common.Path;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.Template;
 import juzu.impl.template.spi.TemplateException;
@@ -44,6 +45,8 @@ public class GroovyTemplateProvider extends DialectTemplateProvider {
     GroovyTemplateEmitter emitter = new GroovyTemplateEmitter(template.getAbsolutePath().getName());
     EmitPhase tcc = new EmitPhase(context);
     tcc.emit(emitter, template.getModel());
-    context.createResource(template.getRelativePath().getRawName() + "_", "groovy", emitter.toString());
+    Path.Absolute path = template.getAbsolutePath();
+    path = path.as(path.getRawName() + "_", "groovy");
+    context.createResource(path, emitter.toString());
   }
 }

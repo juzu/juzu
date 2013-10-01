@@ -149,6 +149,18 @@ public class MetaModelTestCase extends AbstractTestCase {
     }
   }
 
+  @Test
+  public void testSelfCycleDetection() {
+    Simple a = context.create("a");
+    try {
+      a.addChild(A, a);
+      fail("Was expecting cycle detection");
+    }
+    catch (CycleDetectionException ok) {
+      assertEquals(Arrays.asList(a), ok.getPath());
+    }
+  }
+
   static class Simple extends MetaModelObject {
 
     /** . */

@@ -33,6 +33,10 @@ public abstract class TagHandler {
     return name;
   }
 
+  public String getClassName() {
+    return getClass().getName();
+  }
+
   public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException {
     body.render(context);
   }

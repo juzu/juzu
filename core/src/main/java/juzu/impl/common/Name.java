@@ -108,6 +108,10 @@ public class Name implements Iterable<String>, Serializable, CharSequence {
     this.parent = null;
   }
 
+  Name(String[] identifiers) {
+    this(identifiers, identifiers.length);
+  }
+
   Name(String[] identifiers, int size) {
     this.value = Tools.join('.', identifiers, 0, size);
     this.identifiers = identifiers;
@@ -266,6 +270,25 @@ public class Name implements Iterable<String>, Serializable, CharSequence {
       throw new NullPointerException("No null suffix allowed");
     }
     return append(identifiers, identifiers.length);
+  }
+
+  public Name subName(int l) throws IllegalArgumentException {
+    if (l < 0) {
+      throw new IllegalArgumentException("No negative argument " + l + " accepted");
+    } else if (l == 0) {
+      return this;
+    } else {
+      int remaining = size - l;
+      if (remaining < 0) {
+        throw new IllegalArgumentException("Argument " + l + " can't be greater than size " + size);
+      } else if (remaining == 0) {
+        return EMPTY;
+      } else {
+        String[] identifiers = new String[remaining];
+        System.arraycopy(this.identifiers, l, identifiers, 0, remaining);
+        return new Name(identifiers);
+      }
+    }
   }
 
   private Name append(String[] suffixIdentifiers, int suffixSize) throws NullPointerException, IllegalArgumentException {

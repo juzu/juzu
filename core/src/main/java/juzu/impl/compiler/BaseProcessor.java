@@ -186,7 +186,12 @@ public abstract class BaseProcessor extends AbstractProcessor {
             cm.format(msg, true);
           }
           else {
-            new Formatter(msg).format(Locale.getDefault(), code.getMessage(), (Object[])args).flush();
+            try {
+              new Formatter(msg).format(Locale.getDefault(), code.getMessage(), (Object[])args).flush();
+            }
+            catch (Exception e1) {
+              e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
           }
 
           // Log error

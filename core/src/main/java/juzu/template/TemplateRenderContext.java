@@ -27,6 +27,7 @@ import juzu.io.Stream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ import java.util.Map;
 public class TemplateRenderContext {
 
   /** . */
-  private final Map<String, ?> attributes;
+  private Map<String, Object> attributes;
 
   /** . */
   private final Locale locale;
@@ -49,18 +50,18 @@ public class TemplateRenderContext {
   private final TemplateStub stub;
 
   public TemplateRenderContext(TemplateStub stub) {
-    this(stub, Collections.<String, Object>emptyMap());
+    this(stub, (Map<String, Object>)null);
   }
 
-  public TemplateRenderContext(TemplateStub stub, Map<String, ?> attributes) {
+  public TemplateRenderContext(TemplateStub stub, Map<String, Object> attributes) {
     this(stub, null, attributes, null);
   }
 
   public TemplateRenderContext(TemplateStub stub, Locale locale) {
-    this(stub, null, Collections.<String, Object>emptyMap(), locale);
+    this(stub, null, null, locale);
   }
 
-  public TemplateRenderContext(TemplateStub stub, PropertyMap properties, Map<String, ?> attributes, Locale locale) {
+  public TemplateRenderContext(TemplateStub stub, PropertyMap properties, Map<String, Object> attributes, Locale locale) {
     this.locale = locale;
     this.attributes = attributes;
     this.stub = stub;
@@ -69,6 +70,31 @@ public class TemplateRenderContext {
 
   public Map<String, ?> getAttributes() {
     return attributes;
+  }
+
+  public Object getAttribute(String name) {
+    if (name == null) {
+      throw new NullPointerException("No null attribute name accepted");
+    }
+    return attributes != null ? attributes.get(name) : null;
+  }
+
+  public Object setAttribute(String name, Object value) {
+    if (name == null) {
+      throw new NullPointerException("No null attribute name accepted");
+    }
+    if (value != null) {
+      if (attributes == null) {
+        attributes = new HashMap<String, Object>();
+      }
+      return attributes.put(name, value);
+    } else {
+      if (attributes != null) {
+        return attributes.remove(name);
+      } else {
+        return null;
+      }
+    }
   }
 
   public Locale getLocale() {

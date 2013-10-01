@@ -14,22 +14,30 @@
  * limitations under the License.
  */
 
-package plugin.template.tag.simple.tags;
+package plugin.template.tag.simple.body;
 
-import juzu.template.Renderable;
-import juzu.template.TagHandler;
-import juzu.template.TemplateRenderContext;
+import juzu.Path;
+import juzu.Response;
+import juzu.View;
+import juzu.template.Template;
 
-import java.io.IOException;
-import java.util.Map;
+import javax.inject.Inject;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FooTag extends TagHandler {
+public class A {
 
-  @Override
-  public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException {
-    context.getPrinter().write("<foo>");
-    body.render(context);
-    context.getPrinter().write("</foo>");
+  @Path("index.gtmpl")
+  @Inject
+  Template index;
+
+  @View
+  public Response.Content index() throws Exception {
+    try {
+      return index.with().set("parameters", "_").ok();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      throw e;
+    }
   }
 }

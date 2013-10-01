@@ -82,7 +82,7 @@ public class EmitPhase extends CompilationPhase {
       else if (block instanceof ASTNode.Tag) {
         ASTNode.Tag tag = (ASTNode.Tag)block;
         TagHandler handler = get(tag);
-        String className = handler.getClass().getName();
+        String className = handler.getClassName();
         if (tag.getChildren() != null) {
           ctx.writer.openTag(className, tag.getArgs());
           doEmit(ctx, tag.getChildren());

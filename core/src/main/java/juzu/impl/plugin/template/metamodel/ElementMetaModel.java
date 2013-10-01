@@ -21,27 +21,27 @@ import juzu.impl.common.Path;
 import juzu.impl.compiler.ElementHandle;
 
 /**
- * A reference to a template.
+ * A program element referencing a template.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class ElementTemplateRefMetaModel extends TemplateRefMetaModel {
+public class ElementMetaModel extends TemplateRefMetaModel {
 
   /** . */
-  final ElementHandle.Field handle;
+  final ElementHandle.Field element;
 
   /** The path declaration. */
   final Path.Relative path;
 
-  ElementTemplateRefMetaModel(
-      ElementHandle.Field handle,
+  ElementMetaModel(
+      ElementHandle.Field element,
       Path.Relative path) {
-    this.handle = handle;
+    this.element = element;
     this.path = path;
   }
 
-  public ElementHandle.Field getHandle() {
-    return handle;
+  public ElementHandle.Field getElement() {
+    return element;
   }
 
   public Path.Relative getPath() {
@@ -50,7 +50,7 @@ public class ElementTemplateRefMetaModel extends TemplateRefMetaModel {
 
   public JSON toJSON() {
     JSON json = new JSON();
-    json.set("handle", handle);
+    json.set("element", element);
     json.set("template", getChild(TemplateMetaModel.KEY));
     return json;
   }

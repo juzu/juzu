@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package plugin.template.tag.simple;
+package plugin.template.tag.simple.nested;
 
 import juzu.Path;
+import juzu.Response;
 import juzu.View;
-import juzu.io.Stream;
 import juzu.template.Template;
 
 import javax.inject.Inject;
@@ -30,11 +30,14 @@ public class A {
   @Inject
   Template index;
 
-  @Inject
-  Stream.Char printer;
-
   @View
-  public void index() {
-    index.renderTo(printer);
+  public Response.Content index() throws Exception {
+    try {
+      return index.ok();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      throw e;
+    }
   }
 }

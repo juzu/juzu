@@ -18,7 +18,7 @@ package juzu.impl.template.spi.juzu.compiler;
 
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
-import juzu.impl.template.spi.juzu.PhaseContext;
+import juzu.impl.template.spi.PhaseContext;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.template.TagHandler;
 

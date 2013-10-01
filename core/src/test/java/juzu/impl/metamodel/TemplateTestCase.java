@@ -22,7 +22,7 @@ import juzu.impl.common.Path;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.common.Tools;
-import juzu.impl.plugin.template.metamodel.ElementTemplateRefMetaModel;
+import juzu.impl.plugin.template.metamodel.ElementMetaModel;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModelPlugin;
 import juzu.test.AbstractTestCase;
@@ -126,9 +126,9 @@ public class TemplateTestCase extends AbstractTestCase {
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(1).getType());
     TemplateMetaModel indexTemplate = (TemplateMetaModel)events.get(1).getObject();
     assertEquals(Path.parse("index.gtmpl"), indexTemplate.getPath());
-    Collection<ElementTemplateRefMetaModel> indexRefs = indexTemplate.getElementReferences();
+    Collection<ElementMetaModel> indexRefs = indexTemplate.getElementReferences();
     assertEquals(1, indexRefs.size());
-    assertEquals(templateField, indexRefs.iterator().next().getHandle());
+    assertEquals(templateField, indexRefs.iterator().next().getElement());
 
     // Create an inclusion
     File foo = new File(templates, "foo.gtmpl");
@@ -148,9 +148,9 @@ public class TemplateTestCase extends AbstractTestCase {
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
     TemplateMetaModel fooTemplate = (TemplateMetaModel)events.get(0).getObject();
     assertEquals(Path.parse("foo.gtmpl"), fooTemplate.getPath());
-    Collection<ElementTemplateRefMetaModel> fooRefs = fooTemplate.getElementReferences();
+    Collection<ElementMetaModel> fooRefs = fooTemplate.getElementReferences();
     assertEquals(1, fooRefs.size());
-    assertEquals(templateField, fooRefs.iterator().next().getHandle());
+    assertEquals(templateField, fooRefs.iterator().next().getElement());
 
     // Create an neted inclusion
     File bar = new File(templates, "bar.gtmpl");
@@ -169,8 +169,8 @@ public class TemplateTestCase extends AbstractTestCase {
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
     TemplateMetaModel barTemplate = (TemplateMetaModel)events.get(0).getObject();
     assertEquals(Path.parse("bar.gtmpl"), barTemplate.getPath());
-    Collection<ElementTemplateRefMetaModel> barRefs = fooTemplate.getElementReferences();
+    Collection<ElementMetaModel> barRefs = fooTemplate.getElementReferences();
     assertEquals(1, barRefs.size());
-    assertEquals(templateField, barRefs.iterator().next().getHandle());
+    assertEquals(templateField, barRefs.iterator().next().getElement());
   }
 }

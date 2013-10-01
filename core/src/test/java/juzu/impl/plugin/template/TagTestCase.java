@@ -48,17 +48,6 @@ public class TagTestCase extends AbstractInjectTestCase {
     super(di);
   }
 
-  public void _testSimple() throws Exception {
-    MockApplication<?> app = application("plugin.template.tag.simple").init();
-    app.init();
-
-    //
-    MockClient client = app.client();
-    MockRenderBridge render = client.render();
-    String out = render.assertStringResult();
-    assertEquals("<foo>bar</foo>", out);
-  }
-
   @Test
   public void testDecorate() throws Exception {
     MockApplication<?> app = application("plugin.template.tag.decorate").init();
@@ -120,7 +109,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(TemplateMetaModel.TEMPLATE_CYCLE, error.getCode());
-    assertEquals("[TEMPLATE_CYCLE](Path[foo.gtmpl],foo.gtmpl->index.gtmpl)", error.getMessage());
+    assertEquals("[TEMPLATE_CYCLE](Path[/plugin/template/tag/includecircular/templates/foo.gtmpl],foo.gtmpl->index.gtmpl)", error.getMessage());
   }
 
   @Test
@@ -160,21 +149,19 @@ public class TagTestCase extends AbstractInjectTestCase {
     assertNotNull(desc);
     Template<?> foo = new Template<ASTNode.Template>(
       new ASTNode.Template(),
-      (Path.Relative)Path.parse(desc.getType().getName().replace('.', '/') + "/foo.gtmpl"),
       (Path.Absolute)Path.parse("/" + desc.getType().getName().replace('.', '/') + "/foo.gtmpl"),
       System.currentTimeMillis());
 
     //
-    HashMap<Path, Template<?>> templates = new HashMap<Path, Template<?>>();
-    templates.put(Path.parse("foo.gtmpl"), foo);
+    HashMap<Path.Absolute, Template<?>> templates = new HashMap<Path.Absolute, Template<?>>();
+    templates.put((Path.Absolute)Path.parse("/foo.gtmpl"), foo);
     ProcessPhase process = new ProcessPhase(new SimpleProcessContext(templates) {
       @Override
-      public <A extends Serializable> Template<A> resolveTemplate(Path.Relative originPath, Path.Relative path) {
+      public <A extends Serializable> Template<A> resolveTemplate(Path path) {
         if (path.getCanonical().equals("index.gtmpl")) {
           try {
             return (Template<A>)new Template<ASTNode.Template>(
               ASTNode.Template.parse("#{decorate path=foo.gtmpl/}juu"),
-              (Path.Relative)Path.parse("plugin/template/tag/decorate/templates/index.gtmpl"),
               (Path.Absolute)Path.parse("/plugin/template/tag/decorate/templates/index.gtmpl"),
               System.currentTimeMillis()
             );
@@ -200,7 +187,7 @@ public class TagTestCase extends AbstractInjectTestCase {
           return null;
         }
       }
-      public void createResource(String rawName, String ext, CharSequence content) throws IOException {
+      public void createResource(Path.Absolute path, CharSequence content) throws IOException {
         throw new UnsupportedOperationException();
       }
     });
@@ -215,5 +202,50 @@ public class TagTestCase extends AbstractInjectTestCase {
     assertTrue(error.getSource().endsWith("template/tag/notfound/A.java"));
     assertEquals(TemplateMetaModel.UNKNOWN_TAG, error.getCode());
     assertEquals("[UNKNOWN_TAG](notfound)", error.getMessage());
+  }
+
+  @Test
+  public void testSimpleRender() throws Exception {
+    MockApplication<?> app = application("plugin.template.tag.simple.render").init();
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    String out = render.assertStringResult();
+    assertEquals("foothe_tagbar", out);
+  }
+
+  @Test
+  public void testSimpleParameters() throws Exception {
+    MockApplication<?> app = application("plugin.template.tag.simple.parameters").init();
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    String out = render.assertStringResult();
+    assertEquals("-[:]-[a:b]-", out);
+  }
+
+  @Test
+  public void testSimpleBody() throws Exception {
+    MockApplication<?> app = application("plugin.template.tag.simple.body").init();
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    String out = render.assertStringResult();
+    assertEquals("<foo>the_body</foo>", out);
+  }
+
+  @Test
+  public void testSimpleNested() throws Exception {
+    MockApplication<?> app = application("plugin.template.tag.simple.nested").init();
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    String out = render.assertStringResult();
+    assertEquals("<index><foo><bar>foo_content</bar></foo></index>", out);
+  }
+
+  @Test
+  public void testSimpleInclude() throws Exception {
+    MockApplication<?> app = application("plugin.template.tag.simple.include").init();
+    MockClient client = app.client();
+    MockRenderBridge render = client.render();
+    String out = render.assertStringResult();
+    assertEquals("pass", out);
   }
 }

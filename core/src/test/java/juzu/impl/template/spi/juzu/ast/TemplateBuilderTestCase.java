@@ -33,7 +33,7 @@ public class TemplateBuilderTestCase extends AbstractTemplateTestCase {
     GroovyTemplateStub s = template("a<%=foo%>c");
     s.init(Thread.currentThread().getContextClassLoader());
     StringWriter out = new StringWriter();
-    new TemplateRenderContext(s, Collections.singletonMap("foo", "b")).render(OutputStream.create(Tools.UTF_8, out));
+    new TemplateRenderContext(s, Collections.<String, Object>singletonMap("foo", "b")).render(OutputStream.create(Tools.UTF_8, out));
     assertEquals("abc", out.toString());
   }
 

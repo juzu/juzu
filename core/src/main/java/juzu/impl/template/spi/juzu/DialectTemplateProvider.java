@@ -41,7 +41,7 @@ public abstract class DialectTemplateProvider extends TemplateProvider<ASTNode.T
   }
 
   @Override
-  public final void process(ProcessContext context, Template<ASTNode.Template> template) {
+  public final void process(ProcessContext context, Template<ASTNode.Template> template) throws TemplateException {
     new ProcessPhase(context).process(template);
   }
 }

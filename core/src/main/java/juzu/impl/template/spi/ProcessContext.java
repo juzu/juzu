@@ -23,7 +23,6 @@ import juzu.impl.compiler.ProcessingException;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.Path;
-import juzu.impl.template.spi.juzu.PhaseContext;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -37,74 +36,62 @@ public abstract class ProcessContext extends PhaseContext {
    * @param path the resource path
    * @return the resource or null if the resource could not be resolved
    */
-  public abstract Resource<Timestamped<Content>> resolveResource(Path.Relative path);
+  public abstract Resource<Timestamped<Content>> resolveResource(Path.Absolute path);
+
+  /**
+   * Resolve a resource for the provided relative path.
+   *
+   * @param path the resource path
+   * @return the resource or null if the resource could not be resolved
+   */
+  public Resource<Timestamped<Content>> resolveResource(Path path) {
+    Path.Absolute abs;
+    if (path instanceof Path.Absolute) {
+      abs = (Path.Absolute)path;
+    } else {
+      abs = resolvePath((Path.Relative)path);
+    }
+    return resolveResource(abs);
+  }
 
   public abstract MethodInvocation resolveMethodInvocation( String typeName, String methodName, Map<String, String> parameterMap) throws ProcessingException;
 
   protected abstract TemplateProvider resolverProvider(String ext);
 
-  protected abstract <M extends Serializable> Template<M> getTemplate(Path.Relative path);
+  protected abstract <M extends Serializable> Template<M> getTemplate(Path.Absolute path);
 
   protected abstract <M extends Serializable> void registerTemplate(Template<M> template);
 
-  protected abstract <M extends Serializable> void register(Path.Relative originPath, Template<M> template);
+  protected abstract Path.Absolute resolvePath(Path.Relative path);
 
-
-  public Template resolveTemplate(Path.Relative path) {
-    return resolveTemplate(null, path);
+  protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, Template<M> template) throws TemplateException {
+    provider.process(this, template);
   }
 
-  public <M extends Serializable> Template<? extends M> resolveTemplate(
-      Path.Relative originPath,
-      Path.Relative path) {
+  protected <M extends Serializable> M parseTemplate(TemplateProvider<M> provider, Path.Absolute path, CharSequence s) throws TemplateException {
+    return provider.parse(new ParseContext(), s);
+  }
 
-    // A class cast here would mean a terrible issue
-    Template<M> template = getTemplate(path);
-
-    //
+  public <M extends Serializable> Template resolveTemplate(Path path) throws TemplateException {
+    Path.Absolute abs;
+    if (path instanceof Path.Relative) {
+      abs = resolvePath((Path.Relative)path);
+    } else {
+      abs = (Path.Absolute)path;
+    }
+    Template<M> template = getTemplate(abs);
     if (template == null) {
-
-      // Get source
-      Resource<Timestamped<Content>> resolved = resolveResource(path);
+      Resource<Timestamped<Content>> resolved = resolveResource(abs);
       if (resolved == null) {
         throw TemplateMetaModel.TEMPLATE_NOT_RESOLVED.failure(path);
-      }
-
-      //
-      TemplateProvider<M> provider = (TemplateProvider<M>)resolverProvider(path.getExt());
-
-      // Parse to AST
-      M templateAST;
-      try {
-        templateAST = provider.parse(new ParseContext(), resolved.content.getObject().getCharSequence());
-      }
-      catch (TemplateException e) {
-        throw TemplateMetaModel.TEMPLATE_SYNTAX_ERROR.failure(path);
-      }
-
-      // Add template to application
-      template =  new Template<M>(
-        templateAST,
-        path,
-        resolved.path,
-        resolved.content.getTime());
-
-      // Register template
-      registerTemplate(template);
-
-      // Process template
-      try {
-        provider.process(this, template);
-      }
-      catch (TemplateException e) {
-        throw TemplateMetaModel.TEMPLATE_VALIDATION_ERROR.failure(path);
+      } else {
+        TemplateProvider<M> provider = (TemplateProvider<M>)resolverProvider(path.getExt());
+        M templateAST = parseTemplate(provider, abs, resolved.content.getObject().getCharSequence());
+        template =  new Template<M>(templateAST, resolved.path, resolved.content.getTime());
+        processTemplate(provider, template);
       }
     }
-
-    // Register relationship
-    register(originPath, template);
-
-    //
+    registerTemplate(template);
     return template;
   }
 }

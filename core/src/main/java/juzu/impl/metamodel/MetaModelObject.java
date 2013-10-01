@@ -21,6 +21,7 @@ import juzu.impl.common.JSON;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -102,6 +103,9 @@ public class MetaModelObject implements Serializable {
     }
     if (child == null) {
       throw new NullPointerException("No null child accepted");
+    }
+    if (child == this) {
+      throw new CycleDetectionException(Arrays.asList(this));
     }
     LinkedList<MetaModelObject> path = child.findPath(this);
     if (path != null) {

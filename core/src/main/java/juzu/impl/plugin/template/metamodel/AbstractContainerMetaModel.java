@@ -20,28 +20,24 @@ import juzu.impl.common.Logger;
 import juzu.impl.common.Name;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
-import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
 import juzu.impl.template.spi.Template;
+import juzu.template.TagHandler;
 
+import javax.lang.model.element.Element;
 import javax.tools.FileObject;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplatesMetaModel extends MetaModelObject implements Iterable<TemplateMetaModel> {
+public abstract class AbstractContainerMetaModel extends MetaModelObject implements Iterable<TemplateMetaModel> {
 
   /** . */
-  private static final Logger log = BaseProcessor.getLogger(TemplateEmitter.class);
-
-  /** . */
-  public final static Key<TemplatesMetaModel> KEY = Key.of(TemplatesMetaModel.class);
-
-  /** . */
-  public static final Name LOCATION = Name.parse("templates");
+  private static final Logger log = BaseProcessor.getLogger(AbstractEmitter.class);
 
   /** . */
   ApplicationMetaModel application;
@@ -50,10 +46,17 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
   private Name qn;
 
   /** . */
-  TemplateEmitter emitter;
+  AbstractEmitter emitter;
 
   /** . */
   TemplateMetaModelPlugin plugin;
+
+  /** . */
+  final Name name;
+
+  public AbstractContainerMetaModel(Name name) {
+    this.name = name;
+  }
 
   @Override
   public JSON toJSON() {
@@ -61,6 +64,15 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
     json.map("values", getChildren(TemplateMetaModel.class));
     json.set("qn", qn);
     return json;
+  }
+
+  final TagHandler resolveTagHandler(String name) {
+    TagContainerMetaModel tags = application.getChild(TagContainerMetaModel.KEY);
+    TagHandler handler = tags.resolveApplicationTagHandler(name);
+    if (handler == null) {
+      handler = plugin.tags.get(name);
+    }
+    return handler;
   }
 
   public Path.Absolute resolvePath(Path path) {
@@ -75,22 +87,18 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
     return qn;
   }
 
-  public TemplateMetaModel get(Path path) {
-    return getChild(Key.of(path, TemplateMetaModel.class));
+  public TemplateMetaModel get(Path.Absolute path) {
+    for (TemplateMetaModel child : getChildren(TemplateMetaModel.class)) {
+      Path.Absolute foo = resolvePath(child.getPath());
+      if (foo.equals(path)) {
+        return child;
+      }
+    }
+    return null;
   }
 
   public Iterator<TemplateMetaModel> iterator() {
     return getChildren(TemplateMetaModel.class).iterator();
-  }
-
-  public void remove(ElementHandle.Field handle) {
-    Key<TemplateRefMetaModel> key = Key.of(handle, TemplateRefMetaModel.class);
-    TemplateRefMetaModel ref = getChild(key);
-    TemplateMetaModel template = ref.getChild(TemplateMetaModel.KEY);
-    removeChild(key);
-    if (template.refCount == 0) {
-      template.remove();
-    }
   }
 
   void resolve() {
@@ -100,19 +108,19 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
     for (TemplateMetaModel child : getChildren(TemplateMetaModel.class)) {
       if (child.template != null) {
         Template<?> template = child.template;
-        FileObject resource = application.resolveResource(TemplatesMetaModel.LOCATION, template.getRelativePath());
+        FileObject resource = application.resolveResource(template.getAbsolutePath());
         if (resource == null) {
           // That will generate a template not found error
           child.template = null;
-          log.log("Detected template removal " + template.getRelativePath());
+          log.log("Detected template removal " + template.getAbsolutePath());
         }
         else if (resource.getLastModified() > template.getLastModified()) {
           // That will force the regeneration of the template
           child.template = null;
-          log.log("Detected stale template " + template.getRelativePath());
+          log.log("Detected stale template " + template.getAbsolutePath());
         }
         else {
-          log.log("Template " + template.getRelativePath() + " is valid");
+          log.log("Template " + template.getAbsolutePath() + " is valid");
         }
       }
     }
@@ -120,9 +128,13 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
     //
     for (final TemplateMetaModel child : getChildren(TemplateMetaModel.class)) {
       if (child.template == null) {
-        final MetaModelProcessContext processContext = new MetaModelProcessContext(this);
-        application.getProcessingContext().executeWithin(child.getReferencingElements()[0], new Callable<Void>() {
+        Element[] elements = getElements(child);
+        application.getProcessingContext().executeWithin(elements[0], new Callable<Void>() {
           public Void call() throws Exception {
+            MetaModelProcessContext processContext = new MetaModelProcessContext(
+                AbstractContainerMetaModel.this,
+                // Initially empty since those are the roots
+                Collections.<TemplateRefMetaModel>emptyList());
             processContext.resolve(child);
             return null;
           }
@@ -131,10 +143,15 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
     }
   }
 
-  public TemplateRefMetaModel add(ElementHandle.Field handle, Path.Relative path) {
-    TemplateRefMetaModel ref = addChild(Key.of(handle, TemplateRefMetaModel.class), new ElementTemplateRefMetaModel(handle, path));
-    return add(ref, path);
+  void emit() {
+    // Generate missing files from template
+    for (TemplateMetaModel templateMM : getChildren(TemplateMetaModel.class)) {
+      Element[] elements = getElements(templateMM);
+      emitter.emit(templateMM, elements);
+    }
   }
+
+  protected abstract Element[] getElements(TemplateMetaModel template);
 
   public TemplateMetaModel add(TemplateRefMetaModel ref, Path.Relative path) {
     TemplateMetaModel template = add(path);
@@ -157,12 +174,14 @@ public class TemplatesMetaModel extends MetaModelObject implements Iterable<Temp
     removeChild(Key.of(template.path, TemplateMetaModel.class));
   }
 
+  protected abstract AbstractEmitter createEmitter();
+
   @Override
   protected void postAttach(MetaModelObject parent) {
     if (parent instanceof ApplicationMetaModel) {
       this.application = (ApplicationMetaModel)parent;
-      this.qn = application.getName().append(LOCATION);
-      this.emitter = new TemplateEmitter(this);
+      this.qn = application.getName().append(name);
+      this.emitter = createEmitter();
     }
   }
 }

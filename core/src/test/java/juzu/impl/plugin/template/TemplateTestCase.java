@@ -79,7 +79,7 @@ public class TemplateTestCase extends AbstractInjectTestCase {
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(TemplateMetaModel.CONTROLLER_NOT_RESOLVED, error.getCode());
-    assertEquals(Arrays.asList("Foo.bar({})", "index.gtmpl", "2", "4"), error.getArguments());
+    assertEquals(Arrays.asList("Foo.bar({})", "/plugin/template/controllernotfound/templates/index.gtmpl", "2", "4"), error.getArguments());
   }
 
   @Test

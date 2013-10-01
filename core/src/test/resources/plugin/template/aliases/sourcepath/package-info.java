@@ -15,7 +15,7 @@
  */
 
 @Application(
-    resourceAliases = @Alias(of = "/plugin/template/aliases/sourcepath/index.gtmpl", as = "index.gtmpl")
+    resourceAliases = @Alias(of = "/plugin/template/aliases/sourcepath/index.gtmpl", as = "templates/index.gtmpl")
 ) package plugin.template.aliases.sourcepath;
 
 import juzu.Application;

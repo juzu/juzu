@@ -17,6 +17,7 @@
 package juzu.impl.template.spi.juzu.ast;
 
 import juzu.impl.common.Tools;
+import juzu.impl.template.spi.TemplateException;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateStub;
 import juzu.io.OutputStream;
 import juzu.template.TemplateExecutionException;
@@ -162,7 +163,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase {
   @Test
   public void testContextResolution() throws Exception {
     String template = "<%= foo %>";
-    Map<String, String> context = new HashMap<String, String>();
+    Map<String, Object> context = new HashMap<String, Object>();
     context.put("foo", "bar");
     String s = render(template, context);
     assertEquals("bar", s);
@@ -171,7 +172,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase {
   @Test
   public void testDollarInExpression() throws Exception {
     String template = "<%= \"$foo\" %>";
-    Map<String, String> context = new HashMap<String, String>();
+    Map<String, Object> context = new HashMap<String, Object>();
     context.put("foo", "bar");
     String s = render(template, context);
     assertEquals("bar", s);
@@ -180,7 +181,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase {
   @Test
   public void testEscapeDollarInExpression() throws Exception {
     String template = "<%= \"\\$foo\" %>";
-    Map<String, String> context = new HashMap<String, String>();
+    Map<String, Object> context = new HashMap<String, Object>();
     context.put("foo", "bar");
     String s = render(template, context);
     assertEquals("$foo", s);
@@ -189,7 +190,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase {
   @Test
   public void testEscapeDollarInText() throws Exception {
     String template = "\\$foo";
-    Map<String, String> context = new HashMap<String, String>();
+    Map<String, Object> context = new HashMap<String, Object>();
     context.put("foo", "bar");
     String s = render(template, context);
     assertEquals("$foo", s);
@@ -198,7 +199,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase {
   @Test
   public void testDollarInScriplet() throws Exception {
     String template = "<% out.print(\"$foo\") %>";
-    Map<String, String> context = new HashMap<String, String>();
+    Map<String, Object> context = new HashMap<String, Object>();
     context.put("foo", "bar");
     String s = render(template, context);
     assertEquals("bar", s);
@@ -207,7 +208,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase {
   @Test
   public void testEscapeDollarInScriplet() throws Exception {
     String template = "<% out.print(\"\\$foo\") %>";
-    Map<String, String> context = new HashMap<String, String>();
+    Map<String, Object> context = new HashMap<String, Object>();
     context.put("foo", "bar");
     String s = render(template, context);
     assertEquals("$foo", s);
@@ -280,7 +281,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase {
   }
 
   @Test
-  public void testSiblingClosures() throws IOException {
+  public void testSiblingClosures() throws IOException, TemplateException {
     GroovyTemplateStub template = template("#{title value=a/}#{title value=b/}");
     template.getClassName();
   }
@@ -367,7 +368,7 @@ public class TemplateRenderingTestCase extends AbstractTemplateTestCase {
     assertNotNull(out);
   }
 
-  private void assertLineNumber(int expectedLineNumber, String expectedText, String script) throws IOException {
+  private void assertLineNumber(int expectedLineNumber, String expectedText, String script) throws IOException, TemplateException {
     GroovyTemplateStub template = template(script);
     try {
       new TemplateRenderContext(template).render(OutputStream.create());

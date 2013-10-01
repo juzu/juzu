@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@Application(resourceAliases = @Alias(of = "/bar.gtmpl", as = "foo.gtmpl")) package plugin.template.aliases.classpath;
+@Application(resourceAliases = @Alias(of = "/bar.gtmpl", as = "templates/foo.gtmpl")) package plugin.template.aliases.classpath;
 
 import juzu.Alias;
 import juzu.Application;

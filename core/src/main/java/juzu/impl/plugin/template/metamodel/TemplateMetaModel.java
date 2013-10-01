@@ -27,7 +27,6 @@ import juzu.impl.common.Path;
 import juzu.impl.template.spi.Template;
 
 import javax.lang.model.element.Element;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -79,7 +78,7 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
   public final static Key<TemplateMetaModel> KEY = Key.of(TemplateMetaModel.class);
 
   /** The related application. */
-  TemplatesMetaModel templates;
+  AbstractContainerMetaModel templates;
 
   /** . */
   final Path.Relative path;
@@ -96,7 +95,7 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
     this.refCount = 0;
   }
 
-  public TemplatesMetaModel getTemplates() {
+  public AbstractContainerMetaModel getTemplates() {
     return templates;
   }
 
@@ -107,8 +106,8 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
    */
   public Element[] getReferencingElements() {
     Set<Name> types = new LinkedHashSet<Name>();
-    for (ElementTemplateRefMetaModel ref : getElementReferences()) {
-      ElementHandle.Field handle = ref.getHandle();
+    for (ElementMetaModel ref : getElementReferences()) {
+      ElementHandle.Field handle = ref.getElement();
       types.add(handle.getFQN());
     }
     final Element[] elements = new Element[types.size()];
@@ -124,7 +123,7 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
    *
    * @return the metamodel elements referencing this template
    */
-  public Collection<ElementTemplateRefMetaModel> getElementReferences() {
+  public Collection<ElementMetaModel> getElementReferences() {
     Collection<TemplateRefMetaModel> refs = getReferences();
     for (Iterator<TemplateRefMetaModel> i = refs.iterator();i.hasNext();) {
       if (i.next() instanceof TemplateMetaModel) {
@@ -173,9 +172,9 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
 
   @Override
   protected void postAttach(MetaModelObject parent) {
-    if (parent instanceof TemplatesMetaModel) {
+    if (parent instanceof AbstractContainerMetaModel) {
       queue(MetaModelEvent.createAdded(this));
-      this.templates = (TemplatesMetaModel)parent;
+      this.templates = (AbstractContainerMetaModel)parent;
     }
     else if (parent instanceof TemplateRefMetaModel) {
       refCount++;
@@ -184,7 +183,7 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
 
   @Override
   protected void preDetach(MetaModelObject parent) {
-    if (parent instanceof TemplatesMetaModel) {
+    if (parent instanceof AbstractContainerMetaModel) {
       ElementHandle.Package handle = templates.application.getHandle();
       this.templates = null;
       this.template = null;

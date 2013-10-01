@@ -23,6 +23,7 @@ import juzu.impl.tags.TitleTag;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.SimpleProcessContext;
 import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateException;
 import juzu.impl.template.spi.juzu.compiler.ProcessPhase;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateEmitter;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateStub;
@@ -46,7 +47,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractTemplateTestCase extends AbstractTestCase {
 
-  public GroovyTemplateStub template(final String text) throws IOException {
+  public GroovyTemplateStub template(final String text) throws IOException, TemplateException {
     Name pkg = Name.parse("foo");
     Name name = Name.parse("index");
     Name fqn = pkg.append(name);
@@ -54,7 +55,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
     Path.Relative relative = Path.relative(name, ".gtmpl");
     GroovyTemplateEmitter generator = new GroovyTemplateEmitter(fqn);
     try {
-      ProcessPhase processPhase = new ProcessPhase(new SimpleProcessContext(Collections.<Path, Template<?>>emptyMap()) {
+      ProcessPhase processPhase = new ProcessPhase(new SimpleProcessContext(Collections.<Path.Absolute, Template<?>>emptyMap()) {
         @Override
         public TagHandler resolveTagHandler(String name) {
           if ("title".equals(name)) {
@@ -81,7 +82,6 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
       });
       Template<ASTNode.Template> template = new Template<ASTNode.Template>(
           ASTNode.Template.parse(text),
-          relative,
           absolute,
           0);
       processPhase.process(template);
@@ -97,7 +97,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
           }
         }
 
-        public void createResource(String rawName, String ext, CharSequence content) throws IOException {
+        public void createResource(Path.Absolute path, CharSequence content) throws IOException {
           throw new UnsupportedOperationException();
         }
       });
@@ -111,25 +111,25 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
     return stub;
   }
 
-  public String render(String template) throws IOException, TemplateExecutionException {
+  public String render(String template) throws IOException, TemplateExecutionException, TemplateException {
     return render(template, null, null);
   }
 
-  public String render(String template, Locale locale) throws IOException, TemplateExecutionException {
+  public String render(String template, Locale locale) throws IOException, TemplateExecutionException, TemplateException {
     return render(template, null, locale);
   }
 
-  public String render(String template, Map<String, ?> attributes) throws IOException, TemplateExecutionException {
+  public String render(String template, Map<String, Object> attributes) throws IOException, TemplateExecutionException, TemplateException {
     return render(template, attributes, null);
   }
 
-  public String render(String text, Map<String, ?> attributes, Locale locale) throws IOException, TemplateExecutionException {
+  public String render(String text, Map<String, Object> attributes, Locale locale) throws IOException, TemplateExecutionException, TemplateException {
     StringWriter out = new StringWriter();
     render(text, attributes, locale, out);
     return out.toString();
   }
 
-  public void render(String text, Map<String, ?> attributes, Locale locale, Appendable appendable) throws IOException, TemplateExecutionException {
+  public void render(String text, Map<String, Object> attributes, Locale locale, Appendable appendable) throws IOException, TemplateExecutionException, TemplateException {
     GroovyTemplateStub template = template(text);
     TemplateRenderContext renderContext = new TemplateRenderContext(template, null, attributes, locale);
     OutputStream adapter = OutputStream.create(Tools.UTF_8, appendable);

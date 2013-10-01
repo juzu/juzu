@@ -13,14 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package juzu.impl.template.spi.juzu;
 
-import juzu.template.TagHandler;
+package juzu.template;
 
-/** @author Julien Viet */
-public abstract class PhaseContext {
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-  public TagHandler resolveTagHandler(String name) {
-    return null;
-  }
+/** A tag declaration */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PACKAGE)
+public @interface Tag {
+
+  /**
+   * @return the tag name
+   */
+  String name();
+
+  /**
+   * @return the tag path
+   */
+  String path();
+
 }

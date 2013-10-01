@@ -14,6 +14,30 @@
  * limitations under the License.
  */
 
-@Application package plugin.template.tag.simple;
+package plugin.template.tag.simple.render;
 
-import juzu.Application;
+import juzu.Path;
+import juzu.Response;
+import juzu.View;
+import juzu.template.Template;
+
+import javax.inject.Inject;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+
+  @Path("index.gtmpl")
+  @Inject
+  Template index;
+
+  @View
+  public Response.Content index() throws Exception {
+    try {
+      return index.ok();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+      throw e;
+    }
+  }
+}

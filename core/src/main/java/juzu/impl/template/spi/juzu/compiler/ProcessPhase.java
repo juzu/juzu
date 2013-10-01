@@ -21,6 +21,7 @@ import juzu.impl.compiler.ProcessingException;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.template.spi.ProcessContext;
 import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateException;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.Path;
@@ -42,37 +43,18 @@ public class ProcessPhase extends CompilationPhase {
     this.context = context;
   }
 
-  /** . */
-  private Path.Relative originPath;
-
-  public void process(Template<ASTNode.Template> template) {
-    boolean initial;
-    if (originPath == null) {
-      originPath = template.getRelativePath();
-      initial = true;
-    }
-    else {
-      initial = false;
-    }
-
-    try {
-      doAttribute(template.getModel());
-      doProcess(template, template.getModel());
-      doResolve(template, template.getModel());
-      doUnattribute(template.getModel());
-    }
-    finally {
-      if (initial) {
-        originPath = null;
-      }
-    }
+  public void process(Template<ASTNode.Template> template) throws TemplateException {
+    doAttribute(template.getModel());
+    doProcess(template, template.getModel());
+    doResolve(template, template.getModel());
+    doUnattribute(template.getModel());
   }
 
-  public Template resolveTemplate(Path.Relative path) throws ProcessingException {
-    return context.resolveTemplate(originPath, path);
+  public Template resolveTemplate(Path path) throws ProcessingException, TemplateException {
+    return context.resolveTemplate(path);
   }
 
-  private void doProcess(Template<ASTNode.Template> template, ASTNode<?> node) throws ProcessingException {
+  private void doProcess(Template<ASTNode.Template> template, ASTNode<?> node) throws ProcessingException, TemplateException {
     if (node instanceof ASTNode.Template) {
       for (ASTNode.Block child : node.getChildren()) {
         doProcess(template, child);
@@ -96,7 +78,7 @@ public class ProcessPhase extends CompilationPhase {
         Location location = urlNode.getBegin().getPosition();
         throw TemplateMetaModel.CONTROLLER_NOT_RESOLVED.failure(
             controller,
-            template.getRelativePath().getCanonical(),
+            template.getAbsolutePath().getCanonical(),
             location.getLine(),
             location.getCol());
       } else {
@@ -115,7 +97,7 @@ public class ProcessPhase extends CompilationPhase {
     }
   }
 
-  private void doResolve(Template<ASTNode.Template> template, ASTNode<?> node) throws ProcessingException {
+  private void doResolve(Template<ASTNode.Template> template, ASTNode<?> node) throws ProcessingException, TemplateException {
     if (node instanceof ASTNode.Template) {
       for (ASTNode.Block child : node.getChildren()) {
         doResolve(template, child);

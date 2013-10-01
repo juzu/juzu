@@ -25,10 +25,12 @@ import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
 import juzu.impl.metamodel.MetaModel;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
-import juzu.impl.plugin.template.metamodel.TemplatesMetaModel;
 import juzu.impl.common.JSON;
+import juzu.impl.plugin.template.metamodel.TemplateContainerMetaModel;
 
 import javax.tools.FileObject;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -39,6 +41,9 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
 
   /** . */
   public static final MessageCode CANNOT_WRITE_CONFIG = new MessageCode("CANNOT_WRITE_CONFIG", "The configuration cannot be written");
+
+  /** . */
+  public static final MessageCode ALIAS_INVALID_OF = new MessageCode("INVALID_ALIAS", "The alias of value must be absolute");
 
   /** . */
   final ElementHandle.Package handle;
@@ -53,12 +58,13 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
   final String baseName;
 
   /** Resource aliases. */
-  final Map<String, String> resourceAliases;
+  final Map<Path.Absolute, Path.Absolute> resourceAliases;
 
   ApplicationMetaModel(
     ElementHandle.Package handle,
     String baseName,
-    Map<String, String> resourceAliases) {
+    Map<Path, Path.Absolute> resourceAliases) {
+
     //
     if (baseName == null) {
       String s = handle.getPackage().toString();
@@ -67,10 +73,22 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
     }
 
     //
+    Map<Path.Absolute, Path.Absolute> tmp;
+    if (resourceAliases.size() > 0) {
+      tmp = new HashMap<Path.Absolute, Path.Absolute>();
+      for (Map.Entry<Path, Path.Absolute> entry : resourceAliases.entrySet()) {
+        Path.Absolute abs = handle.getPackage().resolve(entry.getKey());
+        tmp.put(abs, entry.getValue());
+      }
+    } else {
+      tmp = Collections.emptyMap();
+    }
+
+    //
     this.handle = handle;
     this.modified = false;
     this.baseName = baseName;
-    this.resourceAliases = resourceAliases;
+    this.resourceAliases = tmp;
   }
 
   public Name getName() {
@@ -86,35 +104,31 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
   }
 
   /**
-   * Resolve a resource from the provided folder.
+   * Resolve a resource for this application.
    *
-   * @param location the name of the folder to resolve from
    * @param path the path of the resource to resolve
    * @return the resolved resource or null if it cannot be determined
    * @throws NullPointerException if any argument is null
    * @throws IllegalArgumentException if the context package is not valid
    */
-  public FileObject resolveResource(Name location, Path.Relative path) throws NullPointerException, IllegalArgumentException {
-    String resolved = resourceAliases.get(path.getCanonical());
-    FileObject o;
-    if (resolved != null) {
-      Path.Absolute p = (Path.Absolute)Path.parse(resolved);
-      o = model.processingContext.resolveResourceFromSourcePath(handle, p);
-      if (o == null) {
-        o = model.processingContext.resolveResourceFromClassPath(handle, p);
+  public FileObject resolveResource(Path.Absolute path) throws NullPointerException, IllegalArgumentException {
+    Path.Absolute alias = resourceAliases.get(path);
+    if (alias != null) {
+      FileObject resource = model.processingContext.resolveResourceFromSourcePath(handle, alias);
+      if (resource == null) {
+        resource = model.processingContext.resolveResourceFromClassPath(handle, alias);
       }
+      return resource;
     } else {
-      Path.Absolute p = getName().append(location).resolve(path);
-      o = model.processingContext.resolveResourceFromSourcePath(handle, p);
+      return model.processingContext.resolveResourceFromSourcePath(handle, path);
     }
-    return o;
   }
 
   public JSON toJSON() {
     JSON json = new JSON();
     json.set("handle", handle);
     json.set("qn", handle.getPackage().toString());
-    json.map("templates", getChild(TemplatesMetaModel.KEY));
+    json.map("templates", getChild(TemplateContainerMetaModel.KEY));
     json.map("controllers", getChild(ControllersMetaModel.KEY));
     return json;
   }

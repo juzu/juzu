@@ -16,6 +16,7 @@
 
 package juzu.impl.tags;
 
+import juzu.impl.template.spi.TemplateException;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.impl.template.spi.juzu.compiler.ExtendedTagHandler;
@@ -28,19 +29,10 @@ import juzu.template.TemplateRenderContext;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class DecorateTag extends ExtendedTagHandler {
-
-  /** . */
-  static final ThreadLocal<LinkedList<Renderable>> current = new ThreadLocal<LinkedList<Renderable>>() {
-    @Override
-    protected LinkedList<Renderable> initialValue() {
-      return new LinkedList<Renderable>();
-    }
-  };
 
   public DecorateTag() {
     super("decorate");
@@ -75,7 +67,7 @@ public class DecorateTag extends ExtendedTagHandler {
   }
 
   @Override
-  public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) {
+  public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) throws TemplateException {
     String path = tag.getArgs().get("path");
     Template resolved = phase.resolveTemplate((Path.Relative)Path.parse(path));
     if (resolved == null) {
@@ -85,14 +77,14 @@ public class DecorateTag extends ExtendedTagHandler {
 
   @Override
   public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException {
-    current.get().addLast(body);
+    InsertTag.current.get().addLast(body);
     try {
       String path = args.get("path");
       TemplateStub template = context.resolveTemplate(path);
       template.render(context);
     }
     finally {
-      current.get().removeLast();
+      InsertTag.current.get().removeLast();
     }
   }
 }

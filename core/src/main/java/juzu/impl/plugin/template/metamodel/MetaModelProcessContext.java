@@ -27,6 +27,8 @@ import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
 import juzu.impl.plugin.controller.metamodel.ParameterMetaModel;
 import juzu.impl.plugin.controller.metamodel.PhaseParameterMetaModel;
 import juzu.impl.common.Resource;
+import juzu.impl.template.spi.ParseContext;
+import juzu.impl.template.spi.TemplateException;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.ProcessContext;
 import juzu.impl.template.spi.Template;
@@ -39,6 +41,8 @@ import javax.tools.FileObject;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -46,27 +50,69 @@ import java.util.Map;
 class MetaModelProcessContext extends ProcessContext {
 
   /** . */
-  private TemplatesMetaModel owner;
+  private AbstractContainerMetaModel owner;
 
   /** . */
   private final ProcessingContext env;
 
-  MetaModelProcessContext(TemplatesMetaModel owner) {
+  /** . */
+  private final Collection<? extends TemplateRefMetaModel> refs;
+
+  MetaModelProcessContext(AbstractContainerMetaModel owner, Collection<? extends TemplateRefMetaModel> refs) {
+    this.refs = refs;
     this.owner = owner;
     this.env = owner.application.getProcessingContext();
   }
 
-  void resolve(final TemplateMetaModel metaModel) {
-    resolveTemplate(metaModel.getPath());
+  void resolve(final TemplateMetaModel metaModel) throws TemplateException {
+    Path.Absolute abs = owner.getQN().resolve(metaModel.path);
+    resolveTemplate(abs);
   }
 
   @Override
   public TagHandler resolveTagHandler(String name) {
-    return owner.plugin.tags.get(name);
+    return owner.resolveTagHandler(name);
   }
 
   @Override
-  protected <M extends Serializable> Template<M> getTemplate(Path.Relative path) {
+  protected Path.Absolute resolvePath(Path.Relative path) {
+    return owner.resolvePath(path);
+  }
+
+  protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, Template<M> template) throws TemplateException {
+    Path.Relative rel;
+    if (owner.getQN().isPrefix(template.getAbsolutePath().getName())) {
+      rel = Path.Relative.relative(template.getAbsolutePath().getName().subName(owner.getQN().size()), template.getAbsolutePath().getExt());
+    } else {
+      throw new AssertionError("Should not happen");
+    }
+    TemplateMetaModel related = owner.add(rel);
+    if (related.template != null) {
+      throw new UnsupportedOperationException("todo");
+    } else {
+      related.template = template;
+    }
+    try {
+      provider.process(new MetaModelProcessContext(owner, Collections.singletonList(related)), template);
+    }
+    catch (TemplateException e) {
+      throw TemplateMetaModel.TEMPLATE_VALIDATION_ERROR.failure(rel);
+    }
+  }
+
+  @Override
+  protected <M extends Serializable> M parseTemplate(TemplateProvider<M> provider, Path.Absolute path, CharSequence s) throws TemplateException {
+    try {
+      return provider.parse(new ParseContext(), s);
+    }
+    catch (TemplateException e) {
+      throw TemplateMetaModel.TEMPLATE_SYNTAX_ERROR.failure(path);
+    }
+  }
+
+
+  @Override
+  protected <M extends Serializable> Template<M> getTemplate(Path.Absolute path) {
     TemplateMetaModel tmm = owner.get(path);
     if (tmm != null) {
       return (Template<M>)tmm.template;
@@ -77,24 +123,12 @@ class MetaModelProcessContext extends ProcessContext {
 
   @Override
   protected <M extends Serializable> void registerTemplate(Template<M> template) {
-    TemplateMetaModel related = owner.add(template.getRelativePath());
-    if (related.template != null) {
-      throw new UnsupportedOperationException("todo");
-    } else {
-      related.template = template;
-    }
-  }
-
-  @Override
-  protected <M extends Serializable> void register(Path.Relative originPath, Template<M> template) {
-    if (originPath != null) {
-      TemplateMetaModel a = owner.get(template.getRelativePath());
-      TemplateMetaModel b = owner.get(originPath);
-      Key<TemplateMetaModel> key = Key.of(template.getAbsolutePath(), TemplateMetaModel.class);
-      // It may already be here (in case of double include for instance)
-      if (b.getChild(key) == null) {
+    TemplateMetaModel a = owner.get(template.getAbsolutePath());
+    Key<TemplateMetaModel> key = Key.of(template.getAbsolutePath(), TemplateMetaModel.class);
+    for (TemplateRefMetaModel ref : refs) {
+      if (ref.getChild(key) == null) {
         try {
-          b.addChild(key, a);
+          ref.addChild(key, a);
         }
         catch (CycleDetectionException e) {
           // We have a template cycle and we want to prevent it
@@ -111,7 +145,7 @@ class MetaModelProcessContext extends ProcessContext {
               path.append(node);
             }
           }
-          throw TemplateMetaModel.TEMPLATE_CYCLE.failure(template.getRelativePath(), path);
+          throw TemplateMetaModel.TEMPLATE_CYCLE.failure(template.getAbsolutePath(), path);
         }
       }
     }
@@ -143,15 +177,14 @@ class MetaModelProcessContext extends ProcessContext {
   }
 
   @Override
-  public Resource<Timestamped<Content>> resolveResource(Path.Relative path) {
-    FileObject resource = owner.application.resolveResource(TemplatesMetaModel.LOCATION, path);
+  public Resource<Timestamped<Content>> resolveResource(Path.Absolute path) {
+    FileObject resource = owner.application.resolveResource(path);
     if (resource != null) {
       try {
-        Path.Absolute foo = owner.resolvePath(path);
         byte[] bytes = Tools.bytes(resource.openInputStream());
         long lastModified = resource.getLastModified();
         Timestamped<Content> content = new Timestamped<Content>(lastModified, new Content(bytes, Charset.defaultCharset()));
-        return new Resource<Timestamped<Content>>(foo, content);
+        return new Resource<Timestamped<Content>>(path, content);
       }
       catch (Exception e) {
         env.log("Could not get resource content " + path.getCanonical(), e);
