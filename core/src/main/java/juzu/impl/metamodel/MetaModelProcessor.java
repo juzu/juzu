@@ -41,13 +41,13 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MetaModelProcessor extends BaseProcessor {
+public abstract class MetaModelProcessor<P extends MetaModelPlugin<M, P>, M extends MetaModel<P, M>> extends BaseProcessor {
 
   /** . */
   public static final MessageCode ANNOTATION_UNSUPPORTED = new MessageCode("ANNOTATION_UNSUPPORTED", "The annotation of this element cannot be supported");
 
   /** . */
-  private MetaModelState<?, ?> state;
+  private MetaModelState<P, M> state;
 
   /** . */
   private int index;
@@ -69,12 +69,12 @@ public abstract class MetaModelProcessor extends BaseProcessor {
         FileObject file = getContext().getResource(StandardLocation.SOURCE_OUTPUT, "juzu", "metamodel.ser");
         in = file.openInputStream();
         ObjectInputStream ois = new ObjectInputStream(in);
-        state = (MetaModelState<?, ?>)ois.readObject();
+        state = (MetaModelState<P, M>)ois.readObject();
         log.log("Loaded model from " + file.toUri());
       }
       catch (Exception e) {
         log.log("Created new meta model");
-        MetaModelState<?, ?> metaModel = new MetaModelState(getPluginType(), createMetaModel());
+        MetaModelState<P, M> metaModel = new MetaModelState<P, M>(getPluginType(), createMetaModel());
         metaModel.init(getContext());
         state = metaModel;
       }
@@ -94,9 +94,9 @@ public abstract class MetaModelProcessor extends BaseProcessor {
     this.index = 0;
   }
 
-  protected abstract Class<? extends MetaModelPlugin<?, ?>> getPluginType();
+  protected abstract Class<P> getPluginType();
 
-  protected abstract MetaModel<?, ?> createMetaModel();
+  protected abstract M createMetaModel();
 
   @Override
   protected void doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {

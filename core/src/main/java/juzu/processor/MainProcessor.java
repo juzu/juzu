@@ -16,22 +16,20 @@
 
 package juzu.processor;
 
-import juzu.impl.metamodel.MetaModel;
-import juzu.impl.metamodel.MetaModelPlugin;
 import juzu.impl.metamodel.MetaModelProcessor;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModelPlugin;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MainProcessor extends MetaModelProcessor {
+public class MainProcessor extends MetaModelProcessor<ModuleMetaModelPlugin, ModuleMetaModel> {
 
   @Override
-  protected Class<? extends MetaModelPlugin<?, ?>> getPluginType() {
+  protected Class<ModuleMetaModelPlugin> getPluginType() {
     return ModuleMetaModelPlugin.class;
   }
 
   @Override
-  protected MetaModel<?, ?> createMetaModel() {
+  protected ModuleMetaModel createMetaModel() {
     return new ModuleMetaModel();
   }
 }
