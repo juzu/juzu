@@ -36,6 +36,9 @@ public class ProcessPhase extends CompilationPhase {
   private final ProcessContext context;
 
   public ProcessPhase(ProcessContext context) {
+    super(context);
+
+    //
     this.context = context;
   }
 

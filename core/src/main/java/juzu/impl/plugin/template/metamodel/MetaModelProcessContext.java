@@ -33,6 +33,7 @@ import juzu.impl.template.spi.Template;
 import juzu.impl.common.Content;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.Path;
+import juzu.template.TagHandler;
 
 import javax.tools.FileObject;
 import java.io.Serializable;
@@ -57,6 +58,11 @@ class MetaModelProcessContext extends ProcessContext {
 
   void resolve(final TemplateMetaModel metaModel) {
     resolveTemplate(metaModel.getPath());
+  }
+
+  @Override
+  public TagHandler resolveTagHandler(String name) {
+    return owner.plugin.tags.get(name);
   }
 
   @Override

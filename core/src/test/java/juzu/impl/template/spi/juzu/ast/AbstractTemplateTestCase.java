@@ -19,6 +19,7 @@ package juzu.impl.template.spi.juzu.ast;
 import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingException;
+import juzu.impl.tags.TitleTag;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.SimpleProcessContext;
 import juzu.impl.template.spi.Template;
@@ -29,6 +30,7 @@ import juzu.impl.template.spi.juzu.compiler.EmitPhase;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.Path;
 import juzu.io.OutputStream;
+import juzu.template.TagHandler;
 import juzu.template.TemplateExecutionException;
 import juzu.template.TemplateRenderContext;
 import juzu.test.AbstractTestCase;
@@ -54,6 +56,14 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
     try {
       ProcessPhase processPhase = new ProcessPhase(new SimpleProcessContext(Collections.<Path, Template<?>>emptyMap()) {
         @Override
+        public TagHandler resolveTagHandler(String name) {
+          if ("title".equals(name)) {
+            return new TitleTag();
+          } else {
+            return null;
+          }
+        }
+        @Override
         public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws ProcessingException {
           if (parameterMap.size() > 0) {
             throw failure("Unexpected non empty parameter map");
@@ -78,6 +88,15 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
 
       // Emit
       EmitPhase emitPhase = new EmitPhase(new EmitContext(){
+        @Override
+        public TagHandler resolveTagHandler(String name) {
+          if ("title".equals(name)) {
+            return new TitleTag();
+          } else {
+            return null;
+          }
+        }
+
         public void createResource(String rawName, String ext, CharSequence content) throws IOException {
           throw new UnsupportedOperationException();
         }

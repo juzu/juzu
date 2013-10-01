@@ -24,6 +24,10 @@ import juzu.impl.template.spi.Template;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ParamTag extends ExtendedTagHandler {
 
+  public ParamTag() {
+    super("param");
+  }
+
   @Override
   public void process(ProcessPhase phase, ASTNode.Tag tag, Template t) {
     String parameterName = tag.getArgs().get("name");

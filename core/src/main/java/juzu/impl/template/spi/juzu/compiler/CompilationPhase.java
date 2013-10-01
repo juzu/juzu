@@ -17,39 +17,27 @@
 package juzu.impl.template.spi.juzu.compiler;
 
 import juzu.impl.compiler.ProcessingException;
-import juzu.impl.tags.DecorateTag;
-import juzu.impl.tags.IncludeTag;
-import juzu.impl.tags.InsertTag;
-import juzu.impl.tags.ParamTag;
-import juzu.impl.tags.TitleTag;
+import juzu.impl.template.spi.juzu.PhaseContext;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.template.TagHandler;
 
-import java.util.HashMap;
 import java.util.IdentityHashMap;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class CompilationPhase {
 
   /** . */
-  private final Map<String, TagHandler> tags = new HashMap<String, TagHandler>();
-
-  /** . */
   private final IdentityHashMap<ASTNode.Tag, TagHandler> tagHandlers = new IdentityHashMap<ASTNode.Tag, TagHandler>();
 
-  public CompilationPhase() {
-    // Built in tags
+  /** . */
+  private final PhaseContext context;
 
-    tags.put("include", new IncludeTag());
-    tags.put("insert", new InsertTag());
-    tags.put("decorate", new DecorateTag());
-    tags.put("title", new TitleTag());
-    tags.put("param", new ParamTag());
+  public CompilationPhase(PhaseContext context) {
+    this.context = context;
   }
 
-  public TagHandler resolveTag(String name) {
-    return tags.get(name);
+  public TagHandler resolveTagHandler(String name) {
+    return context.resolveTagHandler(name);
   }
 
   public TagHandler get(ASTNode.Tag node) {
@@ -70,7 +58,7 @@ public class CompilationPhase {
     }
     else if (node instanceof ASTNode.Tag) {
       ASTNode.Tag nodeTag = (ASTNode.Tag)node;
-      TagHandler handler = resolveTag(nodeTag.getName());
+      TagHandler handler = resolveTagHandler(nodeTag.getName());
       if (handler == null) {
         throw new UnsupportedOperationException("handle me gracefully " + nodeTag.getName());
       }

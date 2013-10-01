@@ -23,12 +23,13 @@ import juzu.impl.compiler.ProcessingException;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.Path;
+import juzu.impl.template.spi.juzu.PhaseContext;
 
 import java.io.Serializable;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ProcessContext {
+public abstract class ProcessContext extends PhaseContext {
 
   /**
    * Resolve a resource for the provided relative path.

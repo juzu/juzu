@@ -32,6 +32,9 @@ public class EmitPhase extends CompilationPhase {
   private final EmitContext context;
 
   public EmitPhase(EmitContext context) {
+    super(context);
+
+    //
     this.context = context;
   }
 

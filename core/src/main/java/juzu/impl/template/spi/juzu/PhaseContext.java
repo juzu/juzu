@@ -13,23 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package juzu.impl.template.spi.juzu;
 
-package juzu.impl.template.spi;
+import juzu.template.TagHandler;
 
-import juzu.impl.template.spi.juzu.PhaseContext;
+/** @author Julien Viet */
+public abstract class PhaseContext {
 
-import java.io.IOException;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class EmitContext extends PhaseContext {
-
-  /**
-   * Create a resource.
-   *
-   * @param rawName
-   * @param ext
-   * @param content the content  @throws IOException any io exception preventing the resource creation
-   */
-  public abstract void createResource(String rawName, String ext, CharSequence content) throws IOException;
-
+  public TagHandler resolveTagHandler(String name) {
+    return null;
+  }
 }

@@ -21,6 +21,18 @@ import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class TagHandler {
+
+  /** . */
+  private final String name;
+
+  protected TagHandler(String name) {
+    this.name = name;
+  }
+
+  public String getName() {
+    return name;
+  }
+
   public void render(TemplateRenderContext context, Renderable body, Map<String, String> args) throws IOException {
     body.render(context);
   }

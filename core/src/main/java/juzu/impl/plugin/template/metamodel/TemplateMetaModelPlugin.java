@@ -26,9 +26,15 @@ import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.MetaModelProcessor;
+import juzu.impl.tags.DecorateTag;
+import juzu.impl.tags.IncludeTag;
+import juzu.impl.tags.InsertTag;
+import juzu.impl.tags.ParamTag;
+import juzu.impl.tags.TitleTag;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
+import juzu.template.TagHandler;
 
 import javax.annotation.processing.Completion;
 import javax.annotation.processing.Completions;
@@ -51,6 +57,9 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   /** . */
   Map<String, TemplateProvider> providers;
 
+  /** . */
+  final Map<String, TagHandler> tags = new HashMap<String, TagHandler>();
+
   public TemplateMetaModelPlugin() {
     super("template");
   }
@@ -62,7 +71,14 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void postActivate(ModuleMetaModel applications) {
-    // Discover the template providers
+
+    // Load the tag handlers
+    for (TagHandler handler : applications.getProcessingContext().loadServices(TagHandler.class)) {
+      applications.getProcessingContext().log("Loaded tag handler " + handler.getClass().getName() + " as " + handler.getName());
+      tags.put(handler.getName(), handler);
+    }
+
+    // Load the template providers
     Iterable<TemplateProvider> loader = applications.processingContext.loadServices(TemplateProvider.class);
     Map<String, TemplateProvider> providers = new HashMap<String, TemplateProvider>();
     for (TemplateProvider provider : loader) {
@@ -138,6 +154,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void prePassivate(ModuleMetaModel applications) {
     applications.processingContext.log("Passivating templates");
     this.providers = null;
+    this.tags.clear();
   }
 
   @Override

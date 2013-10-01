@@ -31,6 +31,10 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class IncludeTag extends ExtendedTagHandler {
 
+  public IncludeTag() {
+    super("include");
+  }
+
   @Override
   public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) {
     String path = tag.getArgs().get("path");

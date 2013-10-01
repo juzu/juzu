@@ -27,6 +27,7 @@ import juzu.impl.plugin.template.metadata.TemplateDescriptor;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Path;
 import juzu.impl.common.Tools;
+import juzu.template.TagHandler;
 
 import javax.annotation.Generated;
 import javax.lang.model.element.Element;
@@ -110,6 +111,13 @@ class TemplateEmitter implements Serializable {
           //
           try {
             EmitContext emitCtx = new EmitContext() {
+
+              @Override
+              public TagHandler resolveTagHandler(String name) {
+                return owner.plugin.tags.get(name);
+              }
+
+              @Override
               public void createResource(String rawName, String ext, CharSequence content) throws IOException {
                 Path.Relative bar = template.getRelativePath().as(rawName, ext);
                 Path.Absolute absolute = owner.resolvePath(bar);

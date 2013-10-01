@@ -42,6 +42,10 @@ public class DecorateTag extends ExtendedTagHandler {
     }
   };
 
+  public DecorateTag() {
+    super("decorate");
+  }
+
   @Override
   public void process(ProcessPhase phase, ASTNode.Tag tag, Template t) {
 

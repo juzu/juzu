@@ -19,6 +19,7 @@ package juzu.impl.plugin.template;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
+import juzu.impl.tags.DecorateTag;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.SimpleProcessContext;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateEmitter;
@@ -28,6 +29,7 @@ import juzu.impl.template.spi.juzu.compiler.ProcessPhase;
 import juzu.impl.template.spi.Template;
 import juzu.impl.plugin.template.metadata.TemplateDescriptor;
 import juzu.impl.common.Path;
+import juzu.template.TagHandler;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
@@ -191,6 +193,13 @@ public class TagTestCase extends AbstractInjectTestCase {
 
     // Now emit the template
     EmitPhase emit = new EmitPhase(new EmitContext(){
+      public TagHandler resolveTagHandler(String name) {
+        if ("decorate".equals(name)) {
+          return new DecorateTag();
+        } else {
+          return null;
+        }
+      }
       public void createResource(String rawName, String ext, CharSequence content) throws IOException {
         throw new UnsupportedOperationException();
       }

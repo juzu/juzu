@@ -24,6 +24,10 @@ import juzu.template.TagHandler;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class ExtendedTagHandler extends TagHandler {
 
+  protected ExtendedTagHandler(String name) {
+    super(name);
+  }
+
   public void process(ProcessPhase phase, ASTNode.Tag tag, Template t) throws ProcessingException {
   }
 
