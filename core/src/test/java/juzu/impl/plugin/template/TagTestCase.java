@@ -206,4 +206,14 @@ public class TagTestCase extends AbstractInjectTestCase {
     });
     emit.emit(new GroovyTemplateEmitter(), template.getModel());
   }
+
+  @Test
+  public void testNotFound() throws Exception {
+    List<CompilationError> errors = compiler("plugin.template.tag.notfound").formalErrorReporting(true).failCompile();
+    assertEquals(1, errors.size());
+    CompilationError error = errors.get(0);
+    assertTrue(error.getSource().endsWith("template/tag/notfound/A.java"));
+    assertEquals(TemplateMetaModel.UNKNOWN_TAG, error.getCode());
+    assertEquals("[UNKNOWN_TAG](notfound)", error.getMessage());
+  }
 }

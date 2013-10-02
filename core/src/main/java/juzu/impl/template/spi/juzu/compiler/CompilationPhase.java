@@ -17,6 +17,7 @@
 package juzu.impl.template.spi.juzu.compiler;
 
 import juzu.impl.compiler.ProcessingException;
+import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.template.spi.juzu.PhaseContext;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.template.TagHandler;
@@ -60,11 +61,12 @@ public class CompilationPhase {
       ASTNode.Tag nodeTag = (ASTNode.Tag)node;
       TagHandler handler = resolveTagHandler(nodeTag.getName());
       if (handler == null) {
-        throw new UnsupportedOperationException("handle me gracefully " + nodeTag.getName());
-      }
-      tagHandlers.put(nodeTag, handler);
-      for (ASTNode.Block<?> child : nodeTag.getChildren()) {
-        doAttribute(child);
+        throw TemplateMetaModel.UNKNOWN_TAG.failure(nodeTag.getName());
+      } else {
+        tagHandlers.put(nodeTag, handler);
+        for (ASTNode.Block<?> child : nodeTag.getChildren()) {
+          doAttribute(child);
+        }
       }
     }
   }

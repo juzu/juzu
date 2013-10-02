@@ -73,6 +73,9 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
       "Controller %1$s not found in template %2$s at (%3$s,%4$s)");
 
   /** . */
+  public static final MessageCode UNKNOWN_TAG = new MessageCode("UNKNOWN_TAG", "Tag %1$ does not exists");
+
+  /** . */
   public final static Key<TemplateMetaModel> KEY = Key.of(TemplateMetaModel.class);
 
   /** The related application. */
