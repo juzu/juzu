@@ -78,7 +78,7 @@ public class ProcessPhase extends CompilationPhase {
         Location location = urlNode.getBegin().getPosition();
         throw TemplateMetaModel.CONTROLLER_NOT_RESOLVED.failure(
             controller,
-            template.getAbsolutePath().getCanonical(),
+            template.getPath().getCanonical(),
             location.getLine(),
             location.getCol());
       } else {

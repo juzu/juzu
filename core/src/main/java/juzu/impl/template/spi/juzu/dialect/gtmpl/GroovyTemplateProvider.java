@@ -42,10 +42,10 @@ public class GroovyTemplateProvider extends DialectTemplateProvider {
 
   @Override
   public final void emit(EmitContext context, Template<ASTNode.Template> template) throws TemplateException, IOException {
-    GroovyTemplateEmitter emitter = new GroovyTemplateEmitter(template.getAbsolutePath().getName());
+    GroovyTemplateEmitter emitter = new GroovyTemplateEmitter(template.getPath().getName());
     EmitPhase tcc = new EmitPhase(context);
     tcc.emit(emitter, template.getModel());
-    Path.Absolute path = template.getAbsolutePath();
+    Path.Absolute path = template.getPath();
     path = path.as(path.getRawName() + "_", "groovy");
     context.createResource(path, emitter.toString());
   }

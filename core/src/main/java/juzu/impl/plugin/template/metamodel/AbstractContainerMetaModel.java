@@ -108,19 +108,19 @@ public abstract class AbstractContainerMetaModel extends MetaModelObject impleme
     for (TemplateMetaModel child : getChildren(TemplateMetaModel.class)) {
       if (child.template != null) {
         Template<?> template = child.template;
-        FileObject resource = application.resolveResource(template.getAbsolutePath());
+        FileObject resource = application.resolveResource(template.getPath());
         if (resource == null) {
           // That will generate a template not found error
           child.template = null;
-          log.log("Detected template removal " + template.getAbsolutePath());
+          log.log("Detected template removal " + template.getPath());
         }
         else if (resource.getLastModified() > template.getLastModified()) {
           // That will force the regeneration of the template
           child.template = null;
-          log.log("Detected stale template " + template.getAbsolutePath());
+          log.log("Detected stale template " + template.getPath());
         }
         else {
-          log.log("Template " + template.getAbsolutePath() + " is valid");
+          log.log("Template " + template.getPath() + " is valid");
         }
       }
     }

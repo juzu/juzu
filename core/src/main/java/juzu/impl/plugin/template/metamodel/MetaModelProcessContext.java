@@ -81,8 +81,8 @@ class MetaModelProcessContext extends ProcessContext {
 
   protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, Template<M> template) throws TemplateException {
     Path.Relative rel;
-    if (owner.getQN().isPrefix(template.getAbsolutePath().getName())) {
-      rel = Path.Relative.relative(template.getAbsolutePath().getName().subName(owner.getQN().size()), template.getAbsolutePath().getExt());
+    if (owner.getQN().isPrefix(template.getPath().getName())) {
+      rel = Path.Relative.relative(template.getPath().getName().subName(owner.getQN().size()), template.getPath().getExt());
     } else {
       throw new AssertionError("Should not happen");
     }
@@ -123,8 +123,8 @@ class MetaModelProcessContext extends ProcessContext {
 
   @Override
   protected <M extends Serializable> void registerTemplate(Template<M> template) {
-    TemplateMetaModel a = owner.get(template.getAbsolutePath());
-    Key<TemplateMetaModel> key = Key.of(template.getAbsolutePath(), TemplateMetaModel.class);
+    TemplateMetaModel a = owner.get(template.getPath());
+    Key<TemplateMetaModel> key = Key.of(template.getPath(), TemplateMetaModel.class);
     for (TemplateRefMetaModel ref : refs) {
       if (ref.getChild(key) == null) {
         try {
@@ -145,7 +145,7 @@ class MetaModelProcessContext extends ProcessContext {
               path.append(node);
             }
           }
-          throw TemplateMetaModel.TEMPLATE_CYCLE.failure(template.getAbsolutePath(), path);
+          throw TemplateMetaModel.TEMPLATE_CYCLE.failure(template.getPath(), path);
         }
       }
     }

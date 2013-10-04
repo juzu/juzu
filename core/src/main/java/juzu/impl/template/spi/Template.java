@@ -33,7 +33,7 @@ public class Template<M extends Serializable> implements Serializable {
   private final M model;
 
   /** . */
-  private final Path.Absolute absolutePath;
+  private final Path.Absolute path;
 
   /** . */
   private final LinkedHashSet<String> parameters;
@@ -43,16 +43,16 @@ public class Template<M extends Serializable> implements Serializable {
 
   public Template(
     M model,
-    Path.Absolute absolutePath,
+    Path.Absolute path,
     long lastModified) {
     this.model = model;
     this.parameters = new LinkedHashSet<String>();
     this.lastModified = lastModified;
-    this.absolutePath = absolutePath;
+    this.path = path;
   }
 
-  public Path.Absolute getAbsolutePath() {
-    return absolutePath;
+  public Path.Absolute getPath() {
+    return path;
   }
 
   public M getModel() {

@@ -42,7 +42,7 @@ public class SimpleProcessContext extends ProcessContext {
 
   @Override
   protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, Template<M> template) throws TemplateException {
-    templates.put(template.getAbsolutePath(), template);
+    templates.put(template.getPath(), template);
     super.processTemplate(provider, template);
   }
 
