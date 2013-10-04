@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package juzu.impl.plugin.template;
+package juzu.impl.template;
 
 import juzu.Path;
 

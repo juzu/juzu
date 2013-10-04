@@ -91,20 +91,16 @@ public abstract class Template {
   /** . */
   private final TemplatePlugin plugin;
 
-  /** . */
-  private final Class<? extends TemplateStub> stubType;
-
   @Inject
   Application application;
 
-  public Template(TemplatePlugin plugin, String path, Class<? extends TemplateStub> stubType) {
-    this(plugin, Path.parse(path), stubType);
+  public Template(TemplatePlugin plugin, String path) {
+    this(plugin, Path.parse(path));
   }
 
-  public Template(TemplatePlugin plugin, Path path, Class<? extends TemplateStub> stubType) {
+  public Template(TemplatePlugin plugin, Path path) {
     this.plugin = plugin;
     this.path = path;
-    this.stubType = stubType;
   }
 
   /**

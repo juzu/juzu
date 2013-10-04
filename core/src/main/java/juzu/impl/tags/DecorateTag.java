@@ -69,7 +69,7 @@ public class DecorateTag extends ExtendedTagHandler {
   @Override
   public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) throws TemplateException {
     String path = tag.getArgs().get("path");
-    Template resolved = phase.resolveTemplate((Path.Relative)Path.parse(path));
+    Template resolved = phase.resolveTemplate(Path.parse(path));
     if (resolved == null) {
       throw TemplateMetaModel.TEMPLATE_NOT_RESOLVED.failure(path);
     }

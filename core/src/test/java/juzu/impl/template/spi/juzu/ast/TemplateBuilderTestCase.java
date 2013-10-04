@@ -31,7 +31,7 @@ public class TemplateBuilderTestCase extends AbstractTemplateTestCase {
   @Test
   public void testFoo() throws Exception {
     GroovyTemplateStub s = template("a<%=foo%>c");
-    s.init(Thread.currentThread().getContextClassLoader());
+    s.init();
     StringWriter out = new StringWriter();
     new TemplateRenderContext(s, Collections.<String, Object>singletonMap("foo", "b")).render(OutputStream.create(Tools.UTF_8, out));
     assertEquals("abc", out.toString());
@@ -40,7 +40,7 @@ public class TemplateBuilderTestCase extends AbstractTemplateTestCase {
   @Test
   public void testCarriageReturn() throws Exception {
     GroovyTemplateStub s = template("a\r\nb");
-    s.init(Thread.currentThread().getContextClassLoader());
+    s.init();
     StringWriter out = new StringWriter();
     new TemplateRenderContext(s, Collections.<String, Object>emptyMap()).render(OutputStream.create(Tools.UTF_8, out));
     assertEquals("a\nb", out.toString());

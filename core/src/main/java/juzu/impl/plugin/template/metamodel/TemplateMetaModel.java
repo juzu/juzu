@@ -81,7 +81,7 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
   AbstractContainerMetaModel templates;
 
   /** . */
-  final Path.Relative path;
+  final Path.Absolute path;
 
   /** . */
   int refCount;
@@ -89,7 +89,7 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
   /** The related template. */
   Template<?> template;
 
-  public TemplateMetaModel(Path.Relative path) {
+  public TemplateMetaModel(Path.Absolute path) {
     this.path = path;
     this.template = null;
     this.refCount = 0;
@@ -160,7 +160,7 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
     }
   }
 
-  public Path.Relative getPath() {
+  public Path.Absolute getPath() {
     return path;
   }
 

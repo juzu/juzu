@@ -38,11 +38,10 @@ class TagEmitter extends AbstractEmitter {
   protected void emitClass(TemplateProvider<?> provider, TemplateMetaModel template, Element[] elements, Writer writer) throws IOException {
 
     //
-    Path.Relative path = template.getPath();
-    Path.Absolute resolvedPath = owner.resolvePath(path);
+    Path.Absolute path = template.getPath();
 
     // Template qualified class
-    writer.append("package ").append(resolvedPath.getDirs()).append(";\n");
+    writer.append("package ").append(path.getDirs()).append(";\n");
     writer.append("import ").append(TemplateDescriptor.class.getCanonicalName()).append(";\n");
     writer.append("import ").append(TemplatePlugin.class.getCanonicalName()).append(";\n");
     writer.append("@").append(Generated.class.getName()).append("({})\n");
@@ -52,7 +51,7 @@ class TagEmitter extends AbstractEmitter {
     writer.append("{\n");
     writer.append("super(\"").
         append(path.getRawName()).append("\",").
-        append("new ").append(provider.getTemplateStubType().getName()).append("(\"").append(resolvedPath.getName()).append("\")").
+        append("").append(provider.getTemplateStubType().getName()).append(".class").
         append(");\n");
     writer.append("}\n");
 

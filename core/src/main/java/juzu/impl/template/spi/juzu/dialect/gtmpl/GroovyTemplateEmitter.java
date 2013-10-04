@@ -162,7 +162,7 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
 
   public GroovyTemplateStub build(String templateId) {
     final String script = toString();
-    return new GroovyTemplateStub(templateId) {
+    return new GroovyTemplateStub(Thread.currentThread().getContextClassLoader(), templateId) {
       @Override
       public String getScript(ClassLoader loader, String fqn) {
         return script;

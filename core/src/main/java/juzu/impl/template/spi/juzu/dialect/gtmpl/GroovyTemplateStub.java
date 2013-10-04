@@ -42,8 +42,8 @@ public class GroovyTemplateStub extends TemplateStub {
   /** . */
   private HashMap<Integer, Foo> locationTable;
 
-  public GroovyTemplateStub(String templateId) {
-    super(templateId);
+  public GroovyTemplateStub(ClassLoader loader, String templateId) {
+    super(loader, templateId);
 
     //
     this.scriptClass = null;

@@ -20,6 +20,8 @@ import juzu.Path;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.template.Template;
 
+import java.lang.reflect.Constructor;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TemplateDescriptor {
 
@@ -32,15 +34,34 @@ public class TemplateDescriptor {
   /** . */
   private final Class<? extends TemplateStub> stubType;
 
+  /** . */
+  private final TemplateStub stub;
+
   public TemplateDescriptor(
+      String path,
       Class<? extends Template> type,
       Class<? extends TemplateStub> stubType) {
-    Path path = type.getAnnotation(Path.class);
 
     //
-    this.path = path.value();
+    TemplateStub stub;
+    try {
+      Constructor ctor = stubType.getConstructor(ClassLoader.class, String.class);
+      stub = (TemplateStub)ctor.newInstance(type.getClassLoader(), type.getName());
+
+    }
+    catch (Exception e) {
+      throw new UnsupportedOperationException("Handle me gracefully", e);
+    }
+
+    //
+    this.path = path;
     this.type = type;
     this.stubType = stubType;
+    this.stub = stub;
+  }
+
+  public TemplateStub getStub() {
+    return stub;
   }
 
   public String getPath() {

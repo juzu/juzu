@@ -153,13 +153,11 @@ public abstract class AbstractContainerMetaModel extends MetaModelObject impleme
 
   protected abstract Element[] getElements(TemplateMetaModel template);
 
-  public TemplateMetaModel add(TemplateRefMetaModel ref, Path.Relative path) {
-    TemplateMetaModel template = add(path);
-    ref.addChild(TemplateMetaModel.KEY, template);
-    return template;
+  public TemplateMetaModel add(Path.Relative path) {
+    return add(resolvePath(path));
   }
 
-  public TemplateMetaModel add(Path.Relative path) {
+  public TemplateMetaModel add(Path.Absolute path) {
     TemplateMetaModel template = getChild(Key.of(path, TemplateMetaModel.class));
     if (template == null) {
       template = addChild(Key.of(path, TemplateMetaModel.class), new TemplateMetaModel(path));

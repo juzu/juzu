@@ -19,12 +19,10 @@ package juzu.impl.plugin.template.metamodel;
 import juzu.impl.common.Path;
 import juzu.impl.plugin.template.TemplatePlugin;
 import juzu.impl.plugin.template.metadata.TemplateDescriptor;
-import juzu.impl.template.spi.Template;
 import juzu.impl.template.spi.TemplateProvider;
 
 import javax.annotation.Generated;
 import javax.lang.model.element.Element;
-import java.io.Serializable;
 import java.io.Writer;
 import java.io.IOException;
 
@@ -43,15 +41,13 @@ class TemplateEmitter extends AbstractEmitter {
       Writer writer) throws IOException {
 
     //
-    Path.Relative path = template.getPath();
-    Path.Absolute resolvedPath = owner.resolvePath(path);
+    Path.Absolute path = template.getPath();
 
     // Template qualified class
-    writer.append("package ").append(resolvedPath.getDirs()).append(";\n");
+    writer.append("package ").append(path.getDirs()).append(";\n");
     writer.append("import ").append(TemplateDescriptor.class.getCanonicalName()).append(";\n");
     writer.append("import ").append(TemplatePlugin.class.getCanonicalName()).append(";\n");
     writer.append("@").append(Generated.class.getName()).append("({})\n");
-    writer.append("@").append(juzu.Path.class.getName()).append("(\"").append(path.getValue()).append("\")\n");
     writer.append("public class ").append(path.getRawName()).append(" extends ").append(juzu.template.Template.class.getName()).append("\n");
     writer.append("{\n");
     writer.append("@javax.inject.Inject\n");
@@ -59,13 +55,14 @@ class TemplateEmitter extends AbstractEmitter {
         append(TemplatePlugin.class.getSimpleName()).append(" templatePlugin").
         append(")\n");
     writer.append("{\n");
-    writer.append("super(templatePlugin, \"").append(path.getValue()).append("\"").append(", ").append(provider.getTemplateStubType().getName()).append(".class);\n");
+    writer.append("super(templatePlugin, \"").append(path.getValue()).append("\");\n");
     writer.append("}\n");
 
     //
     writer.
         append("public static final ").append(TemplateDescriptor.class.getName()).append(" DESCRIPTOR = new ").append(TemplateDescriptor.class.getName()).append("(").
-        append(resolvedPath.getName()).append(".class,").
+        append("\"").append(path.getValue()).append("\",").
+        append(path.getName()).append(".class,").
         append(provider.getTemplateStubType().getName()).append(".class").
         append(");\n");
 

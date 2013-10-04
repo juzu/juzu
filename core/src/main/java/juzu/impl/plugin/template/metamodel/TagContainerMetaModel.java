@@ -40,16 +40,17 @@ class TagContainerMetaModel extends AbstractContainerMetaModel {
     TagMetaModel tag = getChild(Key.of(name, TagMetaModel.class));
     if (tag != null) {
       TemplateMetaModel template = tag.getChild(TemplateMetaModel.KEY);
-      Path.Relative path = template.getPath();
-      Path.Absolute clazz = resolvePath(path);
-      return new SimpleTag(name, clazz.getName().toString());
+      Path.Absolute path = template.getPath();
+      return new SimpleTag(name, path.getName().toString());
     }
     return null;
   }
 
   public TemplateMetaModel add(String name, Path.Relative path) {
+    TemplateMetaModel template = add(path);
     TagMetaModel ref = addChild(Key.of(name, TagMetaModel.class), new TagMetaModel(name));
-    return add(ref, path);
+    ref.addChild(TemplateMetaModel.KEY, template);
+    return template;
   }
 
   @Override

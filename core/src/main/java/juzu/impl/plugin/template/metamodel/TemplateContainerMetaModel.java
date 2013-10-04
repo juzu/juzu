@@ -45,9 +45,11 @@ public class TemplateContainerMetaModel extends AbstractContainerMetaModel {
     }
   }
 
-  public TemplateMetaModel add(ElementHandle.Field handle, Path.Relative path) {
+  public TemplateMetaModel add(ElementHandle.Field handle, Path.Absolute path) {
+    TemplateMetaModel template = add(path);
     TemplateRefMetaModel ref = addChild(Key.of(handle, TemplateRefMetaModel.class), new ElementMetaModel(handle, path));
-    return add(ref, path);
+    ref.addChild(TemplateMetaModel.KEY, template);
+    return template;
   }
 
   @Override

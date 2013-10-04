@@ -52,15 +52,15 @@ abstract class AbstractEmitter implements Serializable {
   final AbstractContainerMetaModel owner;
 
   /** . */
-  private Set<Path.Relative> emitted;
+  private Set<Path.Absolute> emitted;
 
   /** . */
-  private Map<Path.Relative, FileObject> classCache;
+  private Map<Path.Absolute, FileObject> classCache;
 
   AbstractEmitter(AbstractContainerMetaModel owner) {
     this.owner = owner;
-    this.emitted = new HashSet<Path.Relative>();
-    this.classCache = new HashMap<Path.Relative, FileObject>();
+    this.emitted = new HashSet<Path.Absolute>();
+    this.classCache = new HashMap<Path.Absolute, FileObject>();
   }
 
   void prePassivate() {
@@ -83,7 +83,7 @@ abstract class AbstractEmitter implements Serializable {
         TemplateProvider provider = plugin.providers.get(template.getPath().getExt());
 
         //
-        Path.Relative path = template.getPath();
+        Path.Absolute path = template.getPath();
 
         // If it's the cache we do nothing
         if (!emitted.contains(path)) {
@@ -143,7 +143,7 @@ abstract class AbstractEmitter implements Serializable {
       Element[] elements) {
 
     //
-    Path.Relative path = template.getPath();
+    Path.Absolute path = template.getPath();
     if (classCache.containsKey(path)) {
       log.log("Template class " + path + " was found in cache");
     } else {

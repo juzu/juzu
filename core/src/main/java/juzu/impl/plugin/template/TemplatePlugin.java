@@ -16,17 +16,16 @@
 
 package juzu.impl.plugin.template;
 
+import juzu.impl.common.Name;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.PluginContext;
-import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.template.metadata.TemplateDescriptor;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.plugin.template.metadata.TemplatesDescriptor;
 import juzu.impl.common.Path;
 
-import javax.inject.Inject;
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -38,8 +37,8 @@ public class TemplatePlugin extends ApplicationPlugin {
   /** . */
   private final ConcurrentHashMap<Path, TemplateStub> stubs;
 
-  @Inject
-  Application application;
+  /** . */
+  private PluginContext context;
 
   public TemplatePlugin() {
     super("template");
@@ -54,7 +53,9 @@ public class TemplatePlugin extends ApplicationPlugin {
 
   @Override
   public PluginDescriptor init(PluginContext context) throws Exception {
-    return descriptor = new TemplatesDescriptor(context.getClassLoader(), context.getConfig());
+    this.context = context;
+    this.descriptor = new TemplatesDescriptor(application, context.getClassLoader(), context.getConfig());
+    return descriptor;
   }
 
   public TemplateStub resolveTemplateStub(String path) {
@@ -66,22 +67,28 @@ public class TemplatePlugin extends ApplicationPlugin {
     if (stub == null) {
 
       //
-      TemplateDescriptor desc = descriptor.getTemplate(path.getCanonical());
+      Path.Absolute resolved = descriptor.getPackage().resolve(path);
+
       //
+      TemplateDescriptor desc;
       try {
-        Constructor ctor = desc.getStubType().getConstructor(String.class);
-        stub = (TemplateStub)ctor.newInstance(desc.getType().getName());
+        Class<?> clazz = context.getClassLoader().loadClass(resolved.getName().toString());
+        Field f = clazz.getField("DESCRIPTOR");
+        desc = (TemplateDescriptor)f.get(null);
       }
       catch (Exception e) {
         throw new UnsupportedOperationException("Handle me gracefully", e);
       }
 
       //
+      stub = desc.getStub();
+
+      //
       TemplateStub phantom = stubs.putIfAbsent(path, stub);
       if (phantom != null) {
         stub = phantom;
       } else {
-        stub.init(application.getClassLoader());
+        stub.init();
       }
     }
 

@@ -109,7 +109,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(TemplateMetaModel.TEMPLATE_CYCLE, error.getCode());
-    assertEquals("[TEMPLATE_CYCLE](Path[/plugin/template/tag/includecircular/templates/foo.gtmpl],foo.gtmpl->index.gtmpl)", error.getMessage());
+    assertEquals("[TEMPLATE_CYCLE](Path[/plugin/template/tag/includecircular/templates/foo.gtmpl],/plugin/template/tag/includecircular/templates/foo.gtmpl->/plugin/template/tag/includecircular/templates/index.gtmpl)", error.getMessage());
   }
 
   @Test
@@ -145,7 +145,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     // Manufacture a template
     // to be removed later when we improve this
     // but for now it will be enough
-    TemplateDescriptor desc = app.getLifeCycle().resolveBean(TemplatePlugin.class).getDescriptor().getTemplate("foo.gtmpl");
+    TemplateDescriptor desc = app.getLifeCycle().resolveBean(TemplatePlugin.class).getDescriptor().getTemplate("/plugin/template/tag/decorate/templates/foo.gtmpl");
     assertNotNull(desc);
     Template<?> foo = new Template<ASTNode.Template>(
       new ASTNode.Template(),
@@ -175,7 +175,7 @@ public class TagTestCase extends AbstractInjectTestCase {
         }
       }
     });
-    Template<ASTNode.Template> template = (Template<ASTNode.Template>)process.resolveTemplate((Path.Relative)Path.parse("index.gtmpl"));
+    Template<ASTNode.Template> template = (Template<ASTNode.Template>)process.resolveTemplate(Path.parse("index.gtmpl"));
     assertNotNull(template);
 
     // Now emit the template

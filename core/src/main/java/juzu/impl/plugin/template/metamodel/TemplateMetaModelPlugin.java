@@ -110,9 +110,10 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
     } else if (key.getType().toString().equals(juzu.Path.class.getName())) {
       if (key.getElement() instanceof ElementHandle.Field) {
         ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
-        Path removedPath = Path.parse((String)removed.get("value"));
         TemplateContainerMetaModel templates = metaModel.getChild(TemplateContainerMetaModel.KEY);
-        metaModel.processingContext.log("Removing template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath);
+        Path removedPath = Path.parse((String)removed.get("value"));
+        Path.Absolute absRemoved = templates.resolvePath(removedPath);
+        metaModel.processingContext.log("Removing template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + absRemoved);
         templates.remove(variableElt);
       }
     }
@@ -124,13 +125,15 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
       // throw new UnsupportedOperationException("todo");
     } else if (key.getType().toString().equals(juzu.Path.class.getName())) {
       if (key.getElement() instanceof ElementHandle.Field) {
-        ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
-        Path.Relative addedPath = (Path.Relative)Path.parse((String)added.get("value"));
-        Path removedPath = Path.parse((String)removed.get("value"));
         TemplateContainerMetaModel templates = metaModel.getChild(TemplateContainerMetaModel.KEY);
-        metaModel.processingContext.log("Updating template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + removedPath + "->" + addedPath);
+        ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
+        Path addedPath = Path.parse((String)added.get("value"));
+        Path.Absolute absAdded = templates.resolvePath(addedPath);
+        Path removedPath = Path.parse((String)removed.get("value"));
+        Path.Absolute absRemoved = templates.resolvePath(removedPath);
+        metaModel.processingContext.log("Updating template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + absRemoved + "->" + absAdded);
         templates.remove(variableElt);
-        templates.add(variableElt, addedPath);
+        templates.add(variableElt, absAdded);
       }
     }
   }
@@ -152,9 +155,10 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
       if (key.getElement() instanceof ElementHandle.Field) {
         ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
         TemplateContainerMetaModel templates = application.getChild(TemplateContainerMetaModel.KEY);
-        Path.Relative addedPath = (Path.Relative)Path.parse((String)added.get("value"));
-        application.processingContext.log("Adding template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + addedPath);
-        templates.add(variableElt, addedPath);
+        Path addedPath = Path.parse((String)added.get("value"));
+        Path.Absolute absAdded = templates.resolvePath(addedPath);
+        application.processingContext.log("Adding template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + absAdded);
+        templates.add(variableElt, absAdded);
       }
       else if (key.getElement() instanceof ElementHandle.Class) {
         // We ignore it on purpose

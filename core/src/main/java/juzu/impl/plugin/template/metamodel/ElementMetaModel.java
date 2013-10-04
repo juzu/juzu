@@ -31,11 +31,9 @@ public class ElementMetaModel extends TemplateRefMetaModel {
   final ElementHandle.Field element;
 
   /** The path declaration. */
-  final Path.Relative path;
+  final Path.Absolute path;
 
-  ElementMetaModel(
-      ElementHandle.Field element,
-      Path.Relative path) {
+  ElementMetaModel(ElementHandle.Field element, Path.Absolute path) {
     this.element = element;
     this.path = path;
   }
@@ -44,7 +42,7 @@ public class ElementMetaModel extends TemplateRefMetaModel {
     return element;
   }
 
-  public Path.Relative getPath() {
+  public Path.Absolute getPath() {
     return path;
   }
 

@@ -16,13 +16,19 @@
 
 package juzu.impl.plugin.template.metadata;
 
+import juzu.Path;
+import juzu.impl.common.Name;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.common.JSON;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
+import juzu.impl.template.PathLiteral;
 import juzu.template.Template;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -32,14 +38,21 @@ public class TemplatesDescriptor extends PluginDescriptor {
   private final List<TemplateDescriptor> templates;
 
   /** . */
-  private final String packageName;
+  final Name pkg;
 
   /** . */
   private final ArrayList<BeanDescriptor> beans;
 
-  public TemplatesDescriptor(ClassLoader loader, JSON config) throws Exception {
+  public TemplatesDescriptor(
+      ApplicationDescriptor application,
+      ClassLoader loader,
+      JSON config) throws Exception {
     ArrayList<BeanDescriptor> beans = new ArrayList<BeanDescriptor>();
     List<TemplateDescriptor> templates = new ArrayList<TemplateDescriptor>();
+
+    //
+    String packageName = config.getString("package");
+    Name pkg = Name.parse(packageName);
 
     // Load templates
     for (String fqn : config.getList("templates", String.class)) {
@@ -47,15 +60,20 @@ public class TemplatesDescriptor extends PluginDescriptor {
       Field f = clazz.getField("DESCRIPTOR");
       TemplateDescriptor descriptor = (TemplateDescriptor)f.get(null);
       templates.add(descriptor);
-      beans.add(BeanDescriptor.createFromImpl(Template.class, null, null, descriptor.getType()));
+      juzu.impl.common.Path.Absolute path = (juzu.impl.common.Path.Absolute)juzu.impl.common.Path.parse(descriptor.getPath());
+      Path qualifier;
+      if (pkg.isPrefix(path.getName())) {
+        juzu.impl.common.Path.Relative relativePath = juzu.impl.common.Path.relative(path.getName().subName(pkg.size()), path.getExt());
+        qualifier = new PathLiteral(relativePath.getCanonical());
+      } else {
+        throw new UnsupportedOperationException();
+      }
+      beans.add(BeanDescriptor.createFromImpl(Template.class, null, Arrays.<Annotation>asList(qualifier), descriptor.getType()));
     }
 
     //
-    String packageName = config.getString("package");
-
-    //
     this.templates = templates;
-    this.packageName = packageName;
+    this.pkg = pkg;
     this.beans = beans;
   }
 
@@ -65,6 +83,10 @@ public class TemplatesDescriptor extends PluginDescriptor {
 
   public List<TemplateDescriptor> getTemplates() {
     return templates;
+  }
+
+  public Name getPackage() {
+    return pkg;
   }
 
   public TemplateDescriptor getTemplate(String path) throws NullPointerException {
@@ -77,9 +99,5 @@ public class TemplatesDescriptor extends PluginDescriptor {
       }
     }
     return null;
-  }
-
-  public String getPackageName() {
-    return packageName;
   }
 }

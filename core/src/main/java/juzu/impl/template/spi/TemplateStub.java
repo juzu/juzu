@@ -16,12 +16,10 @@
 
 package juzu.impl.template.spi;
 
-import juzu.impl.common.Logger;
 import juzu.template.TemplateExecutionException;
 import juzu.template.TemplateRenderContext;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -41,19 +39,26 @@ public abstract class TemplateStub {
   private static final int INITIALIZED = 2;
 
   /** . */
+  protected final ClassLoader loader;
+
+  /** . */
   protected final String id;
 
   /** . */
   private final AtomicInteger status;
 
-  protected TemplateStub(String id) {
+  protected TemplateStub(ClassLoader loader, String id) {
 
+    if (loader == null) {
+      throw new NullPointerException("No null loader accepted");
+    }
     if (id == null) {
       id = getClass().getName().substring(0, getClass().getName().length() - 1); // Remove trailing _;
     }
 
     this.id = id;
     this.status = new AtomicInteger(CONSTRUCTED);
+    this.loader = loader;
   }
 
   public String getId() {
@@ -61,15 +66,9 @@ public abstract class TemplateStub {
   }
 
   /**
-   * Initialize the stub with the associated classloader.
-   *
-   * @param loader the class loader
-   * @throws NullPointerException if the loader argument is null
+   * Initialize the stub.
    */
-  public final void init(ClassLoader loader) throws NullPointerException {
-    if (loader == null) {
-      throw new NullPointerException("No null loader accepted");
-    }
+  public final void init() throws NullPointerException {
     while (true) {
       switch (status.get()) {
         case CONSTRUCTED:

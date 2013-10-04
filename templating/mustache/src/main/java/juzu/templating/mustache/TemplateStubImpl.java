@@ -42,8 +42,8 @@ public class TemplateStubImpl extends TemplateStub {
   /** . */
   private final String mustacheName;
 
-  public TemplateStubImpl(String id) {
-    super(id);
+  public TemplateStubImpl(ClassLoader loader, String id) {
+    super(loader, id);
 
     //
     int index = id.lastIndexOf('.');

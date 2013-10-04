@@ -107,7 +107,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
       throw failure(e);
     }
     GroovyTemplateStub stub = generator.build(fqn.toString());
-    stub.init(Thread.currentThread().getContextClassLoader());
+    stub.init();
     return stub;
   }
 

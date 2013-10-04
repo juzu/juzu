@@ -125,7 +125,7 @@ public class TemplateTestCase extends AbstractTestCase {
     assertEquals(2, events.size());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(1).getType());
     TemplateMetaModel indexTemplate = (TemplateMetaModel)events.get(1).getObject();
-    assertEquals(Path.parse("index.gtmpl"), indexTemplate.getPath());
+    assertEquals(Path.parse("/metamodel/template/templates/index.gtmpl"), indexTemplate.getPath());
     Collection<ElementMetaModel> indexRefs = indexTemplate.getElementReferences();
     assertEquals(1, indexRefs.size());
     assertEquals(templateField, indexRefs.iterator().next().getElement());
@@ -147,7 +147,7 @@ public class TemplateTestCase extends AbstractTestCase {
     assertEquals(1, events.size());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
     TemplateMetaModel fooTemplate = (TemplateMetaModel)events.get(0).getObject();
-    assertEquals(Path.parse("foo.gtmpl"), fooTemplate.getPath());
+    assertEquals(Path.parse("/metamodel/template/templates/foo.gtmpl"), fooTemplate.getPath());
     Collection<ElementMetaModel> fooRefs = fooTemplate.getElementReferences();
     assertEquals(1, fooRefs.size());
     assertEquals(templateField, fooRefs.iterator().next().getElement());
@@ -168,7 +168,7 @@ public class TemplateTestCase extends AbstractTestCase {
     assertEquals(1, events.size());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
     TemplateMetaModel barTemplate = (TemplateMetaModel)events.get(0).getObject();
-    assertEquals(Path.parse("bar.gtmpl"), barTemplate.getPath());
+    assertEquals(Path.parse("/metamodel/template/templates/bar.gtmpl"), barTemplate.getPath());
     Collection<ElementMetaModel> barRefs = fooTemplate.getElementReferences();
     assertEquals(1, barRefs.size());
     assertEquals(templateField, barRefs.iterator().next().getElement());

@@ -24,6 +24,7 @@ import juzu.template.TemplateExecutionException;
 import juzu.template.TemplateRenderContext;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.Map;
 
@@ -46,11 +47,18 @@ public class SimpleTag extends TagHandler {
   }
 
   // Runtime
-  public SimpleTag(String name, TemplateStub stub) {
+  public SimpleTag(String name, Class<? extends TemplateStub> stubType) {
     super(name);
 
     // Init stub
-    stub.init(Thread.currentThread().getContextClassLoader());
+    TemplateStub stub;
+    try {
+      Constructor ctor = stubType.getConstructor(ClassLoader.class, String.class);
+      stub = (TemplateStub)ctor.newInstance(getClass().getClassLoader(), getClass().getName());
+    }
+    catch (Exception e) {
+      throw new UnsupportedOperationException("Handle me gracefully", e);
+    }
 
     //
     this.className = getClass().getName();
@@ -64,6 +72,7 @@ public class SimpleTag extends TagHandler {
 
   @Override
   public void render(final TemplateRenderContext context, final Renderable body, Map<String, String> args) throws IOException {
+    stub.init();
     final Object _parameters = context.setAttribute("parameters", args != null ? args : Collections.emptyMap());
     Renderable wrappedBody = new Renderable() {
       public void render(TemplateRenderContext context) throws TemplateExecutionException, UndeclaredIOException {
