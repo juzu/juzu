@@ -17,7 +17,6 @@
 package juzu.impl.plugin.template.metamodel;
 
 import juzu.Application;
-import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.metamodel.Key;
@@ -42,7 +41,6 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -107,41 +105,6 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    if (key.getType().toString().equals(Application.class.getName())) {
-      // throw new UnsupportedOperationException("todo");
-    } else if (key.getType().toString().equals(juzu.Path.class.getName())) {
-      if (key.getElement() instanceof ElementHandle.Field) {
-        ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
-        TemplateContainerMetaModel templates = metaModel.getChild(TemplateContainerMetaModel.KEY);
-        Path removedPath = Path.parse((String)removed.get("value"));
-        Path.Absolute absRemoved = templates.resolvePath(removedPath);
-        metaModel.processingContext.log("Removing template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + absRemoved);
-        templates.remove(variableElt);
-      }
-    }
-  }
-
-  @Override
-  public void processAnnotationUpdated(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed, AnnotationState added) {
-    if (key.getType().toString().equals(Application.class.getName())) {
-      // throw new UnsupportedOperationException("todo");
-    } else if (key.getType().toString().equals(juzu.Path.class.getName())) {
-      if (key.getElement() instanceof ElementHandle.Field) {
-        TemplateContainerMetaModel templates = metaModel.getChild(TemplateContainerMetaModel.KEY);
-        ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
-        Path addedPath = Path.parse((String)added.get("value"));
-        Path.Absolute absAdded = templates.resolvePath(addedPath);
-        Path removedPath = Path.parse((String)removed.get("value"));
-        Path.Absolute absRemoved = templates.resolvePath(removedPath);
-        metaModel.processingContext.log("Updating template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + absRemoved + "->" + absAdded);
-        templates.remove(variableElt);
-        templates.add(variableElt, absAdded);
-      }
-    }
-  }
-
-  @Override
   public void processAnnotationAdded(ApplicationMetaModel application, AnnotationKey key, AnnotationState added) {
     if (key.getType().toString().equals(Application.class.getName())) {
       List<AnnotationState> tags = (List<AnnotationState>)added.get("tags");
@@ -163,11 +126,24 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
         application.processingContext.log("Adding template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + absAdded);
         templates.add(variableElt, absAdded);
       }
-      else if (key.getElement() instanceof ElementHandle.Class) {
-        // We ignore it on purpose
-      }
       else {
         throw MetaModelProcessor.ANNOTATION_UNSUPPORTED.failure(key);
+      }
+    }
+  }
+
+  @Override
+  public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
+    if (key.getType().toString().equals(Application.class.getName())) {
+      // throw new UnsupportedOperationException("todo");
+    } else if (key.getType().toString().equals(juzu.Path.class.getName())) {
+      if (key.getElement() instanceof ElementHandle.Field) {
+        ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
+        TemplateContainerMetaModel templates = metaModel.getChild(TemplateContainerMetaModel.KEY);
+        Path removedPath = Path.parse((String)removed.get("value"));
+        Path.Absolute absRemoved = templates.resolvePath(removedPath);
+        metaModel.processingContext.log("Removing template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + absRemoved);
+        templates.remove(variableElt);
       }
     }
   }
