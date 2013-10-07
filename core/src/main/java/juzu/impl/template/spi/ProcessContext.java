@@ -60,7 +60,7 @@ public abstract class ProcessContext extends PhaseContext {
 
   protected abstract <M extends Serializable> Template<M> getTemplate(Path.Absolute path);
 
-  protected abstract <M extends Serializable> void registerTemplate(Template<M> template);
+  protected abstract <M extends Serializable> void linkTemplate(Template<M> template);
 
   protected abstract Path.Absolute resolvePath(Path.Relative path);
 
@@ -90,8 +90,9 @@ public abstract class ProcessContext extends PhaseContext {
         template =  new Template<M>(templateAST, resolved.path, resolved.content.getTime());
         processTemplate(provider, template);
       }
+    } else {
+      linkTemplate(template);
     }
-    registerTemplate(template);
     return template;
   }
 }

@@ -46,11 +46,9 @@ class TagContainerMetaModel extends AbstractContainerMetaModel {
     return null;
   }
 
-  public TemplateMetaModel add(String name, Path.Relative path) {
-    TemplateMetaModel template = add(path);
+  public TemplateMetaModel add(String name, Path.Absolute path) {
     TagMetaModel ref = addChild(Key.of(name, TagMetaModel.class), new TagMetaModel(name));
-    ref.addChild(TemplateMetaModel.KEY, template);
-    return template;
+    return add(path, ref);
   }
 
   @Override

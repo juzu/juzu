@@ -109,7 +109,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(TemplateMetaModel.TEMPLATE_CYCLE, error.getCode());
-    assertEquals("[TEMPLATE_CYCLE](Path[/plugin/template/tag/includecircular/templates/foo.gtmpl],/plugin/template/tag/includecircular/templates/foo.gtmpl->/plugin/template/tag/includecircular/templates/index.gtmpl)", error.getMessage());
+    assertEquals("[TEMPLATE_CYCLE](Path[/plugin/template/tag/includecircular/templates/index.gtmpl],/plugin/template/tag/includecircular/templates/index.gtmpl->/plugin/template/tag/includecircular/templates/foo.gtmpl)", error.getMessage());
   }
 
   @Test

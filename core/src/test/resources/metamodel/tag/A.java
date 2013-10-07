@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-package juzu.impl.plugin.template.metamodel;
+package metamodel.tag;
 
-import juzu.impl.metamodel.MetaModelObject;
-
-/**
- * A reference to a template.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public abstract class TemplateRefMetaModel extends MetaModelObject {
-
-  public abstract void add(TemplateMetaModel template);
-
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
 }

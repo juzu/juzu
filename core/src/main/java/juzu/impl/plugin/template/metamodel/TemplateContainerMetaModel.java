@@ -36,20 +36,13 @@ public class TemplateContainerMetaModel extends AbstractContainerMetaModel {
   }
 
   public void remove(ElementHandle.Field handle) {
-    Key<TemplateRefMetaModel> key = Key.of(handle, TemplateRefMetaModel.class);
-    TemplateRefMetaModel ref = getChild(key);
-    TemplateMetaModel template = ref.getChild(TemplateMetaModel.KEY);
-    removeChild(key);
-    if (template.refCount == 0) {
-      template.remove();
-    }
+    removeChild(Key.of(handle, TemplateRefMetaModel.class));
   }
 
   public TemplateRefMetaModel add(ElementHandle.Field handle, Path.Absolute path) {
     TemplateRefMetaModel ref = addChild(Key.of(handle, TemplateRefMetaModel.class), new ElementMetaModel(handle, path));
     if (qn.isPrefix(path.getName())) {
-      TemplateMetaModel template = add(path);
-      ref.addChild(TemplateMetaModel.KEY, template);
+      add(path, ref);
     } else {
       // It's an unmanaged template by this container
     }

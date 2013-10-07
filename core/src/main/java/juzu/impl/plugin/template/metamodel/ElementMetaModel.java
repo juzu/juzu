@@ -38,6 +38,11 @@ public class ElementMetaModel extends TemplateRefMetaModel {
     this.path = path;
   }
 
+  @Override
+  public void add(TemplateMetaModel template) {
+    addChild(TemplateMetaModel.KEY, template);
+  }
+
   public ElementHandle.Field getElement() {
     return element;
   }

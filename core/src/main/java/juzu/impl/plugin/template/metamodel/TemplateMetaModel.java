@@ -78,25 +78,22 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
   public final static Key<TemplateMetaModel> KEY = Key.of(TemplateMetaModel.class);
 
   /** The related application. */
-  AbstractContainerMetaModel templates;
+  final AbstractContainerMetaModel container;
 
   /** . */
   final Path.Absolute path;
 
-  /** . */
-  int refCount;
-
   /** The related template. */
   Template<?> template;
 
-  public TemplateMetaModel(Path.Absolute path) {
+  public TemplateMetaModel(AbstractContainerMetaModel container, Path.Absolute path) {
     this.path = path;
+    this.container = container;
     this.template = null;
-    this.refCount = 0;
   }
 
-  public AbstractContainerMetaModel getTemplates() {
-    return templates;
+  public AbstractContainerMetaModel getContainer() {
+    return container;
   }
 
   /**
@@ -113,7 +110,7 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
     final Element[] elements = new Element[types.size()];
     int index = 0;
     for (Name type : types) {
-      elements[index++] = templates.application.getProcessingContext().getTypeElement(type);
+      elements[index++] = container.application.getProcessingContext().getTypeElement(type);
     }
     return elements;
   }
@@ -164,6 +161,14 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
     return path;
   }
 
+  @Override
+  public void add(TemplateMetaModel template) {
+    Key<TemplateMetaModel> key = Key.of(template.getPath(), TemplateMetaModel.class);
+    if (getChild(key) == null) {
+      addChild(key, template);
+    }
+  }
+
   public JSON toJSON() {
     JSON json = new JSON();
     json.set("path", path.getCanonical());
@@ -171,26 +176,14 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
   }
 
   @Override
-  protected void postAttach(MetaModelObject parent) {
-    if (parent instanceof AbstractContainerMetaModel) {
-      queue(MetaModelEvent.createAdded(this));
-      this.templates = (AbstractContainerMetaModel)parent;
-    }
-    else if (parent instanceof TemplateRefMetaModel) {
-      refCount++;
-    }
+  protected void postConstruct() {
+    queue(MetaModelEvent.createAdded(this));
   }
 
   @Override
-  protected void preDetach(MetaModelObject parent) {
-    if (parent instanceof AbstractContainerMetaModel) {
-      ElementHandle.Package handle = templates.application.getHandle();
-      this.templates = null;
-      this.template = null;
-      queue(MetaModelEvent.createRemoved(this, handle));
-    }
-    else if (parent instanceof TemplateRefMetaModel) {
-      refCount--;
-    }
+  protected void preRemove() {
+    ElementHandle.Package handle = container.application.getHandle();
+    container.templates.remove(path);
+    queue(MetaModelEvent.createRemoved(this, handle));
   }
 }

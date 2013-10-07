@@ -21,7 +21,6 @@ import juzu.impl.common.Timestamped;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.impl.metamodel.Key;
 import juzu.impl.plugin.controller.metamodel.MethodMetaModel;
 import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
 import juzu.impl.plugin.controller.metamodel.ParameterMetaModel;
@@ -79,24 +78,13 @@ class MetaModelProcessContext extends ProcessContext {
     return owner.resolvePath(path);
   }
 
-  protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, Template<M> template) throws TemplateException {
-    Path.Relative rel;
-    if (owner.getQN().isPrefix(template.getPath().getName())) {
-      rel = Path.Relative.relative(template.getPath().getName().subName(owner.getQN().size()), template.getPath().getExt());
+  @Override
+  protected <M extends Serializable> Template<M> getTemplate(Path.Absolute path) {
+    TemplateMetaModel tmm = owner.get(path);
+    if (tmm != null) {
+      return (Template<M>)tmm.template;
     } else {
-      throw new AssertionError("Should not happen");
-    }
-    TemplateMetaModel related = owner.add(rel);
-    if (related.template != null) {
-      throw new UnsupportedOperationException("todo");
-    } else {
-      related.template = template;
-    }
-    try {
-      provider.process(new MetaModelProcessContext(owner, Collections.singletonList(related)), template);
-    }
-    catch (TemplateException e) {
-      throw TemplateMetaModel.TEMPLATE_VALIDATION_ERROR.failure(rel);
+      return null;
     }
   }
 
@@ -110,43 +98,58 @@ class MetaModelProcessContext extends ProcessContext {
     }
   }
 
-
   @Override
-  protected <M extends Serializable> Template<M> getTemplate(Path.Absolute path) {
-    TemplateMetaModel tmm = owner.get(path);
-    if (tmm != null) {
-      return (Template<M>)tmm.template;
+  protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, Template<M> template) throws TemplateException {
+    Path.Absolute path = template.getPath();
+    if (owner.getQN().isPrefix(path.getName())) {
+      TemplateMetaModel metaModel;
+      if (!refs.isEmpty()) {
+        if (owner.templates.get(path) != null) {
+          throw new AssertionError();
+        } else {
+          for (TemplateRefMetaModel ref : refs) {
+            owner.add(path, ref);
+          }
+        }
+      }
+      if ((metaModel = owner.templates.get(path)) == null) {
+        throw new AssertionError();
+      }
+      metaModel.template = template;
+      try {
+        provider.process(new MetaModelProcessContext(owner, Collections.singletonList(metaModel)), template);
+      }
+      catch (TemplateException e) {
+        throw TemplateMetaModel.TEMPLATE_VALIDATION_ERROR.failure(path);
+      }
     } else {
-      return null;
+      throw new AssertionError("Should not happen");
     }
   }
 
   @Override
-  protected <M extends Serializable> void registerTemplate(Template<M> template) {
+  protected <M extends Serializable> void linkTemplate(Template<M> template) {
     TemplateMetaModel a = owner.get(template.getPath());
-    Key<TemplateMetaModel> key = Key.of(template.getPath(), TemplateMetaModel.class);
     for (TemplateRefMetaModel ref : refs) {
-      if (ref.getChild(key) == null) {
-        try {
-          ref.addChild(key, a);
-        }
-        catch (CycleDetectionException e) {
-          // We have a template cycle and we want to prevent it
-          StringBuilder path = new StringBuilder();
-          for (Object node : e.getPath()) {
-            if (path.length() > 0) {
-              path.append("->");
-            }
-            if (node instanceof TemplateMetaModel) {
-              TemplateMetaModel templateNode = (TemplateMetaModel)node;
-              path.append(templateNode.getPath().getValue());
-            } else {
-              // WTF ?
-              path.append(node);
-            }
+      try {
+        ref.add(a);
+      }
+      catch (CycleDetectionException e) {
+        // We have a template cycle and we want to prevent it
+        StringBuilder path = new StringBuilder();
+        for (Object node : e.getPath()) {
+          if (path.length() > 0) {
+            path.append("->");
           }
-          throw TemplateMetaModel.TEMPLATE_CYCLE.failure(template.getPath(), path);
+          if (node instanceof TemplateMetaModel) {
+            TemplateMetaModel templateNode = (TemplateMetaModel)node;
+            path.append(templateNode.getPath().getValue());
+          } else {
+            // WTF ?
+            path.append(node);
+          }
         }
+        throw TemplateMetaModel.TEMPLATE_CYCLE.failure(template.getPath(), path);
       }
     }
   }

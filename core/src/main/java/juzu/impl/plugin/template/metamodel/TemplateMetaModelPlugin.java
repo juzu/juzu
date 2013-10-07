@@ -19,6 +19,7 @@ package juzu.impl.plugin.template.metamodel;
 import juzu.Application;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadFileSystem;
+import juzu.impl.metamodel.AnnotationChange;
 import juzu.impl.metamodel.Key;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
@@ -105,19 +106,44 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotationAdded(ApplicationMetaModel application, AnnotationKey key, AnnotationState added) {
-    if (key.getType().toString().equals(Application.class.getName())) {
-      List<AnnotationState> tags = (List<AnnotationState>)added.get("tags");
-      if (tags != null) {
-        TagContainerMetaModel tagsMM = application.getChild(TagContainerMetaModel.KEY);
-        for (AnnotationState tag : tags) {
-          String nameValue = (String)tag.get("name");
-          String pathValue = (String)tag.get("path");
-          Path.Relative path = (Path.Relative)Path.parse(pathValue);
-          tagsMM.add(nameValue, path);
+  public void processAnnotationChange(ApplicationMetaModel metaModel, AnnotationChange change) {
+    if (change.getKey().getType().toString().equals(Application.class.getName())) {
+
+      // Read annotation tags
+      TagContainerMetaModel tagContainer = metaModel.getChild(TagContainerMetaModel.KEY);
+      List<AnnotationState> tagsMember = (List<AnnotationState>)change.getAdded().get("tags");
+      HashMap<String, Path.Absolute> tagAnnotations = new HashMap<String, Path.Absolute>();
+      if (tagsMember != null) {
+        for (AnnotationState tag : tagsMember) {
+          String name = (String)tag.get("name");
+          Path.Relative relativePath = (Path.Relative)Path.parse((String)tag.get("path"));
+          Path.Absolute absolutePath = tagContainer.resolvePath(relativePath);
+          tagAnnotations.put(name, absolutePath);
         }
       }
-    } else if (key.getType().toString().equals(juzu.Path.class.getName())) {
+
+      // Remove annotations that were removed or changed
+      for (TagMetaModel tag : tagContainer.getChildren(TagMetaModel.class)) {
+        TemplateMetaModel template = tag.getChild(TemplateMetaModel.KEY);
+        if (template.getPath().equals(tagAnnotations.get(tag.name))) {
+          tagAnnotations.remove(tag.name);
+        } else {
+          tag.remove();
+        }
+      }
+
+      // Add missing annotations
+      for (Map.Entry<String, Path.Absolute> tagAnnotation : tagAnnotations.entrySet()) {
+        tagContainer.add(tagAnnotation.getKey(), tagAnnotation.getValue());
+      }
+    } else {
+      super.processAnnotationChange(metaModel, change);
+    }
+  }
+
+  @Override
+  public void processAnnotationAdded(ApplicationMetaModel application, AnnotationKey key, AnnotationState added) {
+    if (key.getType().toString().equals(juzu.Path.class.getName())) {
       if (key.getElement() instanceof ElementHandle.Field) {
         ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
         TemplateContainerMetaModel templates = application.getChild(TemplateContainerMetaModel.KEY);
@@ -134,9 +160,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    if (key.getType().toString().equals(Application.class.getName())) {
-      // throw new UnsupportedOperationException("todo");
-    } else if (key.getType().toString().equals(juzu.Path.class.getName())) {
+    if (key.getType().toString().equals(juzu.Path.class.getName())) {
       if (key.getElement() instanceof ElementHandle.Field) {
         ElementHandle.Field variableElt = (ElementHandle.Field)key.getElement();
         TemplateContainerMetaModel templates = metaModel.getChild(TemplateContainerMetaModel.KEY);

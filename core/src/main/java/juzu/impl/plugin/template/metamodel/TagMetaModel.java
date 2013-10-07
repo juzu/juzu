@@ -25,4 +25,9 @@ public class TagMetaModel extends TemplateRefMetaModel {
   public TagMetaModel(String name) {
     this.name = name;
   }
+
+  @Override
+  public void add(TemplateMetaModel template) {
+    addChild(TemplateMetaModel.KEY, template);
+  }
 }

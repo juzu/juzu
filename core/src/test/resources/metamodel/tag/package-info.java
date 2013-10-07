@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-package juzu.impl.plugin.template.metamodel;
+@Application(
+    tags =
+    @Tag(name = "foo", path = "tag.gtmpl")
+) package metamodel.tag;
 
-import juzu.impl.metamodel.MetaModelObject;
-
-/**
- * A reference to a template.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public abstract class TemplateRefMetaModel extends MetaModelObject {
-
-  public abstract void add(TemplateMetaModel template);
-
-}
+import juzu.Application;
+import juzu.template.Tag;

@@ -205,12 +205,12 @@ public abstract class Path implements Serializable {
   public boolean equals(Object obj) {
     if (obj == this) {
       return true;
-    }
-    if (obj.getClass() == getClass()) {
+    } else if (obj != null && obj.getClass() == getClass()) {
       Path that = (Path)obj;
       return isAbsolute() == that.isAbsolute() && name.equals(that.name) && Tools.safeEquals(ext, that.ext);
+    } else {
+      return false;
     }
-    return false;
   }
 
   @Override

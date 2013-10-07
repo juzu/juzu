@@ -51,7 +51,7 @@ public class SimpleProcessContext extends ProcessContext {
     return Path.Absolute.absolute(path.getName(), path.getExt());
   }
 
-  protected <M extends Serializable> void registerTemplate(Template<M> template) {
+  protected <M extends Serializable> void linkTemplate(Template<M> template) {
   }
 
   @Override
