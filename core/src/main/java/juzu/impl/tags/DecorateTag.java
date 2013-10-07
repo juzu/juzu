@@ -72,6 +72,8 @@ public class DecorateTag extends ExtendedTagHandler {
     Template resolved = phase.resolveTemplate(Path.parse(path));
     if (resolved == null) {
       throw TemplateMetaModel.TEMPLATE_NOT_RESOLVED.failure(path);
+    } else {
+      tag.getArgs().put("path", resolved.getPath().getCanonical());
     }
   }
 

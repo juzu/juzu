@@ -39,7 +39,8 @@ public class IncludeTag extends ExtendedTagHandler {
   @Override
   public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) throws TemplateException {
     String path = tag.getArgs().get("path");
-    phase.resolveTemplate((Path.Relative)Path.parse(path));
+    Template template = phase.resolveTemplate(Path.parse(path));
+    tag.getArgs().put("path", template.getPath().getCanonical());
   }
 
   @Override
