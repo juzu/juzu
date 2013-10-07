@@ -17,6 +17,7 @@
 package juzu.impl.plugin.template.metamodel;
 
 import juzu.Application;
+import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.metamodel.Key;
@@ -41,6 +42,8 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -292,13 +295,14 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public JSON getDescriptor(ApplicationMetaModel application) {
     JSON config = new JSON();
-    ArrayList<String> list = new ArrayList<String>();
     AbstractContainerMetaModel metaModel = application.getChild(TemplateContainerMetaModel.KEY);
-    for (TemplateMetaModel template : metaModel.getChildren(TemplateMetaModel.class)) {
-      Path.Absolute resolved = metaModel.resolvePath(template.getPath());
-      list.add(resolved.getName().toString());
+    LinkedHashSet<String> templates = new LinkedHashSet<String>();
+    for (TemplateRefMetaModel ref : metaModel.getChildren(TemplateRefMetaModel.class)) {
+      if (ref instanceof ElementMetaModel) {
+        templates.add(((ElementMetaModel)ref).getPath().getName().toString());
+      }
     }
-    config.map("templates", list);
+    config.map("templates", templates);
     config.set("package", metaModel.getQN().toString());
     return config;
   }

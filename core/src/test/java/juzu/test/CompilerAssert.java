@@ -34,7 +34,9 @@ import javax.inject.Provider;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.WeakHashMap;
 
@@ -186,7 +188,14 @@ public class CompilerAssert<I, O> {
   public Compiler assertCompile() {
     try {
       strategy.compile();
-      classLoader = new URLClassLoader(new URL[]{strategy.classOutput.getURL()}, Thread.currentThread().getContextClassLoader());
+      ArrayList<URL> urls = new ArrayList<URL>();
+      urls.add(strategy.classOutput.getURL());
+      Iterator<ReadFileSystem<?>> i = strategy.classPath.iterator(); // Skip the first one that is the context classloader
+      i.next();
+      while (i.hasNext()) {
+        urls.add(i.next().getURL());
+      }
+      classLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), Thread.currentThread().getContextClassLoader());
       return strategy.compiler;
     }
     catch (Exception e) {

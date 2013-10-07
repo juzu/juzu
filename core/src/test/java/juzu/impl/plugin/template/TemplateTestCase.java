@@ -17,6 +17,7 @@
 package juzu.impl.plugin.template;
 
 import juzu.impl.common.Content;
+import juzu.impl.common.Name;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.Compiler;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -69,6 +70,19 @@ public class TemplateTestCase extends AbstractInjectTestCase {
       template.render(new TemplateRenderContext(new WriterPrinter(out)));
       assertEquals("hello", out.toString());
 */
+  }
+
+  @Test
+  public void testExternal() throws Exception {
+    CompilerAssert<File, File> simpleHelper = compiler("plugin.template.simple");
+    simpleHelper.assertCompile();
+    CompilerAssert<File, File> helper  = compiler("plugin.template.external");
+    helper.addClassPath(simpleHelper.getClassOutput());
+    helper.assertCompile();
+    MockApplication<?> app = new MockApplication<File>(helper.getClassOutput(), helper.getClassLoader(), di, Name.parse("plugin.template.external"));
+    app.init();
+    MockClient client = app.client();
+    assertEquals("hello", client.render().assertStringResult());
   }
 
   @Test

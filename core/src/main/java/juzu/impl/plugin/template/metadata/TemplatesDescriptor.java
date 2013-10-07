@@ -66,7 +66,7 @@ public class TemplatesDescriptor extends PluginDescriptor {
         juzu.impl.common.Path.Relative relativePath = juzu.impl.common.Path.relative(path.getName().subName(pkg.size()), path.getExt());
         qualifier = new PathLiteral(relativePath.getCanonical());
       } else {
-        throw new UnsupportedOperationException();
+        qualifier = new PathLiteral(path.getCanonical());
       }
       beans.add(BeanDescriptor.createFromImpl(Template.class, null, Arrays.<Annotation>asList(qualifier), descriptor.getType()));
     }

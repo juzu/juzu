@@ -43,7 +43,7 @@ public abstract class AbstractContainerMetaModel extends MetaModelObject impleme
   ApplicationMetaModel application;
 
   /** . */
-  private Name qn;
+  Name qn;
 
   /** . */
   AbstractEmitter emitter;

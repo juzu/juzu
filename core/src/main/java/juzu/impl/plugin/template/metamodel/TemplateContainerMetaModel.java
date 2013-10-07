@@ -45,11 +45,15 @@ public class TemplateContainerMetaModel extends AbstractContainerMetaModel {
     }
   }
 
-  public TemplateMetaModel add(ElementHandle.Field handle, Path.Absolute path) {
-    TemplateMetaModel template = add(path);
+  public TemplateRefMetaModel add(ElementHandle.Field handle, Path.Absolute path) {
     TemplateRefMetaModel ref = addChild(Key.of(handle, TemplateRefMetaModel.class), new ElementMetaModel(handle, path));
-    ref.addChild(TemplateMetaModel.KEY, template);
-    return template;
+    if (qn.isPrefix(path.getName())) {
+      TemplateMetaModel template = add(path);
+      ref.addChild(TemplateMetaModel.KEY, template);
+    } else {
+      // It's an unmanaged template by this container
+    }
+    return ref;
   }
 
   @Override
