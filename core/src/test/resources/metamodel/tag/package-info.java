@@ -16,7 +16,7 @@
 
 @Application(
     tags =
-    @Tag(name = "foo", path = "tag.gtmpl")
+    @Tag(name = "foo", path = "foo.gtmpl")
 ) package metamodel.tag;
 
 import juzu.Application;

@@ -17,7 +17,10 @@
 package juzu.impl.metamodel;
 
 import japa.parser.ast.PackageDeclaration;
+import japa.parser.ast.expr.MemberValuePair;
 import japa.parser.ast.expr.NormalAnnotationExpr;
+import japa.parser.ast.expr.StringLiteralExpr;
+import juzu.impl.common.Path;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
@@ -33,6 +36,48 @@ import java.util.List;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class TagTestCase extends AbstractTestCase {
 
+  @Test
+  public void testUpdateAnnotation() throws Exception {
+    CompilerAssert<File, File> helper = compiler("metamodel.tag");
+    helper.assertCompile();
+
+    //
+    JavaFile file = helper.assertSource("metamodel", "tag", "package-info.java");
+    PackageDeclaration a = file.assertPackage();
+    NormalAnnotationExpr applicationDecl = (NormalAnnotationExpr)a.getAnnotations().get(0);
+    NormalAnnotationExpr tagDecl = (NormalAnnotationExpr)applicationDecl.getPairs().get(0).getValue();
+    boolean changed = false;
+    for (MemberValuePair pair : tagDecl.getPairs()) {
+      if (pair.getName().equals("path")) {
+        pair.setValue(new StringLiteralExpr("bar.gtmpl"));
+        changed = true;
+      }
+    }
+    assertTrue(changed);
+    file.assertSave();
+
+    //
+    File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
+    MetaModelState unserialize = Tools.unserialize(MetaModelState.class, ser);
+    ModuleMetaModel mm = (ModuleMetaModel)unserialize.metaModel;
+    mm.getQueue().clear();
+    Tools.serialize(unserialize, ser);
+
+    //
+    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    unserialize = Tools.unserialize(MetaModelState.class, ser);
+    mm = (ModuleMetaModel)unserialize.metaModel;
+    List<MetaModelEvent> events = mm.getQueue().clear();
+    assertEquals(3, events.size());
+    assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
+    assertInstanceOf(TemplateMetaModel.class, events.get(0).getObject());
+    assertEquals(Path.parse("/metamodel/tag/tags/foo.gtmpl"), ((TemplateMetaModel)events.get(0).getObject()).getPath());
+    assertEquals(MetaModelEvent.AFTER_ADD, events.get(1).getType());
+    assertInstanceOf(TemplateMetaModel.class, events.get(1).getObject());
+    assertEquals(Path.parse("/metamodel/tag/tags/bar.gtmpl"), ((TemplateMetaModel)events.get(1).getObject()).getPath());
+    assertEquals(MetaModelEvent.UPDATED, events.get(2).getType());
+    assertInstanceOf(ApplicationMetaModel.class, events.get(2).getObject());
+  }
 
   @Test
   public void testRemoveAnnotation() throws Exception {
@@ -42,8 +87,8 @@ public class TagTestCase extends AbstractTestCase {
     //
     JavaFile file = helper.assertSource("metamodel", "tag", "package-info.java");
     PackageDeclaration a = file.assertPackage();
-    NormalAnnotationExpr decl = (NormalAnnotationExpr)a.getAnnotations().get(0);
-    decl.getPairs().clear();
+    NormalAnnotationExpr applicationDecl = (NormalAnnotationExpr)a.getAnnotations().get(0);
+    applicationDecl.getPairs().clear();
     file.assertSave();
 
     //
@@ -61,6 +106,7 @@ public class TagTestCase extends AbstractTestCase {
     assertEquals(2, events.size());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
     assertInstanceOf(TemplateMetaModel.class, events.get(0).getObject());
+    assertEquals(Path.parse("/metamodel/tag/tags/foo.gtmpl"), ((TemplateMetaModel)events.get(0).getObject()).getPath());
     assertEquals(MetaModelEvent.UPDATED, events.get(1).getType());
     assertInstanceOf(ApplicationMetaModel.class, events.get(1).getObject());
   }
