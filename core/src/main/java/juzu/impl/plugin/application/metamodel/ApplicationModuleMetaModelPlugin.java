@@ -134,24 +134,7 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
     if (key.getType().equals(APPLICATION)) {
       ElementHandle.Package pkg = (ElementHandle.Package)key.getElement();
       String name = (String)added.get("name");
-      Map<Path, Path.Absolute> resourceAliases;
-      List<Map<String, Object>> resourceAliasesDecl = (List<Map<String, Object>>)added.get("resourceAliases");
-      if (resourceAliasesDecl != null && resourceAliasesDecl.size() > 0) {
-        resourceAliases = new HashMap<Path, Path.Absolute>(resourceAliasesDecl.size());
-        for (Map<String, Object> _import : resourceAliasesDecl) {
-          Path of = Path.parse((String)_import.get("of"));
-          Path as = Path.parse((String)_import.get("as"));
-          if (of instanceof Path.Absolute) {
-            resourceAliases.put(as, (Path.Absolute)of);
-          } else {
-            PackageElement pkgElt = metaModel.processingContext.get(pkg);
-            throw ApplicationMetaModel.ALIAS_INVALID_OF.failure(pkgElt);
-          }
-        }
-      } else {
-        resourceAliases = Collections.emptyMap();
-      }
-      ApplicationMetaModel application = new ApplicationMetaModel(pkg, name, resourceAliases);
+      ApplicationMetaModel application = new ApplicationMetaModel(pkg, name);
       metaModel.addChild(Key.of(pkg, ApplicationMetaModel.class), application);
       context.add(application);
     }

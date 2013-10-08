@@ -29,9 +29,6 @@ import juzu.impl.common.JSON;
 import juzu.impl.plugin.template.metamodel.TemplateContainerMetaModel;
 
 import javax.tools.FileObject;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, ApplicationMetaModel> {
@@ -41,9 +38,6 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
 
   /** . */
   public static final MessageCode CANNOT_WRITE_CONFIG = new MessageCode("CANNOT_WRITE_CONFIG", "The configuration cannot be written");
-
-  /** . */
-  public static final MessageCode ALIAS_INVALID_OF = new MessageCode("INVALID_ALIAS", "The alias of value must be absolute");
 
   /** . */
   final ElementHandle.Package handle;
@@ -57,13 +51,7 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
   /** . */
   final String baseName;
 
-  /** Resource aliases. */
-  final Map<Path.Absolute, Path.Absolute> resourceAliases;
-
-  ApplicationMetaModel(
-    ElementHandle.Package handle,
-    String baseName,
-    Map<Path, Path.Absolute> resourceAliases) {
+  ApplicationMetaModel(ElementHandle.Package handle, String baseName) {
 
     //
     if (baseName == null) {
@@ -73,22 +61,9 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
     }
 
     //
-    Map<Path.Absolute, Path.Absolute> tmp;
-    if (resourceAliases.size() > 0) {
-      tmp = new HashMap<Path.Absolute, Path.Absolute>();
-      for (Map.Entry<Path, Path.Absolute> entry : resourceAliases.entrySet()) {
-        Path.Absolute abs = handle.getPackage().resolve(entry.getKey());
-        tmp.put(abs, entry.getValue());
-      }
-    } else {
-      tmp = Collections.emptyMap();
-    }
-
-    //
     this.handle = handle;
     this.modified = false;
     this.baseName = baseName;
-    this.resourceAliases = tmp;
   }
 
   public Name getName() {
@@ -112,16 +87,7 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
    * @throws IllegalArgumentException if the context package is not valid
    */
   public FileObject resolveResource(Path.Absolute path) throws NullPointerException, IllegalArgumentException {
-    Path.Absolute alias = resourceAliases.get(path);
-    if (alias != null) {
-      FileObject resource = model.processingContext.resolveResourceFromSourcePath(handle, alias);
-      if (resource == null) {
-        resource = model.processingContext.resolveResourceFromClassPath(handle, alias);
-      }
-      return resource;
-    } else {
-      return model.processingContext.resolveResourceFromSourcePath(handle, path);
-    }
+    return model.processingContext.resolveResourceFromSourcePath(handle, path);
   }
 
   public JSON toJSON() {

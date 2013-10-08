@@ -58,13 +58,6 @@ public @interface Application {
   boolean escapeXML() default false;
 
   /**
-   * Alias a list of resources in the current application.
-   *
-   * @return the aliases
-   */
-  Alias[] resourceAliases() default {};
-
-  /**
    * Returns the application tags.
    *
    * @return the application tags

@@ -16,12 +16,10 @@
 
 package juzu.impl.plugin.template;
 
-import juzu.impl.common.Content;
 import juzu.impl.common.Name;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.Compiler;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.fs.spi.ram.RAMFileSystem;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.test.AbstractInjectTestCase;
@@ -144,21 +142,5 @@ public class TemplateTestCase extends AbstractInjectTestCase {
     assertTrue(groovy.delete());
     MockClient client = app.client();
     assertEquals("hello", client.render().assertStringResult());
-  }
-
-  @Test
-  public void testAliasesFromSourcepath() throws Exception {
-    MockApplication<?> app = application("plugin.template.aliases.sourcepath").init();
-    MockClient client = app.client();
-    assertEquals("sourcepath_alias", client.render().assertStringResult());
-  }
-
-  @Test
-  public void testAliasesFromClassPath() throws Exception {
-    CompilerAssert<File, File> helper = compiler("plugin.template.aliases.classpath");
-    RAMFileSystem classpath = new RAMFileSystem();
-    classpath.setContent(new String[]{"bar.gtmpl"}, new Content("the template"));
-    helper.addClassPath(classpath);
-    helper.assertCompile();
   }
 }
