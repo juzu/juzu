@@ -29,12 +29,12 @@ public class ContextClientServletTestCase extends AbstractContextClientTestCase 
   }
 
   @Test
-  public void testServletAction() throws Exception {
+  public void testAction() throws Exception {
     test(applicationURL(), "action");
   }
 
   @Test
-  public void testServletResource() throws Exception {
+  public void testResource() throws Exception {
     test(applicationURL(), "resource");
   }
 }

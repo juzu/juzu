@@ -29,12 +29,12 @@ public class ContextClientPortletTestCase extends AbstractContextClientTestCase 
   }
 
   @Test
-  public void testServletAction() throws Exception {
+  public void testAction() throws Exception {
     test(getPortletURL(), "action");
   }
 
   @Test
-  public void testServletResource() throws Exception {
+  public void testResource() throws Exception {
     test(getPortletURL(), "resource");
   }
 }
