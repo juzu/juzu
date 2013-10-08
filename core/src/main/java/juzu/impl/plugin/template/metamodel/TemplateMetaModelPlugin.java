@@ -177,6 +177,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
     for (Key<? extends AbstractContainerMetaModel> key : KEYS) {
       AbstractContainerMetaModel container = application.getChild(key);
       container.plugin = this;
+      container.evictTemplates();
     }
   }
 

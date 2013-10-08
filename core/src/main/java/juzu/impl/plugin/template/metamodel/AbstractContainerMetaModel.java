@@ -101,9 +101,10 @@ public abstract class AbstractContainerMetaModel extends MetaModelObject impleme
     return getChildren(TemplateMetaModel.class).iterator();
   }
 
-  void resolve() {
-
-    // Evict templates that are out of date
+  /**
+   * Evict templates that are out of date.
+   */
+  void evictTemplates() {
     log.log("Synchronizing existing templates");
     for (TemplateMetaModel template : templates.values()) {
       if (template.template != null) {
@@ -123,7 +124,9 @@ public abstract class AbstractContainerMetaModel extends MetaModelObject impleme
         }
       }
     }
+  }
 
+  void resolve() {
     //
     for (final TemplateMetaModel template : new ArrayList<TemplateMetaModel>(templates.values())) {
       if (template.template == null) {
