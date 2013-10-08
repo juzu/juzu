@@ -17,8 +17,7 @@
 package juzu.impl.template;
 
 import juzu.Path;
-
-import javax.enterprise.util.AnnotationLiteral;
+import juzu.impl.common.AnnotationLiteral;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PathLiteral extends AnnotationLiteral<Path> implements Path {
