@@ -128,6 +128,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
                   stream.provide(chunk);
                 }
                 public void close(Thread.UncaughtExceptionHandler errorHandler) {
+                  stream.provide(Chunk.create("</div>"));
                   stream.close(errorHandler);
                 }
               };
