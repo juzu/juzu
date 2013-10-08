@@ -123,6 +123,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
                       sb.append("\"/>");
                       sb.append("</div>");
                     }
+                    sb.append("</div>");
                     stream.provide(Chunk.create(sb));
                   }
                   stream.provide(chunk);
