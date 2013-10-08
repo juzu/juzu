@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-plugins-parent</artifactId>
-    <version>0.7.0-beta23</version>
+    <version>0.7.0-beta24-SNAPSHOT</version>
   </parent>
 
   <artifactId>juzu-plugins-portlet</artifactId>
-  <version>0.7.0-beta23</version>
+  <version>0.7.0-beta24-SNAPSHOT</version>
 
   <name>Juzu Portlet Plugin</name>
   <description>The Portlet plugin</description>
