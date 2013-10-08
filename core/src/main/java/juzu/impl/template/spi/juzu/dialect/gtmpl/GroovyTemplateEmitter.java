@@ -21,10 +21,13 @@ import juzu.impl.template.spi.juzu.DialectTemplateEmitter;
 import juzu.impl.template.spi.juzu.ast.SectionType;
 import juzu.impl.common.Location;
 import juzu.impl.common.Tools;
+import juzu.template.TagHandler;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +45,9 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
 
   /** . */
   private List<String> messageKeys = new ArrayList<String>();
+
+  /** . */
+  private ArrayList<String> tagsTable = new ArrayList<String>();
 
   /** The line number table. */
   private HashMap<Integer, Foo> locationTable = new HashMap<Integer, Foo>();
@@ -152,6 +158,19 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
       }
     }
     builder.append(";").append(sep);
+
+    // Add tag table
+    if (tagsTable.size() > 0) { // TagHandler
+      builder.append("public static final ").append(TagHandler.class.getName()).append("[] TAGS = [ ");
+      for (int i = 0;i < tagsTable.size();i++) {
+        String tag = tagsTable.get(i);
+        if (i > 0) {
+          builder.append(',');
+        }
+        builder.append("new ").append(tag).append("() ");
+      }
+      builder.append("];").append(sep);
+    }
 
     // Close context
     builder.append("}").append(sep);
@@ -265,9 +284,13 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
 
   @Override
   public void closeTag(String className, Map<String, String> args) {
+    if (!tagsTable.contains(className)) {
+      tagsTable.add(className);
+    }
+    int tagIndex = tagsTable.indexOf(className);
     int count = closureCountStack[closureCountIndex--];
     out.append("; } as juzu.template.Renderable;");
-    out.append("; new ").append(className).append("().render(out.renderContext, closure").append(count).append(",");
+    out.append("; ").append(constants.getIdentifier()).append(".TAGS[").append(tagIndex).append("].render(out.renderContext, closure").append(count).append(",");
     if (args == null || args.isEmpty()) {
       out.append("null");
     }

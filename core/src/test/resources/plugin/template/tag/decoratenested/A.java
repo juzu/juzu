@@ -31,7 +31,13 @@ public class A {
   Template index;
 
   @View
-  public Response.Content index() {
-    return index.ok();
+  public Response.Content index() throws Exception {
+    try {
+      return index.ok();
+    }
+    catch (Exception e) {
+      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      throw e;
+    }
   }
 }
