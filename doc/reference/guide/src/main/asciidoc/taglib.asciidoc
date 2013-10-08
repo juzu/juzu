@@ -1,8 +1,5 @@
-A tag library is an essential component of a templating system, allowing to enrich a templating with encapsulated programmable
+A tag library is an essential component of a templating system, allowing to enrich a templating by encapsulating reusable programmable
 logic.
-
-IMPORTANT:
-Juzu does not yet allow application to define their own tags, it will be added a a new feature in a future version.
 
 == Taglib syntax
 
@@ -84,4 +81,80 @@ value of the parameter:
 public Content.Response index() {
   return index.with().color("red").ok();
 }
+----
+
+== Custom tags
+
+Since Juzu 0.7.0, custom tags can be implemented, either as Java class or as templates, we will study both ways in this section.
+
+=== Simple tags
+
+Simple tags allow creation of custom tags with templates located in the +tags+ package of your application.
+
+.Our simple tag
+[source]
+----
+My simple tag
+----
+
+Put this content in the _tags/mytag.gtmpl_ file of the application.
+
+Obviously Juzu needs to be aware of the existence of this tag, this is achieved using the +@Tag+ annotation:
+
+.Declaring our simple tag
+[source,java]
+----
+@Application(tags = @Tag(name = "mytag", path = "mytag.gtmpl"))
+----
+
+Simple tags are templates so most of the tag syntax applies here, however there are a few differences between application
+templates and simple tags:
+
+* Simple tags are in the _tags_ package instead of the _templates_ package
+* Simple tags cannot reference other templates, the tag syntax must be used instead
+
+==== Simple tag parameters
+
+Simple tags can have parameters, to access them use the implicit +parameters+ map property in the tag template.
+
+.Accessing the simple tag parameters
+[source]
+----
+Hello ${parameters.name}
+----
+
+==== Simple tag body
+
+Simple tags can have a body that can be evaluated within the tag body using the +insert+ tag (this tag is also be used
+by the +decorate+ tag).
+
+.Evaluating the simple tag body
+[source]
+----
+<foo>#{insert/}</foo>
+----
+
+The body can be evaluated as much as you want, allowing to create loop tags.
+
+=== Java tags
+
+Tags can also be implemented with Java code, let's look at the actual implementation of the _title_ tag:
+
+.The title tag implementation
+[source,java]
+----
+include::{sourcesdir}/juzu/impl/tags/TitleTag.java[tags=class]
+----
+
+* The class extends the +juzu.template.TagHandler+ abstract class
+* The constructor must provide the tag name to the +TagHandler+ super constructor
+* The tag is rendered with the +render+ method
+
+Finally the tag must be declared as a http://docs.oracle.com/javase/6/docs/technotes/guides/jar/jar.html#Service%20Provider[Java Service Provider API] which is achieved by having the following content in the
+_META-INF/services/juzu.template.TagHandler_ file:
+
+.The tag declaration
+[source,java]
+----
+juzu.impl.tags.TitleTag # the tag service provider
 ----

@@ -41,6 +41,34 @@
         <executions>
           <execution>
             <id>unpack</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <resource>
+                <targetPath>${project.build.directory}/sources</targetPath>
+                <dependencies>
+                  <dependency>
+                    <groupId>org.juzu</groupId>
+                    <artifactId>juzu-doc-tutorial-examples</artifactId>
+                    <classifier>sources</classifier>
+                  </dependency>
+                  <dependency>
+                    <groupId>org.juzu</groupId>
+                    <artifactId>juzu-doc-tutorial-examples</artifactId>
+                    <classifier>sources</classifier>
+                  </dependency>
+                  <dependency>
+                    <groupId>org.juzu</groupId>
+                    <artifactId>juzu-doc-tutorial-examples</artifactId>
+                    <type>war</type>
+                    <classifier>tomcat</classifier>
+                  </dependency>
+                </dependencies>
+                <unpack>true</unpack>
+              </resource>
+            </configuration>
           </execution>
         </executions>
       </plugin>

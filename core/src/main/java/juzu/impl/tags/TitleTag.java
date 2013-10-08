@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+// tag::class[]
 public class TitleTag extends TagHandler {
 
   public TitleTag() {
@@ -43,3 +44,4 @@ public class TitleTag extends TagHandler {
     body.render(context);
   }
 }
+// end::class[]

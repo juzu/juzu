@@ -40,15 +40,15 @@ include::ioc.asciidoc[]
 
 include::templating.asciidoc[]
 
-[[templatespi]]
-= Templating SPI
-
-include::templatespi.asciidoc[]
-
 [[taglib]]
 = Taglib
 
 include::taglib.asciidoc[]
+
+[[templatespi]]
+= Templating SPI
+
+include::templatespi.asciidoc[]
 
 [[assets]]
 = Assets
