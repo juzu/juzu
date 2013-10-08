@@ -17,7 +17,9 @@
 @Application(
     tags = { @Tag(name = "foo", path = "foo.gtmpl"), @Tag(name = "bar", path = "bar.gtmpl") }
 )
+@Tags({ @Tag(name = "foo", path = "foo.gtmpl"), @Tag(name = "bar", path = "bar.gtmpl") })
 package plugin.template.tag.simple.nested;
 
 import juzu.Application;
 import juzu.template.Tag;
+import juzu.template.Tags;

@@ -156,7 +156,7 @@ class MetaModelProcessContext extends ProcessContext {
 
   @Override
   protected TemplateProvider resolverProvider(String ext) {
-    return owner.plugin.providers.get(ext);
+    return owner.resolveTemplateProvider(ext);
   }
 
   @Override

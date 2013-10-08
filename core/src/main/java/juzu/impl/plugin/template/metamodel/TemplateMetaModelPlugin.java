@@ -16,11 +16,9 @@
 
 package juzu.impl.plugin.template.metamodel;
 
-import juzu.Application;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.metamodel.AnnotationChange;
-import juzu.impl.metamodel.Key;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
@@ -33,6 +31,7 @@ import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
 import juzu.template.TagHandler;
+import juzu.template.Tags;
 
 import javax.annotation.processing.Completion;
 import javax.annotation.processing.Completions;
@@ -52,19 +51,16 @@ import java.util.regex.Pattern;
 public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
-  private List<Key<? extends AbstractContainerMetaModel>> KEYS = Tools.list(TemplateContainerMetaModel.KEY, TagContainerMetaModel.KEY);
-
-  /** . */
-  private static final Set<Class<? extends Annotation>> PROCESSED = Collections.unmodifiableSet(Tools.<Class<? extends Annotation>>set(juzu.Path.class, juzu.Application.class));
+  private static final Set<Class<? extends Annotation>> PROCESSED = Collections.unmodifiableSet(Tools.<Class<? extends Annotation>>set(juzu.Path.class, Tags.class));
 
   /** . */
   public static final Pattern PATH_PATTERN = Pattern.compile("([^/].*/|)([^./]+)\\.([a-zA-Z]+)");
 
+  /** The tag loaded from the classpath. */
+  public final Map<String, TagHandler> tags = new HashMap<String, TagHandler>();
+
   /** . */
   Map<String, TemplateProvider> providers;
-
-  /** The tag loaded from the classpath. */
-  final Map<String, TagHandler> tags = new HashMap<String, TagHandler>();
 
   public TemplateMetaModelPlugin() {
     super("template");
@@ -107,18 +103,20 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void processAnnotationChange(ApplicationMetaModel metaModel, AnnotationChange change) {
-    if (change.getKey().getType().toString().equals(Application.class.getName())) {
+    if (change.getKey().getType().toString().equals(Tags.class.getName())) {
 
       // Read annotation tags
       TagContainerMetaModel tagContainer = metaModel.getChild(TagContainerMetaModel.KEY);
-      List<AnnotationState> tagsMember = (List<AnnotationState>)change.getAdded().get("tags");
       HashMap<String, Path.Absolute> tagAnnotations = new HashMap<String, Path.Absolute>();
-      if (tagsMember != null) {
-        for (AnnotationState tag : tagsMember) {
-          String name = (String)tag.get("name");
-          Path.Relative relativePath = (Path.Relative)Path.parse((String)tag.get("path"));
-          Path.Absolute absolutePath = tagContainer.resolvePath(relativePath);
-          tagAnnotations.put(name, absolutePath);
+      if (change.getAdded() != null) {
+        List<AnnotationState> tagsMember = (List<AnnotationState>)change.getAdded().get("value");
+        if (tagsMember != null) {
+          for (AnnotationState tag : tagsMember) {
+            String name = (String)tag.get("name");
+            Path.Relative relativePath = (Path.Relative)Path.parse((String)tag.get("path"));
+            Path.Absolute absolutePath = tagContainer.resolvePath(relativePath);
+            tagAnnotations.put(name, absolutePath);
+          }
         }
       }
 
@@ -174,38 +172,29 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void postActivate(ApplicationMetaModel application) {
-    for (Key<? extends AbstractContainerMetaModel> key : KEYS) {
-      AbstractContainerMetaModel container = application.getChild(key);
-      container.plugin = this;
-      container.evictTemplates();
-    }
+    application.getChild(TemplateContainerMetaModel.KEY).postActivate(this);
+    application.getChild(TagContainerMetaModel.KEY).postActivate(this);
   }
 
   @Override
   public void prePassivate(ApplicationMetaModel application) {
     application.processingContext.log("Passivating template resolver for " + application.getHandle());
-    for (Key<? extends AbstractContainerMetaModel> key : KEYS) {
-      AbstractContainerMetaModel container = application.getChild(key);
-      container.emitter.prePassivate();
-      container.plugin = null;
-    }
+    application.getChild(TemplateContainerMetaModel.KEY).prePassivate();
+    application.getChild(TagContainerMetaModel.KEY).prePassivate();
   }
 
   @Override
-  public void prePassivate(ModuleMetaModel applications) {
-    applications.processingContext.log("Passivating templates");
+  public void prePassivate(ModuleMetaModel module) {
+    module.processingContext.log("Passivating templates");
+    tags.clear();
     this.providers = null;
-    this.tags.clear();
   }
 
   @Override
   public void postProcessEvents(ApplicationMetaModel application) {
     application.processingContext.log("Processing templates of " + application.getHandle());
-    for (Key<? extends AbstractContainerMetaModel> key : KEYS) {
-      AbstractContainerMetaModel container = application.getChild(key);
-      container.resolve();
-      container.emit();
-    }
+    application.getChild(TemplateContainerMetaModel.KEY).postProcessEvents();
+    application.getChild(TagContainerMetaModel.KEY).postProcessEvents();
   }
 
   @Override

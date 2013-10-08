@@ -70,17 +70,14 @@ abstract class AbstractEmitter implements Serializable {
   }
 
   void emit(TemplateMetaModel template, Element[] elements) {
-    TemplateProvider<?> provider = (TemplateProvider<?>)owner.plugin.providers.get(template.getPath().getExt());
+    TemplateProvider<?> provider = owner.resolveTemplateProvider(template.getPath().getExt());
     resolvedQualified(provider, template, elements);
-    emitScript(template, owner.plugin, elements);
+    emitScript(template, provider, elements);
   }
 
-  private void emitScript(final TemplateMetaModel template, final TemplateMetaModelPlugin plugin, final Element[] elements) {
+  private void emitScript(final TemplateMetaModel template, final TemplateProvider provider, final Element[] elements) {
     owner.application.getProcessingContext().executeWithin(elements[0], new Callable<Void>() {
       public Void call() throws Exception {
-
-        // If CCE that would mean there is an internal bug
-        TemplateProvider provider = plugin.providers.get(template.getPath().getExt());
 
         //
         Path.Absolute path = template.getPath();

@@ -19,12 +19,11 @@ package juzu.impl.plugin.template.metamodel;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Name;
 import juzu.impl.compiler.BaseProcessor;
-import juzu.impl.metamodel.Key;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
-import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateProvider;
 import juzu.template.TagHandler;
 
 import javax.lang.model.element.Element;
@@ -81,6 +80,21 @@ public abstract class AbstractContainerMetaModel extends MetaModelObject impleme
     return handler;
   }
 
+  final void postActivate(TemplateMetaModelPlugin plugin) {
+    this.plugin = plugin;
+    evictTemplates();
+  }
+
+  void prePassivate() {
+    emitter.prePassivate();
+    plugin = null;
+  }
+
+  void postProcessEvents() {
+    resolve();
+    emit();
+  }
+
   public Path.Absolute resolvePath(Path path) {
     return qn.resolve(path);
   }
@@ -104,7 +118,7 @@ public abstract class AbstractContainerMetaModel extends MetaModelObject impleme
   /**
    * Evict templates that are out of date.
    */
-  void evictTemplates() {
+  private void evictTemplates() {
     log.log("Synchronizing existing templates");
     for (TemplateMetaModel template : templates.values()) {
       if (template.template != null) {
@@ -169,6 +183,8 @@ public abstract class AbstractContainerMetaModel extends MetaModelObject impleme
   }
 
   protected abstract AbstractEmitter createEmitter();
+
+  protected abstract TemplateProvider<?> resolveTemplateProvider(String ext);
 
   @Override
   protected void postAttach(MetaModelObject parent) {

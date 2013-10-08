@@ -19,6 +19,7 @@ import juzu.impl.common.Name;
 import juzu.impl.common.Path;
 import juzu.impl.metamodel.Key;
 import juzu.impl.tags.SimpleTag;
+import juzu.impl.template.spi.TemplateProvider;
 import juzu.template.TagHandler;
 
 import javax.lang.model.element.Element;
@@ -49,6 +50,11 @@ class TagContainerMetaModel extends AbstractContainerMetaModel {
   public TemplateMetaModel add(String name, Path.Absolute path) {
     TagMetaModel ref = addChild(Key.of(name, TagMetaModel.class), new TagMetaModel(name));
     return add(path, ref);
+  }
+
+  @Override
+  protected TemplateProvider<?> resolveTemplateProvider(String ext) {
+    return plugin.providers.get(ext);
   }
 
   @Override

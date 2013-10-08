@@ -19,6 +19,7 @@ import juzu.impl.common.Name;
 import juzu.impl.common.Path;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.Key;
+import juzu.impl.template.spi.TemplateProvider;
 
 import javax.lang.model.element.Element;
 
@@ -47,6 +48,11 @@ public class TemplateContainerMetaModel extends AbstractContainerMetaModel {
       // It's an unmanaged template by this container
     }
     return ref;
+  }
+
+  @Override
+  protected TemplateProvider<?> resolveTemplateProvider(String ext) {
+    return plugin.providers.get(ext);
   }
 
   @Override

@@ -99,12 +99,18 @@ My simple tag
 
 Put this content in the _tags/mytag.gtmpl_ file of the application.
 
-Obviously Juzu needs to be aware of the existence of this tag, this is achieved using the +@Tag+ annotation:
+Obviously Juzu needs to be aware of the existence of this tag, this is achieved using the +@Tag+/+@Tags+ annotations:
 
 .Declaring our simple tag
 [source,java]
 ----
-@Application(tags = @Tag(name = "mytag", path = "mytag.gtmpl"))
+@Application
+@Tags(@Tag(name = "mytag", path = "mytag.gtmpl"))
+package my.application;
+
+import juzu.Application;
+import juzu.template.Tags;
+import juzu.template.Tag;
 ----
 
 Simple tags are templates so most of the tag syntax applies here, however there are a few differences between application

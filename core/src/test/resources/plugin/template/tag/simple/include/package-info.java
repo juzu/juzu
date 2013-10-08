@@ -17,7 +17,9 @@
 @Application(
     tags = @Tag(name = "foo", path = "foo.gtmpl")
 )
+@Tags(@Tag(name = "foo", path = "foo.gtmpl"))
 package plugin.template.tag.simple.include;
 
 import juzu.Application;
 import juzu.template.Tag;
+import juzu.template.Tags;

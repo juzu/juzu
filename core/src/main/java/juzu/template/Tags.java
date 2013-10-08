@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package juzu.template;
 
-@Tags(@Tag(name = "foo", path = "foo.gtmpl"))
-@Application
-package metamodel.tag;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import juzu.Application;
-import juzu.template.Tag;
-import juzu.template.Tags;
+/** @author Julien Viet */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PACKAGE)
+public @interface Tags {
+  Tag[] value();
+}
