@@ -142,13 +142,40 @@ public class Controller {
 <1> Declares the template path
 <2> Returns a content response from the template
 
-The +juzu.Path+ annotation is a qualifier annotation managed by the IOC container. It is very similar to the
-+@javax.inject.Named+ qualifier, but it has a special meaning for Juzu for declaring the template.
+
+The +@Path+ declares the template to use, the value is usually a path relative to the +templates+ package. The value
+can also be absolute like +/my/application/templates/index.gtmpl+.
+
+The +@Inject+ annotation instructs the injection container the inject the template at runtime, so it can be used
+by the controller.
 
 The +render+ method of a template returns a +juzu.Response.Content+ response which can also be returned
 by the controller method.
 
-== Type safe parameters ==
+NOTE: The +juzu.Path+ annotation is a qualifier annotation managed by the IOC container. It is very much like the
++@javax.inject.Named+ qualifier, but it has a special meaning for Juzu for processing the template.
+
+
+=== Template reuse
+
+Template can be shared between applications: one application can reuse the templates of another application
+by using an absolute path value instead of a relative path value:
+
+.Reusing a template
+[source,java]
+----
+@Inject
+@Path("/my/other/application/templates/index.gtmpl")
+Template index;
+----
+
+There are a few things to keep in mind when using external templates:
+
+* templates will not be compiled by the current application.
+* relative templates references (such as inclusion) are relative to the initial compilation directory, so don't expect
+this behavior to be dynamic (since it would break compile time safety).
+
+=== Type safe parameters
 
 Template type safe parameters brings more type safety in your applications. Templates can declare parameters and they
 are made available on a subclass of the +juzu.template.Template+ class.
