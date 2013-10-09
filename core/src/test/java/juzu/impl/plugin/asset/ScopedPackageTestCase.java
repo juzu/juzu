@@ -26,4 +26,9 @@ public class ScopedPackageTestCase extends AbstractScopedTestCase {
   public static WebArchive createDeployment() {
     return createServletDeployment(true, "plugin.asset.scope.pkg");
   }
+
+  @Override
+  protected String getExpectedAsset() {
+    return "test.js";
+  }
 }

@@ -26,4 +26,9 @@ public class ScopedSuperPackageTestCase extends AbstractScopedTestCase {
   public static WebArchive createDeployment() {
     return createServletDeployment(true, "plugin.asset.scope.superpkg");
   }
+
+  @Override
+  protected String getExpectedAsset() {
+    return "test.js";
+  }
 }

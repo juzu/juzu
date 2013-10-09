@@ -25,6 +25,7 @@ import org.openqa.selenium.WebElement;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractAssetTestCase extends AbstractWebTestCase {
@@ -32,15 +33,29 @@ public abstract class AbstractAssetTestCase extends AbstractWebTestCase {
   @Drone
   WebDriver driver;
 
+  protected abstract String getExpectedAsset();
+
   @Test
   public void testSatisfied() throws Exception {
     URL url = applicationURL();
     driver.get(url.toString());
-    WebElement script = driver.findElement(By.tagName("script"));
-    String src  = script.getAttribute("src");
-    url = new URL(url, src);
-    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-    conn.connect();
-    assertEquals(200, conn.getResponseCode());
+    WebElement script;
+    try {
+      script = driver.findElement(By.tagName("script"));
+    }
+    catch (org.openqa.selenium.NoSuchElementException e) {
+      script = null;
+    }
+    String expected = getExpectedAsset();
+    if (expected != null) {
+      String src  = script.getAttribute("src");
+      assertTrue("Was expecting " + src + " to end with " + expected, src.endsWith(expected));
+      url = new URL(url, src);
+      HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+      conn.connect();
+      assertEquals(200, conn.getResponseCode());
+    } else {
+      assertNull(script);
+    }
   }
 }

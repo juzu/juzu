@@ -26,4 +26,9 @@ public class ImplicitIdSimpleTestCase extends AbstractAssetTestCase {
   public static WebArchive createDeployment() {
     return createServletDeployment(true, "plugin.asset.implicitid.simple");
   }
+
+  @Override
+  protected String getExpectedAsset() {
+    return "test.js";
+  }
 }

@@ -26,4 +26,9 @@ public class ServingTestCase extends AbstractAssetTestCase {
   public static WebArchive createDeployment() {
     return createServletDeployment(true, "plugin.asset.serving");
   }
+
+  @Override
+  protected String getExpectedAsset() {
+    return "test.js";
+  }
 }
