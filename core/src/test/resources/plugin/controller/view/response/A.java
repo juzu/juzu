@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package plugin.controller.render.throwable.error;
+package plugin.controller.view.response;
 
+import juzu.Response;
 import juzu.View;
+
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
 
-  public A() {
-  }
-
   @View
-  public void index() {
-    throw new UnknownError();
+  public Response.Content index() throws IOException {
+    return Response.ok("foo");
   }
 }

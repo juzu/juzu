@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-@Application package plugin.controller.render.response;
+@Application package plugin.controller.view.index;
 
 import juzu.Application;

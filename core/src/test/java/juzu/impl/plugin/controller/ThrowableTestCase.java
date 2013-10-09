@@ -65,7 +65,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRenderChecked() throws Exception {
-    MockApplication<?> app = application("plugin.controller.render.throwable.checked").init();
+    MockApplication<?> app = application("plugin.controller.view.throwable.checked").init();
 
     //
     MockClient client = app.client();
@@ -75,7 +75,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRenderRuntime() throws Exception {
-    MockApplication<?> app = application("plugin.controller.render.throwable.runtime").init();
+    MockApplication<?> app = application("plugin.controller.view.throwable.runtime").init();
 
     //
     MockClient client = app.client();
@@ -85,7 +85,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRenderError() throws Exception {
-    MockApplication<?> app = application("plugin.controller.render.throwable.error").init();
+    MockApplication<?> app = application("plugin.controller.view.throwable.error").init();
 
     //
     MockClient client = app.client();

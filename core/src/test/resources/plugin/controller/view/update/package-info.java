@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 
-package plugin.controller.render.throwable.checked;
+@Application package plugin.controller.view.update;
 
-import juzu.View;
-
-import javax.naming.AuthenticationException;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-
-  public A() {
-  }
-
-  @View
-  public void index() throws Exception {
-    throw new AuthenticationException();
-  }
-}
+import juzu.Application;

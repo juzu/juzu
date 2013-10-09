@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package plugin.controller.render.update;
+package plugin.controller.view.update;
 
 import juzu.Action;
 import juzu.Response;

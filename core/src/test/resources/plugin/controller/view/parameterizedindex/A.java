@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package plugin.controller.render.parameterizedindex;
+package plugin.controller.view.parameterizedindex;
 
 import juzu.Response;
 import juzu.View;

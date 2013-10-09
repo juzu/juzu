@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-package plugin.controller.render.index;
+@Application package plugin.controller.view.throwable.runtime;
 
-import juzu.Response;
-import juzu.View;
-
-import java.io.IOException;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-
-  @View
-  public Response.Content index() throws IOException {
-    return Response.ok("index");
-  }
-}
+import juzu.Application;

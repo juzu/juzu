@@ -14,28 +14,6 @@
  * limitations under the License.
  */
 
-package plugin.controller.render.overridenindex;
+@Application package plugin.controller.view.response;
 
-import juzu.Response;
-import juzu.View;
-
-import java.io.IOException;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-
-  @View
-  public Response.Content index() throws IOException {
-    return Response.ok("0[" + A_.index("foo").toString() + "]");
-  }
-
-  @View
-  public Response.Content index(String param) throws IOException {
-    if (param != null) {
-      return Response.ok("1[" + A_.index(null).toString() + "]");
-    }
-    else {
-      return Response.ok("2[]");
-    }
-  }
-}
+import juzu.Application;

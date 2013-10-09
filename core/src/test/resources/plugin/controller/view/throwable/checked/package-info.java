@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-@Application package plugin.controller.render.throwable.runtime;
+@Application package plugin.controller.view.throwable.checked;
 
 import juzu.Application;

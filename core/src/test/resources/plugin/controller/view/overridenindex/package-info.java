@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 
-package plugin.controller.render.throwable.runtime;
+@Application package plugin.controller.view.overridenindex;
 
-import juzu.View;
-
-import java.util.ConcurrentModificationException;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-
-  public A() {
-  }
-
-  @View
-  public void index() {
-    throw new ConcurrentModificationException();
-  }
-}
+import juzu.Application;

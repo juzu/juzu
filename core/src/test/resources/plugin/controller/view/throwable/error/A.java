@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
-@Application package plugin.controller.render.throwable.checked;
+package plugin.controller.view.throwable.error;
 
-import juzu.Application;
+import juzu.View;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+
+  public A() {
+  }
+
+  @View
+  public void index() {
+    throw new UnknownError();
+  }
+}

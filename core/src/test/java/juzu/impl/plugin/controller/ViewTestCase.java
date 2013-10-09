@@ -29,17 +29,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RenderTestCase extends AbstractInjectTestCase {
+public class ViewTestCase extends AbstractInjectTestCase {
 
   private static final Pattern P = Pattern.compile("([0-9]+)\\[(.*)\\]");
 
-  public RenderTestCase(InjectorProvider di) {
+  public ViewTestCase(InjectorProvider di) {
     super(di);
   }
 
   @Test
   public void testIndex() throws Exception {
-    MockApplication<?> app = application("plugin.controller.render.index").init();
+    MockApplication<?> app = application("plugin.controller.view.index").init();
 
     //
     MockClient client = app.client();
@@ -49,7 +49,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testParameterizedIndex() throws Exception {
-    MockApplication<?> app = application("plugin.controller.render.parameterizedindex").init();
+    MockApplication<?> app = application("plugin.controller.view.parameterizedindex").init();
 
     //
     MockClient client = app.client();
@@ -70,7 +70,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testOverridenIndex() throws Exception {
-    MockApplication<?> app = application("plugin.controller.render.overridenindex").init();
+    MockApplication<?> app = application("plugin.controller.view.overridenindex").init();
 
     //
     MockClient client = app.client();
@@ -91,7 +91,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testResponse() throws Exception {
-    MockApplication<?> app = application("plugin.controller.render.response").init();
+    MockApplication<?> app = application("plugin.controller.view.response").init();
 
     MockClient client = app.client();
     MockRenderBridge render = client.render();
@@ -101,7 +101,7 @@ public class RenderTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testUpdate() throws Exception {
-    MockApplication<?> app = application("plugin.controller.render.update").init();
+    MockApplication<?> app = application("plugin.controller.view.update").init();
 
     //
     MockClient client = app.client();

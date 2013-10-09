@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-@Application package plugin.controller.render.overridenindex;
+@Application package plugin.controller.view.throwable.error;
 
 import juzu.Application;
