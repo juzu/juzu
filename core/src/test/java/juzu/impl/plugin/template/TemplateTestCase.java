@@ -85,7 +85,7 @@ public class TemplateTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testControllerNotFound() throws Exception {
-    CompilerAssert<File, File> compiler = compiler("plugin.template.controllerNotFound");
+    CompilerAssert<File, File> compiler = compiler("plugin.template.controllernotfound");
     compiler.formalErrorReporting(true);
     List<CompilationError> errors = compiler.failCompile();
     assertEquals(1, errors.size());
