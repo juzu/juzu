@@ -20,11 +20,11 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ScopedClassTestCase extends AbstractScopedTestCase {
+public class ScopedAnnotatedPackageTestCase extends AbstractScopedTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment(true, "plugin.asset.scope.clazz");
+    return createServletDeployment(true, "plugin.asset.scope.annotatedpkg");
   }
 
   @Override

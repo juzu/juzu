@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-@Application()
-@Assets(value = @Asset(id = "test.js", value = "test.js"))
-package plugin.asset.scope.superclazz;
+package juzu.impl.plugin.asset;
 
-import juzu.Application;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class ScopedAnnotatedMethodInstanceTestCase extends AbstractScopedTestCase {
+
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createServletDeployment(true, "plugin.asset.scope.annotatedmethod.instance");
+  }
+
+  @Override
+  protected String getExpectedAsset() {
+    return "test.js";
+  }
+}

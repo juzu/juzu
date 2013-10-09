@@ -13,11 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package plugin.asset.scope.superclazz;
 
-import juzu.plugin.asset.WithAssets;
+package juzu.impl.plugin.asset;
 
-/** @author Julien Viet */
-@WithAssets("test.js")
-public class Super {
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class ScopedAnnotatedClassSubClassMethodTestCase extends AbstractScopedTestCase {
+
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createServletDeployment(true, "plugin.asset.scope.annotatedclass.subclassmethod");
+  }
+
+  @Override
+  protected String getExpectedAsset() {
+    return null;
+  }
 }

@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-@Application()
-@Assets(value = @Asset(id = "test.js", value = "test.js"))
-package plugin.asset.scope.superclazzdeclaring;
+package plugin.asset.scope.annotatedparentpkg.sub;
 
-import juzu.Application;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
+import juzu.Response;
+import juzu.View;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+  @View
+  public Response.Status index() {
+    return Response.ok("content");
+  }
+}

@@ -16,10 +16,8 @@
 
 @Application()
 @Assets(value = @Asset(id = "test.js", value = "test.js"))
-@WithAssets("test.js")
-package plugin.asset.scope.superpkg;
+package plugin.asset.scope.annotatedmethod.instance;
 
 import juzu.Application;
 import juzu.plugin.asset.Asset;
 import juzu.plugin.asset.Assets;
-import juzu.plugin.asset.WithAssets;

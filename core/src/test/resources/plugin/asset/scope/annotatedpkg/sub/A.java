@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package plugin.asset.scope.superpkg.sub;
+package plugin.asset.scope.annotatedpkg.sub;
 
 import juzu.Response;
 import juzu.View;

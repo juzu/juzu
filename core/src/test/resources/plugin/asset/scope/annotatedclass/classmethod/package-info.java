@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-package plugin.asset.scope.method;
+@Application()
+@Assets(@Asset(id = "test.js", value = "test.js"))
+package plugin.asset.scope.annotatedclass.classmethod;
 
-import juzu.Response;
-import juzu.View;
-import juzu.plugin.asset.WithAssets;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-  @View
-  @WithAssets("test.js")
-  public Response.Status index() {
-    return Response.ok("content");
-  }
-}
+import juzu.Application;
+import juzu.plugin.asset.Asset;
+import juzu.plugin.asset.Assets;

@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-@WithAssets("test.js")
-package plugin.asset.scope.pkg.sub;
+package plugin.asset.scope.annotatedclass.subclassmethod;
 
-import juzu.plugin.asset.WithAssets;
+import juzu.Response;
+import juzu.View;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A extends Super {
+  @View
+  public Response.Status index() {
+    return Response.ok("content");
+  }
+}

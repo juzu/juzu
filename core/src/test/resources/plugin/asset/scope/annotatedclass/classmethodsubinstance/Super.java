@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package plugin.asset.scope.superclazz;
+package plugin.asset.scope.annotatedclass.classmethodsubinstance;
 
 import juzu.Response;
 import juzu.View;
+import juzu.plugin.asset.WithAssets;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Super {
+/** @author Julien Viet */
+@WithAssets("test.js")
+public class Super {
   @View
   public Response.Status index() {
     return Response.ok("content");

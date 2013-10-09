@@ -14,21 +14,7 @@
  * limitations under the License.
  */
 
-package juzu.impl.plugin.asset;
+@WithAssets("test.js")
+package plugin.asset.scope.annotatedpkg.sub;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ScopedSuperPackageTestCase extends AbstractScopedTestCase {
-
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createServletDeployment(true, "plugin.asset.scope.superpkg");
-  }
-
-  @Override
-  protected String getExpectedAsset() {
-    return "test.js";
-  }
-}
+import juzu.plugin.asset.WithAssets;

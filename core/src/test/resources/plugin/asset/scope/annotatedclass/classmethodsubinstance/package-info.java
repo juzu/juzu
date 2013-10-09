@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package plugin.asset.scope.superclazzdeclaring;
+@Application()
+@Assets(value = @Asset(id = "test.js", value = "test.js"))
+package plugin.asset.scope.annotatedclass.classmethodsubinstance;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A extends Super {
-}
+import juzu.Application;
+import juzu.plugin.asset.Asset;
+import juzu.plugin.asset.Assets;

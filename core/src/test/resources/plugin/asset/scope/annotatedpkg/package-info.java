@@ -16,7 +16,7 @@
 
 @Application()
 @Assets(value = @Asset(id = "test.js", value = "test.js"))
-package plugin.asset.scope.pkg;
+package plugin.asset.scope.annotatedpkg;
 
 import juzu.Application;
 import juzu.plugin.asset.Asset;

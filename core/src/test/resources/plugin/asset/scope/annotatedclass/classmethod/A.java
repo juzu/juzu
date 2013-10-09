@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package juzu.impl.plugin.asset;
+package plugin.asset.scope.annotatedclass.classmethod;
 
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
+import juzu.Response;
+import juzu.View;
+import juzu.plugin.asset.WithAssets;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ScopedSuperClassDeclaringTestCase extends AbstractScopedTestCase {
-
-  @Deployment(testable = false)
-  public static WebArchive createDeployment() {
-    return createServletDeployment(true, "plugin.asset.scope.superclazzdeclaring");
-  }
-
-  @Override
-  protected String getExpectedAsset() {
-    return "test.js";
+@WithAssets("test.js")
+public class A {
+  @View
+  public Response.Status index() {
+    return Response.ok("content");
   }
 }

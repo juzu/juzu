@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package plugin.asset.scope.superclazzdeclaring;
 
-import juzu.Response;
-import juzu.View;
-import juzu.plugin.asset.WithAssets;
+@Application()
+@Assets(value = @Asset(id = "test.js", value = "test.js"))
+package plugin.asset.scope.annotatedclass.subclassmethod;
 
-/** @author Julien Viet */
-@WithAssets("test.js")
-public class Super {
-  @View
-  public Response.Status index() {
-    return Response.ok("content");
-  }
-}
+import juzu.Application;
+import juzu.plugin.asset.Asset;
+import juzu.plugin.asset.Assets;

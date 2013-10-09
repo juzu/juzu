@@ -14,15 +14,8 @@
  * limitations under the License.
  */
 
-package plugin.asset.scope.pkg.sub;
-
-import juzu.Response;
-import juzu.View;
+package plugin.asset.scope.annotatedclass.classmethodsubinstance;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-  @View
-  public Response.Status index() {
-    return Response.ok("content");
-  }
+public class A extends Super {
 }
