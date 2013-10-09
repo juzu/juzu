@@ -242,8 +242,11 @@ public abstract class AbstractTestCase extends Assert {
     String relativePath = packageName.toString().replace('.', '/') + '/';
     assertTrue(new File(sourcePathDir, relativePath).mkdirs());
     DiskFileSystem sourcePath = new DiskFileSystem(sourcePathDir);
+    URL url = Thread.currentThread().getContextClassLoader().getResource(relativePath);
+    if (url == null) {
+      throw failure("Could not resolve resource " + relativePath);
+    }
     try {
-      URL url = Thread.currentThread().getContextClassLoader().getResource(relativePath);
       URLFileSystem fs = new URLFileSystem();
       fs.add(url);
       fs.copy(sourcePath, sourcePath.getPath(packageName));
