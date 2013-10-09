@@ -502,12 +502,12 @@ public class ControllerTestCase extends AbstractTestCase {
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
     assertEquals(ElementHandle.Method.create(Name.parse("metamodel.controller.A"), "index", Collections.<String>emptyList()), ((MethodMetaModel)events.get(0).getObject()).getHandle());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(1).getType());
-    assertEquals(ElementHandle.Class.create(Name.parse("metamodel.controller.A")), ((ControllerMetaModel)events.get(1).getObject()).getHandle());
+    assertEquals(ElementHandle.Type.create(Name.parse("metamodel.controller.A")), ((ControllerMetaModel)events.get(1).getObject()).getHandle());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(2).getType());
-    assertEquals(ElementHandle.Class.create(Name.parse("metamodel.controller.sub.A")), ((ControllerMetaModel)events.get(2).getObject()).getHandle());
+    assertEquals(ElementHandle.Type.create(Name.parse("metamodel.controller.sub.A")), ((ControllerMetaModel)events.get(2).getObject()).getHandle());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(3).getType());
     assertEquals(ElementHandle.Method.create(Name.parse("metamodel.controller.sub.A"), "index", Collections.<String>emptyList()), ((MethodMetaModel)events.get(3).getObject()).getHandle());
     assertEquals(MetaModelEvent.UPDATED, events.get(4).getType());
-    assertEquals(ElementHandle.Class.create(Name.parse("metamodel.controller.sub.A")), ((ControllerMetaModel)events.get(4).getObject()).getHandle());
+    assertEquals(ElementHandle.Type.create(Name.parse("metamodel.controller.sub.A")), ((ControllerMetaModel)events.get(4).getObject()).getHandle());
   }
 }

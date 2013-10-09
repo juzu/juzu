@@ -18,7 +18,6 @@ package juzu.impl.plugin.application.metamodel;
 
 import juzu.Application;
 import juzu.impl.common.Name;
-import juzu.impl.common.Path;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
@@ -45,11 +44,7 @@ import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -299,7 +294,7 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
     if (applications != null && applications.size() > 0) {
       json = new JSON();
       for (ApplicationMetaModel application : applications) {
-        json.set(application.getHandle().getPackage().toString(), new JSON());
+        json.set(application.getHandle().getPackageName().toString(), new JSON());
       }
     }
     return json;

@@ -57,7 +57,7 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
     return getChildren(ControllerMetaModel.class).iterator();
   }
 
-  public ControllerMetaModel get(ElementHandle.Class handle) {
+  public ControllerMetaModel get(ElementHandle.Type handle) {
     return getChild(Key.of(handle, ControllerMetaModel.class));
   }
 

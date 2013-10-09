@@ -31,7 +31,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -165,7 +164,7 @@ public class AnnotationState extends HashMap<String, Serializable> {
       return ((VariableElement)value).getSimpleName().toString();
     }
     else if (value instanceof DeclaredType) {
-      return ElementHandle.Class.create((TypeElement)((DeclaredType)value).asElement());
+      return ElementHandle.Type.create((TypeElement)((DeclaredType)value).asElement());
     }
     else if (value instanceof AnnotationMirror) {
       return create((AnnotationMirror)value);

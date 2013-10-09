@@ -73,13 +73,13 @@ public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
   
   @Override
   public void processAnnotationAdded(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState added) {
-    Name pkg = key.getElement().getPackage();
+    Name pkg = key.getElement().getPackageName();
     annotations.put(pkg, added);
   }
 
   @Override
   public void processAnnotationRemoved(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    Name pkg = key.getElement().getPackage();
+    Name pkg = key.getElement().getPackageName();
     annotations.remove(pkg);
   }
 

@@ -43,7 +43,7 @@ public abstract class ApplicationMetaModelPlugin extends MetaModelPlugin<Applica
 
   @Override
   public void processAnnotationChange(ApplicationMetaModel metaModel, AnnotationChange change) {
-    if (metaModel.getHandle().getPackage().isPrefix(change.getKey().getElement().getPackage())) {
+    if (metaModel.getHandle().getPackageName().isPrefix(change.getKey().getElement().getPackageName())) {
       super.processAnnotationChange(metaModel, change);
     }
   }
@@ -55,7 +55,7 @@ public abstract class ApplicationMetaModelPlugin extends MetaModelPlugin<Applica
       AnnotationState annotationState,
       String member,
       String userText) {
-    if (metaModel.getHandle().getPackage().isPrefix(annotationKey.getElement().getPackage())) {
+    if (metaModel.getHandle().getPackageName().isPrefix(annotationKey.getElement().getPackageName())) {
       return super.getCompletions(metaModel, annotationKey, annotationState, member, userText);
     } else {
       return null;

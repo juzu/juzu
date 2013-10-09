@@ -73,7 +73,7 @@ class ControllerMetaModelResolver extends ControllerResolver<MethodMetaModel> {
 
   @Override
   public boolean isDefault(MethodMetaModel method) {
-    return method.getController().getHandle().getFQN().equals(controllers.defaultController) || size < 2;
+    return method.getController().getHandle().getName().equals(controllers.defaultController) || size < 2;
   }
 
   @Override

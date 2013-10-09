@@ -85,14 +85,14 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
 
   @Override
   public void processAnnotationAdded(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState added) {
-    Name pkg = key.getElement().getPackage();
+    Name pkg = key.getElement().getPackageName();
     log.log("Adding less annotation for package " + pkg);
     annotations.put(pkg, added);
   }
 
   @Override
   public void processAnnotationRemoved(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    Name pkg = key.getElement().getPackage();
+    Name pkg = key.getElement().getPackageName();
     log.log("Removing less annotation for package " + pkg);
     annotations.remove(pkg);
   }

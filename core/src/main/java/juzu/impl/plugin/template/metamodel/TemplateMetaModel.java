@@ -105,7 +105,7 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
     Set<Name> types = new LinkedHashSet<Name>();
     for (ElementMetaModel ref : getElementReferences()) {
       ElementHandle.Field handle = ref.getElement();
-      types.add(handle.getFQN());
+      types.add(handle.getTypeName());
     }
     final Element[] elements = new Element[types.size()];
     int index = 0;

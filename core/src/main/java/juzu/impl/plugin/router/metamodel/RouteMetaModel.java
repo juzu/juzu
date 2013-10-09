@@ -16,9 +16,7 @@
 
 package juzu.impl.plugin.router.metamodel;
 
-import juzu.Route;
 import juzu.impl.common.JSON;
-import juzu.impl.common.Name;
 import juzu.impl.plugin.router.ParamDescriptor;
 
 import java.io.Serializable;
@@ -33,9 +31,6 @@ import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouteMetaModel implements Serializable {
-
-  /** . */
-  static final Name FQN = Name.create(Route.class);
 
   /** . */
   HashMap<String, String> targets;

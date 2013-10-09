@@ -59,9 +59,9 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
   ControllersMetaModel controllers;
 
   /** . */
-  final ElementHandle.Class handle;
+  final ElementHandle.Type handle;
 
-  public ControllerMetaModel(ElementHandle.Class handle) {
+  public ControllerMetaModel(ElementHandle.Type handle) {
     this.handle = handle;
     this.modified = false;
   }
@@ -81,7 +81,7 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
     return controllers;
   }
 
-  public ElementHandle.Class getHandle() {
+  public ElementHandle.Type getHandle() {
     return handle;
   }
 
@@ -162,7 +162,7 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
 
             //
             TypeElement te = (TypeElement)context.processingContext.asElement(parameterSimpleTypeMirror);
-            ElementHandle.Class a = ElementHandle.Class.create(te);
+            ElementHandle.Type a = ElementHandle.Type.create(te);
 
             //
             if (te.toString().equals("java.lang.String") || te.getAnnotation(Mapped.class) != null) {

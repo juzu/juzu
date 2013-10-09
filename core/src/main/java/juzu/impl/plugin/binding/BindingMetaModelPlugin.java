@@ -118,12 +118,12 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
     ArrayList<JSON> list = new ArrayList<JSON>();
     if (bindings != null) {
       for (Map<String, Object> binding : bindings) {
-        ElementHandle.Class bindingValue = (ElementHandle.Class)binding.get("value");
-        ElementHandle.Class bindingImplementation = (ElementHandle.Class)binding.get("implementation");
+        ElementHandle.Type bindingValue = (ElementHandle.Type)binding.get("value");
+        ElementHandle.Type bindingImplementation = (ElementHandle.Type)binding.get("implementation");
         String scope = (String)binding.get("scope");
 
         //
-        JSON bindingJSON = new JSON().set("value", bindingValue.getFQN().toString());
+        JSON bindingJSON = new JSON().set("value", bindingValue.getName().toString());
 
         //
         TypeElement valueElt = env.get(bindingValue);
@@ -196,7 +196,7 @@ public class BindingMetaModelPlugin extends ApplicationMetaModelPlugin {
           }
 
           //
-          bindingJSON.set("implementation", bindingImplementation.getFQN().toString());
+          bindingJSON.set("implementation", bindingImplementation.getName().toString());
         }
 
         // Add the declared scope if any

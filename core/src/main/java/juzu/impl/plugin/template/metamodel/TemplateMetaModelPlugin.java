@@ -147,7 +147,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
         TemplateContainerMetaModel templates = application.getChild(TemplateContainerMetaModel.KEY);
         Path addedPath = Path.parse((String)added.get("value"));
         Path.Absolute absAdded = templates.resolvePath(addedPath);
-        application.processingContext.log("Adding template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + absAdded);
+        application.processingContext.log("Adding template ref " + variableElt.getTypeName() + "#" + variableElt.getName() + " " + absAdded);
         templates.add(variableElt, absAdded);
       }
       else {
@@ -164,7 +164,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
         TemplateContainerMetaModel templates = metaModel.getChild(TemplateContainerMetaModel.KEY);
         Path removedPath = Path.parse((String)removed.get("value"));
         Path.Absolute absRemoved = templates.resolvePath(removedPath);
-        metaModel.processingContext.log("Removing template ref " + variableElt.getFQN() + "#" + variableElt.getName() + " " + absRemoved);
+        metaModel.processingContext.log("Removing template ref " + variableElt.getTypeName() + "#" + variableElt.getName() + " " + absRemoved);
         templates.remove(variableElt);
       }
     }

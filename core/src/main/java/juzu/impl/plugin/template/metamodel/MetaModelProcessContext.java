@@ -176,7 +176,7 @@ class MetaModelProcessContext extends ProcessContext {
         args.add(value);
       }
     }
-    return new MethodInvocation(method.getController().getHandle().getFQN() + "_", method.getName(), args);
+    return new MethodInvocation(method.getController().getHandle().getName() + "_", method.getName(), args);
   }
 
   @Override

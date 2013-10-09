@@ -59,7 +59,7 @@ public class MethodMetaModel extends MetaModelObject {
 
     String id;
     if (declaredId == null) {
-      id = handle.getFQN().getIdentifier() + "." + handle.getName();
+      id = handle.getTypeName().getIdentifier() + "." + handle.getName();
     } else {
       id = declaredId;
     }

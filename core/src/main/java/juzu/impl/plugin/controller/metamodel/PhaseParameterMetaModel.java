@@ -27,7 +27,7 @@ public class PhaseParameterMetaModel extends ParameterMetaModel {
   final Cardinality cardinality;
 
   /** . */
-  final ElementHandle.Class type;
+  final ElementHandle.Type type;
 
   /** . */
   final String alias;
@@ -35,7 +35,7 @@ public class PhaseParameterMetaModel extends ParameterMetaModel {
   public PhaseParameterMetaModel(
       String name,
       Cardinality cardinality,
-      ElementHandle.Class type,
+      ElementHandle.Type type,
       String typeLiteral,
       String alias) {
     super(name, typeLiteral);
@@ -50,7 +50,7 @@ public class PhaseParameterMetaModel extends ParameterMetaModel {
     return cardinality;
   }
 
-  public ElementHandle.Class getType() {
+  public ElementHandle.Type getType() {
     return type;
   }
 

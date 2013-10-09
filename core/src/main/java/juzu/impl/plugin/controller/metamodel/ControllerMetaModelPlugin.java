@@ -102,9 +102,9 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     AnnotationMirror annotation = Tools.getAnnotation(pkg, Application.class.getName());
     AnnotationState values = AnnotationState.create(annotation);
     Boolean escapeXML = (Boolean)values.get("escapeXML");
-    ElementHandle.Class defaultControllerElt = (ElementHandle.Class)values.get("defaultController");
+    ElementHandle.Type defaultControllerElt = (ElementHandle.Type)values.get("defaultController");
     controllers.escapeXML = escapeXML;
-    controllers.defaultController = defaultControllerElt != null ? defaultControllerElt.getFQN() : null;
+    controllers.defaultController = defaultControllerElt != null ? defaultControllerElt.getName() : null;
     application.addChild(ControllersMetaModel.KEY, controllers);
   }
 
@@ -112,7 +112,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void processAnnotationAdded(ApplicationMetaModel application, AnnotationKey key, AnnotationState added) {
     ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
     ElementHandle.Method m = (ElementHandle.Method)key.getElement();
-    ElementHandle.Class handle = ElementHandle.Class.create(m.getFQN());
+    ElementHandle.Type handle = ElementHandle.Type.create(m.getTypeName());
     ControllerMetaModel controller = ac.get(handle);
     if (controller == null) {
       ac.add(controller = new ControllerMetaModel(handle));
@@ -123,7 +123,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     ElementHandle.Method methodHandle = (ElementHandle.Method)key.getElement();
-    ElementHandle.Class controllerHandle = ElementHandle.Class.create(methodHandle.getFQN());
+    ElementHandle.Type controllerHandle = ElementHandle.Type.create(methodHandle.getTypeName());
     ControllersMetaModel controllers = metaModel.getChild(ControllersMetaModel.KEY);
     ControllerMetaModel controller = controllers.get(controllerHandle);
     if (controller != null) {
@@ -168,7 +168,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     // Build routes configuration
     ArrayList<String> controllers = new ArrayList<String>();
     for (ControllerMetaModel controller : ac) {
-      controllers.add(controller.getHandle().getFQN() + "_");
+      controllers.add(controller.getHandle().getName() + "_");
     }
 
     //
@@ -221,7 +221,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   private void emitController(ProcessingContext env, ControllerMetaModel controller) throws ProcessingException {
-    Name fqn = controller.getHandle().getFQN();
+    Name fqn = controller.getHandle().getName();
     Element origin = env.get(controller.getHandle());
     Collection<MethodMetaModel> methods = controller.getMethods();
     Writer writer = null;
@@ -369,7 +369,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       env.log("Generated controller companion " + fqn + "_" + " as " + file.toUri());
     }
     catch (IOException e) {
-      throw ControllerMetaModel.CANNOT_WRITE_CONTROLLER_COMPANION.failure(e, origin, controller.getHandle().getFQN());
+      throw ControllerMetaModel.CANNOT_WRITE_CONTROLLER_COMPANION.failure(e, origin, controller.getHandle().getName());
     }
     finally {
       Tools.safeClose(writer);

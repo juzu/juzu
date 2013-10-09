@@ -56,7 +56,7 @@ public class ServletMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     ElementHandle.Package pkg = metaModel.getHandle();
-    if (key.getElement().getPackage().equals(pkg.getPackage())) {
+    if (key.getElement().getPackageName().equals(pkg.getPackageName())) {
       servlets.put(pkg, added);
     }
   }
@@ -64,7 +64,7 @@ public class ServletMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     ElementHandle.Package pkg = metaModel.getHandle();
-    if (key.getElement().getPackage().equals(pkg.getPackage())) {
+    if (key.getElement().getPackageName().equals(pkg.getPackageName())) {
       servlets.remove(pkg);
     }
   }
@@ -81,12 +81,12 @@ public class ServletMetaModelPlugin extends ApplicationMetaModelPlugin {
       if (simpleName == null) {
         simpleName = metaModel.getBaseName() + "Servlet";
       }
-      Name clazz = pkg.getPackage().append(simpleName);
+      Name clazz = pkg.getPackageName().append(simpleName);
       Writer writer = null;
       try {
         JavaFileObject file = metaModel.processingContext.createSourceFile(clazz, pkgElt);
         writer = file.openWriter();
-        writer.append("package ").append(pkg.getPackage()).append(";\n");
+        writer.append("package ").append(pkg.getPackageName()).append(";\n");
         writer.append("import javax.servlet.annotation.WebServlet;\n");
         writer.append("import javax.servlet.annotation.WebInitParam;\n");
         writer.append("@WebServlet(name=\"").append(simpleName).append("\",urlPatterns=\"").append(urlPattern).append("\"");
@@ -97,12 +97,12 @@ public class ServletMetaModelPlugin extends ApplicationMetaModelPlugin {
         writer.append("public class " ).append(simpleName).append(" extends juzu.bridge.servlet.JuzuServlet {\n");
         writer.append("@Override\n");
         writer.append("protected String getApplicationName(javax.servlet.ServletConfig config) {\n");
-        writer.append("return \"").append(pkg.getPackage()).append("\";\n");
+        writer.append("return \"").append(pkg.getPackageName()).append("\";\n");
         writer.append("}\n");
         writer.append("}\n");
       }
       catch (IOException e) {
-        throw CANNOT_WRITE_SERVLET_CLASS.failure(e, pkgElt, pkg.getPackage());
+        throw CANNOT_WRITE_SERVLET_CLASS.failure(e, pkgElt, pkg.getPackageName());
       }
       finally {
         Tools.safeClose(writer);
