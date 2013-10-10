@@ -27,6 +27,7 @@ import japa.parser.ast.type.ClassOrInterfaceType;
 import juzu.Action;
 import juzu.View;
 import juzu.impl.common.Name;
+import juzu.impl.compiler.CompilationError;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.compiler.ElementHandle;
@@ -509,5 +510,21 @@ public class ControllerTestCase extends AbstractTestCase {
     assertEquals(ElementHandle.Method.create(Name.parse("metamodel.controller.sub.A"), "index", Collections.<String>emptyList()), ((MethodMetaModel)events.get(3).getObject()).getHandle());
     assertEquals(MetaModelEvent.UPDATED, events.get(4).getType());
     assertEquals(ElementHandle.Type.create(Name.parse("metamodel.controller.sub.A")), ((ControllerMetaModel)events.get(4).getObject()).getHandle());
+  }
+
+  @Test
+  public void testMakeAbstract() throws Exception {
+    CompilerAssert<File, File> helper = incrementalCompiler("metamodel.controller").formalErrorReporting();
+    helper.assertCompile();
+
+    //
+    JavaFile file = helper.assertSource("metamodel", "controller", "A.java");
+    ClassOrInterfaceDeclaration a = file.assertDeclaration();
+    a.setModifiers(a.getModifiers() | Modifier.ABSTRACT);
+    file.assertSave();
+    List<CompilationError> errors = helper.addClassPath(helper.getClassOutput()).failCompile();
+    CompilationError error = errors.get(0);
+    assertEquals(ControllerMetaModel.CONTROLLER_IS_ABSTRACT, error.getCode());
+    assertTrue("Was expecting " + error.getSource() + " to end with A.java", error.getSource().endsWith("A.java"));
   }
 }

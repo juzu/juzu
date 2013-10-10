@@ -158,6 +158,10 @@ public class CompilerAssert<I, O> {
     return strategy.sourceOutput;
   }
 
+  public CompilerAssert<I, O> formalErrorReporting() {
+    return formalErrorReporting(true);
+  }
+
   public CompilerAssert<I, O> formalErrorReporting(boolean formalErrorReporting) {
     if (formalErrorReporting) {
       strategy.config.withProcessorOption("juzu.error_reporting", "formal");

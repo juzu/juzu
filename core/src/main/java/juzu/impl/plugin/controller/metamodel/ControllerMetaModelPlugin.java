@@ -45,7 +45,9 @@ import juzu.request.Phase;
 import javax.annotation.Generated;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
@@ -110,12 +112,12 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel application, AnnotationKey key, AnnotationState added) {
-    ControllersMetaModel ac = application.getChild(ControllersMetaModel.KEY);
-    ElementHandle.Method m = (ElementHandle.Method)key.getElement();
-    ElementHandle.Type handle = ElementHandle.Type.create(m.getTypeName());
-    ControllerMetaModel controller = ac.get(handle);
+    ElementHandle.Method methodHandle = (ElementHandle.Method)key.getElement();
+    ElementHandle.Type controllerHandle = methodHandle.getType();
+    ControllersMetaModel controllers = application.getChild(ControllersMetaModel.KEY);
+    ControllerMetaModel controller = controllers.get(controllerHandle);
     if (controller == null) {
-      ac.add(controller = new ControllerMetaModel(handle));
+      controllers.add(controller = new ControllerMetaModel(controllerHandle));
     }
     controller.addMethod(application.model, key, added);
   }
@@ -193,6 +195,15 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void postProcessEvents(ApplicationMetaModel application) {
+
+    // Validate abstract
+    for (ControllerMetaModel controller : application.getChild(ControllersMetaModel.KEY)) {
+      TypeElement controllerElt = application.getProcessingContext().get(controller.getHandle());
+      if (controllerElt.getModifiers().contains(Modifier.ABSTRACT)) {
+        throw ControllerMetaModel.CONTROLLER_IS_ABSTRACT.failure(controllerElt, controller.handle.getName());
+      }
+    }
+
     // Check everything is OK here
 //    for (ControllerMetaModel controller : application.getChild(ControllersMetaModel.KEY)) {
 //      for (MethodMetaModel method : controller.getMethods()) {

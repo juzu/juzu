@@ -52,6 +52,9 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
   /** . */
   public static final MessageCode CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED = new MessageCode("CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED", "The method parameter type %1s should be a string or annotated with @juzu.Param");
 
+  /** . */
+  public static final MessageCode CONTROLLER_IS_ABSTRACT = new MessageCode("CONTROLLER_IS_ABSTRACT", "The controller class %1s cannot be abstract");
+
   /** A flag for handling modified event. */
   boolean modified;
 
