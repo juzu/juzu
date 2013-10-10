@@ -34,10 +34,9 @@ to the _stylesheet.css_. If we want this file to be served with the application 
 [source,java]
 ----
 @Less("stylesheet.less")
-@Assets(stylesheets = @Stylesheet(
-  src = "stylesheet.css",
-  location = AssetLocation.CLASSPATH)
-)
+@Assets({
+  @Asset(value = "stylesheet.css", location = AssetLocation.CLASSPATH)
+})
 @Application
 package myapp;
 
