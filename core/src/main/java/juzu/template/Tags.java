@@ -20,9 +20,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/** @author Julien Viet */
+/**
+ * Container for {@link Tag} annotations, it should be used on the application package.
+ *
+ * @author Julien Viet
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)
 public @interface Tags {
+
+  /**
+   * @return a list of tag declarations
+   */
   Tag[] value();
 }
