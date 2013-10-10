@@ -16,7 +16,7 @@
 
 package juzu.impl.runtime;
 
-import juzu.impl.common.DevClassLoader;
+import juzu.impl.common.ParentJarClassLoader;
 import juzu.impl.common.Logger;
 import juzu.impl.compiler.*;
 import juzu.impl.compiler.Compiler;
@@ -88,7 +88,7 @@ public abstract class ModuleRuntime<C> {
     private ClassLoader classLoader;
 
     /** . */
-    private ClassLoader devClassLoader;
+    private ClassLoader classPathLoader;
 
     /** . */
     private ReadFileSystem<String[]> classes;
@@ -102,7 +102,7 @@ public abstract class ModuleRuntime<C> {
       //
       this.classLoader = null;
       this.baseClassLoader = baseClassLoader;
-      this.devClassLoader = new DevClassLoader(baseClassLoader);
+      this.classPathLoader = new ParentJarClassLoader(baseClassLoader);
       this.scanner = FileSystemScanner.createHashing(source);
       this.snapshot = scanner.take();
       this.classPath = null;
@@ -119,7 +119,7 @@ public abstract class ModuleRuntime<C> {
 
       // Lazy initialize
       if (classPath == null) {
-        classPath = new URLFileSystem().add(devClassLoader, ClassLoader.getSystemClassLoader().getParent());
+        classPath = new URLFileSystem().add(classPathLoader, ClassLoader.getSystemClassLoader().getParent());
       }
 
       Snapshot<S> next = snapshot.scan();
@@ -138,16 +138,8 @@ public abstract class ModuleRuntime<C> {
         //
         ReadFileSystem<S> sourcePath = scanner.getFileSystem();
 
-        // Copy everything that is not a java source
-        RAMFileSystem classOutput = new RAMFileSystem();
-        sourcePath.copy(new Filter.Default() {
-          @Override
-          public boolean acceptFile(Object file, String name) throws IOException {
-            return !name.endsWith(".java");
-          }
-        }, classOutput);
-
         //
+        final RAMFileSystem classOutput = new RAMFileSystem();
         Compiler compiler = Compiler.
             builder().
             sourcePath(sourcePath).
@@ -157,8 +149,16 @@ public abstract class ModuleRuntime<C> {
         compiler.addAnnotationProcessor(new MainProcessor());
         compiler.compile();
 
+        // Copy everything that is not a java source
+        sourcePath.copy(new Filter.Default<S>() {
+          @Override
+          public boolean acceptFile(S file, String name) throws IOException {
+            return !name.endsWith(".java");
+          }
+        }, classOutput);
+
         //
-        this.classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, devClassLoader);
+        this.classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, classPathLoader);
         this.classes = classOutput;
         this.snapshot = next;
         this.failed = false;

@@ -30,6 +30,9 @@ import java.net.URL;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractRunModeLiveTestCase extends AbstractWebTestCase {
 
+  public static Boolean SAME_CL_1;
+  public static Boolean SAME_CL_2;
+
   @Drone
   WebDriver driver;
 
@@ -46,6 +49,8 @@ public abstract class AbstractRunModeLiveTestCase extends AbstractWebTestCase {
     //
     driver.get(url.toString());
     assertEquals("ok", driver.findElement(By.tagName("body")).getText());
+    assertTrue(SAME_CL_1);
+    assertTrue(SAME_CL_2);
 
     // Now we should get an application error
     HttpURLConnection conn = (HttpURLConnection)url.openConnection();
@@ -62,6 +67,8 @@ public abstract class AbstractRunModeLiveTestCase extends AbstractWebTestCase {
     elt = driver.findElement(By.id("trigger"));
     elt.click();
     assertEquals("OK", driver.findElement(By.tagName("body")).getText());
+    assertTrue(SAME_CL_1);
+    assertTrue(SAME_CL_2);
 
     // Now make fail with compilation error
     pkgFile.assertSave(pkgFile.assertContent().replace("public", "_public_"));

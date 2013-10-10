@@ -19,9 +19,11 @@ package bridge.runmode.live;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
+import juzu.impl.bridge.runmode.AbstractRunModeLiveTestCase;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
+
 
   /** . */
   private static int count = 0;
@@ -29,6 +31,11 @@ public class A {
   @View
   @Route("/foo")
   public Response.Content index() {
+    ClassLoader threadCL = Thread.currentThread().getContextClassLoader();
+    ClassLoader aCL = getClass().getClassLoader();
+    ClassLoader bCL = B.class.getClassLoader();
+    AbstractRunModeLiveTestCase.SAME_CL_1 = aCL == threadCL;
+    AbstractRunModeLiveTestCase.SAME_CL_2 = bCL == threadCL;
     if (count == 0) {
       count = 1;
       String url = A_.index().toString();
