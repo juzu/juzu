@@ -25,9 +25,9 @@ package my.application;
 <3> Declares the _jQuery-UI_ asset
 <4> depends on +jquery+ and +jquery-ui.css+ assets
 
-== Asset declaration
+== Configuring assets
 
-Assets are declared and used by the application with the following attributes:
+Assets can configured for the application with:
 
 * an _id_ to reference it within the application
 * a _location_ and _source_ for resolving the asset file
@@ -36,10 +36,10 @@ Assets are declared and used by the application with the following attributes:
 For example, the _jQuery-UI_ plugin could be identified by _jquery-ui_ with the dependency onto the _jquery_ js asset and
 the _jQuery-UI_ stylesheet. Its physical location would be the +asset+ package with the +jquery-ui-1.4.2.min.js+ name.
 
-=== Asset id
+=== The asset identifier
 
-The asset id must be unique within the application, this value is however optional. When no id is declared, the asset value
-is used for creating an id from the asset file name:
+Assets are identified by a unique id within the application, this value is however optional. When no id is declared
+, the asset value is used for creating an id from the asset file name:
 
 * The value +jquery-ui-1.7.2.custom.min.js+ produces the same +jquery-ui-1.7.2.custom.min.js+ value
 * The value +js/jquery-ui-1.7.2.custom.min.js+ produces the +jquery-ui-1.7.2.custom.min.js+  value
@@ -118,19 +118,37 @@ public Response.Content index() {
 }
 ----
 
-The annotation can be declared on _controller methods_, _classes_ or _packages_. When the declaration occurs on
-classes or packages, the declaration is _cascaded_ on the nested controller.
+The annotation can be declared on _controller methods_, _classes_ or _packages_. such declarations are
+ _cascaded_ to the nested controllers:
 
-The annotation can also be used with the +*+ pattern, matching all application declared assets, which is equivalent
-to use the +@WithAssets+ annotation without parameters as +*+ is this annotation default value.
+.+@WithAssets+ annotations are cascaded with a few rules
+[cols="2*",options="header"]
+|===
+|Declared on
+|Effective on
 
-TIP: Annotating the application package with +#WithAsset+ will serve all assets declared in the application for all controllers.
+|Method
+|Controller method
+
+|Class
+|Controller methods declared in the class
+
+|Package
+|Controller classes declared in the current and sub package and sub
+|===
+
+Those rules apply where the +@WithAssets+ annotation occurs, in particular it is also valid for overriden methods.
+The overriding method will not use the annotations of its current class or packages unless the method redeclares an +@WithAssets+
+ annotation (possibly empty).
+
+Annotating the application package with +#WithAsset+ will serve all assets declared in the application for all controllers.
 If you need finer grained serving, remove it and use it on controller directly.
 
 === Dynamic asset serving
 
-Asset serving can be achieved programmatically when the application does not know the assets to serve at compilation
-time:
+Declarative asset serving is powerful, however is requires you to declare the asset to server at compilation time.
+When the application does not know the assets to serve at compilation, this behavior can be also dynamic by
+using the Juzu API.
 
 .Serve _jQuery_ and _Twitter Bootstrap_ with the application index
 [source,java]

@@ -212,6 +212,16 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     }
     if (elt instanceof Method) {
       Method methodElt = (Method)elt;
+      if (decl == null) {
+        for (Class<?> current = methodElt.getDeclaringClass().getSuperclass();current != null;current = current.getSuperclass()) {
+          try {
+            methodElt = current.getDeclaredMethod(methodElt.getName(), methodElt.getParameterTypes());
+            return foo(methodElt, bar);
+          }
+          catch (NoSuchMethodException ignore) {
+          }
+        }
+      }
       return foo(methodElt.getDeclaringClass(), bar);
     } else if (elt instanceof Class<?>) {
       Class<?> classElt = (Class<Object>)elt;

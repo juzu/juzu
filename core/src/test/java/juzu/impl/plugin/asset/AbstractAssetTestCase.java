@@ -25,6 +25,8 @@ import org.openqa.selenium.WebElement;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -39,23 +41,21 @@ public abstract class AbstractAssetTestCase extends AbstractWebTestCase {
   public void testSatisfied() throws Exception {
     URL url = applicationURL();
     driver.get(url.toString());
-    WebElement script;
-    try {
-      script = driver.findElement(By.tagName("script"));
-    }
-    catch (org.openqa.selenium.NoSuchElementException e) {
-      script = null;
-    }
+    List<WebElement> scripts = driver.findElements(By.tagName("script"));
     String expected = getExpectedAsset();
     if (expected != null) {
-      String src  = script.getAttribute("src");
-      assertTrue("Was expecting " + src + " to end with " + expected, src.endsWith(expected));
-      url = new URL(url, src);
-      HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-      conn.connect();
-      assertEquals(200, conn.getResponseCode());
+      if (scripts.size() != 1) {
+        throw failure("Was expecting scripts to match the single asset " + expected + " instead of being " + scripts);
+      } else {
+        String src  = scripts.get(0).getAttribute("src");
+        assertTrue("Was expecting " + src + " to end with " + expected, src.endsWith(expected));
+        url = new URL(url, src);
+        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+        conn.connect();
+        assertEquals(200, conn.getResponseCode());
+      }
     } else {
-      assertNull(script);
+      assertEquals(Collections.emptyList(), scripts);
     }
   }
 }
