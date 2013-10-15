@@ -102,4 +102,13 @@ public class JavaFile<I> {
       throw AbstractTestCase.failure(e);
     }
   }
+
+  public void assertRemove() {
+    try {
+      sourcePath.removePath(path);
+    }
+    catch (Exception e) {
+      throw AbstractTestCase.failure(e);
+    }
+  }
 }

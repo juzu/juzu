@@ -229,16 +229,16 @@ public class CompilerAssert<I, O> {
     }
   }
 
-  public JavaFile<I> assertSource(String... names) {
+  public JavaFile<I> assertSource(String... name) {
     I path;
     try {
-      path = strategy.sourcePath.getPath(names);
+      path = strategy.sourcePath.getPath(name);
     }
     catch (IOException e) {
       throw AbstractTestCase.failure(e);
     }
     if (path == null) {
-      throw AbstractTestCase.failure("Was not expecting " + Arrays.asList(names) + " to be null file");
+      throw AbstractTestCase.failure("Was not expecting " + Arrays.asList(name) + " to be null file");
     }
     return new JavaFile<I>(strategy.sourcePath, path);
   }

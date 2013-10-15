@@ -234,6 +234,10 @@ public class Tools {
     }
   }
 
+  public static byte[] bytes(URL url) throws IOException {
+    return bytes(url.openStream());
+  }
+
   public static byte[] bytes(InputStream in) throws IOException {
     try {
       ByteArrayOutputStream baos = new ByteArrayOutputStream(in.available());
