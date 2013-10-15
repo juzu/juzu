@@ -68,7 +68,7 @@ public class PathTestCase extends AbstractTestCase {
     assertTrue(foo.renameTo(bar));
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
@@ -97,7 +97,7 @@ public class PathTestCase extends AbstractTestCase {
     Tools.write(Tools.read(a).replace("@Path(\"foo.gtmpl\")", ""), a);
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
@@ -122,7 +122,7 @@ public class PathTestCase extends AbstractTestCase {
     assertDelete(helper.getSourcePath().getPath("metamodel", "path", "package-info.java"));
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     ModuleMetaModel mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
@@ -159,7 +159,7 @@ public class PathTestCase extends AbstractTestCase {
     Tools.write(Tools.read(pkg).replace("package metamodel.path;", "package metamodel;"), pkg);
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 

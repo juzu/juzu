@@ -108,7 +108,7 @@ public class ControllerTestCase extends AbstractTestCase {
     assertDelete(helper.getSourcePath().getPath("metamodel", "controller", "package-info.java"));
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
@@ -143,7 +143,7 @@ public class ControllerTestCase extends AbstractTestCase {
     assertDelete(helper.getSourcePath().getPath("metamodel", "controller", "A.java"));
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
@@ -184,7 +184,7 @@ public class ControllerTestCase extends AbstractTestCase {
     file.assertSave();
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
@@ -240,7 +240,7 @@ public class ControllerTestCase extends AbstractTestCase {
     file.assertSave();
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
@@ -286,7 +286,7 @@ public class ControllerTestCase extends AbstractTestCase {
     //
     a.getMembers().add(decl);
     file.assertSave();
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
 
     //
     mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
@@ -339,7 +339,7 @@ public class ControllerTestCase extends AbstractTestCase {
     file.assertSave();
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
@@ -386,7 +386,7 @@ public class ControllerTestCase extends AbstractTestCase {
     //
     assertTrue(a.getMembers().remove(show));
     file.assertSave();
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
@@ -441,7 +441,7 @@ public class ControllerTestCase extends AbstractTestCase {
     file.assertSave();
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
@@ -494,7 +494,7 @@ public class ControllerTestCase extends AbstractTestCase {
     javaFile.assertSave();
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
     //
@@ -522,7 +522,7 @@ public class ControllerTestCase extends AbstractTestCase {
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     a.setModifiers(a.getModifiers() | Modifier.ABSTRACT);
     file.assertSave();
-    List<CompilationError> errors = helper.addClassPath(helper.getClassOutput()).failCompile();
+    List<CompilationError> errors = helper.failCompile();
     CompilationError error = errors.get(0);
     assertEquals(ControllerMetaModel.CONTROLLER_IS_ABSTRACT, error.getCode());
     assertTrue("Was expecting " + error.getSource() + " to end with A.java", error.getSource().endsWith("A.java"));

@@ -77,7 +77,11 @@ public class TemplateTestCase extends AbstractInjectTestCase {
     CompilerAssert<File, File> helper  = compiler("plugin.template.external");
     helper.addClassPath(simpleHelper.getClassOutput());
     helper.assertCompile();
-    MockApplication<?> app = new MockApplication<File>(helper.getClassOutput(), helper.getClassLoader(), di, Name.parse("plugin.template.external"));
+    MockApplication<?> app = new MockApplication<File>(
+        helper.getClassOutput(),
+        helper.getClassLoader(),
+        di,
+        Name.parse("plugin.template.external"));
     app.init();
     MockClient client = app.client();
     assertEquals("hello", client.render().assertStringResult());

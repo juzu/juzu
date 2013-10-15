@@ -85,7 +85,7 @@ public class ParamTestCase extends AbstractTestCase {
 
     // Recompile
     // we should have a way to test the error kind more precisely
-    /*List<CompilationError> errors = */helper.addClassPath(helper.getClassOutput()).assertCompile();
+    /*List<CompilationError> errors = */helper.assertCompile();
     // assertEquals(1, errors.size());
 
     // Add back @Param
@@ -93,7 +93,7 @@ public class ParamTestCase extends AbstractTestCase {
     file.assertSave();
 
     // Recompile
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
 
     // Check
     File ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");

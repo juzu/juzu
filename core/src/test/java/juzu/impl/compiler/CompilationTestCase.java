@@ -465,7 +465,6 @@ public class CompilationTestCase extends AbstractTestCase {
     ReadWriteFileSystem<File> sourcePath = (ReadWriteFileSystem<File>)compiler.getSourcePath();
     File b = sourcePath.makePath(sourcePath.getPath("compiler", "incremental"), "B.java");
     sourcePath.setContent(b, new Content("package compiler.incremental; public class B extends A {}"));
-    compiler.addClassPath(classOutput);
     compiler.assertCompile();
     assertEquals(2, classOutput.size(ReadFileSystem.FILE));
   }

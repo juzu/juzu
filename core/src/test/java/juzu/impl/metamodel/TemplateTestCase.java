@@ -72,7 +72,7 @@ public class TemplateTestCase extends AbstractTestCase {
     assertDelete(helper.getSourcePath().getPath("metamodel", "template", "templates", "index.gtmpl"));
 
     //
-    helper.addClassPath(helper.getClassOutput()).failCompile();
+    helper.failCompile();
   }
 
   @Test
@@ -95,7 +95,7 @@ public class TemplateTestCase extends AbstractTestCase {
     Tools.serialize(unserialize, ser);
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
 
     //
     unserialize = Tools.unserialize(MetaModelState.class, ser);
@@ -137,7 +137,7 @@ public class TemplateTestCase extends AbstractTestCase {
     assertTrue(index.setLastModified(index.lastModified() + 1000));
 
     // Compile
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     unserialize = Tools.unserialize(MetaModelState.class, ser);
     mm = (ModuleMetaModel)unserialize.metaModel;
     events = mm.getQueue().clear();

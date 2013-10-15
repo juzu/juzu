@@ -91,7 +91,7 @@ public class ApplicationTestCase extends AbstractTestCase {
     pkgFile.assertSave();
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 
@@ -129,7 +129,7 @@ public class ApplicationTestCase extends AbstractTestCase {
     assertTrue(helper.getSourcePath().getPath("metamodel", "application", "package-info.java").delete());
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     ser = helper.getSourceOutput().getPath("juzu", "metamodel.ser");
     mm = (ModuleMetaModel)Tools.unserialize(MetaModelState.class, ser).metaModel;
 

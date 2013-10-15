@@ -22,13 +22,17 @@ import juzu.impl.compiler.Compiler;
 import juzu.impl.compiler.CompilerConfig;
 import juzu.impl.fs.Change;
 import juzu.impl.fs.FileSystemScanner;
+import juzu.impl.fs.Filter;
 import juzu.impl.fs.Snapshot;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.common.Tools;
+import juzu.impl.fs.spi.disk.DiskFileSystem;
+import juzu.impl.fs.spi.ram.RAMFileSystem;
 
 import javax.annotation.processing.Processor;
 import javax.inject.Provider;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -123,7 +127,7 @@ public abstract class CompileStrategy<I, O> {
       List<String> toCompile = new ArrayList<String>();
       List<String> toDelete = new ArrayList<String>();
 
-      //
+      // Scan the sources
       snapshot = snapshot.scan();
       for (Map.Entry<String, Change> change : snapshot.getChanges().entrySet()) {
         String path = change.getKey();
@@ -143,7 +147,7 @@ public abstract class CompileStrategy<I, O> {
         }
       }
 
-      //
+      // Delete the classes corresponding to the deleted classes
       for (String s : toDelete) {
         Matcher matcher = javaFilePattern.matcher(s);
         Assert.assertTrue(matcher.matches());
@@ -155,7 +159,23 @@ public abstract class CompileStrategy<I, O> {
         }
       }
 
-      //
+      // Make the current classoutput part of the classpath
+      if (classOutput.size(ReadFileSystem.FILE) > 0) {
+        File root = File.createTempFile("juzu", "");
+        Assert.assertTrue(root.delete());
+        Assert.assertTrue(root.mkdirs());
+        root.deleteOnExit();
+        ReadWriteFileSystem classes = new DiskFileSystem(root);
+        classOutput.copy(new Filter.Default<O>() {
+          @Override
+          public boolean acceptFile(O file, String name) throws IOException {
+            return name.endsWith(".class");
+          }
+        }, classes);
+        builder.addClassPath(classes);
+      }
+
+      // Add our classpath to the compiler classpath
       for (ReadFileSystem<?> cp : classPath) {
         builder.addClassPath(cp);
       }

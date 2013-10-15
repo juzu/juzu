@@ -65,7 +65,7 @@ public class TagTestCase extends AbstractTestCase {
     Tools.serialize(unserialize, ser);
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     unserialize = Tools.unserialize(MetaModelState.class, ser);
     mm = (ModuleMetaModel)unserialize.metaModel;
     List<MetaModelEvent> events = mm.getQueue().clear();
@@ -97,7 +97,7 @@ public class TagTestCase extends AbstractTestCase {
     Tools.serialize(unserialize, ser);
 
     //
-    helper.addClassPath(helper.getClassOutput()).assertCompile();
+    helper.assertCompile();
     unserialize = Tools.unserialize(MetaModelState.class, ser);
     mm = (ModuleMetaModel)unserialize.metaModel;
     List<MetaModelEvent> events = mm.getQueue().clear();

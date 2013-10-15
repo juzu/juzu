@@ -20,6 +20,8 @@ import juzu.impl.metamodel.AnnotationState;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import java.lang.annotation.Annotation;
@@ -28,6 +30,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+@SupportedSourceVersion(SourceVersion.RELEASE_6)
 class CaptureAnnotationProcessor extends AbstractProcessor {
 
   /** . */
