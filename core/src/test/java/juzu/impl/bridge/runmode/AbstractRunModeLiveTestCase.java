@@ -16,6 +16,7 @@
 
 package juzu.impl.bridge.runmode;
 
+import juzu.impl.common.RunMode;
 import juzu.test.AbstractWebTestCase;
 import juzu.test.JavaFile;
 import org.jboss.arquillian.drone.api.annotation.Drone;
@@ -32,6 +33,7 @@ public abstract class AbstractRunModeLiveTestCase extends AbstractWebTestCase {
 
   public static Boolean SAME_CL_1;
   public static Boolean SAME_CL_2;
+  public static RunMode RUN_MODE;
 
   @Drone
   WebDriver driver;
@@ -45,6 +47,7 @@ public abstract class AbstractRunModeLiveTestCase extends AbstractWebTestCase {
 
     //
     driver.get(getURL().toString());
+    assertEquals(RunMode.LIVE, RUN_MODE);
     WebElement elt = driver.findElement(By.id("trigger"));
     URL url = new URL(elt.getAttribute("href"));
     driver.get(url.toString());

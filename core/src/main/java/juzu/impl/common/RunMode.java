@@ -15,6 +15,8 @@
  */
 package juzu.impl.common;
 
+import juzu.PropertyType;
+
 /**
  * The run mode affects the behavior of Juzu at runtime.
  *
@@ -36,6 +38,9 @@ public enum RunMode {
    * Live mode.
    */
   LIVE(true, true);
+
+  /** The run mode property. */
+  public static PropertyType<RunMode> PROPERTY = new PropertyType<RunMode>(){};
 
   /** . */
   private static final RunMode[] ALL = values();

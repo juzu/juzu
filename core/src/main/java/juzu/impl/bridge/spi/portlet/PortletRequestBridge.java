@@ -21,6 +21,7 @@ import juzu.PropertyType;
 import juzu.Scope;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
+import juzu.impl.common.RunMode;
 import juzu.impl.request.ControlParameter;
 import juzu.request.Result;
 import juzu.request.RequestParameter;
@@ -198,6 +199,9 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     }
     else if (JuzuPortlet.WINDOW_STATE.equals(propertyType)) {
       propertyValue = req.getWindowState();
+    }
+    if (RunMode.PROPERTY.equals(propertyType)) {
+      propertyValue = bridge.getRunMode();
     }
     return propertyValue == null ? null : propertyType.cast(propertyValue);
   }

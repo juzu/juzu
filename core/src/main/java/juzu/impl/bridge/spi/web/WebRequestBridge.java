@@ -21,6 +21,7 @@ import juzu.PropertyType;
 import juzu.Scope;
 import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
+import juzu.impl.common.RunMode;
 import juzu.impl.common.UriBuilder;
 import juzu.impl.request.ControlParameter;
 import juzu.request.Result;
@@ -115,7 +116,9 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   }
 
   public <T> T getProperty(PropertyType<T> propertyType) {
-    if (PropertyType.PATH.equals(propertyType)) {
+    if (RunMode.PROPERTY.equals(propertyType)) {
+      return propertyType.cast(bridge.getRunMode());
+    } else if (PropertyType.PATH.equals(propertyType)) {
       return propertyType.cast(http.getRequestContext().getRequestURI());
     }
     return null;

@@ -20,6 +20,8 @@ import juzu.Response;
 import juzu.Route;
 import juzu.View;
 import juzu.impl.bridge.runmode.AbstractRunModeLiveTestCase;
+import juzu.impl.common.RunMode;
+import juzu.impl.request.Request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
@@ -27,10 +29,6 @@ public class A {
 
   /** . */
   private static int count = 0;
-
-  public A() {
-    System.out.println("build");
-  }
 
   @View
   @Route("/foo")
@@ -40,6 +38,7 @@ public class A {
     ClassLoader bCL = B.class.getClassLoader();
     AbstractRunModeLiveTestCase.SAME_CL_1 = aCL == threadCL;
     AbstractRunModeLiveTestCase.SAME_CL_2 = bCL == threadCL;
+    AbstractRunModeLiveTestCase.RUN_MODE = Request.getCurrent().getBridge().getProperty(RunMode.PROPERTY);
     if (count == 0) {
       count = 1;
       String url = A_.index().toString();
