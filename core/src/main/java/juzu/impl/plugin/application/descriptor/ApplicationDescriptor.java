@@ -29,14 +29,31 @@ import java.util.Collections;
 public class ApplicationDescriptor extends PluginDescriptor {
 
   /**
-   * Encapsulate application descriptor loading from an application class.
+   * Encapsulate application descriptor loading from an application name.
+   *
+   * @param loader the application loader
+   * @param applicationName the application name
+   * @return the descriptor
+   * @throws Exception any exception that would prevent the exception to be loaded
+   */
+  public static ApplicationDescriptor create(ClassLoader loader, String applicationName) throws Exception {
+    if (loader == null) {
+      throw new NullPointerException("No null loader accepted");
+    }
+    // Application class
+    Class<?> applicationClass = loader.loadClass(applicationName + ".Application");
+    return new ApplicationDescriptor(loader, applicationClass);
+  }
+
+  /**
+   * Encapsulate application descriptor loading from an application name.
    *
    * @param applicationClass the application class
    * @return the descriptor
    * @throws Exception any exception that would prevent the exception to be loaded
    */
   public static ApplicationDescriptor create(Class<?> applicationClass) throws Exception {
-    return new ApplicationDescriptor(applicationClass);
+    return new ApplicationDescriptor(applicationClass.getClassLoader(), applicationClass);
   }
 
   /** . */
@@ -54,12 +71,18 @@ public class ApplicationDescriptor extends PluginDescriptor {
   /** . */
   private final JSON config;
 
-  public ApplicationDescriptor(Class<?> applicationClass) throws Exception {
+  /** . */
+  private final ClassLoader loader;
+
+  private ApplicationDescriptor(ClassLoader loader, Class<?> applicationClass) throws Exception {
+
+
     // Load config
     JSON config;
     InputStream in = null;
     try {
-      in = applicationClass.getResourceAsStream("config.json");
+      String configPath = applicationClass.getPackage().getName().replace('.', '/') + "/config.json";
+      in = loader.getResourceAsStream(configPath);
       String s = Tools.read(in);
       config = (JSON)JSON.parse(s);
     }
@@ -75,9 +98,7 @@ public class ApplicationDescriptor extends PluginDescriptor {
     this.name = applicationClass.getSimpleName();
     this.packageName = applicationClass.getPackage().getName();
     this.packageClass = Tools.getPackageClass(applicationClass.getClassLoader(), applicationClass.getPackage().getName());
-
-
-    //
+    this.loader = loader;
     this.config = config;
   }
 
@@ -99,7 +120,7 @@ public class ApplicationDescriptor extends PluginDescriptor {
   }
 
   public ClassLoader getApplicationLoader() {
-    return applicationClass.getClassLoader();
+    return loader;
   }
 
   public String getPackageName() {

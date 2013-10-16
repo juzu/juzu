@@ -37,8 +37,13 @@ public class LiveClassLoader extends URLClassLoader {
   /** . */
   private final ClassLoader parent;
 
-  public LiveClassLoader(URL[] urls, ClassLoader parent) {
+  public LiveClassLoader(URL[] urls, ClassLoader parent) throws NullPointerException {
     super(urls, parent);
+
+    //
+    if (parent == null) {
+      throw new NullPointerException("No null parent classloader accpeted");
+    }
 
     //
     this.parent = parent;

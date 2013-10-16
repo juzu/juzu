@@ -19,7 +19,6 @@ package juzu.impl.inject.spi.cdi;
 import juzu.Scope;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.common.JSON;
-import juzu.impl.common.Name;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.cdi.provided.ProvidedCDIInjector;
@@ -80,9 +79,7 @@ public class ExtensionImpl implements Extension {
           throw new RuntimeException("Was expecting application size to be 1 instead of " + applications);
         }
         String packageFQN = applications.names().iterator().next();
-        Name applicationFQN = Name.parse(packageFQN).append("Application");
-        Class<?> clazz = cl.loadClass(applicationFQN.toString());
-        ApplicationDescriptor descriptor = ApplicationDescriptor.create(clazz);
+        ApplicationDescriptor descriptor = ApplicationDescriptor.create(cl, packageFQN);
         // For now we don't resolve anything...
         ResourceResolver resourceResolver = new ResourceResolver() {
           public URL resolve(String uri) {

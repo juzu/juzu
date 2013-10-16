@@ -58,7 +58,11 @@ public class Application {
   /** . */
   private Map<String, ApplicationPlugin> plugins;
 
+  /** . */
+  private final ClassLoader classLoader;
+
   public Application(Injector injector, ApplicationDescriptor descriptor, ResourceResolver resourceResolver) {
+    this.classLoader = descriptor.getApplicationLoader();
     this.injectionContext = null;
     this.descriptor = descriptor;
     this.injector = injector;
@@ -71,7 +75,7 @@ public class Application {
     final ResourceResolver applicationResolver = new ResourceResolver() {
       public URL resolve(String uri) {
         if (uri.startsWith("/")) {
-          return descriptor.getApplicationLoader().getResource(uri.substring(1));
+          return classLoader.getResource(uri.substring(1));
         } else {
           return null;
         }
@@ -106,7 +110,7 @@ public class Application {
           return entry.getValue();
         }
         public ClassLoader getClassLoader() {
-          return descriptor.getApplicationLoader();
+          return classLoader;
         }
         public ResourceResolver getServerResolver() {
           return resourceResolver;
@@ -174,7 +178,7 @@ public class Application {
               return false;
             } else {
               try {
-                Class<?> packageClass = descriptor.getApplicationLoader().loadClass(currentPkg + ".package-info");
+                Class<?> packageClass = classLoader.loadClass(currentPkg + ".package-info");
                 juzu.Application ann = packageClass.getAnnotation(juzu.Application.class);
                 if (ann != null) {
                   blackList.add(currentPkg);

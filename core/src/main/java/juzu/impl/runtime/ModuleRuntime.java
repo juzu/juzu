@@ -16,6 +16,7 @@
 
 package juzu.impl.runtime;
 
+import juzu.impl.common.LiveClassLoader;
 import juzu.impl.common.ParentJarClassLoader;
 import juzu.impl.common.Logger;
 import juzu.impl.compiler.*;
@@ -30,7 +31,6 @@ import juzu.processor.MainProcessor;
 
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLClassLoader;
 
 /**
  * The module life cycle.
@@ -158,7 +158,7 @@ public abstract class ModuleRuntime<C> {
         }, classOutput);
 
         //
-        this.classLoader = new URLClassLoader(new URL[]{classOutput.getURL()}, classPathLoader);
+        this.classLoader = new LiveClassLoader(new URL[]{classOutput.getURL()}, baseClassLoader);
         this.classes = classOutput;
         this.snapshot = next;
         this.failed = false;

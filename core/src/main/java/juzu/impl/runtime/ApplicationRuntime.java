@@ -24,7 +24,6 @@ import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.BeanLifeCycle;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.inject.spi.Injector;
-import juzu.impl.inject.spi.spring.SpringInjector;
 import juzu.impl.common.Logger;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
@@ -33,7 +32,6 @@ import juzu.impl.resource.ResourceResolver;
 
 import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
 
 /**
  * The application life cycle.
@@ -137,11 +135,7 @@ public class ApplicationRuntime<P, R> implements Closeable {
     ReadFileSystem<?> classes = moduleLifeCycle.getClasses();
 
     //
-    Name fqn = name.append("Application");
-
-    //
-    Class<?> clazz = moduleLifeCycle.getClassLoader().loadClass(fqn.toString());
-    ApplicationDescriptor descriptor = ApplicationDescriptor.create(clazz);
+    ApplicationDescriptor descriptor = ApplicationDescriptor.create(moduleLifeCycle.getClassLoader(), name.toString());
 
     //
     Injector injector = injectorProvider.get();

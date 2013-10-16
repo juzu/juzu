@@ -42,17 +42,15 @@ public abstract class AbstractRunModeLiveTestCase extends AbstractWebTestCase {
 
   @Test
   public void testRender() throws Exception {
+
+    //
     driver.get(getURL().toString());
     WebElement elt = driver.findElement(By.id("trigger"));
     URL url = new URL(elt.getAttribute("href"));
-
-    //
     driver.get(url.toString());
     assertEquals("ok", driver.findElement(By.tagName("body")).getText());
-    assertTrue(SAME_CL_1);
-    assertTrue(SAME_CL_2);
-
-    // Now we should get an application error
+    assertFalse(SAME_CL_1);
+    assertFalse(SAME_CL_2);
     HttpURLConnection conn = (HttpURLConnection)url.openConnection();
     assertEquals(getErrorStatus(), conn.getResponseCode());
     driver.get(url.toString());
@@ -61,14 +59,16 @@ public abstract class AbstractRunModeLiveTestCase extends AbstractWebTestCase {
     // Make a change
     JavaFile pkgFile = getCompiler().assertSource("bridge", "runmode", "live", "A.java");
     pkgFile.assertSave(pkgFile.assertContent().replace("\"ok\"", "\"OK\""));
-
-    //
     driver.get(applicationURL().toString());
     elt = driver.findElement(By.id("trigger"));
     elt.click();
     assertEquals("OK", driver.findElement(By.tagName("body")).getText());
     assertTrue(SAME_CL_1);
-    assertTrue(SAME_CL_2);
+    assertFalse(SAME_CL_2);
+
+
+
+
 
     // Now make fail with compilation error
     pkgFile.assertSave(pkgFile.assertContent().replace("public", "_public_"));

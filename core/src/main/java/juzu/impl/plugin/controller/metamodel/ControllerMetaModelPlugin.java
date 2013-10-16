@@ -260,6 +260,9 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       writer.append("@Generated(value={})\n");
       writer.append("public class ").append(fqn.getIdentifier()).append("_ {\n");
 
+      // Class literal
+      writer.append("private static final Class<").append(fqn).append("> TYPE = ").append(fqn).append(".class;\n");
+
       //
       int index = 0;
       for (MethodMetaModel method : methods) {
@@ -281,8 +284,8 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
           writer.append("null,");
         }
         writer.append(PHASE).append(".").append(method.getPhase().name()).append(",");
-        writer.append(fqn).append(".class").append(",");
-        writer.append(TOOLS).append(".safeGetMethod(").append(fqn).append(".class,\"").append(method.getName()).append("\"");
+        writer.append("TYPE,");
+        writer.append(TOOLS).append(".safeGetMethod(TYPE,\"").append(method.getName()).append("\"");
         for (ParameterMetaModel parameter : method.getParameters()) {
           writer.append(",").append(parameter.typeLiteral).append(".class");
         }
@@ -363,7 +366,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
       //
       writer.append("public static final ").append(CONTROLLER_DESCRIPTOR).append(" DESCRIPTOR = new ").append(CONTROLLER_DESCRIPTOR).append("(");
-      writer.append(fqn.getIdentifier()).append(".class,Arrays.<").append(METHOD_DESCRIPTOR).append("<?>>asList(");
+      writer.append("TYPE,Arrays.<").append(METHOD_DESCRIPTOR).append("<?>>asList(");
       for (int j = 0;j < methods.size();j++) {
         if (j > 0) {
           writer.append(',');

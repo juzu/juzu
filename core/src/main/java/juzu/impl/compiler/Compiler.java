@@ -404,11 +404,9 @@ public class Compiler {
     };
 
     //
-    List<String> options = null;
+    List<String> options = new ArrayList<String>();
+    options.add("-g");
     for (String optionName : config.getProcessorOptionNames()) {
-      if (options == null) {
-        options = new ArrayList<String>();
-      }
       options.add("-A" + optionName + "=" + config.getProcessorOptionValue(optionName));
     }
 

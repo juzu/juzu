@@ -28,6 +28,10 @@ public class A {
   /** . */
   private static int count = 0;
 
+  public A() {
+    System.out.println("build");
+  }
+
   @View
   @Route("/foo")
   public Response.Content index() {
