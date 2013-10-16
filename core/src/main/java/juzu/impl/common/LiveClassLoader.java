@@ -29,9 +29,25 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import static java.util.Collections.addAll;
-
-/** @author Julien Viet */
+/**
+ * Provides a custom classloading policy oscillating between parent-first and child-first:
+ * <ul>
+ *   <li>a class is loaded by this loader when it exists and the same class in the parent loader does not
+ *   exists or has a different bytecode</li>
+ *   <li>a class is loaded bythe parent loaded when it does not exists in this loader or has the same bytecode</li>
+ *   <li>classes loaded by ancestors loaders are not subject to this policy</li>
+ * </ul>
+ *
+ * todo:
+ * <ul>
+ *   <li>Annotation scan</li>
+ *   <li>ArrayType generics</li>
+ *   <li>TypeVariable generics</li>
+ *   <li>Bytecode analysis</li>
+ * </ul>
+ *
+ *  @author Julien Viet
+ */
 public class LiveClassLoader extends URLClassLoader {
 
   /** . */
