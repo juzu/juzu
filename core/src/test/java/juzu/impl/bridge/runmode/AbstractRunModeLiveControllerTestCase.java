@@ -29,7 +29,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class AbstractRunModeLiveTestCase extends AbstractWebTestCase {
+public abstract class AbstractRunModeLiveControllerTestCase extends AbstractWebTestCase {
 
   public static Boolean SAME_CL_1;
   public static Boolean SAME_CL_2;
@@ -60,7 +60,7 @@ public abstract class AbstractRunModeLiveTestCase extends AbstractWebTestCase {
     assertEquals("java.lang.RuntimeException: throwed", driver.findElement(By.cssSelector("div.juzu > section > p")).getText().trim());
 
     // Make a change
-    JavaFile pkgFile = getCompiler().assertSource("bridge", "runmode", "live", "A.java");
+    JavaFile pkgFile = getCompiler().assertSource("bridge", "runmode", "live", "controller", "A.java");
     pkgFile.assertSave(pkgFile.assertContent().replace("\"ok\"", "\"OK\""));
     driver.get(applicationURL().toString());
     elt = driver.findElement(By.id("trigger"));
@@ -68,10 +68,6 @@ public abstract class AbstractRunModeLiveTestCase extends AbstractWebTestCase {
     assertEquals("OK", driver.findElement(By.tagName("body")).getText());
     assertTrue(SAME_CL_1);
     assertFalse(SAME_CL_2);
-
-
-
-
 
     // Now make fail with compilation error
     pkgFile.assertSave(pkgFile.assertContent().replace("public", "_public_"));

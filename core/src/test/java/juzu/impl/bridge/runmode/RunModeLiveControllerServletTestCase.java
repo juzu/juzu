@@ -23,11 +23,11 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RunModeLivePortletTestCase extends AbstractRunModeLiveTestCase {
+public class RunModeLiveControllerServletTestCase extends AbstractRunModeLiveControllerTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createPortletDeployment(RunMode.LIVE, "bridge.runmode.live");
+    return createServletDeployment(RunMode.LIVE, true, "bridge.runmode.live.controller");
   }
 
   @Override
@@ -37,6 +37,6 @@ public class RunModeLivePortletTestCase extends AbstractRunModeLiveTestCase {
 
   @Override
   protected int getErrorStatus() {
-    return 200;
+    return 500;
   }
 }

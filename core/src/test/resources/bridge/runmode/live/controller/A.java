@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package bridge.runmode.live;
+package bridge.runmode.live.controller;
 
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
-import juzu.impl.bridge.runmode.AbstractRunModeLiveTestCase;
+import juzu.impl.bridge.runmode.AbstractRunModeLiveControllerTestCase;
 import juzu.impl.common.RunMode;
 import juzu.impl.request.Request;
 
@@ -36,9 +36,9 @@ public class A {
     ClassLoader threadCL = Thread.currentThread().getContextClassLoader();
     ClassLoader aCL = getClass().getClassLoader();
     ClassLoader bCL = B.class.getClassLoader();
-    AbstractRunModeLiveTestCase.SAME_CL_1 = aCL == threadCL;
-    AbstractRunModeLiveTestCase.SAME_CL_2 = bCL == threadCL;
-    AbstractRunModeLiveTestCase.RUN_MODE = Request.getCurrent().getBridge().getProperty(RunMode.PROPERTY);
+    AbstractRunModeLiveControllerTestCase.SAME_CL_1 = aCL == threadCL;
+    AbstractRunModeLiveControllerTestCase.SAME_CL_2 = bCL == threadCL;
+    AbstractRunModeLiveControllerTestCase.RUN_MODE = Request.getCurrent().getBridge().getProperty(RunMode.PROPERTY);
     if (count == 0) {
       count = 1;
       String url = A_.index().toString();

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-@Application package bridge.runmode.live;
+@Application package bridge.runmode.live.controller;
 
 import juzu.Application;
