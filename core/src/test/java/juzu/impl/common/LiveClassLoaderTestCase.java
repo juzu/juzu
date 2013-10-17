@@ -22,7 +22,9 @@ import juzu.test.JavaFile;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -398,5 +400,21 @@ public class LiveClassLoaderTestCase extends AbstractTestCase {
 
     //
 //    assertSame(a, ((ParameterizedType)b.getGenericInterfaces()[0]).getActualTypeArguments()[0]);
+  }
+
+  @Test
+  public void testResource() throws IOException {
+    Context ctx = new Context("common.live.resource");
+    ctx.init();
+
+    //
+    assertEquals("bar", Tools.read(ctx.local.getResource("common/live/resource/foo.txt")));
+
+    //
+    File dir = new File(ctx.compilerAssert2.getClassOutput().getRoot(), "common/live/resource");
+    assertTrue(dir.mkdirs());
+    File f = new File(dir, "foo.txt");
+    new FileWriter(f).append("bar_").close();
+    assertEquals("bar_", Tools.read(ctx.local.getResource("common/live/resource/foo.txt")));
   }
 }

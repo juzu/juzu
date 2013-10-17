@@ -40,6 +40,7 @@ import java.util.LinkedList;
  *
  * todo:
  * <ul>
+ *   <li>implement getResources()</li>
  *   <li>Annotation scan</li>
  *   <li>ArrayType generics</li>
  *   <li>TypeVariable generics</li>
@@ -194,5 +195,14 @@ public class LiveClassLoader extends URLClassLoader {
     } else {
       throw new UnsupportedOperationException("Type " + type + " not yet supported");
     }
+  }
+
+  @Override
+  public URL getResource(String name) {
+    URL url = findResource(name);
+    if (url == null) {
+      url = super.getResource(name);
+    }
+    return url;
   }
 }
