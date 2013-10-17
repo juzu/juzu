@@ -52,6 +52,10 @@ public class Content {
     return encoding;
   }
 
+  public byte[] getBytes() {
+    return data.clone();
+  }
+
   public InputStream getInputStream() {
     return new ByteArrayInputStream(data);
   }

@@ -123,7 +123,7 @@ public class ApplicationRuntime<P, R> implements Closeable {
 
     //
     if (application == null) {
-      log.log("Building application");
+      log.log("Starting application");
       start();
       return true;
     } else {

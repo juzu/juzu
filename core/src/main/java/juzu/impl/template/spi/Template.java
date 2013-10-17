@@ -39,20 +39,29 @@ public class Template<M extends Serializable> implements Serializable {
   private final LinkedHashSet<String> parameters;
 
   /** The last modified date. */
-  private long lastModified;
+  private final long lastModified;
+
+  /** . */
+  private final long md5;
 
   public Template(
     M model,
     Path.Absolute path,
-    long lastModified) {
+    long lastModified,
+    long md5) {
     this.model = model;
     this.parameters = new LinkedHashSet<String>();
     this.lastModified = lastModified;
     this.path = path;
+    this.md5 = md5;
   }
 
   public Path.Absolute getPath() {
     return path;
+  }
+
+  public long getMD5() {
+    return md5;
   }
 
   public M getModel() {

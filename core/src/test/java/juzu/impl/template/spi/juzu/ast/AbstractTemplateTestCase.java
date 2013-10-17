@@ -83,6 +83,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
       Template<ASTNode.Template> template = new Template<ASTNode.Template>(
           ASTNode.Template.parse(text),
           absolute,
+          0,
           0);
       processPhase.process(template);
 

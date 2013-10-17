@@ -62,6 +62,7 @@ class TemplateEmitter extends AbstractEmitter {
     writer.
         append("public static final ").append(TemplateDescriptor.class.getName()).append(" DESCRIPTOR = new ").append(TemplateDescriptor.class.getName()).append("(").
         append("\"").append(path.getValue()).append("\",").
+        append("0x").append(Long.toHexString(template.template.getMD5())).append("L,").
         append(path.getName()).append(".class,").
         append(provider.getTemplateStubType().getName()).append(".class").
         append(");\n");

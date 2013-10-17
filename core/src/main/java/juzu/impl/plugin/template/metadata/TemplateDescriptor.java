@@ -37,8 +37,12 @@ public class TemplateDescriptor {
   /** . */
   private final TemplateStub stub;
 
+  /** Not really useful at runtime, rather used to have distinct template subclass for different content. */
+  private final long md5;
+
   public TemplateDescriptor(
       String path,
+      long md5,
       Class<? extends Template> type,
       Class<? extends TemplateStub> stubType) {
 
@@ -55,9 +59,14 @@ public class TemplateDescriptor {
 
     //
     this.path = path;
+    this.md5 = md5;
     this.type = type;
     this.stubType = stubType;
     this.stub = stub;
+  }
+
+  public long getMD5() {
+    return md5;
   }
 
   public TemplateStub getStub() {

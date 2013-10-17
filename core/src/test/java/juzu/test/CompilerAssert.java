@@ -229,19 +229,24 @@ public class CompilerAssert<I, O> {
     }
   }
 
-  public JavaFile<I> assertJavaSource(String name) {
+  public FileResource<I> assertSource(String name, String ext) {
     I path;
     try {
       String[] atoms = Tools.split(name, '.');
-      atoms[atoms.length - 1] += ".java";
+      atoms[atoms.length - 1] += "." + ext;
       path = strategy.sourcePath.getPath(atoms);
+      if (path == null) {
+        throw AbstractTestCase.failure("Was not expecting " + Arrays.asList(name) + " to be null file");
+      }
+      return new FileResource<I>(strategy.sourcePath, path);
     }
     catch (IOException e) {
       throw AbstractTestCase.failure(e);
     }
-    if (path == null) {
-      throw AbstractTestCase.failure("Was not expecting " + Arrays.asList(name) + " to be null file");
-    }
-    return new JavaFile<I>(strategy.sourcePath, path);
+  }
+
+  public JavaFile<I> assertJavaSource(String name) {
+    FileResource<I> resource = assertSource(name, "java");
+    return new JavaFile<I>(resource.sourcePath, resource.path);
   }
 }

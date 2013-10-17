@@ -22,8 +22,6 @@ import juzu.impl.common.Tools;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -60,21 +58,10 @@ public abstract class FileSystemScanner<P> implements Filter<P> {
 
     @Override
     protected long stampOf(P file) throws IOException {
-      try {
-        juzu.impl.common.Timestamped<Content> content = fs.getContent(file);
-        MessageDigest digest = MessageDigest.getInstance("MD5");
-        InputStream in = content.getObject().getInputStream();
-        byte[] bytes = Tools.bytes(in);
-        byte[] md5 = digest.digest(bytes);
-        long value = 0;
-        for (byte b : md5) {
-          value = value * 256 + Tools.unsignedByteToInt(b);
-        }
-        return value;
-      }
-      catch (NoSuchAlgorithmException e) {
-        throw new AssertionError(e);
-      }
+      juzu.impl.common.Timestamped<Content> content = fs.getContent(file);
+      InputStream in = content.getObject().getInputStream();
+      byte[] bytes = Tools.bytes(in);
+      return Tools.md5(bytes);
     }
 
     @Override

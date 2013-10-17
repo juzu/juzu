@@ -28,20 +28,15 @@ import java.io.InputStream;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class JavaFile<I> {
-
-  /** . */
-  final ReadWriteFileSystem<I> sourcePath;
-
-  /** . */
-  final I path;
+public class JavaFile<I> extends FileResource<I> {
 
   /** . */
   private CompilationUnit cu;
 
   public JavaFile(ReadWriteFileSystem<I> sourcePath, I path) {
-    this.sourcePath = sourcePath;
-    this.path = path;
+    super(sourcePath, path);
+
+    //
     this.cu = null;
   }
 
@@ -59,16 +54,6 @@ public class JavaFile<I> {
     return cu;
   }
 
-  public String assertContent() {
-    try {
-      Content content = sourcePath.getContent(path).getObject();
-      return content.getCharSequence().toString();
-    }
-    catch (Exception e) {
-      throw AbstractTestCase.failure(e);
-    }
-  }
-
   public ClassOrInterfaceDeclaration assertDeclaration() {
     List<TypeDeclaration> decls = assertCompilationUnit().getTypes();
     AbstractTestCase.assertEquals(1, decls.size());
@@ -80,35 +65,8 @@ public class JavaFile<I> {
     return assertCompilationUnit().getPackage();
   }
 
-  public void assertTouch() {
-    try {
-      Content content = sourcePath.getContent(path).getObject();
-      sourcePath.setContent(path, content);
-    }
-    catch (Exception e) {
-      throw AbstractTestCase.failure(e);
-    }
-  }
-
   public void assertSave() {
     assertSave(cu.toString());
   }
 
-  public void assertSave(String content) {
-    try {
-      sourcePath.setContent(path, new Content(content));
-    }
-    catch (Exception e) {
-      throw AbstractTestCase.failure(e);
-    }
-  }
-
-  public void assertRemove() {
-    try {
-      sourcePath.removePath(path);
-    }
-    catch (Exception e) {
-      throw AbstractTestCase.failure(e);
-    }
-  }
 }

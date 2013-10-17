@@ -47,6 +47,8 @@ import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -1571,5 +1573,20 @@ public class Tools {
         };
       }
     };
+  }
+
+  public static long md5(byte[] bytes) {
+    try {
+      MessageDigest digest = MessageDigest.getInstance("MD5");
+      byte[] md5 = digest.digest(bytes);
+      long value = 0;
+      for (byte b : md5) {
+        value = value * 256 + Tools.unsignedByteToInt(b);
+      }
+      return value;
+    }
+    catch (NoSuchAlgorithmException e) {
+      throw new UnsupportedOperationException("Could not resolve MD5", e);
+    }
   }
 }

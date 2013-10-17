@@ -19,6 +19,7 @@ package juzu.impl.template.spi;
 import juzu.impl.common.Resource;
 import juzu.impl.common.Content;
 import juzu.impl.common.Timestamped;
+import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.common.MethodInvocation;
@@ -87,7 +88,11 @@ public abstract class ProcessContext extends PhaseContext {
       } else {
         TemplateProvider<M> provider = (TemplateProvider<M>)resolverProvider(path.getExt());
         M templateAST = parseTemplate(provider, abs, resolved.content.getObject().getCharSequence());
-        template =  new Template<M>(templateAST, resolved.path, resolved.content.getTime());
+        template =  new Template<M>(
+            templateAST,
+            resolved.path,
+            resolved.content.getTime(),
+            Tools.md5(resolved.content.getObject().getBytes()));
         processTemplate(provider, template);
       }
     } else {

@@ -150,7 +150,8 @@ public class TagTestCase extends AbstractInjectTestCase {
     Template<?> foo = new Template<ASTNode.Template>(
       new ASTNode.Template(),
       (Path.Absolute)Path.parse("/" + desc.getType().getName().replace('.', '/') + "/foo.gtmpl"),
-      System.currentTimeMillis());
+      System.currentTimeMillis(),
+      0);
 
     //
     HashMap<Path.Absolute, Template<?>> templates = new HashMap<Path.Absolute, Template<?>>();
@@ -163,7 +164,8 @@ public class TagTestCase extends AbstractInjectTestCase {
             return (Template<A>)new Template<ASTNode.Template>(
               ASTNode.Template.parse("#{decorate path=foo.gtmpl/}juu"),
               (Path.Absolute)Path.parse("/plugin/template/tag/decorate/templates/index.gtmpl"),
-              System.currentTimeMillis()
+              System.currentTimeMillis(),
+              0
             );
           }
           catch (juzu.impl.template.spi.juzu.ast.ParseException e) {

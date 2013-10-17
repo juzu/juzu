@@ -29,6 +29,7 @@ import juzu.impl.fs.spi.ram.RAMFileSystem;
 import juzu.impl.fs.spi.url.URLFileSystem;
 import juzu.processor.MainProcessor;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -136,7 +137,7 @@ public abstract class ModuleRuntime<C> {
         this.failed = true;
 
         //
-        ReadFileSystem<S> sourcePath = scanner.getFileSystem();
+        final ReadFileSystem<S> sourcePath = scanner.getFileSystem();
 
         //
         final RAMFileSystem classOutput = new RAMFileSystem();
@@ -149,11 +150,13 @@ public abstract class ModuleRuntime<C> {
         compiler.addAnnotationProcessor(new MainProcessor());
         compiler.compile();
 
-        // Copy everything that is not a java source
+        // Copy everything that is not a java source and not already present
         sourcePath.copy(new Filter.Default<S>() {
           @Override
           public boolean acceptFile(S file, String name) throws IOException {
-            return !name.endsWith(".java");
+            Iterable<String> names = sourcePath.getNames(file);
+            String[] path = classOutput.getPath(names);
+            return path == null && !name.endsWith(".java");
           }
         }, classOutput);
 
