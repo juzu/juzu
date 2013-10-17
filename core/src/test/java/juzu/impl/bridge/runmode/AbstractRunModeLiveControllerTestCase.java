@@ -60,7 +60,7 @@ public abstract class AbstractRunModeLiveControllerTestCase extends AbstractWebT
     assertEquals("java.lang.RuntimeException: throwed", driver.findElement(By.cssSelector("div.juzu > section > p")).getText().trim());
 
     // Make a change
-    JavaFile pkgFile = getCompiler().assertSource("bridge", "runmode", "live", "controller", "A.java");
+    JavaFile pkgFile = getCompiler().assertJavaSource("bridge.runmode.live.controller.A");
     pkgFile.assertSave(pkgFile.assertContent().replace("\"ok\"", "\"OK\""));
     driver.get(applicationURL().toString());
     elt = driver.findElement(By.id("trigger"));

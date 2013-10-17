@@ -19,7 +19,6 @@ package juzu.impl.metamodel;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.expr.AnnotationExpr;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
-import juzu.impl.compiler.CompilationError;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.test.AbstractTestCase;
@@ -28,7 +27,6 @@ import juzu.test.JavaFile;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.List;
 
 import static juzu.impl.common.JSON.json;
 
@@ -76,7 +74,7 @@ public class ParamTestCase extends AbstractTestCase {
     helper.assertCompile();
 
     // Remove @Param
-    JavaFile file = helper.assertSource("metamodel", "param", "Bean.java");
+    JavaFile file = helper.assertJavaSource("metamodel.param.Bean");
     ClassOrInterfaceDeclaration bean = file.assertDeclaration();
     AnnotationExpr annotation = bean.getAnnotations().get(0);
     bean.getAnnotations().clear();

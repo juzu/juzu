@@ -216,11 +216,11 @@ public class CompilerAssert<I, O> {
     }
   }
 
-  public void assertRemove(String names) {
+  public void assertRemove(String name) {
     try {
-      I path = strategy.sourcePath.getPath(names);
+      I path = strategy.sourcePath.getPath(name);
       if (path == null) {
-        throw AbstractTestCase.failure("Cannot remove path " + Tools.join('/', names));
+        throw AbstractTestCase.failure("Cannot remove path " + Tools.join('/', name));
       }
       strategy.sourcePath.removePath(path);
     }
@@ -229,10 +229,12 @@ public class CompilerAssert<I, O> {
     }
   }
 
-  public JavaFile<I> assertSource(String... name) {
+  public JavaFile<I> assertJavaSource(String name) {
     I path;
     try {
-      path = strategy.sourcePath.getPath(name);
+      String[] atoms = Tools.split(name, '.');
+      atoms[atoms.length - 1] += ".java";
+      path = strategy.sourcePath.getPath(atoms);
     }
     catch (IOException e) {
       throw AbstractTestCase.failure(e);

@@ -57,7 +57,7 @@ public class LiveClassLoaderTestCase extends AbstractTestCase {
     }
 
     void aExtends(String name, String type) {
-      JavaFile<?> file = compilerAssert2.assertSource("common", "live", name, "A.java");
+      JavaFile<?> file = compilerAssert2.assertJavaSource("common.live." + name + ".A");
       file.assertDeclaration().setExtends(Arrays.asList(new ClassOrInterfaceType(type)));
       file.assertSave();
     }
@@ -107,7 +107,7 @@ public class LiveClassLoaderTestCase extends AbstractTestCase {
   @Test
   public void testModified() throws Exception {
     Context ctx = new Context("common.live.modified");
-    JavaFile<?> file = ctx.compilerAssert2.assertSource("common", "live", "modified", "A.java");
+    JavaFile<?> file = ctx.compilerAssert2.assertJavaSource("common.live.modified.A");
     file.assertDeclaration().setExtends(Arrays.asList(new ClassOrInterfaceType("java.util.Date")));
     file.assertSave();
     ctx.init();
@@ -119,7 +119,7 @@ public class LiveClassLoaderTestCase extends AbstractTestCase {
   @Test
   public void testDependsOnModified() throws Exception {
     Context ctx = new Context("common.live.dependsonmodified");
-    JavaFile<?> file = ctx.compilerAssert2.assertSource("common", "live", "dependsonmodified", "B.java");
+    JavaFile<?> file = ctx.compilerAssert2.assertJavaSource("common.live.dependsonmodified.B");
     file.assertDeclaration().setExtends(Arrays.asList(new ClassOrInterfaceType("java.util.Date")));
     file.assertSave();
     ctx.init();
@@ -179,7 +179,7 @@ public class LiveClassLoaderTestCase extends AbstractTestCase {
   @Test
   public void testFoundLocally() throws Exception {
     Context ctx = new Context("common.live.foundlocally");
-    ctx.compilerAssert1.assertSource("common", "live", "foundlocally", "B.java").assertRemove();
+    ctx.compilerAssert1.assertJavaSource("common.live.foundlocally.B").assertRemove();
     ctx.init();
 
     //

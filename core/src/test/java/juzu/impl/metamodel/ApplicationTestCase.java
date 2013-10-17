@@ -79,7 +79,7 @@ public class ApplicationTestCase extends AbstractTestCase {
     Tools.serialize(b, ser);
 
     //
-    JavaFile pkgFile = helper.assertSource("metamodel", "application", "package-info.java");
+    JavaFile pkgFile = helper.assertJavaSource("metamodel.application.package-info");
     PackageDeclaration pkg = pkgFile.assertPackage();
     pkg.getAnnotations().clear();
     List<AnnotationExpr> a = Collections.<AnnotationExpr>singletonList(new NormalAnnotationExpr(ASTHelper.createNameExpr(
@@ -153,7 +153,7 @@ public class ApplicationTestCase extends AbstractTestCase {
     helper.assertCompile();
 
     //
-    JavaFile pkgFile = helper.assertSource("metamodel", "application", "package-info.java");
+    JavaFile pkgFile = helper.assertJavaSource("metamodel.application.package-info");
     PackageDeclaration pkg = pkgFile.assertPackage();
     pkg.getAnnotations().clear();
     pkgFile.assertSave();

@@ -23,7 +23,6 @@ import japa.parser.ast.expr.SingleMemberAnnotationExpr;
 import japa.parser.ast.expr.StringLiteralExpr;
 import juzu.impl.common.Path;
 import juzu.impl.common.Tools;
-import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.test.AbstractTestCase;
@@ -43,7 +42,7 @@ public class TagTestCase extends AbstractTestCase {
     helper.assertCompile();
 
     //
-    JavaFile file = helper.assertSource("metamodel", "tag", "package-info.java");
+    JavaFile file = helper.assertJavaSource("metamodel.tag.package-info");
     PackageDeclaration a = file.assertPackage();
     SingleMemberAnnotationExpr applicationDecl = (SingleMemberAnnotationExpr)a.getAnnotations().get(0);
     NormalAnnotationExpr tagDecl = (NormalAnnotationExpr)applicationDecl.getMemberValue();
@@ -84,7 +83,7 @@ public class TagTestCase extends AbstractTestCase {
     helper.assertCompile();
 
     //
-    JavaFile file = helper.assertSource("metamodel", "tag", "package-info.java");
+    JavaFile file = helper.assertJavaSource("metamodel.tag.package-info");
     PackageDeclaration a = file.assertPackage();
     a.getAnnotations().remove(0);
     file.assertSave();

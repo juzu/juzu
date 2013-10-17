@@ -81,7 +81,7 @@ public class TemplateTestCase extends AbstractTestCase {
     helper.assertCompile();
 
     //
-    JavaFile file = helper.assertSource("metamodel", "template", "A.java");
+    JavaFile file = helper.assertJavaSource("metamodel.template.A");
     ClassOrInterfaceDeclaration a = file.assertDeclaration();
     FieldDeclaration decl = (FieldDeclaration)a.getMembers().get(0);
     decl.getAnnotations().clear();
