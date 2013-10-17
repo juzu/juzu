@@ -16,7 +16,6 @@
 
 package juzu.impl.plugin.template;
 
-import juzu.impl.common.Name;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
@@ -24,6 +23,7 @@ import juzu.impl.plugin.template.metadata.TemplateDescriptor;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.plugin.template.metadata.TemplatesDescriptor;
 import juzu.impl.common.Path;
+import juzu.template.TagHandler;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,11 +40,15 @@ public class TemplatePlugin extends ApplicationPlugin {
   /** . */
   private PluginContext context;
 
+  /** . */
+  private final ConcurrentHashMap<String, TagHandler> tags;
+
   public TemplatePlugin() {
     super("template");
 
     //
     this.stubs = new ConcurrentHashMap<Path, TemplateStub>();
+    this.tags = new ConcurrentHashMap<String, TagHandler>();
   }
 
   public TemplatesDescriptor getDescriptor() {
@@ -56,6 +60,22 @@ public class TemplatePlugin extends ApplicationPlugin {
     this.context = context;
     this.descriptor = new TemplatesDescriptor(application, context.getClassLoader(), context.getConfig());
     return descriptor;
+  }
+
+  public TagHandler resolveTag(String name) {
+    TagHandler tag = tags.get(name);
+    if (tag == null) {
+      try {
+        Class<?> a = context.getClassLoader().loadClass(name);
+        Class<? extends TagHandler> tagHandlerClass = a.asSubclass(TagHandler.class);
+        tag = tagHandlerClass.newInstance();
+        tags.putIfAbsent(name, tag);
+      }
+      catch (Exception e) {
+        throw new UnsupportedOperationException("handle me gracefully", e);
+      }
+    }
+    return tag;
   }
 
   public TemplateStub resolveTemplateStub(String path) {

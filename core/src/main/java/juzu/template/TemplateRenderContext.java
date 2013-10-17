@@ -68,6 +68,17 @@ public class TemplateRenderContext {
     this.properties = properties;
   }
 
+  /**
+   * Renders a tag.
+   *
+   * @param name the tag name
+   * @param body the tag body
+   * @param parameters the tag paremeters
+   */
+  public void renderTag(String name, Renderable body, Map<String, String> parameters) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
   public Map<String, ?> getAttributes() {
     return attributes;
   }

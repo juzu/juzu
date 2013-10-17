@@ -368,6 +368,12 @@ public abstract class Template {
           boolean bundleLoaded = false;
 
           @Override
+          public void renderTag(String name, Renderable body, Map<String, String> parameters) throws IOException {
+            TagHandler handler = plugin.resolveTag(name);
+            handler.render(this, body, parameters);
+          }
+
+          @Override
           public TemplateStub resolveTemplate(String path) {
             return plugin.resolveTemplateStub(path);
           }
