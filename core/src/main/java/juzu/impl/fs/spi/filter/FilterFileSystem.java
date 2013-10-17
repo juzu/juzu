@@ -86,6 +86,11 @@ public class FilterFileSystem<P> extends ReadFileSystem<P> {
   }
 
   @Override
+  public Iterable<String> getNames(P path) {
+    return filtered.getNames(path);
+  }
+
+  @Override
   public Iterator<P> getChildren(P dir) throws IOException {
     final Iterator<P> i = filtered.getChildren(dir);
     return new Iterator<P>() {

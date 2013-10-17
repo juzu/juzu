@@ -18,6 +18,7 @@ package juzu.impl.fs.spi.composite;
 
 import juzu.impl.common.Content;
 import juzu.impl.common.Timestamped;
+import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.PathType;
 import juzu.impl.fs.spi.ram.RAMFileSystem;
 import juzu.test.AbstractTestCase;
@@ -46,6 +47,7 @@ public class CompositeFileSystemTestCase extends AbstractTestCase {
     Context b = composite.getChild(a, "b");
     assertNotNull(b);
     assertEquals(PathType.FILE, composite.typeOf(b));
+    assertEquals(Tools.list("a", "b"), composite.getNames(b));
 
     //
     Timestamped<Content> content = composite.getContent(b);

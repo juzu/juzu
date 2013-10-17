@@ -81,6 +81,11 @@ public class CompositeFileSystem extends ReadFileSystem<Context> {
   }
 
   @Override
+  public Iterable<String> getNames(Context path) {
+    return path.getPath();
+  }
+
+  @Override
   public PathType typeOf(Context path) throws IOException {
     for (int i = 0;i < path.paths.length;i++) {
       ReadFileSystem compound = compounds[i];

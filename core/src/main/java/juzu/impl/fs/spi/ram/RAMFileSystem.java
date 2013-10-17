@@ -152,6 +152,11 @@ public class RAMFileSystem extends ReadWriteFileSystem<String[]> {
   }
 
   @Override
+  public Iterable<String> getNames(String[] path) {
+    return Tools.iterable(path);
+  }
+
+  @Override
   public Iterator<String[]> getChildren(String[] dir) throws IOException {
     RAMPath path = get(dir);
     if (path instanceof RAMDir) {

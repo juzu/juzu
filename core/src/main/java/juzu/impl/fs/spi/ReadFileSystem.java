@@ -117,6 +117,8 @@ public abstract class ReadFileSystem<P> {
 
   public abstract String getName(P path);
 
+  public abstract Iterable<String> getNames(P path);
+
   public abstract Iterator<P> getChildren(P dir) throws IOException;
 
   public abstract PathType typeOf(P path) throws IOException;

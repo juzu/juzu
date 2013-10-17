@@ -16,6 +16,7 @@
 
 package juzu.impl.fs.spi.jar;
 
+import juzu.impl.common.Spliterator;
 import juzu.io.UndeclaredIOException;
 import juzu.impl.common.Timestamped;
 import juzu.impl.common.Tools;
@@ -189,6 +190,11 @@ public class JarFileSystem extends ReadFileSystem<String> {
       int index = path.lastIndexOf('/', from - 1);
       return index == -1 ? path.substring(0, from) : path.substring(index + 1, from);
     }
+  }
+
+  @Override
+  public Iterable<String> getNames(String path) {
+    return Spliterator.split(path, '/');
   }
 
   @Override

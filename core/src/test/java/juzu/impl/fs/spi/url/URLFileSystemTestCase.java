@@ -32,6 +32,7 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 
@@ -115,6 +116,12 @@ public class URLFileSystemTestCase extends AbstractTestCase {
   }
 
   private <P> void assertFS(ReadFileSystem<P> fs) throws Exception {
+
+    //
+    assertEquals("", fs.getName(fs.getRoot()));
+    assertEquals(Collections.emptyList(), fs.getNames(fs.getRoot()));
+
+    //
     P foo = fs.getPath("foo");
     assertEquals("foo", fs.getName(foo));
     HashSet<? extends P> fooChildren = Tools.set(fs.getChildren(foo));
@@ -141,6 +148,7 @@ public class URLFileSystemTestCase extends AbstractTestCase {
     URL fooBarJuuURL = fs.getURL(fooBarJuu);
     String fooBarJuuContent = Tools.read(fooBarJuuURL);
     assertEquals("foo/bar/juu.txt_value", fooBarJuuContent);
+    assertEquals(Tools.list("foo", "bar", "juu.txt"), fs.getNames(fooBarJuu));
 
     //
     assertEquals(null, fs.getPath("juu"));

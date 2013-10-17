@@ -210,7 +210,12 @@ public class URLFileSystem extends ReadFileSystem<Node> {
 
   @Override
   public String getName(Node path) {
-    return path.getKey();
+    return path == root ? "" : path.getKey();
+  }
+
+  @Override
+  public Iterable<String> getNames(Node path) {
+    return path.getPath();
   }
 
   @Override

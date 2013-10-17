@@ -17,11 +17,13 @@
 package juzu.impl.fs.spi;
 
 import juzu.impl.common.Content;
+import juzu.impl.common.Tools;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class AbstractReadWriteFileSystemTestCase<P> extends AbstractTestCase {
@@ -32,6 +34,16 @@ public abstract class AbstractReadWriteFileSystemTestCase<P> extends AbstractTes
    * @return the new file system
    */
   protected abstract ReadWriteFileSystem<P> create() throws IOException;
+
+  @Test
+  public void testGetNames() throws IOException {
+    ReadWriteFileSystem<P> fs = create();
+    assertFalse(fs.getNames(fs.getRoot()).iterator().hasNext());
+    List<String> expected = Tools.list("a", "b", "c");
+    P path = fs.makePath(expected);
+    List<String> test = Tools.list(fs.getNames(path));
+    assertEquals(expected, test);
+  }
 
   @Test
   public void testLifeCycle() throws Exception {

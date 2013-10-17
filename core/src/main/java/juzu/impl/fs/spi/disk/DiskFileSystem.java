@@ -32,8 +32,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class DiskFileSystem extends ReadWriteFileSystem<File> {
@@ -112,6 +117,16 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
     else {
       return path.getName();
     }
+  }
+
+  @Override
+  public Iterable<String> getNames(File path) {
+    LinkedList<String> names = new LinkedList<String>();
+    while (!path.equals(root)) {
+      names.addFirst(path.getName());
+      path = path.getParentFile();
+    }
+    return names;
   }
 
   @Override

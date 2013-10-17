@@ -16,6 +16,7 @@
 
 package juzu.impl.fs.spi.war;
 
+import juzu.impl.common.Spliterator;
 import juzu.impl.common.Timestamped;
 import juzu.impl.fs.spi.PathType;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -82,6 +83,15 @@ public abstract class WarFileSystem extends ReadFileSystem<String> {
 
     // Return name
     return path.substring(index + 1);
+  }
+
+  @Override
+  public Iterable<String> getNames(String path) {
+    int to = path.length();
+    if (path.endsWith("/")) {
+      to--;
+    }
+    return Spliterator.split(path, 0, to, '/');
   }
 
   @Override
