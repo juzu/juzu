@@ -74,7 +74,6 @@ public class AssetManager {
       //
       switch (data.location) {
         case APPLICATION:
-        case SERVER:
           resources.put(data.getValue(), url);
           break;
         default:
