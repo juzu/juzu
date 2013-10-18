@@ -43,6 +43,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -122,16 +123,21 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
         }
 
         //
-        String value = script.getString("value");
-        if (!value.startsWith("/") && location == AssetLocation.APPLICATION) {
-          value = "/" + application.getPackageName().replace('.', '/') + "/" + packageName.replace('.', '/') + "/" + value;
+        List<String> values = new ArrayList<String>(script.getList("value", String.class));
+        if (location == AssetLocation.APPLICATION) {
+          for (int i = 0;i < values.size();i++) {
+            String value = values.get(i);
+            if (!value.startsWith("/")) {
+              values.set(i, "/" + application.getPackageName().replace('.', '/') + "/" + packageName.replace('.', '/') + "/" + value);
+            }
+          }
         }
 
         //
         AssetMetaData descriptor = new AssetMetaData(
           id,
           location,
-          value,
+          values,
           script.getArray("depends", String.class)
         );
         abc.add(descriptor);
@@ -160,29 +166,45 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     LinkedHashMap<String, Chunk.Property<String>> assets = new LinkedHashMap<String, Chunk.Property<String>>();
     for (AssetMetaData script : data) {
 
+      //
+      HashMap<String, URL> resources = new HashMap<String, URL>(script.getValues().size());
+
       // Validate assets
       AssetLocation location = script.getLocation();
-      URL url;
       if (location == AssetLocation.APPLICATION) {
-        url = resolve(AssetLocation.APPLICATION, script.getValue());
-        if (url == null) {
-          throw new Exception("Could not resolve application  " + script.getValue());
+        for (String value : script.getValues()) {
+          URL url = resolve(AssetLocation.APPLICATION, value);
+          if (url == null) {
+            throw new Exception("Could not resolve application  " + value);
+          } else {
+            resources.put(value, url);
+          }
         }
       } else if (location == AssetLocation.SERVER) {
-        if (!script.getValue().startsWith("/")) {
-          url = resolve(AssetLocation.SERVER, "/" + script.getValue());
-          if (url == null) {
-            throw new Exception("Could not resolve server asset " + script.getValue());
+        for (String value : script.getValues()) {
+          if (!value.startsWith("/")) {
+            URL url = resolve(AssetLocation.SERVER, "/" + value);
+            if (url == null) {
+              throw new Exception("Could not resolve server asset " + value);
+            }
           }
-        } else {
-          url = null;
+          resources.put(value, null);
         }
       } else {
-        url = null;
+        for (String value : script.getValues()) {
+          resources.put(value, null);
+        }
+      }
+
+      String id = script.getId();
+      if (id == null) {
+        String value = script.getValues().get(0);
+        int slash = value.lastIndexOf('/');
+        id = slash >= 0 ? value.substring(slash + 1) : value;
       }
 
       //
-      String id = assetManager.addAsset(script, url);
+      assetManager.addAsset(id, script.getLocation(), resources, script.getDependencies());
       assets.put(id, new Chunk.Property<String>(id, PropertyType.ASSET));
     }
 

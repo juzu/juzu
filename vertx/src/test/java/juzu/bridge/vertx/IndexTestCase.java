@@ -17,11 +17,9 @@
 package juzu.bridge.vertx;
 
 import junit.framework.Assert;
-import juzu.impl.common.Tools;
 import org.junit.Test;
 import org.vertx.java.test.TestModule;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -33,10 +31,7 @@ public class IndexTestCase extends VertxTestCase {
   @Test
   public void testFoo() throws Exception {
     URL url = new URL("http://localhost:8080/");
-    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-    conn.connect();
-    Assert.assertEquals(200, conn.getResponseCode());
-    String result = Tools.read(conn.getInputStream());
+    String result = assertStatus(200, url);
     Assert.assertTrue(result.contains("pass"));
   }
 }

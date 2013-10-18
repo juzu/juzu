@@ -37,6 +37,11 @@ public @interface Asset {
   String id() default "";
 
   /**
+   * @return the value for resolving the asset
+   */
+  String[] value() default {};
+
+  /**
    * @return the asset dependencies, i.e the asset that are needed by this asset.
    */
   String[] depends() default {};
@@ -45,10 +50,5 @@ public @interface Asset {
    * @return the asset location
    */
   AssetLocation location() default AssetLocation.APPLICATION;
-
-  /**
-   * @return the value for resolving the asset
-   */
-  String value();
 
 }

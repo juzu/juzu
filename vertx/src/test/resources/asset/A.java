@@ -35,13 +35,7 @@ public class A {
   @PostConstruct
   public void start() {
     URL url = AjaxPlugin.class.getClassLoader().getResource("juzu/impl/plugin/ajax/script.js");
-    manager.addAsset(
-        new AssetMetaData(
-            "juzu.ajax",
-            AssetLocation.APPLICATION,
-            "/asset/juzu/impl/plugin/ajax/script.js",
-            "jquery"),
-        url);
+    manager.addAsset("juzu.ajax", AssetLocation.APPLICATION, "/asset/juzu/impl/plugin/ajax/script.js", url, "jquery");
   }
 
   @View

@@ -13,28 +13,28 @@ the an application.
 ----
 @Assets({
   @Asset(id = "jquery", value = "javascripts/jquery-1.7.1.min.js"), // <1>
-  @Asset(id = "jquery-ui.css", value = "ui-lightness/jquery-ui-1.7.2.custom.css"), // <2>
-  @Asset(value = "javascripts/jquery-ui-1.7.2.custom.min.js", // <3>
-         depends = {"jquery", "jquery-ui.css"}) // <4>
+  @Asset(value = { "javascripts/jquery-ui-1.7.2.custom.min.js", ui-lightness/jquery-ui-1.7.2.custom.css }, // <2>
+         depends = "jquery") // <3>
   }}
 )
 package my.application;
 ----
-<1> Declares the _jQuery_ asset
-<2> Declare the _jQuery-UI_ stylesheet asset
-<3> Declares the _jQuery-UI_ asset
-<4> depends on +jquery+ and +jquery-ui.css+ assets
+<1> declares the _jQuery_ asset
+<2> declares the _jQuery-UI_ asset composed of the JavaScript source and its associated stylesheet
+<3> depends on +jquery+ assets
 
 == Configuring assets
 
 Assets can configured for the application with:
 
 * an _id_ to reference it within the application
-* a _location_ and _source_ for resolving the asset file
+* a _location_ and _value_ for resolving the asset physical resources which can be empty, a single file or several files
 * a list of _dependencies_ referencing other assets that are needed by the asset
 
 For example, the _jQuery-UI_ plugin could be identified by _jquery-ui_ with the dependency onto the _jquery_ js asset and
 the _jQuery-UI_ stylesheet. Its physical location would be the +asset+ package with the +jquery-ui-1.4.2.min.js+ name.
+
+NOTE: an empty value asset is useful for declaring an asset defined by its dependencies
 
 === The asset identifier
 

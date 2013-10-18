@@ -28,7 +28,6 @@ import javax.inject.Inject;
 import juzu.PropertyType;
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetManager;
-import juzu.impl.asset.AssetMetaData;
 import juzu.impl.common.JSON;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.PluginDescriptor;
@@ -179,10 +178,8 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
     }
 
     //
-    assetManager.addAsset(new AssetMetaData("juzu.amd", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/require.js"),
-        requirejsURL);
-    assetManager.addAsset(new AssetMetaData("juzu.amd.wrapper", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/wrapper.js"),
-        wrapperjsURL);
+    assetManager.addAsset("juzu.amd", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/require.js", requirejsURL);
+    assetManager.addAsset("juzu.amd.wrapper", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/wrapper.js", wrapperjsURL);
 
     //
     this.defines = process(descriptor.getDefines(), manager);

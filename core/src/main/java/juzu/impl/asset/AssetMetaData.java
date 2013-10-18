@@ -20,6 +20,7 @@ import juzu.asset.AssetLocation;
 import juzu.impl.common.Tools;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,14 +37,14 @@ public class AssetMetaData {
   final AssetLocation location;
 
   /** The asset value. */
-  final String value;
+  final List<String> values;
 
   /** The asset dependencies. */
   final Set<String> dependencies;
 
-  public AssetMetaData(String id, AssetLocation location, String value, String... dependencies) {
+  public AssetMetaData(String id, AssetLocation location, List<String> values, String... dependencies) {
     this.id = id;
-    this.value = value;
+    this.values = values;
     this.location = location;
     this.dependencies = Collections.unmodifiableSet(Tools.set(dependencies));
   }
@@ -56,8 +57,8 @@ public class AssetMetaData {
     return location;
   }
 
-  public String getValue() {
-    return value;
+  public List<String> getValues() {
+    return values;
   }
 
   public Set<String> getDependencies() {
@@ -66,6 +67,6 @@ public class AssetMetaData {
 
   @Override
   public String toString() {
-    return "AssetDescriptor[id=" + id + ",location=" + location + ",value=" + value + ",dependencies=" + dependencies + "]";
+    return "AssetDescriptor[id=" + id + ",location=" + location + ",values=" + values + ",dependencies=" + dependencies + "]";
   }
 }

@@ -34,7 +34,7 @@ public class AssetNode {
   final AssetLocation location;
 
   /** . */
-  final String value;
+  final Set<String> value;
 
   /** . */
   Set<String> dependsOnMe;
@@ -42,7 +42,7 @@ public class AssetNode {
   /** . */
   Set<String> iDependOn;
 
-  public AssetNode(String id, AssetLocation location, String value, Set<String> iDependOn) {
+  public AssetNode(String id, AssetLocation location, Set<String> value, Set<String> iDependOn) {
     this.id = id;
     this.location = location;
     this.value = value;
@@ -58,7 +58,7 @@ public class AssetNode {
     return location;
   }
 
-  public String getValue() {
+  public Set<String> getValue() {
     return value;
   }
 }

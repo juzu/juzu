@@ -21,7 +21,6 @@ import juzu.asset.AssetLocation;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.asset.AssetManager;
-import juzu.impl.asset.AssetMetaData;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.Method;
@@ -71,13 +70,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
     }
 
     //
-    manager.addAsset(
-        new AssetMetaData(
-            "juzu.ajax",
-            AssetLocation.APPLICATION,
-            "/juzu/impl/plugin/ajax/script.js",
-            "jquery"),
-        url);
+    manager.addAsset("juzu.ajax", AssetLocation.APPLICATION, "/juzu/impl/plugin/ajax/script.js", url, "jquery");
 
     //
     Map<String, Method> table = new HashMap<String, Method>();
