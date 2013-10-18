@@ -67,8 +67,8 @@
       <artifactId>htmlunit</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.github.detro.ghostdriver</groupId>
-      <artifactId>phantomjsdriver</artifactId>
+      <groupId>org.jboss.arquillian.extension</groupId>
+      <artifactId>arquillian-phantom-driver</artifactId>
     </dependency>
 
     <!-- GateIn embedded portlet container -->
