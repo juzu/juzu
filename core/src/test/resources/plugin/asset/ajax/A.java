@@ -47,7 +47,7 @@ public class A {
 
   @Resource
   @Route("/resource")
-  public Response.Content resource() {
-    return Response.ok("bar");
+  public Response.Body resource() {
+    return Response.ok().body("bar");
   }
 }

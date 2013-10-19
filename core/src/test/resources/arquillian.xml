@@ -7,6 +7,8 @@
   <extension qualifier="webdriver">
     <!-- Needed for html unit web driver -->
     <property name="useJavaScript">true</property>
+    <!-- Use PhantomJS -->
+    <property name="browser">phantomjs</property>
   </extension>
 
   <container qualifier="tomcat" default="true">
