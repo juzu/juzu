@@ -20,6 +20,7 @@ import juzu.asset.AssetLocation;
 import juzu.impl.common.Tools;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -61,7 +62,7 @@ public class AssetManager {
 
     //
     if (!assets.keySet().contains(id)) {
-      AssetNode asset = new AssetNode(id, location, new HashSet<String>(resources.keySet()), dependencies);
+      AssetNode asset = new AssetNode(id, location, new ArrayList<String>(resources.keySet()), dependencies);
       for (AssetNode deployed : assets.values()) {
         if (deployed.iDependOn.contains(id)) {
           asset.dependsOnMe = Tools.addToHashSet(asset.dependsOnMe, deployed.id);
@@ -136,9 +137,7 @@ public class AssetManager {
         if (entry.getValue().isEmpty()) {
           i.remove();
           AssetNode asset = this.assets.get(entry.getKey());
-          for (String value : asset.value) {
-            resolved.addLast(Asset.of(asset.getLocation(), value));
-          }
+          resolved.addAll(asset.assets);
           for (String dependency : asset.dependsOnMe) {
             HashSet<String> foo = sub.get(dependency);
             if (foo != null) {

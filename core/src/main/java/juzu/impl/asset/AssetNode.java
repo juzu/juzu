@@ -18,7 +18,9 @@ package juzu.impl.asset;
 
 import juzu.asset.AssetLocation;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -34,7 +36,10 @@ public class AssetNode {
   final AssetLocation location;
 
   /** . */
-  final Set<String> value;
+  final List<String> value;
+
+  /** . */
+  final List<Asset> assets;
 
   /** . */
   Set<String> dependsOnMe;
@@ -42,12 +47,20 @@ public class AssetNode {
   /** . */
   Set<String> iDependOn;
 
-  public AssetNode(String id, AssetLocation location, Set<String> value, Set<String> iDependOn) {
+  public AssetNode(String id, AssetLocation location, List<String> value, Set<String> iDependOn) {
+
+    List<Asset> assets = new ArrayList<Asset>(value.size());
+    for (String v : value) {
+      assets.add(Asset.of(location, v));
+    }
+
+    //
     this.id = id;
     this.location = location;
     this.value = value;
     this.dependsOnMe = EMPTY_SET;
     this.iDependOn = iDependOn;
+    this.assets = assets;
   }
 
   public String getId() {
@@ -58,7 +71,7 @@ public class AssetNode {
     return location;
   }
 
-  public Set<String> getValue() {
+  public List<String> getValue() {
     return value;
   }
 }
