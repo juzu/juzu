@@ -22,6 +22,11 @@
     </license>
   </licenses>
 
+  <prerequisites>
+    <!-- It is impossible to build with an older maven version due to plugins used -->
+    <maven>2.2.1</maven>
+  </prerequisites>
+
   <properties>
 
     <!-- Encoding -->
@@ -37,9 +42,23 @@
     <!-- Used by the wikbook doc -->
     <juzu.version>${project.version}</juzu.version>
 
-    <!-- Compiler settings -->
+    <!-- maven-compiler-plugin -->
     <maven.compiler.target>1.5</maven.compiler.target>
     <maven.compiler.source>1.5</maven.compiler.source>
+
+    <!--  maven-javadoc-plugin -->
+    <detectOfflineLinks>false</detectOfflineLinks>
+    <!-- too slow : http://jira.codehaus.org/browse/MJAVADOC-268 -->
+    <quiet>true</quiet>
+
+    <!-- maven-war-plugin -->
+    <useCache>true</useCache>
+    <!-- Additional properties to activate the compression of already compressed archives - time expensive -->
+    <maven.war.recompressZippedFiles>false</maven.war.recompressZippedFiles>
+
+    <!-- maven-assembly-plugin -->
+    <!-- Additional properties to activate the compression of already compressed archives - time expensive -->
+    <maven.assembly.recompressZippedFiles>false</maven.assembly.recompressZippedFiles>
 
     <!-- Sonar/Reporting settings -->
     <sonar.java.target>${maven.compiler.target}</sonar.java.target>
@@ -709,16 +728,16 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>2.1.2</version>
+          <version>2.2.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.3</version>
+          <version>2.4</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
-          <version>1.2</version>
+          <version>2.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -728,17 +747,17 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.8</version>
+          <version>2.9.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
-          <version>2.1.1</version>
+          <version>2.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>2.4.1</version>
+          <version>2.5</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -748,37 +767,37 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>2.3.1</version>
+          <version>2.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>2.3.2</version>
+          <version>2.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>2.5</version>
+          <version>2.6</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.3</version>
+          <version>2.8</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>1.7</version>
+          <version>1.8</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.3.2</version>
+          <version>3.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.10</version>
+          <version>2.16</version>
           <configuration>
           <systemPropertyVariables>
             <targetDir>${project.build.directory}</targetDir>
@@ -792,7 +811,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.2.1</version>
+          <version>2.4.1</version>
           <configuration>
             <!-- Avoid issues with signature plugin -->
             <mavenExecutorId>forked-path</mavenExecutorId>
@@ -801,13 +820,13 @@
             <useReleaseProfile>false</useReleaseProfile>
             <pushChanges>false</pushChanges>
             <autoVersionSubmodules>true</autoVersionSubmodules>
-            <arguments>-Psign-artifacts</arguments>
+            <arguments>-Psign-artifacts,juzu-release</arguments>
           </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
-          <version>1.1</version>
+          <version>1.4</version>
         </plugin>
 
       </plugins>
@@ -971,6 +990,16 @@
           <scope>test</scope>
         </dependency>
       </dependencies>
+    </profile>
+
+    <!-- This profile is activated when the project is released. -->
+    <profile>
+      <id>juzu-release</id>
+      <properties>
+        <!-- Additional properties to activate the compression of already compressed archives - time expensive -->
+        <maven.assembly.recompressZippedFiles>true</maven.assembly.recompressZippedFiles>
+        <maven.war.recompressZippedFiles>true</maven.war.recompressZippedFiles>
+      </properties>
     </profile>
 
   </profiles>
