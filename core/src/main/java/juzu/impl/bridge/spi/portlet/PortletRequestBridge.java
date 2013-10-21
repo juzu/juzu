@@ -19,10 +19,13 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Scope;
+import juzu.asset.AssetLocation;
+import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.common.RunMode;
 import juzu.impl.request.ControlParameter;
+import juzu.io.UndeclaredIOException;
 import juzu.request.Result;
 import juzu.request.RequestParameter;
 import juzu.request.ResponseParameter;
@@ -54,6 +57,7 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
+import javax.portlet.ResourceURL;
 import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
 import java.io.IOException;
@@ -434,5 +438,52 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
   public PortletResponse getPortletResponse() {
     return resp;
+  }
+
+  public void renderAssetURL(AssetLocation location, String uri, Appendable appendable) throws NullPointerException, UnsupportedOperationException, IOException {
+    switch (location) {
+      case SERVER:
+        if (!uri.startsWith("/")) {
+          appendable.append(req.getContextPath());
+          appendable.append('/');
+        }
+        appendable.append(uri);
+        break;
+      case APPLICATION:
+        if (bridge.getRunMode().isStatic()) {
+          appendable.append(req.getContextPath()).append("/assets");
+          if (!uri.startsWith("/")) {
+            appendable.append('/');
+          }
+          appendable.append(uri);
+        }
+        else {
+          if (resp instanceof MimeResponse) {
+            ResourceURL r = ((MimeResponse)resp).createResourceURL();
+            r.setParameter("juzu.request", "assets");
+            r.setResourceID(uri);
+          } else {
+            throw new UnsupportedOperationException("todo");
+          }
+        }
+        break;
+      case URL:
+        appendable.append(uri);
+        break;
+      default:
+        throw new AssertionError();
+    }
+  }
+
+  String getAssetURL(Asset asset) {
+    StringBuilder sb = new StringBuilder();
+    try {
+      renderAssetURL(asset.getLocation(), asset.getURI(), sb);
+    }
+    catch (IOException e) {
+      // Should not happen
+      throw new UndeclaredIOException(e);
+    }
+    return sb.toString();
   }
 }

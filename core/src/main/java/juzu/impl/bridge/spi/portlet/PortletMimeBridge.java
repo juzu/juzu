@@ -122,9 +122,9 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
                   elt.setAttribute("media", "screen");
                   elt.setAttribute("rel", "stylesheet");
                   elt.setAttribute("type", "text/" + ext);
-                  elt.setAttribute("href", ((PortletRenderBridge)PortletMimeBridge.this).getAssetURL(resolvedAsset));
+                  elt.setAttribute("href", PortletMimeBridge.this.getAssetURL(resolvedAsset));
                 } else if (resolvedAsset.isScript()) {
-                  String url = ((PortletRenderBridge)PortletMimeBridge.this).getAssetURL(resolvedAsset);
+                  String url = PortletMimeBridge.this.getAssetURL(resolvedAsset);
                   elt = resp.createElement("script");
                   elt.setAttribute("type", "text/javascript");
                   elt.setAttribute("src", url);

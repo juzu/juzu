@@ -18,6 +18,7 @@ package juzu.impl.bridge.spi;
 
 import juzu.PropertyType;
 import juzu.Scope;
+import juzu.asset.AssetLocation;
 import juzu.impl.request.ControlParameter;
 import juzu.request.Result;
 import juzu.request.RequestParameter;
@@ -122,4 +123,16 @@ public interface RequestBridge extends Closeable {
    * @throws NullPointerException if any argument is null
    */
   DispatchBridge createDispatch(Phase phase, MethodHandle target, Map<String, ResponseParameter> parameters) throws NullPointerException, IllegalArgumentException;
+
+  /**
+   * Renders the url of the specified asset to the specified appendable.
+   *
+   * @param location the asset location
+   * @param uri the asset uri
+   * @param appendable the buffer to append to
+   * @throws NullPointerException if any argument is null
+   * @throws UnsupportedOperationException if the current request is not appropriate for rendering the asset
+   */
+  void renderAssetURL(AssetLocation location, String uri, Appendable appendable) throws NullPointerException, UnsupportedOperationException, IOException;
+
 }

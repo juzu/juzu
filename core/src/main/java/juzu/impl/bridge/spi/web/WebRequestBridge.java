@@ -19,7 +19,7 @@ package juzu.impl.bridge.spi.web;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Scope;
-import juzu.impl.asset.Asset;
+import juzu.asset.AssetLocation;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.RunMode;
 import juzu.impl.common.UriBuilder;
@@ -74,9 +74,6 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
 
   /** . */
   protected Request request;
-
-  /** . */
-  protected UserContext userContext;
 
   /** . */
   protected Map<String, RequestParameter> requestParameters;
@@ -320,10 +317,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
     }
   }
 
-  private String getAssetURL(Asset asset) throws IOException {
-    StringBuilder url = new StringBuilder();
-    String uri = asset.getURI();
-    http.getRequestContext().renderAssetURL(asset.getLocation(), uri, url);
-    return url.toString();
+  public void renderAssetURL(AssetLocation location, String uri, Appendable appendable) throws NullPointerException, UnsupportedOperationException, IOException {
+    http.getRequestContext().renderAssetURL(location, uri, appendable);
   }
 }

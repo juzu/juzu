@@ -17,7 +17,6 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.Response;
-import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.Formatting;
 import juzu.impl.compiler.CompilationException;
@@ -29,7 +28,6 @@ import juzu.request.Phase;
 import javax.portlet.PortletConfig;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.ResourceURL;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -74,45 +72,5 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
 
     //
     super.invoke();
-  }
-
-  String getAssetURL(Asset asset) {
-    StringBuilder sb;
-    String url;
-    String uri = asset.getURI();
-    switch (asset.getLocation()) {
-      case SERVER:
-        sb = new StringBuilder();
-        if (!uri.startsWith("/")) {
-          sb.append(req.getContextPath());
-          sb.append('/');
-        }
-        sb.append(uri);
-        url = sb.toString();
-        break;
-      case APPLICATION:
-        if (bridge.getRunMode().isStatic()) {
-          sb = new StringBuilder();
-          sb.append(req.getContextPath()).append("/assets");
-          if (!uri.startsWith("/")) {
-            sb.append('/');
-          }
-          sb.append(uri);
-          url = sb.toString();
-        }
-        else {
-          ResourceURL r = resp.createResourceURL();
-          r.setParameter("juzu.request", "assets");
-          r.setResourceID(uri);
-          url = r.toString();
-        }
-        break;
-      case URL:
-        url = uri;
-        break;
-      default:
-        throw new AssertionError();
-    }
-    return url;
   }
 }

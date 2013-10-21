@@ -19,6 +19,7 @@ package juzu.test.protocol.mock;
 import juzu.PropertyMap;
 import juzu.PropertyType;
 import juzu.Scope;
+import juzu.asset.AssetLocation;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.common.Tools;
 import juzu.impl.io.BinaryOutputStream;
@@ -279,6 +280,10 @@ public abstract class MockRequestBridge implements RequestBridge {
   }
 
   public void end() {
+  }
+
+  public void renderAssetURL(AssetLocation location, String uri, Appendable appendable) throws NullPointerException, UnsupportedOperationException, IOException {
+    throw new IllegalStateException();
   }
 
   public void setResult(Result result) throws IllegalArgumentException, IOException {
