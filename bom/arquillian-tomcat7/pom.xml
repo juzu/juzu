@@ -17,6 +17,11 @@
   <name>Juzu Arquillian Tomcat7 BOM</name>
   <description>The Juzu BOM for Arquillian testing with Tomcat7</description>
 
+  <properties>
+    <!-- No target/classes. Jacoco cannot be launched here -->
+    <jacoco.skip>true</jacoco.skip>
+  </properties>
+
   <dependencies>
 
     <!-- Shrinkwrap/Arquillian -->

@@ -16,6 +16,11 @@
   <name>Juzu API documentation</name>
   <description>The API documentation</description>
 
+  <properties>
+    <!-- No target/classes. Jacoco cannot be launched here -->
+    <jacoco.skip>true</jacoco.skip>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>javax.portlet</groupId>

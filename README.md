@@ -18,3 +18,21 @@ The distribution contains
 # Website
 
 http://juzu.github.com
+
+# Build instructions
+
+Prerequisites
+- Java 1.7
+- Apache Maven 3
+
+Build the project
+
+    mvn verify
+
+Build the project and generate tests coverage information (not human readable they are useful to be integrated in another software like SonarQube)
+
+   mvn verify -Pcoverage
+
+Build the project and generate tests coverage reports (in target/site/jacoco)
+
+   mvn verify -Pcoverage-report
