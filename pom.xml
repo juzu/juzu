@@ -22,6 +22,11 @@
     </license>
   </licenses>
 
+  <prerequisites>
+    <!-- It is impossible to build with an older maven version due to plugins used -->
+    <maven>2.2.1</maven>
+  </prerequisites>
+
   <properties>
 
     <!-- Encoding -->
@@ -36,6 +41,51 @@
 
     <!-- Used by the wikbook doc -->
     <juzu.version>${project.version}</juzu.version>
+
+    <!-- maven-compiler-plugin -->
+    <maven.compiler.target>1.5</maven.compiler.target>
+    <maven.compiler.source>1.5</maven.compiler.source>
+
+    <!--  maven-javadoc-plugin -->
+    <detectOfflineLinks>false</detectOfflineLinks>
+    <!-- too slow : http://jira.codehaus.org/browse/MJAVADOC-268 -->
+    <quiet>true</quiet>
+
+    <!-- maven-war-plugin -->
+    <useCache>true</useCache>
+    <!-- Additional properties to activate the compression of already compressed archives - time expensive -->
+    <maven.war.recompressZippedFiles>false</maven.war.recompressZippedFiles>
+
+    <!-- maven-assembly-plugin -->
+    <!-- Additional properties to activate the compression of already compressed archives - time expensive -->
+    <maven.assembly.recompressZippedFiles>false</maven.assembly.recompressZippedFiles>
+
+    <!-- Sonar/Reporting settings -->
+    <sonar.java.target>${maven.compiler.target}</sonar.java.target>
+    <sonar.java.source>${maven.compiler.source}</sonar.java.source>
+    <!-- Sonar/Jacoco integration. Note that these properties need to be defined outside the "coverage" profile
+         because we want to be to able to execute mvn sonar:sonar without passing a profile -->
+    <!-- Tells Sonar to use jacoco for coverage results -->
+    <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+    <!-- Jacoco version to use -->
+    <jacoco.version>0.6.3.201306030806</jacoco.version>
+    <!-- The Sonar Jacoco Listener for JUnit to extract coverage details per test -->
+    <sonar-jacoco-listeners.version>1.4</sonar-jacoco-listeners.version>
+    <!-- Don't let Sonar execute tests. We will ask it to Maven -->
+    <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+    <!-- The system property jacoco.outputDir needs to be override on the command line
+         with an absolute path if you want to merge results from all modules.
+         Example in a Jenkisn build where ${WORKSPACE} is defined and your project in the root directory of the workspace :
+            mvn clean install -Prun-its,coverage -Djacoco.outputDir=${WORKSPACE}/target
+         Note that unfortunately using the following does not work because of
+         http://jira.codehaus.org/browse/SONAR-3427:
+            <jacoco.outputDir>${session.executionRootDirectory}/target/</jacoco.outputDir>
+    -->
+    <jacoco.outputDir>${project.build.directory}</jacoco.outputDir>
+    <!-- Jacoco output file for UTs -->
+    <jacoco.out.ut.file>jacoco-ut.exec</jacoco.out.ut.file>
+    <!-- Tells Sonar where the Jacoco coverage result file is located for Unit Tests -->
+    <sonar.jacoco.reportPath>${jacoco.outputDir}/${jacoco.out.ut.file}</sonar.jacoco.reportPath>
 
   </properties>
 
@@ -678,16 +728,16 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>2.1.2</version>
+          <version>2.2.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
-          <version>2.3</version>
+          <version>2.4</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>versions-maven-plugin</artifactId>
-          <version>1.2</version>
+          <version>2.1</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
@@ -697,17 +747,17 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.8</version>
+          <version>2.9.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-war-plugin</artifactId>
-          <version>2.1.1</version>
+          <version>2.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>2.4.1</version>
+          <version>2.5</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -717,41 +767,37 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-install-plugin</artifactId>
-          <version>2.3.1</version>
+          <version>2.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>2.3.2</version>
+          <version>2.4</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-resources-plugin</artifactId>
-          <version>2.5</version>
+          <version>2.6</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-dependency-plugin</artifactId>
-          <version>2.3</version>
+          <version>2.8</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
-          <version>1.7</version>
+          <version>1.8</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>2.3.2</version>
-          <configuration>
-            <source>1.5</source>
-            <target>1.5</target>
-          </configuration>
+          <version>3.1</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.10</version>
+          <version>2.16</version>
           <configuration>
           <systemPropertyVariables>
             <targetDir>${project.build.directory}</targetDir>
@@ -765,7 +811,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.2.1</version>
+          <version>2.4.1</version>
           <configuration>
             <!-- Avoid issues with signature plugin -->
             <mavenExecutorId>forked-path</mavenExecutorId>
@@ -774,13 +820,13 @@
             <useReleaseProfile>false</useReleaseProfile>
             <pushChanges>false</pushChanges>
             <autoVersionSubmodules>true</autoVersionSubmodules>
-            <arguments>-Psign-artifacts</arguments>
+            <arguments>-Psign-artifacts,juzu-release</arguments>
           </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
-          <version>1.1</version>
+          <version>1.4</version>
         </plugin>
 
       </plugins>
@@ -824,6 +870,135 @@
       <id>ecj</id>
       <properties>
         <juzu.test.compiler>ecj</juzu.test.compiler>
+      </properties>
+    </profile>
+
+    <!--
+    This profile executes tests coverage for UTs and ITs with Jacoco.
+    -->
+    <profile>
+      <id>coverage</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>${jacoco.agent.ut.arg}</argLine>
+              <!-- Specific to generate mapping between tests and covered code -->
+              <properties>
+                <property>
+                  <name>listener</name>
+                  <value>org.sonar.java.jacoco.JUnitListener</value>
+                </property>
+              </properties>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${jacoco.version}</version>
+            <executions>
+              <!-- Prepares a variable, jacoco.agent.ut.arg, that contains the info to be passed to the JVM hosting the code
+                   being tested. -->
+              <execution>
+                <id>prepare-ut-agent</id>
+                <phase>process-test-classes</phase>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+                <configuration>
+                  <destFile>${sonar.jacoco.reportPath}</destFile>
+                  <propertyName>jacoco.agent.ut.arg</propertyName>
+                  <append>true</append>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <dependencies>
+        <dependency>
+          <groupId>org.codehaus.sonar-plugins.java</groupId>
+          <artifactId>sonar-jacoco-listeners</artifactId>
+          <version>${sonar-jacoco-listeners.version}</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <!--
+    This profile must be added to coverage profile to generate HTML reports.
+    -->
+    <profile>
+      <id>coverage-report</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>${jacoco.agent.ut.arg}</argLine>
+              <!-- Specific to generate mapping between tests and covered code -->
+              <properties>
+                <property>
+                  <name>listener</name>
+                  <value>org.sonar.java.jacoco.JUnitListener</value>
+                </property>
+              </properties>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${jacoco.version}</version>
+            <executions>
+              <!-- Prepares a variable, jacoco.agent.ut.arg, that contains the info to be passed to the JVM hosting the code
+                   being tested. -->
+              <execution>
+                <id>prepare-ut-agent</id>
+                <phase>process-test-classes</phase>
+                <goals>
+                  <goal>prepare-agent</goal>
+                </goals>
+                <configuration>
+                  <destFile>${sonar.jacoco.reportPath}</destFile>
+                  <propertyName>jacoco.agent.ut.arg</propertyName>
+                  <append>true</append>
+                </configuration>
+              </execution>
+              <!-- Generates jacoco reports for UTs -->
+              <execution>
+                <id>generate-jacoco-report</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+                <configuration>
+                  <dataFile>${sonar.jacoco.reportPath}</dataFile>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <dependencies>
+        <dependency>
+          <groupId>org.codehaus.sonar-plugins.java</groupId>
+          <artifactId>sonar-jacoco-listeners</artifactId>
+          <version>${sonar-jacoco-listeners.version}</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <!-- This profile is activated when the project is released. -->
+    <profile>
+      <id>juzu-release</id>
+      <properties>
+        <!-- Additional properties to activate the compression of already compressed archives - time expensive -->
+        <maven.assembly.recompressZippedFiles>true</maven.assembly.recompressZippedFiles>
+        <maven.war.recompressZippedFiles>true</maven.war.recompressZippedFiles>
       </properties>
     </profile>
 
