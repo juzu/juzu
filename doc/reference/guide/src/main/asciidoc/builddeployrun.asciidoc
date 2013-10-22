@@ -33,18 +33,18 @@ The _bom_ is a Juzu artifact that serves the purpose of building and packaging a
 
 To achieve the first step, we simply declare the following dependency in a Maven artifact:
 
-[source,xml]
+[source,xml,subs="attributes,specialcharacters"]
 ----
 <dependency>
   <groupId>org.juzu</groupId>
   <artifactId>juzu-bom-core</artifactId>
-  <version>$[juzu.version]</version>
+  <version>{juzu-version}</version>
 </dependency>
 ----
 
 Assembling the application requires more XML but is very straightforward:
 
-[source,xml]
+[source,xml,subs="attributes,specialcharacters"]
 ----
 <plugin>
   <artifactId>maven-assembly-plugin</artifactId>
@@ -52,7 +52,7 @@ Assembling the application requires more XML but is very straightforward:
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-bom-core</artifactId>
-      <version>$[juzu.version]</version>
+      <version>{juzu-version}</version>
     </dependency>
   </dependencies>
   <executions>
@@ -125,11 +125,12 @@ the same result, the usage of a war packaging with the overlay feature.
 The following creates a base Juzu application for Tomcat with the Guice injection container:
 
 .Generating an application for the Tomcat server and the Guice injection container
+[subs="attributes,specialcharacters"]
 ----
 mvn archetype:generate \\
    -DarchetypeGroupId=org.juzu \\
    -DarchetypeArtifactId=juzu-archetype \\
-   -DarchetypeVersion=$[juzu.version] \\
+   -DarchetypeVersion={juzu-version} \\
    -DgroupId=org.example \\
    -DartifactId=myapp \\
    -DpackageName=org.example.myapp \\
@@ -142,11 +143,12 @@ The archetype uses the packager described in the previous section.
 It is possible to generate the application for a different server and injection container:
 
 .Generating an application for the Tomcat server and the Spring injection container
+[subs="attributes,specialcharacters"]
 ----
 mvn archetype:generate \\
    -DarchetypeGroupId=org.juzu \\
    -DarchetypeArtifactId=juzu-archetype \\
-   -DarchetypeVersion=$[juzu.version] \\
+   -DarchetypeVersion={juzu-version} \\
    -DgroupId=org.example \\
    -DartifactId=myapp \\
    -DpackageName=org.example.myapp \\

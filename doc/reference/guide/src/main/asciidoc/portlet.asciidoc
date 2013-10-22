@@ -93,11 +93,11 @@ Add the Portlet plugin jar to your compilation classpath.
 
 In Maven it can achieved by adding the Less plugin dependency to your POM:
 
-[source,xml]
+[source,xml,subs="attributes,specialcharacters"]
 ----
 <dependency>
   <groupId>org.juzu</groupId>
   <artifactId>juzu-plugins-portlet</artifactId>
-  <version>$[juzu.version]</version>
+  <version>{juzu-version}</version>
 </dependency>
 ----

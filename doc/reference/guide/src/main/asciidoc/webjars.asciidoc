@@ -86,11 +86,11 @@ Add the WebJars plugin jar to your compilation classpath.
 
 In Maven it can achieved by adding the WebJars plugin dependency to your POM:
 
-[source,xl]
+[source,xml,subs="attributes,specialcharacters"]
 ----
 <dependency>
   <groupId>org.juzu</groupId>
   <artifactId>juzu-plugins-webjars</artifactId>
-  <version>$[juzu.version]</version>
+  <version>{juzu-version}</version>
 </dependency>
 ----
