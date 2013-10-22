@@ -17,6 +17,7 @@
 package juzu.impl.bridge.spi.web;
 
 import juzu.impl.bridge.spi.ScopedContext;
+import juzu.impl.common.Logger;
 import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
@@ -27,6 +28,8 @@ import java.util.concurrent.RejectedExecutionException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class WebBridge {
+
+  public abstract Logger getLogger(String name);
 
   public abstract WebRequestContext getRequestContext();
 

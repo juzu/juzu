@@ -23,6 +23,8 @@ import juzu.asset.AssetLocation;
 import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
+import juzu.impl.common.JUL;
+import juzu.impl.common.Logger;
 import juzu.impl.common.RunMode;
 import juzu.impl.request.ControlParameter;
 import juzu.io.UndeclaredIOException;
@@ -186,6 +188,10 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     this.applicationContext = new PortletApplicationContext(config);
   }
 
+  public final Logger getLogger(String name) {
+    return JUL.getLogger(name);
+  }
+
   protected abstract Phase getPhase();
 
   public Map<String, RequestParameter> getRequestParameters() {
@@ -242,12 +248,13 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   }
 
   public final ScopedContext getScopedContext(Scope scope, boolean create) {
+    Logger log = bridge.context.getLogger(ServletScopedContext.class.getName());
     ScopedContext context;
     switch (scope) {
       case REQUEST:
         context = (ScopedContext)req.getAttribute("juzu.request_scope");
         if (context == null && create) {
-          req.setAttribute("juzu.request_scope", context = new ServletScopedContext(bridge.log));
+          req.setAttribute("juzu.request_scope", context = new ServletScopedContext(log));
         }
         break;
       case FLASH:
@@ -255,7 +262,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
         if (session != null) {
           context = (ScopedContext)session.getAttribute("juzu.flash_scope");
           if (context == null && create) {
-            session.setAttribute("juzu.flash_scope", context = new ServletScopedContext(bridge.log));
+            session.setAttribute("juzu.flash_scope", context = new ServletScopedContext(log));
           }
         } else {
           context = null;
@@ -266,7 +273,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
         if (session != null) {
           context = (ScopedContext)session.getAttribute("juzu.session_scope");
           if (context == null && create) {
-            session.setAttribute("juzu.session_scope", context = new ServletScopedContext(bridge.log));
+            session.setAttribute("juzu.session_scope", context = new ServletScopedContext(log));
           }
         } else {
           context = null;

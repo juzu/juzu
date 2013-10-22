@@ -53,7 +53,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Application {
@@ -100,12 +99,27 @@ public class Application {
       final org.vertx.java.core.logging.Logger logger = container.getLogger();
 
       @Override
-      public void log(Level level, CharSequence msg) {
-        logger.info(msg);
+      public void error(CharSequence msg, Throwable t) {
+        logger.error(msg, t);
       }
 
       @Override
-      public void log(Level level, CharSequence msg, Throwable t) {
+      public void warning(CharSequence msg, Throwable t) {
+        logger.warn(msg, t);
+      }
+
+      @Override
+      public void trace(CharSequence msg, Throwable t) {
+        logger.trace(msg, t);
+      }
+
+      @Override
+      public void debug(CharSequence msg, Throwable t) {
+        logger.debug(msg, t);
+      }
+
+      @Override
+      public void info(CharSequence msg, Throwable t) {
         logger.info(msg, t);
       }
     };
@@ -184,6 +198,10 @@ public class Application {
               /** . */
               final HashMap<String, Object> attributes = new HashMap<String, Object>();
 
+              public Logger getLogger(String name) {
+                return log;
+              }
+
               public ClassLoader getClassLoader() {
                 return loader;
               }
@@ -234,7 +252,6 @@ public class Application {
             //
             this.bridge = new ApplicationBridge(
                 context,
-                log,
                 config,
                 null,
                 r,

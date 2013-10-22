@@ -18,6 +18,7 @@ package juzu.impl.bridge.spi.servlet;
 
 import juzu.Method;
 import juzu.impl.bridge.spi.web.WebBridge;
+import juzu.impl.common.JUL;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Tools;
 import juzu.impl.bridge.spi.ScopedContext;
@@ -47,22 +48,17 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
   private final Method method;
 
   /** . */
-  private final Logger log;
-
-  /** . */
   private final ServletBridge servlet;
 
-  public ServletWebBridge(
-      ServletBridge servlet,
-      ServletRequestContext ctx,
-      Logger log) {
-
-
-    //
+  public ServletWebBridge(ServletBridge servlet, ServletRequestContext ctx) {
     this.ctx = ctx;
     this.method = Method.valueOf(ctx.req.getMethod());
-    this.log = log;
     this.servlet = servlet;
+  }
+
+  @Override
+  public Logger getLogger(String name) {
+    return JUL.getLogger(name);
   }
 
   public ServletRequestContext getRequestContext() {
@@ -117,7 +113,7 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
   public ScopedContext getRequestScope(boolean create) {
     ScopedContext context = (ScopedContext)ctx.req.getAttribute("juzu.request_scope");
     if (context == null && create) {
-      ctx.req.setAttribute("juzu.request_scope", context = new ServletScopedContext(log));
+      ctx.req.setAttribute("juzu.request_scope", context = new ServletScopedContext(getLogger(ServletScopedContext.class.getName())));
     }
     return context;
   }
@@ -128,7 +124,7 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
     if (session != null) {
       context = (ScopedContext)session.getAttribute("juzu.flash_scope");
       if (context == null && create) {
-        session.setAttribute("juzu.flash_scope", context = new ServletScopedContext(log));
+        session.setAttribute("juzu.flash_scope", context = new ServletScopedContext(getLogger(ServletScopedContext.class.getName())));
       }
     }
     return context;
@@ -140,7 +136,7 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
     if (session != null) {
       context = (ScopedContext)session.getAttribute("juzu.session_scope");
       if (context == null && create) {
-        session.setAttribute("juzu.session_scope", context = new ServletScopedContext(log));
+        session.setAttribute("juzu.session_scope", context = new ServletScopedContext(getLogger(ServletScopedContext.class.getName())));
       }
     }
     return context;

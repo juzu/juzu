@@ -44,12 +44,11 @@ public class ProvidedBridge extends Bridge {
 
   public ProvidedBridge(
       BridgeContext context,
-      Logger log,
       BridgeConfig config,
       AssetServer server,
       ResourceResolver resolver,
       Injector injector) {
-    super(context, log, config, server, resolver);
+    super(context, config, server, resolver);
 
     //
     this.injector = injector;

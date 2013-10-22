@@ -21,6 +21,7 @@ import juzu.PropertyType;
 import juzu.Scope;
 import juzu.asset.AssetLocation;
 import juzu.impl.bridge.Bridge;
+import juzu.impl.common.Logger;
 import juzu.impl.common.RunMode;
 import juzu.impl.common.UriBuilder;
 import juzu.impl.request.ControlParameter;
@@ -99,6 +100,10 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   }
 
   //
+
+  public Logger getLogger(String name) {
+    return http.getLogger(name);
+  }
 
   public Map<String, RequestParameter> getRequestParameters() {
     return requestParameters;

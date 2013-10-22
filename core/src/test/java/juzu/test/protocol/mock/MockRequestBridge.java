@@ -21,6 +21,7 @@ import juzu.PropertyType;
 import juzu.Scope;
 import juzu.asset.AssetLocation;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
+import juzu.impl.common.JUL;
 import juzu.impl.common.Tools;
 import juzu.impl.io.BinaryOutputStream;
 import juzu.impl.io.BinaryStream;
@@ -140,6 +141,10 @@ public abstract class MockRequestBridge implements RequestBridge {
     this.attributesHistory = new ArrayList<Scoped>();
     this.arguments = arguments;
     this.requestParameters = requestParameters;
+  }
+
+  public Logger getLogger(String name) {
+    return JUL.getLogger(name);
   }
 
   public Map<String, RequestParameter> getRequestParameters() {

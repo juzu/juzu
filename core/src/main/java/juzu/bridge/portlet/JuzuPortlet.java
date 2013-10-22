@@ -86,11 +86,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
   private PortletConfig config;
 
   public void init(final PortletConfig config) throws PortletException {
-
-    //
-    Logger log = JUL.getLogger(config.getPortletName());
-
-    //
     AssetServer server = (AssetServer)config.getPortletContext().getAttribute("asset.server");
     if (server == null) {
       server = new AssetServer();
@@ -178,6 +173,9 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
       public void setAttribute(String key, Object value) {
         context.setAttribute(key, value);
       }
+      public Logger getLogger(String name) {
+        return JUL.getLogger(name);
+      }
     };
 
     //
@@ -193,7 +191,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     //
     Bridge bridge = new ApplicationBridge(
         bridgeContext,
-        log,
         bridgeConfig,
         server,
         new ResourceResolver() {

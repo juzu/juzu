@@ -55,9 +55,6 @@ public class ServletBridge extends HttpServlet {
   public static final String BUNDLE_NAME = "juzu.resource_bundle";
 
   /** . */
-  Logger log;
-
-  /** . */
   private String path;
 
   /** . */
@@ -103,7 +100,6 @@ public class ServletBridge extends HttpServlet {
 
     //
     final ServletConfig servletConfig = getServletConfig();
-    Logger log = JUL.getLogger(servletConfig.getServletName());
 
     //
     BridgeConfig config;
@@ -146,7 +142,6 @@ public class ServletBridge extends HttpServlet {
     // Future resource bundle
 
     //
-    this.log = log;
     this.config = config;
     this.handler = null;
     this.path = path;
@@ -215,6 +210,9 @@ public class ServletBridge extends HttpServlet {
         public void setAttribute(String key, Object value) {
           getServletContext().setAttribute(key, value);
         }
+        public Logger getLogger(String name) {
+          return JUL.getLogger(name);
+        }
       };
 
       //
@@ -241,9 +239,9 @@ public class ServletBridge extends HttpServlet {
 
       //
       if (injector.isProvided()) {
-        bridge = new ProvidedBridge(bridgeContext, log, this.config, server, resolver, injector);
+        bridge = new ProvidedBridge(bridgeContext, this.config, server, resolver, injector);
       } else {
-        bridge = new ApplicationBridge(bridgeContext, log, this.config, server, resolver, injector);
+        bridge = new ApplicationBridge(bridgeContext, this.config, server, resolver, injector);
       }
     }
 
@@ -271,7 +269,7 @@ public class ServletBridge extends HttpServlet {
     ServletRequestContext ctx = new ServletRequestContext(config.requestEncoding, req, resp, path);
 
     //
-    ServletWebBridge bridge = new ServletWebBridge(this, ctx, log);
+    ServletWebBridge bridge = new ServletWebBridge(this, ctx);
 
     // Do we need to send a server resource ?
     if (ctx.getRequestPath().length() > 1 && !ctx.getRequestPath().startsWith("/WEB-INF/")) {

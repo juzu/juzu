@@ -19,6 +19,7 @@ package juzu.impl.bridge.spi;
 import juzu.PropertyType;
 import juzu.Scope;
 import juzu.asset.AssetLocation;
+import juzu.impl.common.Logger;
 import juzu.impl.request.ControlParameter;
 import juzu.request.Result;
 import juzu.request.RequestParameter;
@@ -39,6 +40,14 @@ import java.util.concurrent.RejectedExecutionException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface RequestBridge extends Closeable {
+
+  /**
+   * Returns a logger for the specified name.
+   *
+   * @param name the logger name
+   * @return the logger
+   */
+  Logger getLogger(String name);
 
   /**
    * Returns the request target.

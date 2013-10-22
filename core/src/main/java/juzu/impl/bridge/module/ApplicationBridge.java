@@ -46,16 +46,19 @@ public class ApplicationBridge extends Bridge {
   /** . */
   private RunMode runMode;
 
+  /** . */
+  private final Logger log;
+
   public ApplicationBridge(
       BridgeContext context,
-      Logger log,
       BridgeConfig config,
       AssetServer server,
       ResourceResolver resolver,
       Injector injector) {
-    super(context, log, config, server, resolver);
+    super(context, config, server, resolver);
 
     //
+    this.log = context.getLogger(ApplicationBridge.class.getName());
     this.injector = injector;
   }
 

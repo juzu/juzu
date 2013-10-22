@@ -15,11 +15,14 @@
  */
 package juzu.impl.bridge;
 
+import juzu.impl.common.Logger;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.resource.ResourceResolver;
 
 /** @author Julien Viet */
 public interface BridgeContext {
+
+  Logger getLogger(String name);
 
   ReadFileSystem<?> getClassPath();
 

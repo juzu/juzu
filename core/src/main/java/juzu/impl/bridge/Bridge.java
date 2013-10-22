@@ -19,7 +19,6 @@ package juzu.impl.bridge;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.common.RunMode;
 import juzu.impl.asset.AssetServer;
-import juzu.impl.common.Logger;
 import juzu.impl.resource.ResourceResolver;
 
 import java.io.Closeable;
@@ -29,9 +28,6 @@ public abstract class Bridge implements Closeable {
 
   /** . */
   public final BridgeContext context;
-
-  /** . */
-  public final Logger log;
 
   /** . */
   protected final AssetServer server;
@@ -44,14 +40,12 @@ public abstract class Bridge implements Closeable {
 
   public Bridge(
       BridgeContext context,
-      Logger log,
       BridgeConfig config,
       AssetServer server,
       ResourceResolver resolver) {
 
     //
     this.context = context;
-    this.log = log;
     this.config = config;
     this.server = server;
     this.resolver = resolver;

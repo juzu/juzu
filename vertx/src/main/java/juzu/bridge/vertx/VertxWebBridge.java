@@ -26,6 +26,7 @@ import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.bridge.spi.web.WebBridge;
 import juzu.impl.bridge.spi.web.WebRequestContext;
 import juzu.impl.bridge.spi.ScopedContext;
+import juzu.impl.common.Logger;
 import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
@@ -67,6 +68,11 @@ public class VertxWebBridge extends WebBridge implements HttpContext {
     this.bridge = bridge;
     this.ctx = ctx;
 
+  }
+
+  @Override
+  public Logger getLogger(String name) {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
   @Override
