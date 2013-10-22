@@ -112,28 +112,32 @@ public class LiveClassLoader extends URLClassLoader {
             return false;
           } else {
             URL parentResource = parent.getResource(resourceName);
-            try {
-              byte[] parentBytes = Tools.bytes(parentResource);
-              byte[] bytes = Tools.bytes(resource);
-              if (Arrays.equals(parentBytes, bytes)) {
-                // If any one dependency could is not loaded locally then this clazz must not be loaded
-                // locally
-                for (Iterator<Class<?>> dependencies = getDirectDependencies(clazz);dependencies.hasNext();) {
-                  Class<?> dependency = dependencies.next();
-                  if (loadLocally(stack, dependency)) {
-                    return true;
+            if (parentResource == null) {
+              throw new UnsupportedOperationException("Could not find parent resource " + resourceName + " from parent loader");
+            } else {
+              try {
+                byte[] parentBytes = Tools.bytes(parentResource);
+                byte[] bytes = Tools.bytes(resource);
+                if (Arrays.equals(parentBytes, bytes)) {
+                  // If any one dependency could is not loaded locally then this clazz must not be loaded
+                  // locally
+                  for (Iterator<Class<?>> dependencies = getDirectDependencies(clazz);dependencies.hasNext();) {
+                    Class<?> dependency = dependencies.next();
+                    if (loadLocally(stack, dependency)) {
+                      return true;
+                    }
                   }
+                  // Otherwise the parent can load it fine
+                  stack.add(clazz);
+                  return false;
+                } else {
+                  // We must load it locally as it has new bytecode
+                  return true;
                 }
-                // Otherwise the parent can load it fine
-                stack.add(clazz);
-                return false;
-              } else {
-                // We must load it locally as it has new bytecode
-                return true;
               }
-            }
-            catch (IOException e) {
-              throw new UnsupportedOperationException("handle me gracefully", e);
+              catch (IOException e) {
+                throw new UnsupportedOperationException("handle me gracefully", e);
+              }
             }
           }
         }

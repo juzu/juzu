@@ -38,6 +38,13 @@ public class A {
     ClassLoader bCL = B.class.getClassLoader();
     AbstractRunModeLiveControllerTestCase.SAME_CL_1 = aCL == threadCL;
     AbstractRunModeLiveControllerTestCase.SAME_CL_2 = bCL == threadCL;
+    try {
+      Class<?> c = threadCL.loadClass("bridge.runmode.live.controller.C");
+      AbstractRunModeLiveControllerTestCase.SAME_CL_3 = c.getClassLoader() == threadCL;
+    }
+    catch (ClassNotFoundException ignore) {
+      AbstractRunModeLiveControllerTestCase.SAME_CL_3 = null;
+    }
     AbstractRunModeLiveControllerTestCase.RUN_MODE = Request.getCurrent().getBridge().getProperty(RunMode.PROPERTY);
     if (count == 0) {
       count = 1;

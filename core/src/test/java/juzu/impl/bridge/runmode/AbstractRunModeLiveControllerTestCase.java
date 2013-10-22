@@ -33,6 +33,7 @@ public abstract class AbstractRunModeLiveControllerTestCase extends AbstractWebT
 
   public static Boolean SAME_CL_1;
   public static Boolean SAME_CL_2;
+  public static Boolean SAME_CL_3;
   public static RunMode RUN_MODE;
 
   @Drone
@@ -54,6 +55,7 @@ public abstract class AbstractRunModeLiveControllerTestCase extends AbstractWebT
     assertEquals("ok", driver.findElement(By.tagName("body")).getText());
     assertFalse(SAME_CL_1);
     assertFalse(SAME_CL_2);
+    assertNull(SAME_CL_3);
     HttpURLConnection conn = (HttpURLConnection)url.openConnection();
     assertEquals(getErrorStatus(), conn.getResponseCode());
     driver.get(url.toString());
@@ -68,6 +70,7 @@ public abstract class AbstractRunModeLiveControllerTestCase extends AbstractWebT
     assertEquals("OK", driver.findElement(By.tagName("body")).getText());
     assertTrue(SAME_CL_1);
     assertFalse(SAME_CL_2);
+    assertNull(SAME_CL_3);
 
     // Now make fail with compilation error
     pkgFile.assertSave(pkgFile.assertContent().replace("public", "_public_"));
@@ -87,5 +90,12 @@ public abstract class AbstractRunModeLiveControllerTestCase extends AbstractWebT
     elt = driver.findElement(By.id("trigger"));
     elt.click();
     assertEquals("OK", driver.findElement(By.tagName("body")).getText());
+
+    // Add a new class
+    JavaFile abc = getCompiler().assertAddJavaSource("bridge.runmode.live.controller.C");
+    driver.get(applicationURL().toString());
+    assertTrue(SAME_CL_1);
+    assertFalse(SAME_CL_2);
+    assertTrue(SAME_CL_3);
   }
 }

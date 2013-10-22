@@ -33,6 +33,10 @@ public class JavaFile<I> extends FileResource<I> {
   /** . */
   private CompilationUnit cu;
 
+  public JavaFile(FileResource<I> file) {
+    this(file.sourcePath, file.path);
+  }
+
   public JavaFile(ReadWriteFileSystem<I> sourcePath, I path) {
     super(sourcePath, path);
 

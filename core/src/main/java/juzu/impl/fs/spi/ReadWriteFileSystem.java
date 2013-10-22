@@ -47,6 +47,12 @@ public abstract class ReadWriteFileSystem<P> extends ReadFileSystem<P> {
    */
   public abstract P makePath(P parent, String name) throws IOException;
 
+  /**
+   * Create the dir recursively, if the dir already exists, this directory is returned.
+   *
+   * @param dir the dir
+   * @throws IOException any io exception
+   */
   public abstract void createDir(P dir) throws IOException;
 
   public abstract long setContent(P file, Content content) throws IOException;

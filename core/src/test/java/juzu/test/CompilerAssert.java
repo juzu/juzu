@@ -16,6 +16,9 @@
 
 package juzu.test;
 
+import juzu.impl.common.Content;
+import juzu.impl.common.Name;
+import juzu.impl.common.Path;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.Compiler;
@@ -216,19 +219,6 @@ public class CompilerAssert<I, O> {
     }
   }
 
-  public void assertRemove(String name) {
-    try {
-      I path = strategy.sourcePath.getPath(name);
-      if (path == null) {
-        throw AbstractTestCase.failure("Cannot remove path " + Tools.join('/', name));
-      }
-      strategy.sourcePath.removePath(path);
-    }
-    catch (Exception e) {
-      throw AbstractTestCase.failure(e);
-    }
-  }
-
   public FileResource<I> assertSource(String name, String ext) {
     I path;
     try {
@@ -247,6 +237,45 @@ public class CompilerAssert<I, O> {
 
   public JavaFile<I> assertJavaSource(String name) {
     FileResource<I> resource = assertSource(name, "java");
-    return new JavaFile<I>(resource.sourcePath, resource.path);
+    return new JavaFile<I>(resource);
+  }
+
+  public JavaFile<I> assertAddJavaSource(String name) {
+    Name n = Name.parse(name);
+    FileResource<I> source = assertAddSource(name, "java", "package " + n.getParent() + ";\npublic class " + n.getIdentifier() + " {}\n");
+    return new JavaFile<I>(source);
+  }
+
+  public FileResource<I> assertAddSource(String name, String ext, String content) {
+    try {
+      ReadWriteFileSystem<I> fs = strategy.sourcePath;
+      String[] atoms = Tools.split(name, '.');
+      I path;
+      if (atoms.length > 1) {
+        path = fs.makePath(Tools.iterable(atoms, 0, atoms.length - 1));
+        fs.createDir(path);
+      } else {
+        path = fs.getRoot();
+      }
+      path = fs.makePath(path, atoms[atoms.length - 1] + "." + ext);
+      fs.setContent(path, new Content(content));
+      return new FileResource<I>(fs, path);
+    }
+    catch (IOException e) {
+      throw AbstractTestCase.failure(e);
+    }
+  }
+
+  public void assertRemoveSource(String name) {
+    try {
+      I path = strategy.sourcePath.getPath(name);
+      if (path == null) {
+        throw AbstractTestCase.failure("Cannot remove path " + Tools.join('/', name));
+      }
+      strategy.sourcePath.removePath(path);
+    }
+    catch (Exception e) {
+      throw AbstractTestCase.failure(e);
+    }
   }
 }
