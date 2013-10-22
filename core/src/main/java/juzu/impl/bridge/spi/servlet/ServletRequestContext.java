@@ -19,7 +19,9 @@ import juzu.asset.AssetLocation;
 import juzu.impl.bridge.spi.web.HttpStream;
 import juzu.impl.bridge.spi.web.WebRequestContext;
 import juzu.impl.common.FormURLEncodedParser;
+import juzu.impl.common.JUL;
 import juzu.impl.common.Lexers;
+import juzu.impl.common.Logger;
 import juzu.impl.common.Spliterator;
 import juzu.impl.common.Tools;
 import juzu.impl.io.BinaryOutputStream;
@@ -40,6 +42,9 @@ import java.util.Map;
 
 /** @author Julien Viet */
 public class ServletRequestContext extends WebRequestContext {
+
+  /** The request logger. */
+  static final Logger log = JUL.getLogger(ServletRequestContext.class.getName());
 
   /** . */
   final HttpServletRequest req;
@@ -106,7 +111,7 @@ public class ServletRequestContext extends WebRequestContext {
             }
           }
           catch (IOException e) {
-            e.printStackTrace();
+            log.error("Cannot parse form post", e);
           }
         }
       }
@@ -139,7 +144,7 @@ public class ServletRequestContext extends WebRequestContext {
 
   synchronized void endAsync() {
     if (context != null) {
-      System.out.println("COMPLETING ASYNC");
+      log.trace("Completing async");
       context.complete();
     }
   }
@@ -151,10 +156,9 @@ public class ServletRequestContext extends WebRequestContext {
    */
   synchronized AsyncContext beginAsync() {
     if (req.isAsyncStarted()) {
-      System.out.println("DETECTED ASYNC ALREADY STARTED");
       context = req.getAsyncContext();
     } else {
-      System.out.println("STARTING ASYNC");
+      log.trace("Starting async mode");
       context = req.startAsync();
     }
     return context;

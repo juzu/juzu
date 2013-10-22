@@ -26,7 +26,6 @@ public class DependencyProvider implements Provider<Bean> {
   private Dependency dependency;
 
   public DependencyProvider() {
-    System.out.println("FOO");
   }
 
   public Bean get() {

@@ -70,10 +70,25 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
   }
 
   @Override
-  public void execute(Runnable runnable) {
+  public void execute(final Runnable runnable) {
     if (ctx.req.isAsyncSupported()) {
       AsyncContext context = ctx.beginAsync();
-      context.start(runnable);
+      ServletRequestContext.log.trace("Scheduling runnable " + runnable);
+      context.start(new Runnable() {
+        public void run() {
+          ServletRequestContext.log.trace("Starting runnable " + runnable);
+          try {
+            runnable.run();
+            ServletRequestContext.log.trace("Ended runnable " + runnable);
+          }
+          catch (Exception e) {
+            if (e instanceof InterruptedException) {
+              Thread.currentThread().interrupt();
+            }
+            ServletRequestContext.log.trace("Failure of runnable " + runnable, e);
+          }
+        }
+      });
     } else {
       throw new RejectedExecutionException("Async not enabled currently for this servlet");
     }

@@ -53,11 +53,6 @@ public abstract class AbstractRunnableAsyncTestCase extends AbstractWebTestCase 
     long delta = - System.currentTimeMillis();
     driver.get(applicationURL().toString());
     delta += System.currentTimeMillis();
-    System.out.println("delta = " + delta);
-    System.out.println("delta = " + delta);
-    System.out.println("delta = " + delta);
-    System.out.println("delta = " + delta);
-    System.out.println("delta = " + delta);
     assertTrue(driver.getPageSource().contains("pass"));
     assertNotSame(requestURL, runnableURL);
     assertEquals("null", runnableURL);

@@ -99,7 +99,7 @@ public class Logger {
   }
 
   public void error(CharSequence msg) {
-    send(Level.SEVERE, msg, null);
+    error(msg, null);
   }
 
   public void error(CharSequence msg, Throwable t) {
@@ -107,7 +107,7 @@ public class Logger {
   }
 
   public void warning(CharSequence msg) {
-    send(Level.WARNING, msg, null);
+    warning(msg, null);
   }
 
   public void warning(CharSequence msg, Throwable t) {
@@ -115,7 +115,7 @@ public class Logger {
   }
 
   public void info(CharSequence msg) {
-    send(Level.INFO, msg, null);
+    info(msg, null);
   }
 
   public void info(CharSequence msg, Throwable t) {
@@ -123,7 +123,7 @@ public class Logger {
   }
 
   public void debug(CharSequence msg) {
-    send(Level.FINER, msg, null);
+    debug(msg, null);
   }
 
   public void debug(CharSequence msg, Throwable t) {
@@ -131,7 +131,7 @@ public class Logger {
   }
 
   public void trace(CharSequence msg) {
-    send(Level.FINEST, msg, null);
+    trace(msg, null);
   }
 
   public void trace(CharSequence msg, Throwable t) {

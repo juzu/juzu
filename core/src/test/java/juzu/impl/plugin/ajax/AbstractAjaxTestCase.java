@@ -53,7 +53,6 @@ public abstract class AbstractAjaxTestCase extends AbstractWebTestCase {
     HttpURLConnection conn = (HttpURLConnection)page.getUrl().openConnection();
     assertEquals(200, conn.getResponseCode());
     String s = Tools.read(conn.getInputStream());
-    System.out.println("s = " + s);
 
     //
     HtmlAnchor trigger1 = (HtmlAnchor)page.getElementById("trigger1");
