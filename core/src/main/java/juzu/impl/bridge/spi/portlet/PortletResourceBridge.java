@@ -17,8 +17,6 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.spi.ResourceBridge;
-import juzu.impl.common.Tools;
 import juzu.io.OutputStream;
 import juzu.io.Stream;
 import juzu.request.ClientContext;
@@ -31,13 +29,13 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse> implements ResourceBridge {
+public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, ResourceResponse> {
 
   /** . */
   private final PortletClientContext clientContext;
 
   public PortletResourceBridge(Bridge bridge, ResourceRequest request, ResourceResponse response, PortletConfig config) {
-    super(bridge, request, response, config);
+    super(bridge, Phase.RESOURCE, request, response, config);
 
     //
     this.clientContext = new PortletClientContext(request);
@@ -60,11 +58,6 @@ public class PortletResourceBridge extends PortletMimeBridge<ResourceRequest, Re
 
     //
     return OutputStream.create(charset, this.resp.getPortletOutputStream());
-  }
-
-  @Override
-  protected Phase getPhase() {
-    return Phase.RESOURCE;
   }
 
   public ClientContext getClientContext() {

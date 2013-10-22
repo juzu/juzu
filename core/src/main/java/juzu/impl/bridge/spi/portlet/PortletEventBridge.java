@@ -18,11 +18,11 @@ package juzu.impl.bridge.spi.portlet;
 
 import juzu.Event;
 import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.common.Introspector;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.ControlParameter;
 import juzu.impl.request.Method;
+import juzu.request.ClientContext;
 import juzu.request.Phase;
 
 import javax.portlet.EventRequest;
@@ -31,7 +31,7 @@ import javax.portlet.PortletConfig;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletEventBridge extends PortletInteractionBridge<EventRequest, EventResponse> implements EventBridge {
+public class PortletEventBridge extends PortletInteractionBridge<EventRequest, EventResponse> {
 
   public PortletEventBridge(
       Bridge bridge,
@@ -40,7 +40,7 @@ public class PortletEventBridge extends PortletInteractionBridge<EventRequest, E
       PortletConfig config,
       Method<?> target,
       Map<String, String[]> parameters) {
-    super(bridge, req, resp, config, target, parameters);
+    super(bridge, Phase.EVENT, req, resp, config, target, parameters);
 
     // Set event as part of contextual arguments
     for (ControlParameter parameter : target.getParameters()) {
@@ -57,8 +57,7 @@ public class PortletEventBridge extends PortletInteractionBridge<EventRequest, E
     }
   }
 
-  @Override
-  protected Phase getPhase() {
-    return Phase.EVENT;
+  public ClientContext getClientContext() {
+    return null;
   }
 }

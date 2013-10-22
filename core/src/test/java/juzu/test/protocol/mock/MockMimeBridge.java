@@ -16,8 +16,8 @@
 
 package juzu.test.protocol.mock;
 
-import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.MethodHandle;
+import juzu.request.Phase;
 import juzu.request.Result;
 import juzu.impl.runtime.ApplicationRuntime;
 import juzu.test.AbstractTestCase;
@@ -27,10 +27,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class MockMimeBridge extends MockRequestBridge implements MimeBridge {
+public abstract class MockMimeBridge extends MockRequestBridge {
 
-  public MockMimeBridge(ApplicationRuntime<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
-    super(application, client, target, parameters);
+  public MockMimeBridge(ApplicationRuntime<?, ?> application, MockClient client, Phase phase, MethodHandle target, Map<String, String[]> parameters) {
+    super(application, client, phase, target, parameters);
   }
 
   public String assertStringResult(String expected) {

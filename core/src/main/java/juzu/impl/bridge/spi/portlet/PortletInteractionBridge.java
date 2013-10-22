@@ -41,15 +41,15 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs extends StateAwareResponse> extends PortletRequestBridge<Rq, Rs> {
 
-  protected PortletInteractionBridge(Bridge bridge, Rq req, Rs resp, PortletConfig config) {
-    super(bridge, req, resp, config);
+  protected PortletInteractionBridge(Bridge bridge, Phase phase, Rq req, Rs resp, PortletConfig config) {
+    super(bridge, phase, req, resp, config);
 
     //
     init();
   }
 
-  protected PortletInteractionBridge(Bridge bridge, Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters) {
-    super(bridge, req, resp, config, target, parameters);
+  protected PortletInteractionBridge(Bridge bridge, Phase phase, Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters) {
+    super(bridge, phase, req, resp, config, target, parameters);
 
     //
     init();

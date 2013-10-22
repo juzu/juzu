@@ -17,25 +17,26 @@
 package juzu.impl.bridge.spi.web;
 
 import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.plugin.amd.AMDPlugin;
 import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.impl.request.Method;
+import juzu.request.Phase;
 import juzu.request.Result;
 import juzu.request.RequestParameter;
 
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class WebMimeBridge extends WebRequestBridge implements MimeBridge {
+public abstract class WebMimeBridge extends WebRequestBridge {
 
   WebMimeBridge(
       Bridge bridge,
       Handler handler,
       WebBridge http,
+      Phase phase,
       Method<?> target,
       Map<String, RequestParameter> parameters) {
-    super(bridge, handler, http, target, parameters);
+    super(bridge, handler, http, phase, target, parameters);
   }
 
   @Override

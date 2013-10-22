@@ -16,30 +16,13 @@
 
 package juzu.request;
 
-import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class EventContext extends RequestContext {
 
-  /** . */
-  private final EventBridge bridge;
-
-  public EventContext(Request request, Method method, EventBridge bridge) {
+  public EventContext(Request request, Method method) {
     super(request, method);
-
-    //
-    this.bridge = bridge;
-  }
-
-  @Override
-  public Phase.Event getPhase() {
-    return Phase.EVENT;
-  }
-
-  @Override
-  protected EventBridge getBridge() {
-    return bridge;
   }
 }

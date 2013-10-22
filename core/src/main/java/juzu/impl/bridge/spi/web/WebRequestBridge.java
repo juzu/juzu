@@ -25,6 +25,7 @@ import juzu.impl.common.Logger;
 import juzu.impl.common.RunMode;
 import juzu.impl.common.UriBuilder;
 import juzu.impl.request.ControlParameter;
+import juzu.request.ClientContext;
 import juzu.request.Result;
 import juzu.request.RequestParameter;
 import juzu.request.ResponseParameter;
@@ -68,6 +69,9 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   final WebBridge http;
 
   /** . */
+  final Phase phase;
+
+  /** . */
   final Method<?> target;
 
   /** . */
@@ -86,6 +90,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
       Bridge bridge,
       Handler handler,
       WebBridge http,
+      Phase phase,
       Method<?> target,
       Map<String, RequestParameter> requestParameters) {
 
@@ -97,9 +102,14 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
     this.handler = handler;
     this.http = http;
     this.request = null;
+    this.phase = phase;
   }
 
   //
+
+  public Phase getPhase() {
+    return phase;
+  }
 
   public Logger getLogger(String name) {
     return http.getLogger(name);
@@ -136,6 +146,10 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
     return "window_id";
   }
   //
+
+  public ClientContext getClientContext() {
+    return phase == Phase.ACTION || phase == Phase.RESOURCE ? http.getClientContext() : null;
+  }
 
   public final HttpContext getHttpContext() {
     return http.getHttpContext();

@@ -18,7 +18,6 @@ package juzu.test.protocol.mock;
 
 import junit.framework.Assert;
 import juzu.Response;
-import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.request.Result;
@@ -32,10 +31,10 @@ import juzu.test.AbstractTestCase;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockActionBridge extends MockRequestBridge implements ActionBridge {
+public class MockActionBridge extends MockRequestBridge {
 
   public MockActionBridge(ApplicationRuntime<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
-    super(application, client, target, parameters);
+    super(application, client, Phase.ACTION, target, parameters);
   }
 
   public ClientContext getClientContext() {

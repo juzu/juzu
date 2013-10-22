@@ -19,10 +19,10 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.PropertyType;
 import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.spi.MimeBridge;
 import juzu.impl.common.Formatting;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.asset.AssetPlugin;
+import juzu.request.Phase;
 import juzu.request.Result;
 import juzu.io.Chunk;
 import juzu.io.Stream;
@@ -43,10 +43,10 @@ import java.util.LinkedList;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> implements MimeBridge {
+public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> {
 
-  PortletMimeBridge(Bridge bridge, Rq request, Rs response, PortletConfig config) {
-    super(bridge, request, response, config);
+  PortletMimeBridge(Bridge bridge, Phase phase, Rq request, Rs response, PortletConfig config) {
+    super(bridge, phase, request, response, config);
   }
 
   public abstract Stream createStream(String mimeType, Charset charset) throws IOException;

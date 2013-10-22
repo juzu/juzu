@@ -18,28 +18,11 @@ package juzu.request;
 
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
-import juzu.impl.bridge.spi.RenderBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RenderContext extends MimeContext {
 
-  /** . */
-  private RenderBridge bridge;
-
-  public RenderContext(Request request, Method method, RenderBridge bridge) {
+  public RenderContext(Request request, Method method) {
     super(request, method);
-
-    //
-    this.bridge = bridge;
-  }
-
-  @Override
-  protected RenderBridge getBridge() {
-    return bridge;
-  }
-
-  @Override
-  public Phase.View getPhase() {
-    return Phase.VIEW;
   }
 }

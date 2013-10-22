@@ -68,6 +68,9 @@ public abstract class MockRequestBridge implements RequestBridge {
   protected final MockClient client;
 
   /** . */
+  private final Phase phase;
+
+  /** . */
   private final MethodHandle target;
 
   /** . */
@@ -106,7 +109,7 @@ public abstract class MockRequestBridge implements RequestBridge {
   /** . */
   protected String title;
 
-  public MockRequestBridge(ApplicationRuntime<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+  public MockRequestBridge(ApplicationRuntime<?, ?> application, MockClient client, Phase phase, MethodHandle target, Map<String, String[]> parameters) {
 
     //
     Map<String, RequestParameter> requestParameters = Collections.emptyMap();
@@ -141,6 +144,11 @@ public abstract class MockRequestBridge implements RequestBridge {
     this.attributesHistory = new ArrayList<Scoped>();
     this.arguments = arguments;
     this.requestParameters = requestParameters;
+    this.phase = phase;
+  }
+
+  public Phase getPhase() {
+    return phase;
   }
 
   public Logger getLogger(String name) {

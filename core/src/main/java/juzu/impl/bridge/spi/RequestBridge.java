@@ -21,6 +21,7 @@ import juzu.Scope;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.Logger;
 import juzu.impl.request.ControlParameter;
+import juzu.request.ClientContext;
 import juzu.request.Result;
 import juzu.request.RequestParameter;
 import juzu.impl.common.MethodHandle;
@@ -40,6 +41,8 @@ import java.util.concurrent.RejectedExecutionException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface RequestBridge extends Closeable {
+
+  Phase getPhase();
 
   /**
    * Returns a logger for the specified name.
@@ -73,6 +76,8 @@ public interface RequestBridge extends Closeable {
   <T> T getProperty(PropertyType<T> propertyType);
 
   ScopedContext getScopedContext(Scope scope, boolean create);
+
+  ClientContext getClientContext();
 
   HttpContext getHttpContext();
 

@@ -17,15 +17,15 @@
 package juzu.impl.bridge.spi.web;
 
 import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.request.Method;
+import juzu.request.Phase;
 import juzu.request.RequestParameter;
 import juzu.request.ClientContext;
 
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class WebResourceBridge extends WebMimeBridge implements ResourceBridge {
+public class WebResourceBridge extends WebMimeBridge {
 
   WebResourceBridge(
       Bridge bridge,
@@ -33,7 +33,7 @@ public class WebResourceBridge extends WebMimeBridge implements ResourceBridge {
       WebBridge webBridge,
       Method<?> target,
       Map<String, RequestParameter> parameters) {
-    super(bridge, handler, webBridge, target, parameters);
+    super(bridge, handler, webBridge, Phase.RESOURCE, target, parameters);
   }
 
   public ClientContext getClientContext() {

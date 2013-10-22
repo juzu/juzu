@@ -16,20 +16,15 @@
 
 package juzu.impl.bridge.spi.web;
 
-import juzu.PropertyType;
-import juzu.Response;
 import juzu.impl.bridge.Bridge;
-import juzu.impl.common.MimeType;
-import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.request.Method;
+import juzu.request.Phase;
 import juzu.request.RequestParameter;
-import juzu.request.ClientContext;
 
-import java.io.IOException;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class WebActionBridge extends WebRequestBridge implements ActionBridge {
+public class WebActionBridge extends WebRequestBridge {
 
   WebActionBridge(
       Bridge bridge,
@@ -37,10 +32,6 @@ public class WebActionBridge extends WebRequestBridge implements ActionBridge {
       WebBridge http,
       Method<?> target,
       Map<String, RequestParameter> parameters) {
-    super(bridge, handler, http, target, parameters);
-  }
-
-  public ClientContext getClientContext() {
-    return http.getClientContext();
+    super(bridge, handler, http, Phase.ACTION, target, parameters);
   }
 }

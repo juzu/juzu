@@ -16,21 +16,25 @@
 
 package juzu.test.protocol.mock;
 
-import juzu.Response;
-import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.runtime.ApplicationRuntime;
+import juzu.request.ClientContext;
+import juzu.request.Phase;
 
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockRenderBridge extends MockMimeBridge implements RenderBridge {
+public class MockRenderBridge extends MockMimeBridge {
 
   public MockRenderBridge(ApplicationRuntime<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
-    super(application, client, target, parameters);
+    super(application, client, Phase.VIEW, target, parameters);
   }
 
   public String getTitle() {
     return title;
+  }
+
+  public ClientContext getClientContext() {
+    return null;
   }
 }

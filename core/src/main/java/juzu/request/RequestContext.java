@@ -77,13 +77,17 @@ public abstract class RequestContext {
    * Provide an {@link Executor} the specified modes.
    *
    */
-  public Executor getExecutor() {
+  public final Executor getExecutor() {
     return request.getExecutor();
   }
 
-  public abstract Phase getPhase();
+  public final Phase getPhase() {
+    return getBridge().getPhase();
+  }
 
-  protected abstract RequestBridge getBridge();
+  final RequestBridge getBridge() {
+    return request.getBridge();
+  }
 
   /**
    * Create a dispatch object with unset parameters.

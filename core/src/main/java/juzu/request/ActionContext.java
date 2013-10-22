@@ -19,33 +19,16 @@ package juzu.request;
 import juzu.Response;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
-import juzu.impl.bridge.spi.ActionBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ActionContext extends RequestContext {
 
-  /** . */
-  private ActionBridge bridge;
-
-  public ActionContext(Request request, Method method, ActionBridge bridge) {
+  public ActionContext(Request request, Method method) {
     super(request, method);
-
-    //
-    this.bridge = bridge;
-  }
-
-  @Override
-  protected ActionBridge getBridge() {
-    return bridge;
   }
 
   public ClientContext getClientContext() {
-    return bridge.getClientContext();
-  }
-
-  @Override
-  public Phase.Action getPhase() {
-    return Phase.ACTION;
+    return getBridge().getClientContext();
   }
 
   public Response.View createResponse(Method<Phase.View> target) throws IllegalStateException {

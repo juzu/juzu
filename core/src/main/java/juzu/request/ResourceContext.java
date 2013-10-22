@@ -18,32 +18,15 @@ package juzu.request;
 
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
-import juzu.impl.bridge.spi.ResourceBridge;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ResourceContext extends MimeContext {
 
-  /** . */
-  private ResourceBridge bridge;
-
-  public ResourceContext(Request request, Method method, ResourceBridge bridge) {
+  public ResourceContext(Request request, Method method) {
     super(request, method);
-
-    //
-    this.bridge = bridge;
   }
 
   public ClientContext getClientContext() {
-    return bridge.getClientContext();
-  }
-
-  @Override
-  protected ResourceBridge getBridge() {
-    return bridge;
-  }
-
-  @Override
-  public Phase.Resource getPhase() {
-    return Phase.RESOURCE;
+    return request.getClientContext();
   }
 }

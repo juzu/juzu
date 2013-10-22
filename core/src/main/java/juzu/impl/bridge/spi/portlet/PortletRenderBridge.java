@@ -20,9 +20,9 @@ import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.Formatting;
 import juzu.impl.compiler.CompilationException;
-import juzu.impl.bridge.spi.RenderBridge;
 import juzu.io.OutputStream;
 import juzu.io.Stream;
+import juzu.request.ClientContext;
 import juzu.request.Phase;
 
 import javax.portlet.PortletConfig;
@@ -34,15 +34,10 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> implements RenderBridge {
+public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> {
 
   public PortletRenderBridge(Bridge bridge, RenderRequest request, RenderResponse response, PortletConfig config) {
-    super(bridge, request, response, config);
-  }
-
-  @Override
-  protected Phase getPhase() {
-    return Phase.VIEW;
+    super(bridge, Phase.VIEW, request, response, config);
   }
 
   @Override
@@ -55,6 +50,10 @@ public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, Render
     // a charset that is not the portlet container provided charset
     // and therefore it is safer to use the writer of the portlet container
     return OutputStream.create(charset, this.resp.getWriter());
+  }
+
+  public ClientContext getClientContext() {
+    return null;
   }
 
   @Override

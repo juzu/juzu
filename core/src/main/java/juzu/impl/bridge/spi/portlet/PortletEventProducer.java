@@ -17,10 +17,9 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.EventQueue;
-import juzu.impl.bridge.spi.EventBridge;
-import juzu.impl.bridge.spi.ActionBridge;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.request.Request;
+import juzu.request.Phase;
 
 import java.io.Serializable;
 
@@ -36,10 +35,10 @@ public class PortletEventProducer implements EventQueue {
     RequestBridge bridge = request.getBridge();
     if (payload == null || payload instanceof Serializable) {
       Serializable serializablePayload = (Serializable)payload;
-      if (bridge instanceof ActionBridge) {
+      if (bridge.getPhase() == Phase.ACTION) {
         PortletActionBridge actionBridge = (PortletActionBridge)bridge;
         actionBridge.resp.setEvent(name, serializablePayload);
-      } else if (bridge instanceof EventBridge) {
+      } else if (bridge.getPhase() == Phase.EVENT) {
         PortletEventBridge actionBridge = (PortletEventBridge)bridge;
         actionBridge.resp.setEvent(name, serializablePayload);
       } else {

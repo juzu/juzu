@@ -20,7 +20,6 @@ import juzu.Response;
 import juzu.Scope;
 import juzu.impl.bridge.Parameters;
 import juzu.impl.bridge.spi.DispatchBridge;
-import juzu.impl.bridge.spi.EventBridge;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopeController;
@@ -28,10 +27,7 @@ import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopingContext;
 import juzu.impl.inject.spi.BeanLifeCycle;
 import juzu.impl.inject.spi.InjectionContext;
-import juzu.impl.bridge.spi.ActionBridge;
-import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.bridge.spi.RequestBridge;
-import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.request.ActionContext;
@@ -114,14 +110,7 @@ public class Request implements ScopingContext {
   }
 
   public ClientContext getClientContext() {
-    RequestBridge bridge = getBridge();
-    if (bridge instanceof ActionBridge) {
-      return ((ActionBridge)bridge).getClientContext();
-    } else if (bridge instanceof ResourceBridge) {
-      return ((ResourceBridge)bridge).getClientContext();
-    } else {
-      return null;
-    }
+    return bridge.getClientContext();
   }
 
   public HttpContext getHttpContext() {
@@ -339,17 +328,17 @@ public class Request implements ScopingContext {
 
     // Create context
     RequestContext context;
-    if (bridge instanceof RenderBridge) {
-      context = new RenderContext(this, method, (RenderBridge)bridge);
+    if (bridge.getPhase() == Phase.VIEW) {
+      context = new RenderContext(this, method);
     }
-    else if (bridge instanceof ActionBridge) {
-      context = new ActionContext(this, method, (ActionBridge)bridge);
+    else if (bridge.getPhase() == Phase.ACTION) {
+      context = new ActionContext(this, method);
     }
-    else if (bridge instanceof EventBridge) {
-      context = new EventContext(this, method, (EventBridge)bridge);
+    else if (bridge.getPhase() == Phase.EVENT) {
+      context = new EventContext(this, method);
     }
     else {
-      context = new ResourceContext(this, method, (ResourceBridge)bridge);
+      context = new ResourceContext(this, method);
     }
 
     //

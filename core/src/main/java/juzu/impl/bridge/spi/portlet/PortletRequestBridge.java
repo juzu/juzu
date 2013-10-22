@@ -108,12 +108,15 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   protected final PortletApplicationContext applicationContext;
 
   /** . */
+  private final Phase phase;
+
+  /** . */
   protected Request request;
 
   /** . */
   protected Result result;
 
-  PortletRequestBridge(Bridge bridge, Rq req, Rs resp, PortletConfig config) {
+  PortletRequestBridge(Bridge bridge, Phase phase, Rq req, Rs resp, PortletConfig config) {
     String methodId = null;
     Map<String, String[]> parameters = new HashMap<String, String[]>(req.getParameterMap());
     Map<String ,RequestParameter> requestParameters = Collections.emptyMap();
@@ -134,7 +137,6 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     }
 
     //
-    Phase phase = getPhase();
     ControllerResolver<Method> resolver = bridge.getApplication().resolveBean(ControllerPlugin.class).getResolver();
     Method<?> target;
     if (methodId != null) {
@@ -158,9 +160,10 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     this.userContext = new PortletUserContext(req);
     this.applicationContext = new PortletApplicationContext(config);
     this.requestParameters = requestParameters;
+    this.phase = phase;
   }
 
-  PortletRequestBridge(Bridge bridge,  Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters) {
+  PortletRequestBridge(Bridge bridge,  Phase phase, Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters) {
 
     //
     Map<String, RequestParameter> requestParameters = Collections.emptyMap();
@@ -175,6 +178,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     HashMap<ControlParameter, Object> arguments = new HashMap<ControlParameter, Object>(target.getArguments(requestParameters));
 
     //
+    this.phase = phase;
     this.bridge = bridge;
     this.req = req;
     this.resp = resp;
@@ -192,7 +196,9 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     return JUL.getLogger(name);
   }
 
-  protected abstract Phase getPhase();
+  public final Phase getPhase() {
+    return phase;
+  }
 
   public Map<String, RequestParameter> getRequestParameters() {
     return requestParameters;

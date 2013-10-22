@@ -19,7 +19,6 @@ package juzu.request;
 import juzu.Response;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
-import juzu.impl.bridge.spi.MimeBridge;
 
 import java.io.IOException;
 
@@ -29,10 +28,6 @@ public abstract class MimeContext extends RequestContext {
   protected MimeContext(Request request, Method method) {
     super(request, method);
   }
-
-  @Override
-  protected abstract MimeBridge getBridge();
-
 
   public void setResponse(Response.Content response) throws IOException, IllegalStateException {
     // Consume response here

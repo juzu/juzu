@@ -17,7 +17,6 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.spi.ActionBridge;
 import juzu.request.Result;
 import juzu.request.ClientContext;
 import juzu.request.Phase;
@@ -29,13 +28,13 @@ import javax.portlet.PortletException;
 import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletActionBridge extends PortletInteractionBridge<ActionRequest, ActionResponse> implements ActionBridge {
+public class PortletActionBridge extends PortletInteractionBridge<ActionRequest, ActionResponse> {
 
   /** . */
   private final PortletClientContext clientContext;
 
   public PortletActionBridge(Bridge bridge, ActionRequest request, ActionResponse response, PortletConfig config) {
-    super(bridge, request, response, config);
+    super(bridge, Phase.ACTION, request, response, config);
 
     //
     this.clientContext = new PortletClientContext(request);
@@ -43,11 +42,6 @@ public class PortletActionBridge extends PortletInteractionBridge<ActionRequest,
 
   public ClientContext getClientContext() {
     return clientContext;
-  }
-
-  @Override
-  protected Phase getPhase() {
-    return Phase.ACTION;
   }
 
   @Override

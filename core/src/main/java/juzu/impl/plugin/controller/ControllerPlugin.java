@@ -19,11 +19,7 @@ package juzu.impl.plugin.controller;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.request.Result;
 import juzu.io.UndeclaredIOException;
-import juzu.impl.bridge.spi.ActionBridge;
-import juzu.impl.bridge.spi.EventBridge;
-import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.bridge.spi.RequestBridge;
-import juzu.impl.bridge.spi.ResourceBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.plugin.PluginContext;
@@ -75,22 +71,7 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
   }
 
   public void invoke(RequestBridge bridge) {
-    Phase phase;
-    if (bridge instanceof RenderBridge) {
-      phase = Phase.VIEW;
-    }
-    else if (bridge instanceof ActionBridge) {
-      phase = Phase.ACTION;
-    }
-    else if (bridge instanceof EventBridge) {
-      phase = Phase.EVENT;
-    }
-    else if (bridge instanceof ResourceBridge) {
-      phase = Phase.RESOURCE;
-    }
-    else {
-      throw new AssertionError();
-    }
+    Phase phase = bridge.getPhase();
 
     //
     Map<String, RequestParameter> parameters = bridge.getRequestParameters();

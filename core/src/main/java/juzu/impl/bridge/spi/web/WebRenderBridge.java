@@ -17,14 +17,14 @@
 package juzu.impl.bridge.spi.web;
 
 import juzu.impl.bridge.Bridge;
-import juzu.impl.bridge.spi.RenderBridge;
 import juzu.impl.request.Method;
+import juzu.request.Phase;
 import juzu.request.RequestParameter;
 
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class WebRenderBridge extends WebMimeBridge implements RenderBridge {
+public class WebRenderBridge extends WebMimeBridge {
 
   WebRenderBridge(
       Bridge bridge,
@@ -32,6 +32,6 @@ public class WebRenderBridge extends WebMimeBridge implements RenderBridge {
       WebBridge http,
       Method<?> target,
       Map<String, RequestParameter> parameters) {
-    super(bridge, handler, http, target, parameters);
+    super(bridge, handler, http, Phase.VIEW, target, parameters);
   }
 }
