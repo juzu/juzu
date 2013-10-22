@@ -86,14 +86,14 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
   @Override
   public void processAnnotationAdded(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     Name pkg = key.getElement().getPackageName();
-    log.log("Adding less annotation for package " + pkg);
+    log.info("Adding less annotation for package " + pkg);
     annotations.put(pkg, added);
   }
 
   @Override
   public void processAnnotationRemoved(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     Name pkg = key.getElement().getPackageName();
-    log.log("Removing less annotation for package " + pkg);
+    log.info("Removing less annotation for package " + pkg);
     annotations.remove(pkg);
   }
 
@@ -122,7 +122,7 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
       AnnotationMirror annotationMirror = Tools.getAnnotation(pkgElt, Less.class.getName());
 
       //
-      log.log("Handling less annotation for package " + pkg + ": minify=" + minify + " resources=" + resources);
+      log.info("Handling less annotation for package " + pkg + ": minify=" + minify + " resources=" + resources);
 
       //
       if (resources != null && resources.size() > 0) {
@@ -135,7 +135,7 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
 
         //
         for (String resource : resources) {
-          log.log("Processing declared resource " + resource);
+          log.info("Processing declared resource " + resource);
 
           //
           Path path;
@@ -148,7 +148,7 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
 
           //
           Path.Absolute to = assetPkg.resolve(path.as("css"));
-          log.log("Resource " + resource + " destination resolved to " + to);
+          log.info("Resource " + resource + " destination resolved to " + to);
 
           //
           Lesser lesser;
@@ -158,14 +158,14 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
             result = lesser.compile(clc, resource, Boolean.TRUE.equals(minify));
           }
           catch (Exception e) {
-            log.log("Unexpected exception", e);
+            log.info("Unexpected exception", e);
             throw new UnsupportedOperationException(e);
           }
 
           //
           if (result instanceof Compilation) {
             try {
-              log.log("Resource " + resource + " compiled about to write on disk as " + to);
+              log.info("Resource " + resource + " compiled about to write on disk as " + to);
               Compilation compilation = (Compilation)result;
               FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, to);
               Writer writer = fo.openWriter();
@@ -177,7 +177,7 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
               }
             }
             catch (IOException e) {
-              log.log("Resource " + to + " could not be written on disk", e);
+              log.info("Resource " + to + " could not be written on disk", e);
             }
           }
           else {
@@ -200,7 +200,7 @@ public class LessMetaModelPlugin extends ModuleMetaModelPlugin {
                 error.line,
                 error.column + 1,
                 sb);
-              log.log(msg.toDisplayString());
+              log.info(msg.toDisplayString());
               messages.add(msg);
             }
             throw new ProcessingException(pkgElt, annotationMirror, messages);

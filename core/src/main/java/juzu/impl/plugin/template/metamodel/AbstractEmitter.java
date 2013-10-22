@@ -64,7 +64,7 @@ abstract class AbstractEmitter implements Serializable {
   }
 
   void prePassivate() {
-    log.log("Evicting cache " + emitted);
+    log.info("Evicting cache " + emitted);
     emitted.clear();
     classCache.clear();
   }
@@ -101,7 +101,7 @@ abstract class AbstractEmitter implements Serializable {
                 try {
                   writer = scriptFile.openWriter();
                   writer.append(content);
-                  log.log("Generated template script " + path.getCanonical() + " as " + scriptFile.toUri() +
+                  log.info("Generated template script " + path.getCanonical() + " as " + scriptFile.toUri() +
                       " with originating elements " + Arrays.asList(elements));
                 }
                 finally {
@@ -121,7 +121,7 @@ abstract class AbstractEmitter implements Serializable {
           }
         }
         else {
-          log.log("Template " + template.getPath() + " was found in cache");
+          log.info("Template " + template.getPath() + " was found in cache");
         }
         return null;
       }
@@ -142,7 +142,7 @@ abstract class AbstractEmitter implements Serializable {
     //
     Path.Absolute path = template.getPath();
     if (classCache.containsKey(path)) {
-      log.log("Template class " + path + " was found in cache");
+      log.info("Template class " + path + " was found in cache");
     } else {
       Path.Absolute resolvedPath = owner.resolvePath(path);
       Writer writer = null;
@@ -151,7 +151,7 @@ abstract class AbstractEmitter implements Serializable {
         writer = classFile.openWriter();
         emitClass(provider, template, elements, writer);
         classCache.put(path, classFile);
-        log.log("Generated template class " + path + " as " + classFile.toUri() +
+        log.info("Generated template class " + path + " as " + classFile.toUri() +
             " with originating elements " + Arrays.asList(elements));
       }
       catch (IOException e) {

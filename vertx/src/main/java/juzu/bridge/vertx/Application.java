@@ -98,11 +98,11 @@ public class Application {
     final Logger log = new Logger() {
       final org.vertx.java.core.logging.Logger logger = container.getLogger();
 
-      public void log(CharSequence msg) {
+      public void info(CharSequence msg) {
         logger.info(msg);
       }
 
-      public void log(CharSequence msg, Throwable t) {
+      public void info(CharSequence msg, Throwable t) {
         logger.info(msg, t);
       }
     };

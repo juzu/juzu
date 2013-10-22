@@ -94,12 +94,12 @@ public enum ProcessingTool {
 
         //
         Class packageBindingClass = binding.getClass();
-        log.log("Packaging binding class " + packageBindingClass.getName());
+        log.info("Packaging binding class " + packageBindingClass.getName());
 
         //
         Field compoundNameField = packageBindingClass.getField("compoundName");
         char[][] compoundName = (char[][])compoundNameField.get(binding);
-        log.log("About to hack " + compoundName);
+        log.info("About to hack " + compoundName);
 
         // Compute name
         char[][] name = new char[compoundName.length + 1][];
@@ -114,37 +114,37 @@ public enum ProcessingTool {
           }
           sb.append(name[i]);
         }
-        log.log("Name is " + sb);
+        log.info("Name is " + sb);
 
         //
         Field envField = c.getField("_env");
         Object _env = envField.get(pkgElt);
-        log.log("env: " + _env);
+        log.info("env: " + _env);
 
         //
         Class _envClass = _env.getClass();
         Method getLookupEnvironmentMethod = _envClass.getMethod("getLookupEnvironment");
         Object le = getLookupEnvironmentMethod.invoke(_env);
-        log.log("lookupEnvironment: " + le);
+        log.info("lookupEnvironment: " + le);
 
         //
         Class leClass = le.getClass();
         Method getTypeMethod = leClass.getMethod("getType", char[][].class);
         Object nameObj = name;
         Object referenceBinding = getTypeMethod.invoke(le, nameObj);
-        log.log("Reference binding : " + referenceBinding);
-        log.log("Reference binding type : " + referenceBinding.getClass());
+        log.info("Reference binding : " + referenceBinding);
+        log.info("Reference binding type : " + referenceBinding.getClass());
 
         //
         Field scopeField = referenceBinding.getClass().getField("scope");
         Object scope = scopeField.get(referenceBinding);
-        log.log("Scope is " + scope);
+        log.info("Scope is " + scope);
 
         //
         Field referenceContextField = scope.getClass().getField("referenceContext");
         Object referenceContext = referenceContextField.get(scope);
-        log.log("Reference context : " + referenceContext);
-        log.log("Reference context type : " + referenceContext.getClass().getName());
+        log.info("Reference context : " + referenceContext);
+        log.info("Reference context type : " + referenceContext.getClass().getName());
 
         Class referenceContextClass = referenceContext.getClass();
         Field annotationsField = referenceContextClass.getField("annotations");
@@ -153,9 +153,9 @@ public enum ProcessingTool {
         Object annotations = annotationsField.get(referenceContext);
         int sourceStart = (Integer)sourceStartField.get(referenceContext);
         Object sourceEnd = sourceEndField.get(referenceContext);
-        log.log("Annotations : " + annotations);
-        log.log("Source start : " + sourceStart);
-        log.log("Source end : " + sourceEnd);
+        log.info("Annotations : " + annotations);
+        log.info("Source start : " + sourceStart);
+        log.info("Source end : " + sourceEnd);
 
         //
         Class referenceContextType = referenceContextClass.getClassLoader().loadClass("org.eclipse.jdt.internal.compiler.impl.ReferenceContext");
@@ -163,7 +163,7 @@ public enum ProcessingTool {
         //
         Method compilationResultMethod = referenceContextClass.getMethod("compilationResult");
         Object compilationResult = compilationResultMethod.invoke(referenceContext);
-        log.log("Compilation result : " + compilationResult);
+        log.info("Compilation result : " + compilationResult);
 
         //
         Class<?> compilationResultClass = compilationResult.getClass();
@@ -174,21 +174,21 @@ public enum ProcessingTool {
         for (int i : lineEnds) {
           sb2.append(" ").append(i);
         }
-        log.log(sb2);
+        log.info(sb2);
 
         //
         Class utilClass = referenceContextClass.getClassLoader().loadClass("org.eclipse.jdt.internal.compiler.util.Util");
         Method getLineNumberMethod = utilClass.getMethod("getLineNumber", int.class, int[].class, int.class, int.class);
         Method searchColumnNumber = utilClass.getMethod("searchColumnNumber", int[].class, int.class, int.class);
         int lineNumber = sourceStart >= 0 ? (Integer)getLineNumberMethod.invoke(null, sourceStart, lineEnds, 0, lineEnds.length - 1) : 0;
-        log.log("Line number : " + lineNumber);
+        log.info("Line number : " + lineNumber);
         int columnNumber = sourceStart >= 0 ? (Integer)searchColumnNumber.invoke(null, lineEnds, lineNumber, sourceStart) : 0;
-        log.log("Column number : " + columnNumber);
+        log.info("Column number : " + columnNumber);
 
         //
         Field fileNameField = compilationResultClass.getField("fileName");
         char[] fileName = (char[])fileNameField.get(compilationResult);
-        log.log("File name : " + new String(fileName));
+        log.info("File name : " + new String(fileName));
 
         int severity = 1;
 
@@ -218,7 +218,7 @@ public enum ProcessingTool {
           columnNumber
         );
 
-        log.log("Apt problem " + aptProblem);
+        log.info("Apt problem " + aptProblem);
 
         //
         Field _processingEnvField = messager.getClass().getDeclaredField("_processingEnv");
@@ -258,7 +258,7 @@ public enum ProcessingTool {
 
       }
       catch (Exception e) {
-        log.log("Could not make it work", e);
+        log.info("Could not make it work", e);
       }
     }
 

@@ -190,7 +190,7 @@ class MetaModelProcessContext extends ProcessContext {
         return new Resource<Timestamped<Content>>(path, content);
       }
       catch (Exception e) {
-        env.log("Could not get resource content " + path.getCanonical(), e);
+        env.info("Could not get resource content " + path.getCanonical(), e);
       }
     }
     return null;

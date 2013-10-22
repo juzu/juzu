@@ -24,10 +24,10 @@ package juzu.impl.common;
 public interface Logger {
 
   Logger SYSTEM = new Logger() {
-    public void log(CharSequence msg) {
+    public void info(CharSequence msg) {
       System.out.println(msg);
     }
-    public void log(CharSequence msg, Throwable t) {
+    public void info(CharSequence msg, Throwable t) {
       System.err.println(msg);
       t.printStackTrace();
     }
@@ -38,7 +38,7 @@ public interface Logger {
    *
    * @param msg the message
    */
-  void log(CharSequence msg);
+  void info(CharSequence msg);
 
   /**
    * Log a message assocated with a throwable.
@@ -46,6 +46,6 @@ public interface Logger {
    * @param msg the message
    * @param t   the throwable
    */
-  void log(CharSequence msg, Throwable t);
+  void info(CharSequence msg, Throwable t);
 
 }

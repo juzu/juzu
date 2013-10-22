@@ -76,7 +76,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
     // Load the tag handlers
     for (TagHandler handler : applications.getProcessingContext().loadServices(TagHandler.class)) {
-      applications.getProcessingContext().log("Loaded tag handler " + handler.getClass().getName() + " as " + handler.getName());
+      applications.getProcessingContext().info("Loaded tag handler " + handler.getClass().getName() + " as " + handler.getName());
       tags.put(handler.getName(), handler);
     }
 
@@ -147,7 +147,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
         TemplateContainerMetaModel templates = application.getChild(TemplateContainerMetaModel.KEY);
         Path addedPath = Path.parse((String)added.get("value"));
         Path.Absolute absAdded = templates.resolvePath(addedPath);
-        application.processingContext.log("Adding template ref " + variableElt.getTypeName() + "#" + variableElt.getName() + " " + absAdded);
+        application.processingContext.info("Adding template ref " + variableElt.getTypeName() + "#" + variableElt.getName() + " " + absAdded);
         templates.add(variableElt, absAdded);
       }
       else {
@@ -164,7 +164,7 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
         TemplateContainerMetaModel templates = metaModel.getChild(TemplateContainerMetaModel.KEY);
         Path removedPath = Path.parse((String)removed.get("value"));
         Path.Absolute absRemoved = templates.resolvePath(removedPath);
-        metaModel.processingContext.log("Removing template ref " + variableElt.getTypeName() + "#" + variableElt.getName() + " " + absRemoved);
+        metaModel.processingContext.info("Removing template ref " + variableElt.getTypeName() + "#" + variableElt.getName() + " " + absRemoved);
         templates.remove(variableElt);
       }
     }
@@ -178,21 +178,21 @@ public class TemplateMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void prePassivate(ApplicationMetaModel application) {
-    application.processingContext.log("Passivating template resolver for " + application.getHandle());
+    application.processingContext.info("Passivating template resolver for " + application.getHandle());
     application.getChild(TemplateContainerMetaModel.KEY).prePassivate();
     application.getChild(TagContainerMetaModel.KEY).prePassivate();
   }
 
   @Override
   public void prePassivate(ModuleMetaModel module) {
-    module.processingContext.log("Passivating templates");
+    module.processingContext.info("Passivating templates");
     tags.clear();
     this.providers = null;
   }
 
   @Override
   public void postProcessEvents(ApplicationMetaModel application) {
-    application.processingContext.log("Processing templates of " + application.getHandle());
+    application.processingContext.info("Processing templates of " + application.getHandle());
     application.getChild(TemplateContainerMetaModel.KEY).postProcessEvents();
     application.getChild(TagContainerMetaModel.KEY).postProcessEvents();
   }

@@ -380,7 +380,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       writer.append("}\n");
 
       //
-      env.log("Generated controller companion " + fqn + "_" + " as " + file.toUri());
+      env.info("Generated controller companion " + fqn + "_" + " as " + file.toUri());
     }
     catch (IOException e) {
       throw ControllerMetaModel.CANNOT_WRITE_CONTROLLER_COMPANION.failure(e, origin, controller.getHandle().getName());

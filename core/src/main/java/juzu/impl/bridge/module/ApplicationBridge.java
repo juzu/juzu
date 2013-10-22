@@ -65,7 +65,7 @@ public class ApplicationBridge extends Bridge {
       if (runModeValue != null) {
         runMode = RunMode.parse(runModeValue);
         if (runMode == null) {
-          log.log("Unparseable run mode " + runModeValue + " will use prod instead");
+          log.info("Unparseable run mode " + runModeValue + " will use prod instead");
           runMode = RunMode.PROD;
         }
       } else {

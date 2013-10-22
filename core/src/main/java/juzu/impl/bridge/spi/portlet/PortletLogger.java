@@ -29,11 +29,11 @@ public class PortletLogger implements Logger {
     this.config = config;
   }
 
-  public void log(CharSequence msg) {
+  public void info(CharSequence msg) {
     config.getPortletContext().log("[" + config.getPortletName() + "] " + msg);
   }
 
-  public void log(CharSequence msg, Throwable t) {
+  public void info(CharSequence msg, Throwable t) {
     config.getPortletContext().log("[" + config.getPortletName() + "] " + msg, t);
   }
 }

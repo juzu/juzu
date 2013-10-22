@@ -60,7 +60,7 @@ public abstract class MetaModelProcessor<P extends MetaModelPlugin<M, P>, M exte
 
   @Override
   protected void doInit(ProcessingContext context) {
-    log.log("Using processing env " + context.getClass().getName());
+    log.info("Using processing env " + context.getClass().getName());
 
     // Try to get state or create new one
     if (state == null) {
@@ -70,10 +70,10 @@ public abstract class MetaModelProcessor<P extends MetaModelPlugin<M, P>, M exte
         in = file.openInputStream();
         ObjectInputStream ois = new ObjectInputStream(in);
         state = (MetaModelState<P, M>)ois.readObject();
-        log.log("Loaded model from " + file.toUri());
+        log.info("Loaded model from " + file.toUri());
       }
       catch (Exception e) {
-        log.log("Created new meta model");
+        log.info("Created new meta model");
         MetaModelState<P, M> metaModel = new MetaModelState<P, M>(getPluginType(), createMetaModel());
         metaModel.init(getContext());
         state = metaModel;
@@ -102,10 +102,10 @@ public abstract class MetaModelProcessor<P extends MetaModelPlugin<M, P>, M exte
   protected void doProcess(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     if (!roundEnv.errorRaised()) {
       if (roundEnv.processingOver()) {
-        log.log("APT processing over");
+        log.info("APT processing over");
 
         //
-        log.log("Passivating model");
+        log.info("Passivating model");
         state.metaModel.prePassivate();
 
         // Passivate model
@@ -118,18 +118,18 @@ public abstract class MetaModelProcessor<P extends MetaModelPlugin<M, P>, M exte
         }
         catch (Exception e) {
           e.printStackTrace();
-          log.log("Could not passivate model ", e);
+          log.info("Could not passivate model ", e);
         }
         finally {
           Tools.safeClose(out);
         }
       }
       else {
-        log.log("Starting APT round #" + index);
+        log.info("Starting APT round #" + index);
 
         //
         if (index == 0) {
-          log.log("Activating model");
+          log.info("Activating model");
           state.metaModel.postActivate(getContext());
         }
 
@@ -137,10 +137,10 @@ public abstract class MetaModelProcessor<P extends MetaModelPlugin<M, P>, M exte
         LinkedHashMap<AnnotationKey, AnnotationState> updates = new LinkedHashMap<AnnotationKey, AnnotationState>();
         for (TypeElement annotationElt : annotations) {
           if (supportedAnnotations.contains(annotationElt.getQualifiedName().toString())) {
-            log.log("Processing elements for annotation for " + annotationElt.getQualifiedName());
+            log.info("Processing elements for annotation for " + annotationElt.getQualifiedName());
             for (Element annotatedElt : roundEnv.getElementsAnnotatedWith(annotationElt)) {
               if (annotatedElt.getAnnotation(Generated.class) == null) {
-                log.log("Processing element " + annotatedElt);
+                log.info("Processing element " + annotatedElt);
                 for (AnnotationMirror annotationMirror : annotatedElt.getAnnotationMirrors()) {
                   if (annotationMirror.getAnnotationType().asElement().equals(annotationElt)) {
                     AnnotationKey key = new AnnotationKey(annotatedElt, annotationMirror);
@@ -154,23 +154,23 @@ public abstract class MetaModelProcessor<P extends MetaModelPlugin<M, P>, M exte
         }
 
         //
-        log.log("Process annotations");
+        log.info("Process annotations");
         state.context.processAnnotations(updates.entrySet());
 
         //
-        log.log("Post processing model");
+        log.info("Post processing model");
         state.metaModel.postProcessAnnotations();
 
         //
-        log.log("Process events");
+        log.info("Process events");
         state.metaModel.processEvents();
 
         //
-        log.log("Post process events");
+        log.info("Post process events");
         state.metaModel.postProcessEvents();
 
         //
-        log.log("Ending APT round #" + index++);
+        log.info("Ending APT round #" + index++);
       }
     }
   }
@@ -181,7 +181,7 @@ public abstract class MetaModelProcessor<P extends MetaModelPlugin<M, P>, M exte
     // For now we don't provide completion when element is absent
     if (element != null) {
       // Get state (but we won't save it)
-      log.log("Activating model");
+      log.info("Activating model");
       state.metaModel.postActivate(getContext());
       AnnotationKey annotationKey = new AnnotationKey(element, Name.parse(((TypeElement)annotation.getAnnotationType().asElement()).getQualifiedName().toString()));
       AnnotationState annotationState = AnnotationState.create(annotation);

@@ -95,7 +95,7 @@ public class ModuleMetaModel extends MetaModel<ModuleMetaModelPlugin, ModuleMeta
   }
 
   private void emitConfig(ProcessingContext env) {
-    env.log("Emitting module config");
+    env.info("Emitting module config");
 
     // Merge plugins
     JSON descriptor = null;

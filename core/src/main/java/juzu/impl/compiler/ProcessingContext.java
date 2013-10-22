@@ -129,11 +129,11 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
         Class javaProjectClass = cl.loadClass("org.eclipse.jdt.core.IJavaProject");
         Method getProcessorOptionsMethod = aptConfigClass.getMethod("getProcessorOptions", javaProjectClass);
         Map<String, String> options = (Map<String, String>)getProcessorOptionsMethod.invoke(null, javaProject);
-        log.log("Retrieved options " + options);
+        log.info("Retrieved options " + options);
 
         //
         String sp = options.get("-sourcepath");
-        log.log("Found sourcepath " + sp);
+        log.info("Found sourcepath " + sp);
         if (sp != null) {
           // We take the first value
           Spliterator split = new Spliterator(sp, PATH_SEPARATOR_CHAR);
@@ -148,7 +148,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
         // Building service class loader, this works better in eclipse specially with m2e and
         // the externally loaded plugins
         String cp = options.get("-classpath");
-        log.log("Found classpath " + cp);
+        log.info("Found classpath " + cp);
         if (cp != null) {
           ArrayList<URL> urls = new ArrayList<URL>();
           for (String s : Spliterator.split(cp, PATH_SEPARATOR_CHAR)) {
@@ -167,9 +167,9 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
     }
 
     //
-    log.log("Using processing tool " + tool);
-    log.log("Using processing " + env);
-    log.log("Using source path " + sourcePath);
+    log.info("Using processing tool " + tool);
+    log.info("Using processing " + env);
+    log.info("Using source path " + sourcePath);
 
     //
     this.env = env;
@@ -238,17 +238,17 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
       throw new IllegalArgumentException("Package element cannot be resolved " + context);
     }
     if (sourcePath != null) {
-      log.log("Found eclipse source path " + sourcePath + " for package " + context.getPackageName());
+      log.info("Found eclipse source path " + sourcePath + " for package " + context.getPackageName());
       return sourcePath;
     }
     else {
       ReadFileSystem<File> sourcePath = sourcePathMap.get(context);
       if (sourcePath == null) {
         try {
-          log.log("Trying to find a native file system for package " + context.getPackageName());
+          log.info("Trying to find a native file system for package " + context.getPackageName());
           List<? extends AnnotationMirror> annotations = element.getAnnotationMirrors();
           if (annotations.size() > 0) {
-            log.log("Found package " + context.getPackageName() + " annotations " + annotations + " will use first one");
+            log.info("Found package " + context.getPackageName() + " annotations " + annotations + " will use first one");
             AnnotationMirror annotation = annotations.get(0);
             ClassLoader cl = env.getClass().getClassLoader();
             if (cl == null) {
@@ -265,7 +265,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
               Method getSourceFileMethod = cu.getClass().getMethod("getSourceFile");
               JavaFileObject file = (JavaFileObject)getSourceFileMethod.invoke(cu);
               URI uri = file.toUri();
-              log.log("Resolved uri " + uri + " for package " + context.getPackageName());
+              log.info("Resolved uri " + uri + " for package " + context.getPackageName());
               File f = new File(uri.getPath());
               if (f.exists() && f.isFile()) {
                 File dir = f.getParentFile().getParentFile();
@@ -278,19 +278,19 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
                 sourcePathMap.put(context, sourcePath = new DiskFileSystem(dir));
               }
             } else {
-              log.log("No path object for package " + context.getPackageName());
+              log.info("No path object for package " + context.getPackageName());
             }
           }
           else {
-            log.log("Package " + context.getPackageName() + " is not annotated (does not make sense)");
+            log.info("Package " + context.getPackageName() + " is not annotated (does not make sense)");
           }
         }
         catch (Exception e) {
-          log.log("Could not resolve package " + context, e);
+          log.info("Could not resolve package " + context, e);
         }
       }
       else {
-        log.log("Found cached source path " + sourcePath.getDescription() + " for package " + context.getPackageName());
+        log.info("Found cached source path " + sourcePath.getDescription() + " for package " + context.getPackageName());
       }
       return sourcePath;
     }
@@ -327,32 +327,32 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
     }
     ReadFileSystem<File> sourcePath = getSourcePath(context);
     if (sourcePath != null) {
-      log.log("Attempt to resolve " + key + " from source path");
+      log.info("Attempt to resolve " + key + " from source path");
       try {
         File f = sourcePath.getPath(key.names);
         if (f != null) {
-          log.log("Resolved " + key + " to " + f.getAbsolutePath());
+          log.info("Resolved " + key + " to " + f.getAbsolutePath());
           return new JavaFileObjectImpl<File>(StandardLocation.SOURCE_PATH, key, sourcePath, f);
         }
         else {
-          log.log("Resolving " + key + " from source path gave no result");
+          log.info("Resolving " + key + " from source path gave no result");
         }
       }
       catch (IOException e) {
-        log.log("Could not resolve " + key + " from source path", e);
+        log.info("Could not resolve " + key + " from source path", e);
       }
     }
     else {
       for (StandardLocation location : RESOURCE_LOCATIONS) {
         try {
-          log.log("Attempt to resolve " + key + " from " + location.getName());
+          log.info("Attempt to resolve " + key + " from " + location.getName());
           FileObject resource = getResource(location, key);
           if (resource != null && resource.getLastModified() > 0) {
             return resource;
           }
         }
         catch (Exception e) {
-          log.log("Could not resolve resource " + key + " from " + location.getName(), e);
+          log.info("Could not resolve resource " + key + " from " + location.getName(), e);
         }
       }
     }
@@ -389,7 +389,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
       throw new NullPointerException("No null path accepted");
     }
     try {
-      log.log("Attempt to resolve " + key + " from classpath");
+      log.info("Attempt to resolve " + key + " from classpath");
       Filer classPath = env.getFiler();
       FileObject object = classPath.getResource(StandardLocation.CLASS_PATH, key.packageFQN, key.name);
       if (object != null && object.getLastModified() > 0) {
@@ -397,7 +397,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
       }
     }
     catch (IOException e) {
-      log.log("Could not resolve " + key + " from classpath", e);
+      log.info("Could not resolve " + key + " from classpath", e);
     }
 
     //
@@ -416,12 +416,12 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
     if (service == null) {
       throw new NullPointerException("No null service class accepted");
     }
-    log.log("Loading services implementation of " + service.getName());
+    log.info("Loading services implementation of " + service.getName());
     try {
       return Tools.list(ServiceLoader.load(service, serviceCL));
     }
     catch (ServiceConfigurationError e) {
-      log.log("Could not load service for service " + service.getName(), e);
+      log.info("Could not load service for service " + service.getName(), e);
       return Collections.emptyList();
     }
   }
@@ -593,7 +593,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
         throw new IllegalArgumentException("Originating elements contains a null element");
       }
     }
-    log.log("Creating source file for name=" + name + " elements=" + Arrays.asList(originatingElements));
+    log.info("Creating source file for name=" + name + " elements=" + Arrays.asList(originatingElements));
     return env.getFiler().createSourceFile(name, originatingElements);
   }
 
@@ -608,7 +608,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
         throw new IllegalArgumentException("Originating elements contains a null element");
       }
     }
-    log.log("Creating class file for name=" + name + " elements=" + Arrays.asList(originatingElements));
+    log.info("Creating class file for name=" + name + " elements=" + Arrays.asList(originatingElements));
     return env.getFiler().createClassFile(name, originatingElements);
   }
 
@@ -625,7 +625,7 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
       Key key = new Key(location, pkg.toString(), relativeName.toString());
       FileObject resource = resources != null ? resources.get(key) : null;
       if (resource == null) {
-        log.log("Creating resource file for location=" + location + " pkg=" + pkg + " relativeName=" + relativeName + " elements=" + Arrays.asList(originatingElements));
+        log.info("Creating resource file for location=" + location + " pkg=" + pkg + " relativeName=" + relativeName + " elements=" + Arrays.asList(originatingElements));
         resource = env.getFiler().createResource(location, pkg, relativeName, originatingElements);
         if (resources == null) {
           resources = new HashMap<Key, FileObject>();
@@ -672,12 +672,12 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
 
   // Logger implementation
 
-  public void log(CharSequence msg) {
-    log.log(msg);
+  public void info(CharSequence msg) {
+    log.info(msg);
   }
 
-  public void log(CharSequence msg, Throwable t) {
-    log.log(msg, t);
+  public void info(CharSequence msg, Throwable t) {
+    log.info(msg, t);
   }
 
   /**

@@ -109,7 +109,7 @@ public class VertxRequestContext extends WebRequestContext {
 
     // Parse cookies
     String cookies = req.headers().get("cookie");
-    log.log("Got cookies " + cookies);
+    log.info("Got cookies " + cookies);
     if (cookies != null) {
       ArrayList<HttpCookie> parsed = new ArrayList<HttpCookie>();
       Matcher matcher = cookiePattern.matcher(cookies);
@@ -152,7 +152,7 @@ public class VertxRequestContext extends WebRequestContext {
             }
           }
           catch (Exception e) {
-            log.log("Could not parse cookie", e);
+            log.info("Could not parse cookie", e);
           }
         }
       }
@@ -237,7 +237,7 @@ public class VertxRequestContext extends WebRequestContext {
     if (scope != null && scope.size() > 0) {
       if (scope.purged) {
         for (String name : scope.getNames()) {
-          log.log("Clearing cookie " + name);
+          log.info("Clearing cookie " + name);
           cookies.add(scopeName + "." + name + "=; Path=/");
         }
       } else if (scope.values != null) {
@@ -254,12 +254,12 @@ public class VertxRequestContext extends WebRequestContext {
               // When they are equals we don't do anything
             } else {
 //              HttpCookie tmp = new HttpCookie(scopeName + "." + name, encoded);
-              log.log("Sending cookie " + name + " = " + value + " as " + encoded);
+              log.info("Sending cookie " + name + " = " + value + " as " + encoded);
               cookies.add(scopeName + "." + name + "=" + encoded + "; Path=/");
             }
           }
           catch (Exception e) {
-            log.log("Could not encode cookie", e);
+            log.info("Could not encode cookie", e);
           }
         }
       }

@@ -55,7 +55,7 @@ class CompilerLessContext implements LessContext {
           return c.getCharContent(true).toString();
         }
         catch (IOException e) {
-          processingContext.log("Could not get content of " + path, e);
+          processingContext.info("Could not get content of " + path, e);
         }
       }
     }

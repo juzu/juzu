@@ -29,7 +29,6 @@ import juzu.impl.fs.spi.ram.RAMFileSystem;
 import juzu.impl.fs.spi.url.URLFileSystem;
 import juzu.processor.MainProcessor;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
@@ -127,11 +126,11 @@ public abstract class ModuleRuntime<C> {
 
       //
       if (!failed && !next.hasChanges()) {
-        logger.log("No changes detected");
+        logger.info("No changes detected");
         return false;
       }
       else {
-        logger.log("Building application");
+        logger.info("Building application");
 
         //
         this.failed = true;

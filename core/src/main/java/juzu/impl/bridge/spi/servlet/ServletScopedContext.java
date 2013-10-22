@@ -95,7 +95,7 @@ public class ServletScopedContext implements ScopedContext, HttpSessionBindingLi
           scoped.destroy();
         }
         catch (Throwable t) {
-          log.log("Error when destroying object", t);
+          log.info("Error when destroying object", t);
         }
       }
     }

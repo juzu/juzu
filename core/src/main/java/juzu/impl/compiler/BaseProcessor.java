@@ -40,7 +40,6 @@ import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -74,11 +73,11 @@ public abstract class BaseProcessor extends AbstractProcessor {
     Logger logger = loggers.get(key);
     if (logger == null) {
       logger = new Logger() {
-        public void log(CharSequence msg) {
+        public void info(CharSequence msg) {
           BaseProcessor.log(name, msg);
         }
 
-        public void log(CharSequence msg, Throwable t) {
+        public void info(CharSequence msg, Throwable t) {
           BaseProcessor.log(name, msg, t);
         }
       };
@@ -213,7 +212,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
           }
           writer.append(msg).append("\n");
           e.printStackTrace(new PrintWriter(writer));
-          logger.log(writer.getBuffer());
+          logger.info(writer.getBuffer());
 
           // Report to tool
           context.report(Diagnostic.Kind.ERROR, msg, element, annotation, null);
@@ -233,7 +232,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
         writer.append("Compilation error: ");
         writer.append(msg).append("\n");
         e.printStackTrace(new PrintWriter(writer));
-        logger.log(writer.getBuffer());
+        logger.info(writer.getBuffer());
 
         // Report to tool
         context.report(Diagnostic.Kind.ERROR, msg, null, null, null);

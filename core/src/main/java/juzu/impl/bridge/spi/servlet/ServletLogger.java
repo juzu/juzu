@@ -34,11 +34,11 @@ public class ServletLogger implements Logger {
     this.servletConfig = servletConfig;
   }
 
-  public void log(CharSequence msg) {
+  public void info(CharSequence msg) {
     servletConfig.getServletContext().log("[" + servletConfig.getServletName() + "] " + msg);
   }
 
-  public void log(CharSequence msg, Throwable t) {
+  public void info(CharSequence msg, Throwable t) {
     servletConfig.getServletContext().log("[" + servletConfig.getServletName() + "] " + msg, t);
   }
 }

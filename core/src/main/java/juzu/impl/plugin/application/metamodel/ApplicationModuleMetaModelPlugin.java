@@ -224,7 +224,7 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
       writer.append("}\n");
 
       //
-      env.log("Generated application " + fqn + " as " + applicationFile.toUri());
+      env.info("Generated application " + fqn + " as " + applicationFile.toUri());
     }
     catch (IOException e) {
       throw TemplateMetaModel.CANNOT_WRITE_APPLICATION.failure(e, elt, application.getName());
@@ -260,7 +260,7 @@ public class ApplicationModuleMetaModelPlugin extends ModuleMetaModelPlugin {
 
         //
         JSON descriptor = new JSON();
-        metaModel.processingContext.log("Emitting application " + application.getHandle() + " config");
+        metaModel.processingContext.info("Emitting application " + application.getHandle() + " config");
 
         // Emit config
         for (ApplicationMetaModelPlugin plugin : context.getPlugins()) {

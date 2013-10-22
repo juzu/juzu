@@ -108,7 +108,7 @@ public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
         // For now we use the hardcoded assets package
         Name assetPkg = pkg.append("assets");
         for(String resource : resources) {
-          log.log("Processing declared webjars " + resource);
+          log.info("Processing declared webjars " + resource);
           
           String resourcePath = new WebJarAssetLocator().getFullPath(resource);
           URL url = WebJarAssetLocator.class.getClassLoader().getResource(resourcePath);
@@ -116,7 +116,7 @@ public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
           if (url != null) {
             Path.Absolute to = assetPkg.resolve(resource).as("js");
             try {
-              log.log("Webjars " + resource + " write on disk as " + to);
+              log.info("Webjars " + resource + " write on disk as " + to);
               FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, to);
               Writer writer = fo.openWriter();
               try {
@@ -126,10 +126,10 @@ public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
                 Tools.safeClose(writer);
               }
             } catch (IOException e) {
-              log.log("Resource " + to + " could not be written on disk", e);
+              log.info("Resource " + to + " could not be written on disk", e);
             }
           } else {
-            log.log("Could not resolve WebJars asset " + resource + " with resource path " + resourcePath);
+            log.info("Could not resolve WebJars asset " + resource + " with resource path " + resourcePath);
           }
         }
       }

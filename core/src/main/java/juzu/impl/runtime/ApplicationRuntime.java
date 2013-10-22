@@ -123,7 +123,7 @@ public class ApplicationRuntime<P, R> implements Closeable {
 
     //
     if (application == null) {
-      log.log("Starting application");
+      log.info("Starting application");
       start();
       return true;
     } else {
@@ -143,7 +143,7 @@ public class ApplicationRuntime<P, R> implements Closeable {
     injector.setClassLoader(moduleLifeCycle.getClassLoader());
 
     //
-    log.log("Starting " + descriptor.getName());
+    log.info("Starting " + descriptor.getName());
     Application application = new Application(injector, descriptor, resourceResolver);
     application.start();
     InjectionContext<?, ?> injectionContext = application.getInjectionContext();

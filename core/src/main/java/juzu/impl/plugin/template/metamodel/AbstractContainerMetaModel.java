@@ -119,22 +119,22 @@ public abstract class AbstractContainerMetaModel extends MetaModelObject impleme
    * Evict templates that are out of date.
    */
   private void evictTemplates() {
-    log.log("Synchronizing existing templates");
+    log.info("Synchronizing existing templates");
     for (TemplateMetaModel template : templates.values()) {
       if (template.template != null) {
         FileObject resource = application.resolveResource(template.getPath());
         if (resource == null) {
           // That will generate a template not found error
           template.template = null;
-          log.log("Detected template removal " + template.getPath());
+          log.info("Detected template removal " + template.getPath());
         }
         else if (resource.getLastModified() > template.template.getLastModified()) {
           // That will force the regeneration of the template
           template.template = null;
-          log.log("Detected stale template " + template.getPath());
+          log.info("Detected stale template " + template.getPath());
         }
         else {
-          log.log("Template " + template.getPath() + " is valid");
+          log.info("Template " + template.getPath() + " is valid");
         }
       }
     }

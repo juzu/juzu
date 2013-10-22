@@ -76,7 +76,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
       msg.append(" ").append(plugin.getName());
       pluginMap.put(plugin.getName(), plugin);
     }
-    env.log(msg);
+    env.info(msg);
 
     // Collect processed annotations
     HashSet<Class<? extends java.lang.annotation.Annotation>> supportedAnnotations = new HashSet<Class<? extends java.lang.annotation.Annotation>>();
@@ -86,7 +86,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
         pluginSupportedAnnotations.add(Name.create(annotationType));
         supportedAnnotations.add(annotationType);
       }
-      env.log("Plugin " + plugin.getName() + " supports " + pluginSupportedAnnotations);
+      env.info("Plugin " + plugin.getName() + " supports " + pluginSupportedAnnotations);
       supportedAnnotationsMap.put(plugin, pluginSupportedAnnotations);
     }
 
