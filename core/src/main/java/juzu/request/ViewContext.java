@@ -14,27 +14,15 @@
  * limitations under the License.
  */
 
-package juzu.test.protocol.mock;
+package juzu.request;
 
-import juzu.impl.common.MethodHandle;
-import juzu.impl.runtime.ApplicationRuntime;
-import juzu.request.ClientContext;
-import juzu.request.Phase;
-
-import java.util.Map;
+import juzu.impl.request.Method;
+import juzu.impl.request.Request;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockRenderBridge extends MockMimeBridge {
+public class ViewContext extends MimeContext {
 
-  public MockRenderBridge(ApplicationRuntime<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
-    super(application, client, Phase.VIEW, target, parameters);
-  }
-
-  public String getTitle() {
-    return title;
-  }
-
-  public ClientContext getClientContext() {
-    return null;
+  public ViewContext(Request request, Method method) {
+    super(request, method);
   }
 }

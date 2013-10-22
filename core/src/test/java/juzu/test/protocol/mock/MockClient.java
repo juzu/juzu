@@ -69,14 +69,14 @@ public class MockClient implements UserContext {
         if (method.getPhase() == Phase.ACTION) {
           request = new MockActionBridge(application.getLifeCycle(), this, method.getHandle(), parameters);
         } else if (method.getPhase() == Phase.VIEW) {
-          request = new MockRenderBridge(application.getLifeCycle(), this, method.getHandle(), parameters);
+          request = new MockViewBridge(application.getLifeCycle(), this, method.getHandle(), parameters);
         } else if (method.getPhase() == Phase.RESOURCE) {
           request = new MockResourceBridge(application.getLifeCycle(), this, method.getHandle(), parameters);
         } else {
           throw new AssertionError();
         }
       } else {
-        request = new MockRenderBridge(application.getLifeCycle(), this, null, parameters);
+        request = new MockViewBridge(application.getLifeCycle(), this, null, parameters);
       }
     }
     catch (Exception e) {
@@ -128,7 +128,7 @@ public class MockClient implements UserContext {
     return locales;
   }
 
-  public MockRenderBridge render(String methodId) {
+  public MockViewBridge render(String methodId) {
     MethodHandle handle = null;
     Method method = null;
     if (methodId != null) {
@@ -139,12 +139,12 @@ public class MockClient implements UserContext {
     if (method != null) {
       handle = method.getHandle();
     }
-    MockRenderBridge render = new MockRenderBridge(application.getLifeCycle(), this, handle, new HashMap<String, String[]>());
+    MockViewBridge render = new MockViewBridge(application.getLifeCycle(), this, handle, new HashMap<String, String[]>());
     invoke(render);
     return render;
   }
 
-  public MockRenderBridge render() {
+  public MockViewBridge render() {
     return render(null);
   }
 

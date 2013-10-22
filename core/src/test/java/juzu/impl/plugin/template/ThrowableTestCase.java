@@ -21,7 +21,7 @@ import juzu.template.TemplateExecutionException;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 import javax.naming.AuthenticationException;
@@ -40,7 +40,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     TemplateExecutionException te = render.assertFailure(TemplateExecutionException.class);
     assertInstanceOf(AuthenticationException.class, te.getCause());
   }
@@ -51,7 +51,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     TemplateExecutionException te = render.assertFailure(TemplateExecutionException.class);
     assertInstanceOf(ConcurrentModificationException.class, te.getCause());
   }
@@ -62,7 +62,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     render.assertFailure(UnknownError.class);
   }
 }

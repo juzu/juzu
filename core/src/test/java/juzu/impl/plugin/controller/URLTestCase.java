@@ -22,7 +22,7 @@ import juzu.impl.common.JSON;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -39,7 +39,7 @@ public class URLTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     JSON url = (JSON)JSON.parse(render.assertStringResult());
     assertFalse(url.getJSON("properties").contains(PropertyType.ESCAPE_XML.getClass().getName()));
   }
@@ -51,7 +51,7 @@ public class URLTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     JSON url = (JSON)JSON.parse(render.assertStringResult());
     assertEquals(Boolean.TRUE, url.getJSON("properties").get(PropertyType.ESCAPE_XML.getClass().getName()));
   }
@@ -63,7 +63,7 @@ public class URLTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     assertEquals("pass", render.assertStringResult());
   }
 }

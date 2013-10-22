@@ -20,7 +20,7 @@ import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import juzu.test.protocol.mock.MockResourceBridge;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public class ResourceTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     MockResourceBridge resource = (MockResourceBridge)client.invoke(render.assertStringResult());
     resource.assertNotFound();
   }
@@ -48,7 +48,7 @@ public class ResourceTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     MockResourceBridge resource = (MockResourceBridge)client.invoke(render.assertStringResult());
     assertEquals("hello", new String(resource.assertBinaryResult(), "UTF-8"));
     assertEquals("application/octet-stream", resource.getMimeType());

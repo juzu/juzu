@@ -21,7 +21,7 @@ import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockActionBridge;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -37,7 +37,7 @@ public class RequestContextTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     assertEquals("render_phase", render.assertStringResult());
 
     //

@@ -20,15 +20,12 @@ import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.request.RequestFilter;
 import juzu.test.AbstractInjectTestCase;
-import juzu.test.Registry;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -47,7 +44,7 @@ public class ExecutionFilterTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("plugin.controller.executionfilter.lifecycle").init();
     Tools.list(app.getLifeCycle().resolveBeans(RequestFilter.class));
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     assertEquals((Object)Arrays.asList("execute", "onCommand", "beforeRun", "run", "afterRun", "hello"), events);
   }
 

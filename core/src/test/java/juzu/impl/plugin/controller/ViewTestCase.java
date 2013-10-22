@@ -21,7 +21,7 @@ import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockActionBridge;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -43,7 +43,7 @@ public class ViewTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     assertEquals("index", render.assertStringResult());
   }
 
@@ -53,16 +53,16 @@ public class ViewTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     String result = render.assertStringResult();
     Matcher m = P.matcher(result);
     assertTrue("Was expecting " + result + " to match", m.matches());
     assertEquals("0", m.group(1));
-    render = (MockRenderBridge)client.invoke(m.group(2));
+    render = (MockViewBridge)client.invoke(m.group(2));
     m.reset(result = render.assertStringResult());
     assertTrue("Was expecting " + result + " to match", m.matches());
     assertEquals("1", m.group(1));
-    render = (MockRenderBridge)client.invoke(m.group(2));
+    render = (MockViewBridge)client.invoke(m.group(2));
     m.reset(result = render.assertStringResult());
     assertTrue("Was expecting " + result + " to match", m.matches());
     assertEquals("0", m.group(1));
@@ -74,16 +74,16 @@ public class ViewTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     String result = render.assertStringResult();
     Matcher m = P.matcher(result);
     assertTrue("Was expecting " + result + " to match", m.matches());
     assertEquals("0", m.group(1));
-    render = (MockRenderBridge)client.invoke(m.group(2));
+    render = (MockViewBridge)client.invoke(m.group(2));
     m.reset(result = render.assertStringResult());
     assertTrue("Was expecting " + result + " to match", m.matches());
     assertEquals("1", m.group(1));
-    render = (MockRenderBridge)client.invoke(m.group(2));
+    render = (MockViewBridge)client.invoke(m.group(2));
     m.reset(result = render.assertStringResult());
     assertTrue("Was expecting " + result + " to match", m.matches());
     assertEquals("2", m.group(1));
@@ -94,7 +94,7 @@ public class ViewTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("plugin.controller.view.response").init();
 
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     String result = render.assertStringResult();
     assertEquals("foo", result);
   }
@@ -105,7 +105,7 @@ public class ViewTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     String result = render.assertStringResult();
     MockActionBridge action = (MockActionBridge)client.invoke(result);
     action.assertRender("A.done", Collections.<String, String>emptyMap());

@@ -16,17 +16,12 @@
 
 package juzu.impl.plugin.binding;
 
-import juzu.impl.compiler.CompilationError;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
-import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
-
-import java.io.File;
-import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class BindingBeanTestCase extends AbstractInjectTestCase {
@@ -41,7 +36,7 @@ public class BindingBeanTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     assertEquals("pass", render.assertStringResult());
   }
 
@@ -51,12 +46,12 @@ public class BindingBeanTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     String url = render.assertStringResult();
     assertNotSame("", url);
 
     //
-    render = (MockRenderBridge)client.invoke(url);
+    render = (MockViewBridge)client.invoke(url);
     String result = render.assertStringResult();
     assertEquals("pass", result);
   }

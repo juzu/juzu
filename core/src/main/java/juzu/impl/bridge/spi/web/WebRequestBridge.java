@@ -312,7 +312,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
           RequestParameter requestParameter = RequestParameter.create(parameter.getName(), parameter.toArray());
           rp.put(requestParameter.getName(), requestParameter);
         }
-        WebRenderBridge requestBridge = new WebRenderBridge(bridge, handler, http, desc, rp);
+        WebViewBridge requestBridge = new WebViewBridge(bridge, handler, http, desc, rp);
         requestBridge.invoke();
         return requestBridge.send();
       } else {

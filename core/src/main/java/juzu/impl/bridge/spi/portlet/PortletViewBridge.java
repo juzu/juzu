@@ -34,9 +34,9 @@ import java.io.StringWriter;
 import java.nio.charset.Charset;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletRenderBridge extends PortletMimeBridge<RenderRequest, RenderResponse> {
+public class PortletViewBridge extends PortletMimeBridge<RenderRequest, RenderResponse> {
 
-  public PortletRenderBridge(Bridge bridge, RenderRequest request, RenderResponse response, PortletConfig config) {
+  public PortletViewBridge(Bridge bridge, RenderRequest request, RenderResponse response, PortletConfig config) {
     super(bridge, Phase.VIEW, request, response, config);
   }
 

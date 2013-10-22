@@ -14,15 +14,24 @@
  * limitations under the License.
  */
 
-package juzu.request;
+package juzu.impl.bridge.spi.web;
 
+import juzu.impl.bridge.Bridge;
 import juzu.impl.request.Method;
-import juzu.impl.request.Request;
+import juzu.request.Phase;
+import juzu.request.RequestParameter;
+
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RenderContext extends MimeContext {
+public class WebViewBridge extends WebMimeBridge {
 
-  public RenderContext(Request request, Method method) {
-    super(request, method);
+  WebViewBridge(
+      Bridge bridge,
+      Handler handler,
+      WebBridge http,
+      Method<?> target,
+      Map<String, RequestParameter> parameters) {
+    super(bridge, handler, http, Phase.VIEW, target, parameters);
   }
 }

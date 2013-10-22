@@ -24,12 +24,12 @@ import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.BridgeContext;
 import juzu.impl.bridge.module.ApplicationBridge;
 import juzu.impl.bridge.spi.portlet.PortletEventBridge;
+import juzu.impl.bridge.spi.portlet.PortletViewBridge;
 import juzu.impl.common.JUL;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.bridge.spi.portlet.PortletActionBridge;
-import juzu.impl.bridge.spi.portlet.PortletRenderBridge;
 import juzu.impl.bridge.spi.portlet.PortletResourceBridge;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
@@ -311,7 +311,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
 
     //
     try {
-      PortletRenderBridge requestBridge = new PortletRenderBridge(bridge, req, resp, config);
+      PortletViewBridge requestBridge = new PortletViewBridge(bridge, req, resp, config);
       requestBridge.invoke();
       requestBridge.send();
     }

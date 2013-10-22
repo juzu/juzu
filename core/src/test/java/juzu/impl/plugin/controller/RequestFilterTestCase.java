@@ -23,7 +23,7 @@ import juzu.test.AbstractInjectTestCase;
 import juzu.test.Registry;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 import java.util.ConcurrentModificationException;
@@ -42,7 +42,7 @@ public class RequestFilterTestCase extends AbstractInjectTestCase {
     Tools.list(app.getLifeCycle().resolveBeans(RequestFilter.class));
     assertEquals("created", Registry.get("request.filter.lifecycle"));
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     assertEquals("after", Registry.get("request.filter.lifecycle"));
   }
 
@@ -50,7 +50,7 @@ public class RequestFilterTestCase extends AbstractInjectTestCase {
   public void testFailure() throws Exception {
     MockApplication<?> app = application("plugin.controller.requestfilter.failure").init();
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     assertEquals("pass", render.assertStringResult());
   }
 
@@ -58,7 +58,7 @@ public class RequestFilterTestCase extends AbstractInjectTestCase {
   public void testFailing() throws Exception {
     MockApplication<?> app = application("plugin.controller.requestfilter.failing").init();
     MockClient client = app.client();
-    MockRenderBridge render = null;
+    MockViewBridge render = null;
     try {
       render = client.render();
       fail("Was expecting " + ConcurrentModificationException.class + " to be thrown");

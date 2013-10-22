@@ -21,7 +21,7 @@ import juzu.test.AbstractInjectTestCase;
 import juzu.test.Registry;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 import java.util.ConcurrentModificationException;
@@ -37,7 +37,7 @@ public class LifeCycleTestCase extends AbstractInjectTestCase {
   public void testDispatch() throws Exception {
     MockApplication<?> app = application("plugin.controller.lifecycle.dispatch").init();
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     render.assertStringResult("index");
     Integer count = Registry.get("count");
     assertEquals((Integer)2, count);
@@ -47,7 +47,7 @@ public class LifeCycleTestCase extends AbstractInjectTestCase {
   public void testOverrideBegin() throws Exception {
     MockApplication<?> app = application("plugin.controller.lifecycle.overridebegin").init();
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     render.assertStringResult("begin");
     Integer count = Registry.get("count");
     assertEquals((Integer)0, count);
@@ -57,7 +57,7 @@ public class LifeCycleTestCase extends AbstractInjectTestCase {
   public void testOverrideEnd() throws Exception {
     MockApplication<?> app = application("plugin.controller.lifecycle.overrideend").init();
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     render.assertStringResult("end");
     Integer count = Registry.get("count");
     assertEquals((Integer)2, count);
@@ -67,7 +67,7 @@ public class LifeCycleTestCase extends AbstractInjectTestCase {
   public void testFailureBegin() throws Exception {
     MockApplication<?> app = application("plugin.controller.lifecycle.failurebegin").init();
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     render.assertFailure(ConcurrentModificationException.class);
     Integer count = Registry.get("count");
     assertEquals((Integer)0, count);
@@ -77,7 +77,7 @@ public class LifeCycleTestCase extends AbstractInjectTestCase {
   public void testFailureDispatch() throws Exception {
     MockApplication<?> app = application("plugin.controller.lifecycle.failuredispatch").init();
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     render.assertFailure(ConcurrentModificationException.class);
     Integer count = Registry.get("count");
     assertEquals((Integer)2, count);
@@ -87,7 +87,7 @@ public class LifeCycleTestCase extends AbstractInjectTestCase {
   public void testFailureEnd() throws Exception {
     MockApplication<?> app = application("plugin.controller.lifecycle.failureend").init();
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     render.assertFailure(ConcurrentModificationException.class);
     Integer count = Registry.get("count");
     assertEquals((Integer)2, count);

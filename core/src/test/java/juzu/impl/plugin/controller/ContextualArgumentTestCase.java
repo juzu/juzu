@@ -21,7 +21,7 @@ import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -36,7 +36,7 @@ public class ContextualArgumentTestCase extends AbstractTestCase {
     MockApplication<?> application = application(InjectorProvider.CDI_WELD, "plugin.controller.contextual.simple");
     application.init();
     MockClient client = application.client();
-    MockRenderBridge request = client.render();
+    MockViewBridge request = client.render();
     Assert.assertEquals("__foo__", request.assertStringResult());
   }
 
@@ -45,7 +45,7 @@ public class ContextualArgumentTestCase extends AbstractTestCase {
     MockApplication<?> application = application(InjectorProvider.INJECT_GUICE, "plugin.controller.contextual.request");
     application.init();
     MockClient client = application.client();
-    MockRenderBridge request = client.render();
+    MockViewBridge request = client.render();
     Assert.assertEquals("pass", request.assertStringResult());
   }
 }

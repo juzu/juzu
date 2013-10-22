@@ -20,7 +20,7 @@ import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import juzu.test.protocol.mock.MockRequestBridge;
 import org.junit.Test;
 
@@ -39,7 +39,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     render.assertFailure(AuthenticationException.class);
   }
 
@@ -49,7 +49,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     render.assertFailure(ConcurrentModificationException.class);
   }
 
@@ -59,7 +59,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     render.assertFailure(UnknownError.class);
   }
 
@@ -69,7 +69,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     render.assertFailure(AuthenticationException.class);
   }
 
@@ -79,7 +79,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     render.assertFailure(ConcurrentModificationException.class);
   }
 
@@ -89,7 +89,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     render.assertFailure(UnknownError.class);
   }
 
@@ -99,7 +99,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     MockRequestBridge request = client.invoke(render.assertStringResult());
     request.assertFailure(AuthenticationException.class);
   }
@@ -110,7 +110,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     MockRequestBridge request = client.invoke(render.assertStringResult());
     request.assertFailure(ConcurrentModificationException.class);
   }
@@ -121,7 +121,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     MockRequestBridge request = client.invoke(render.assertStringResult());
     request.assertFailure(UnknownError.class);
   }
@@ -132,7 +132,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     MockRequestBridge request = client.invoke(render.assertStringResult());
     request.assertFailure(AuthenticationException.class);
   }
@@ -143,7 +143,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     MockRequestBridge request = client.invoke(render.assertStringResult());
     request.assertFailure(ConcurrentModificationException.class);
   }
@@ -154,7 +154,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     MockRequestBridge request = client.invoke(render.assertStringResult());
     request.assertFailure(UnknownError.class);
   }

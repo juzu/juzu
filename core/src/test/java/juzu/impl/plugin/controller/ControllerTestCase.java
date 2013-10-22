@@ -19,9 +19,6 @@ import juzu.impl.compiler.CompilationError;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.controller.metamodel.ControllerMetaModel;
 import juzu.test.AbstractInjectTestCase;
-import juzu.test.protocol.mock.MockApplication;
-import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
 import org.junit.Test;
 
 import java.util.List;

@@ -37,7 +37,7 @@ import juzu.request.Dispatch;
 import juzu.request.EventContext;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
-import juzu.request.RenderContext;
+import juzu.request.ViewContext;
 import juzu.request.RequestContext;
 import juzu.request.RequestParameter;
 import juzu.request.ResourceContext;
@@ -329,7 +329,7 @@ public class Request implements ScopingContext {
     // Create context
     RequestContext context;
     if (bridge.getPhase() == Phase.VIEW) {
-      context = new RenderContext(this, method);
+      context = new ViewContext(this, method);
     }
     else if (bridge.getPhase() == Phase.ACTION) {
       context = new ActionContext(this, method);

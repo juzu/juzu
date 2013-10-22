@@ -20,7 +20,7 @@ import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -34,7 +34,7 @@ public class MustacheTestCase extends AbstractInjectTestCase {
   public void testBasic() throws Exception {
     MockApplication<?> app = application("basic").init();
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     assertEquals("foo", render.assertStringResult());
   }
 
@@ -42,7 +42,7 @@ public class MustacheTestCase extends AbstractInjectTestCase {
   public void testResolveParameter() throws Exception {
     MockApplication<?> app = application("resolveparameter").init();
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     assertEquals("bar", render.assertStringResult());
   }
 
@@ -50,7 +50,7 @@ public class MustacheTestCase extends AbstractInjectTestCase {
   public void testResolveBean() throws Exception {
     MockApplication<?> app = application("resolvebean").init();
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     assertEquals("bar", render.assertStringResult());
   }
 
@@ -58,7 +58,7 @@ public class MustacheTestCase extends AbstractInjectTestCase {
   public void testPartial() throws Exception {
     MockApplication<?> app = application("partial").init();
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     assertEquals("<bar>foo</bar>", render.assertStringResult());
   }
 
@@ -67,7 +67,7 @@ public class MustacheTestCase extends AbstractInjectTestCase {
     if (getDI() != InjectorProvider.INJECT_GUICE) {
       MockApplication<?> app = application("parameterdeclaration").init();
       MockClient client = app.client();
-      MockRenderBridge render = client.render();
+      MockViewBridge render = client.render();
       assertEquals("bar", render.assertStringResult());
     }
   }

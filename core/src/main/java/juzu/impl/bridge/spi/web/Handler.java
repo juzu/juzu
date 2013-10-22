@@ -195,7 +195,7 @@ public class Handler implements Closeable {
       if (requestMethod.getPhase() == Phase.ACTION) {
         requestBridge = new WebActionBridge(this.bridge, this, bridge, requestMethod, requestParameters);
       } else if (requestMethod.getPhase() == Phase.VIEW) {
-        requestBridge = new WebRenderBridge(this.bridge, this, bridge, requestMethod, requestParameters);
+        requestBridge = new WebViewBridge(this.bridge, this, bridge, requestMethod, requestParameters);
       } else if (requestMethod.getPhase() == Phase.RESOURCE) {
         requestBridge = new WebResourceBridge(this.bridge, this, bridge, requestMethod, requestParameters);
       } else {

@@ -21,7 +21,7 @@ import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockActionBridge;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -39,7 +39,7 @@ public class ActionTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     MockActionBridge action = (MockActionBridge)client.invoke(render.assertStringResult());
     action.assertNoResponse();
   }
@@ -50,7 +50,7 @@ public class ActionTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     MockActionBridge action = (MockActionBridge)client.invoke(render.assertStringResult());
     action.assertRedirect("http://www.julienviet.com");
   }
@@ -61,7 +61,7 @@ public class ActionTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     MockActionBridge action = (MockActionBridge)client.invoke(render.assertStringResult());
     action.assertRender("render", Collections.singletonMap("arg", "arg_value"));
   }

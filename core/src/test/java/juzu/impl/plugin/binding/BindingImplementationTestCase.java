@@ -22,7 +22,7 @@ import juzu.test.AbstractInjectTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 import java.io.File;
@@ -65,7 +65,7 @@ public class BindingImplementationTestCase extends AbstractInjectTestCase {
 
     //
     MockClient client = app.client();
-    MockRenderBridge render = client.render();
+    MockViewBridge render = client.render();
     assertEquals("pass", render.assertStringResult());
   }
 }

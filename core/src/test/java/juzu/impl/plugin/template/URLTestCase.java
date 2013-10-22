@@ -22,7 +22,7 @@ import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
-import juzu.test.protocol.mock.MockRenderBridge;
+import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 import java.util.List;
@@ -65,6 +65,6 @@ public class URLTestCase extends AbstractTestCase {
     MockApplication<?> app = application(InjectorProvider.CDI_WELD, "plugin.template.url.contextual").init();
     MockClient client = app.client();
     String url = client.render().assertStringResult();
-    assertEquals("pass", ((MockRenderBridge)client.invoke(url)).assertStringResult());
+    assertEquals("pass", ((MockViewBridge)client.invoke(url)).assertStringResult());
   }
 }

@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package juzu.impl.bridge.spi.web;
+package juzu.test.protocol.mock;
 
-import juzu.impl.bridge.Bridge;
-import juzu.impl.request.Method;
+import juzu.impl.common.MethodHandle;
+import juzu.impl.runtime.ApplicationRuntime;
+import juzu.request.ClientContext;
 import juzu.request.Phase;
-import juzu.request.RequestParameter;
 
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class WebRenderBridge extends WebMimeBridge {
+public class MockViewBridge extends MockMimeBridge {
 
-  WebRenderBridge(
-      Bridge bridge,
-      Handler handler,
-      WebBridge http,
-      Method<?> target,
-      Map<String, RequestParameter> parameters) {
-    super(bridge, handler, http, Phase.VIEW, target, parameters);
+  public MockViewBridge(ApplicationRuntime<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
+    super(application, client, Phase.VIEW, target, parameters);
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public ClientContext getClientContext() {
+    return null;
   }
 }
