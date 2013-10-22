@@ -8,7 +8,6 @@
     <version>0.7.0-beta26-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.juzu</groupId>
   <artifactId>juzu-doc-reference-api</artifactId>
   <version>0.7.0-beta26-SNAPSHOT</version>
   <packaging>jar</packaging>

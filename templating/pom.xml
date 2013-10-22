@@ -8,7 +8,6 @@
     <version>0.7.0-beta26-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.juzu</groupId>
   <artifactId>juzu-templating-parent</artifactId>
   <version>0.7.0-beta26-SNAPSHOT</version>
   <packaging>pom</packaging>

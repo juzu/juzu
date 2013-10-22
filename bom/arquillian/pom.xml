@@ -10,7 +10,6 @@
     <version>0.7.0-beta26-SNAPSHOT</version>
   </parent>
 
-  <groupId>org.juzu</groupId>
   <artifactId>juzu-bom-arquillian</artifactId>
   <version>0.7.0-beta26-SNAPSHOT</version>
 
