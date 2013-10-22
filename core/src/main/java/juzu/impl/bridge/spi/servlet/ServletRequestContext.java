@@ -59,6 +59,9 @@ public class ServletRequestContext extends WebRequestContext {
   /** . */
   final Charset defaultEncoding;
 
+  /** . */
+  private AsyncContext context;
+
   public ServletRequestContext(
       Charset defaultEncoding,
       HttpServletRequest req,
@@ -134,6 +137,29 @@ public class ServletRequestContext extends WebRequestContext {
     return req.getRequestURI();
   }
 
+  synchronized void endAsync() {
+    if (context != null) {
+      System.out.println("COMPLETING ASYNC");
+      context.complete();
+    }
+  }
+
+  /**
+   * Begin or reuse an async context from the servlet.
+   *
+   * @return the async context
+   */
+  synchronized AsyncContext beginAsync() {
+    if (req.isAsyncStarted()) {
+      System.out.println("DETECTED ASYNC ALREADY STARTED");
+      context = req.getAsyncContext();
+    } else {
+      System.out.println("STARTING ASYNC");
+      context = req.startAsync();
+    }
+    return context;
+  }
+
   @Override
   public HttpStream getStream(int status) {
     return new ServletStream(status, defaultEncoding);
@@ -143,9 +169,6 @@ public class ServletRequestContext extends WebRequestContext {
 
     /** . */
     private Stream dataStream;
-
-    /** . */
-    private AsyncContext context;
 
     ServletStream(int status, Charset encoding) {
       super(ServletRequestContext.this, status, encoding);
@@ -170,22 +193,13 @@ public class ServletRequestContext extends WebRequestContext {
     }
 
     @Override
-    protected void endAsync() {
-      if (context != null) {
-        System.out.println("COMPLETING ASYNC");
-        context.complete();
-      }
+    protected void beginAsync() {
+      ServletRequestContext.this.beginAsync();
     }
 
     @Override
-    protected void beginAsync() {
-      if (req.isAsyncStarted()) {
-        System.out.println("DETECTED ASYNC ALREADY STARTED");
-        context = req.getAsyncContext();
-      } else {
-        System.out.println("STARTING ASYNC");
-        context = req.startAsync();
-      }
+    protected void endAsync() {
+      ServletRequestContext.this.endAsync();
     }
   }
 
