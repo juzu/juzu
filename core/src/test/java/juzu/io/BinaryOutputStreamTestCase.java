@@ -71,15 +71,9 @@ public class BinaryOutputStreamTestCase extends AbstractTestCase {
   @Test
   public void testAllChars() throws IOException {
     for (char c = Character.MIN_VALUE;c < Character.MAX_VALUE;c++) {
-      try {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        OutputStream bos = OutputStream.create(UTF_8, buffer);
-        bos.append(Character.toString(c));
-      }
-      catch (UnsupportedOperationException e) {
-        System.out.println("c = " + (int)c);
-        throw e;
-      }
+      ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+      OutputStream bos = OutputStream.create(UTF_8, buffer);
+      bos.append(Character.toString(c));
     }
   }
 
