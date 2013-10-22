@@ -23,6 +23,7 @@ import juzu.impl.bridge.BridgeContext;
 import juzu.impl.bridge.module.ApplicationBridge;
 import juzu.impl.bridge.provided.ProvidedBridge;
 import juzu.impl.bridge.spi.web.Handler;
+import juzu.impl.common.JUL;
 import juzu.impl.common.Tools;
 import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
@@ -102,7 +103,7 @@ public class ServletBridge extends HttpServlet {
 
     //
     final ServletConfig servletConfig = getServletConfig();
-    Logger log = new ServletLogger(servletConfig);
+    Logger log = JUL.getLogger(servletConfig.getServletName());
 
     //
     BridgeConfig config;

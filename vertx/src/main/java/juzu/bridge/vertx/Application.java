@@ -53,6 +53,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Application {
@@ -98,11 +99,13 @@ public class Application {
     final Logger log = new Logger() {
       final org.vertx.java.core.logging.Logger logger = container.getLogger();
 
-      public void info(CharSequence msg) {
+      @Override
+      public void log(Level level, CharSequence msg) {
         logger.info(msg);
       }
 
-      public void info(CharSequence msg, Throwable t) {
+      @Override
+      public void log(Level level, CharSequence msg, Throwable t) {
         logger.info(msg, t);
       }
     };

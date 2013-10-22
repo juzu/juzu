@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class BaseProcessor extends AbstractProcessor {
@@ -51,15 +52,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
   private static final String lineSep = System.getProperty("line.separator");
 
   /** . */
-  private final static ThreadLocal<StringBuilder> currentLog = new ThreadLocal<StringBuilder>();
-
-  /** . */
-  private static final ThreadLocal<DateFormat> format = new ThreadLocal<DateFormat>() {
-    @Override
-    protected DateFormat initialValue() {
-      return new SimpleDateFormat("h:mm:ss:SSS");
-    }
-  };
+  private final static ThreadLocal<Formatter> currentLog = new ThreadLocal<Formatter>();
 
   /** . */
   private static final Map<String, Logger> loggers = new HashMap<String, Logger>();
@@ -68,17 +61,15 @@ public abstract class BaseProcessor extends AbstractProcessor {
   private static final Logger logger = getLogger(BaseProcessor.class);
 
   public static Logger getLogger(Class<?> type) {
+
     String key = type.getName();
     final String name = type.getSimpleName();
     Logger logger = loggers.get(key);
     if (logger == null) {
       logger = new Logger() {
-        public void info(CharSequence msg) {
-          BaseProcessor.log(name, msg);
-        }
-
-        public void info(CharSequence msg, Throwable t) {
-          BaseProcessor.log(name, msg, t);
+        @Override
+        protected void send(Level level, CharSequence msg, Throwable t) {
+          BaseProcessor.log(name, level, msg, t);
         }
       };
       loggers.put(key, logger);
@@ -86,21 +77,16 @@ public abstract class BaseProcessor extends AbstractProcessor {
     return logger;
   }
 
-  private static void log(String name, CharSequence msg) {
-    String s = format.get().format(new Date());
-    StringBuilder sb = currentLog.get();
+  private static void log(String name, Level level, CharSequence msg, Throwable t) {
+    Formatter sb = currentLog.get();
     if (sb != null) {
-      sb.append(s).append(" ").append("[").append(name).append("] ").append(msg).append(lineSep);
-    }
-  }
-
-  private static void log(String name, CharSequence msg, Throwable t) {
-    StringWriter buffer = new StringWriter();
-    t.printStackTrace(new PrintWriter(buffer));
-    log(name, msg);
-    StringBuilder sb = currentLog.get();
-    if (sb != null) {
-      sb.append(buffer);
+      sb.format(Logger.FORMAT, System.currentTimeMillis(), level.getName(), name, msg);
+      sb.format(lineSep);
+      if (t != null) {
+        StringWriter buffer = new StringWriter();
+        t.printStackTrace(new PrintWriter(buffer));
+        sb.format("%1$s", buffer);
+      }
     }
   }
 
@@ -135,7 +121,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
     super.init(processingEnv);
 
     //
-    this.currentLog.set(new StringBuilder());
+    this.currentLog.set(new Formatter());
 
     //
     this.formalErrorReporting = "formal".equalsIgnoreCase(processingEnv.getOptions().get("juzu.error_reporting"));
@@ -241,7 +227,7 @@ public abstract class BaseProcessor extends AbstractProcessor {
     finally {
       if (roundEnv.processingOver()) {
         String t = currentLog.get().toString();
-        currentLog.set(new StringBuilder());
+        currentLog.set(new Formatter());
 
         //
         if (t.length() > 0) {

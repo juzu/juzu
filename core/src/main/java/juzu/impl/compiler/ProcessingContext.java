@@ -66,9 +66,10 @@ import java.util.Map;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ProcessingContext implements Filer, Elements, Logger, Types {
+public class ProcessingContext extends Logger implements Filer, Elements, Types {
 
   /** . */
   private static final MessageCode UNEXPECTED_ERROR = new MessageCode("UNEXPECTED_ERROR", "Unexpected error: %1$s");
@@ -672,12 +673,9 @@ public class ProcessingContext implements Filer, Elements, Logger, Types {
 
   // Logger implementation
 
-  public void info(CharSequence msg) {
-    log.info(msg);
-  }
-
-  public void info(CharSequence msg, Throwable t) {
-    log.info(msg, t);
+  @Override
+  protected void send(Level level, CharSequence msg, Throwable t) {
+    log.log(level, msg, t);
   }
 
   /**

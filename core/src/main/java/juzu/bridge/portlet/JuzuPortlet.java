@@ -24,7 +24,7 @@ import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.BridgeContext;
 import juzu.impl.bridge.module.ApplicationBridge;
 import juzu.impl.bridge.spi.portlet.PortletEventBridge;
-import juzu.impl.bridge.spi.portlet.PortletLogger;
+import juzu.impl.common.JUL;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
@@ -88,7 +88,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
   public void init(final PortletConfig config) throws PortletException {
 
     //
-    Logger log = new PortletLogger(config);
+    Logger log = JUL.getLogger(config.getPortletName());
 
     //
     AssetServer server = (AssetServer)config.getPortletContext().getAttribute("asset.server");
