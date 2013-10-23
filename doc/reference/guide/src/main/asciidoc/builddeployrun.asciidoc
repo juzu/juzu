@@ -21,7 +21,7 @@ to Maven, in the future we will provide additional examples or quickstart for al
 
 === With Maven
 
-Juzu libraries are deployed in the >>http://search.maven.org/[Maven Central repository], compiling an application
+Juzu libraries are deployed in the http://search.maven.org/[Maven Central repository], compiling an application
  require a few dependencies to find the correct jars.
 
 ==== Using the Juzu Maven _bom_
