@@ -100,7 +100,7 @@ public class ProvidedCDIInjector extends CDIInjector {
         return classLoader;
       }
       @Override
-      protected BeanManager getBeanManager() {
+      public BeanManager getBeanManager() {
         return beanManager;
       }
     };

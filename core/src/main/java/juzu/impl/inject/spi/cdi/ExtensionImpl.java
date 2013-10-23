@@ -55,9 +55,13 @@ public class ExtensionImpl implements Extension {
   /** The singletons to shut down. */
   private final List<Bean<?>> singletons;
 
+  /** . */
+  private boolean configured;
+
   public ExtensionImpl() {
     this.context = CDIContext.boot.get();
     this.singletons = new ArrayList<Bean<?>>();
+    this.configured = false;
   }
 
   void beforeBeanDiscovery(@Observes BeforeBeanDiscovery event, final BeanManager beanManager) {

@@ -48,7 +48,9 @@ public class DescriptorBuilder {
       new String[0],
       new String[0],
       new Integer[0],
-      new Boolean[0]
+      new Boolean[0],
+      new String[0],
+      new String[0]
   );
 
   /** . */
@@ -90,6 +92,12 @@ public class DescriptorBuilder {
   /** . */
   private final String[] listenersClass;
 
+  /** . */
+  private final String[] resourcesEnvRefName;
+
+  /** . */
+  private final String[] resourcesEnvRefType;
+
   private DescriptorBuilder(
       InjectorProvider injector,
       Charset requestEncoding,
@@ -103,7 +111,9 @@ public class DescriptorBuilder {
       String[] servletsUrlPattern,
       String[] servletsClass,
       Integer[] servletsLoadOnStartup,
-      Boolean[] servletsAsync) {
+      Boolean[] servletsAsync,
+      String[] resourcesEnvRefName,
+      String[] resourcesEnvRefType) {
     this.applicationNames = applicationNames;
     this.runMode = runMode;
     this.injector = injector;
@@ -117,20 +127,22 @@ public class DescriptorBuilder {
     this.servletsClass = servletsClass;
     this.servletsLoadOnStartup = servletsLoadOnStartup;
     this.servletsAsync = servletsAsync;
+    this.resourcesEnvRefName = resourcesEnvRefName;
+    this.resourcesEnvRefType = resourcesEnvRefType;
   }
 
   public DescriptorBuilder runMode(RunMode runMode) {
     if (runMode == null) {
       throw new NullPointerException("No null run mode");
     }
-    return new DescriptorBuilder(injector, requestEncoding, runMode, sourcePath, applicationNames, applicationTypes, urlPatterns, listenersClass, servletsName, servletsUrlPattern, servletsClass, servletsLoadOnStartup, servletsAsync);
+    return new DescriptorBuilder(injector, requestEncoding, runMode, sourcePath, applicationNames, applicationTypes, urlPatterns, listenersClass, servletsName, servletsUrlPattern, servletsClass, servletsLoadOnStartup, servletsAsync, resourcesEnvRefName, resourcesEnvRefType);
   }
 
   public DescriptorBuilder injector(InjectorProvider injector) {
     if (injector == null) {
       throw new NullPointerException("No null injector");
     }
-    return new DescriptorBuilder(injector, requestEncoding, runMode, sourcePath, applicationNames, applicationTypes, urlPatterns, listenersClass, servletsName, servletsUrlPattern, servletsClass, servletsLoadOnStartup, servletsAsync);
+    return new DescriptorBuilder(injector, requestEncoding, runMode, sourcePath, applicationNames, applicationTypes, urlPatterns, listenersClass, servletsName, servletsUrlPattern, servletsClass, servletsLoadOnStartup, servletsAsync, resourcesEnvRefName, resourcesEnvRefType);
   }
 
   public DescriptorBuilder portletApp(String applicationName, String portletName) {
@@ -164,7 +176,9 @@ public class DescriptorBuilder {
         servletsUrlPattern,
         servletsClass,
         servletsLoadOnStartup,
-        servletsAsync
+        servletsAsync,
+        resourcesEnvRefName,
+        resourcesEnvRefType
     );
   }
 
@@ -172,30 +186,33 @@ public class DescriptorBuilder {
     if (sourcePath == null) {
       throw new NullPointerException("No null source path");
     }
-    return new DescriptorBuilder(injector, requestEncoding, runMode, sourcePath, applicationNames, applicationTypes, urlPatterns, listenersClass, servletsName, servletsUrlPattern, servletsClass, servletsLoadOnStartup, servletsAsync);
+    return new DescriptorBuilder(injector, requestEncoding, runMode, sourcePath, applicationNames, applicationTypes, urlPatterns, listenersClass, servletsName, servletsUrlPattern, servletsClass, servletsLoadOnStartup, servletsAsync, resourcesEnvRefName, resourcesEnvRefType);
   }
 
   public DescriptorBuilder requestEncoding(Charset requestEncoding) {
     if (requestEncoding == null) {
       throw new NullPointerException("No null request encoding");
     }
-    return new DescriptorBuilder(injector, requestEncoding, runMode, sourcePath, applicationNames, applicationTypes, urlPatterns, listenersClass, servletsName, servletsUrlPattern, servletsClass, servletsLoadOnStartup, servletsAsync);
+    return new DescriptorBuilder(injector, requestEncoding, runMode, sourcePath, applicationNames, applicationTypes, urlPatterns, listenersClass, servletsName, servletsUrlPattern, servletsClass, servletsLoadOnStartup, servletsAsync, resourcesEnvRefName, resourcesEnvRefType);
   }
 
   public DescriptorBuilder listener(String listenerClass) {
     if (requestEncoding == null) {
       throw new NullPointerException("No null listener class");
     }
-    return new DescriptorBuilder(injector, requestEncoding, runMode, sourcePath, applicationNames, applicationTypes, urlPatterns, Tools.appendTo(listenersClass, listenerClass), servletsName, servletsUrlPattern, servletsClass, servletsLoadOnStartup, servletsAsync);
+    return new DescriptorBuilder(injector, requestEncoding, runMode, sourcePath, applicationNames, applicationTypes, urlPatterns, Tools.appendTo(listenersClass, listenerClass), servletsName, servletsUrlPattern, servletsClass, servletsLoadOnStartup, servletsAsync, resourcesEnvRefName, resourcesEnvRefType);
   }
 
   public DescriptorBuilder servlet(String servletName, String servletUrlPattern, String servletClass, Integer servletLoadOnStartup, Boolean servletAsync) {
-    return new DescriptorBuilder(injector, requestEncoding, runMode, sourcePath, applicationNames, applicationTypes, urlPatterns, listenersClass, Tools.appendTo(servletsName, servletName), Tools.appendTo(servletsUrlPattern, servletUrlPattern), Tools.appendTo(servletsClass, servletClass), Tools.appendTo(servletsLoadOnStartup, servletLoadOnStartup), Tools.appendTo(servletsAsync, servletAsync)
-    );
+    return new DescriptorBuilder(injector, requestEncoding, runMode, sourcePath, applicationNames, applicationTypes, urlPatterns, listenersClass, Tools.appendTo(servletsName, servletName), Tools.appendTo(servletsUrlPattern, servletUrlPattern), Tools.appendTo(servletsClass, servletClass), Tools.appendTo(servletsLoadOnStartup, servletLoadOnStartup), Tools.appendTo(servletsAsync, servletAsync), resourcesEnvRefName, resourcesEnvRefType);
   }
 
   public DescriptorBuilder embedPortletContainer() {
     return servlet("EmbedServlet", "/embed/*", "org.gatein.pc.embed.EmbedServlet", 0, null);
+  }
+
+  public DescriptorBuilder resourceEnvRef(String name, String type) {
+    return new DescriptorBuilder(injector, requestEncoding, runMode, sourcePath, applicationNames, applicationTypes, urlPatterns, listenersClass, servletsName, servletsUrlPattern, servletsClass,servletsLoadOnStartup, servletsAsync, Tools.appendTo(resourcesEnvRefName, name), Tools.appendTo(resourcesEnvRefType, type));
   }
 
   public Iterable<String> getApplications() {
@@ -300,6 +317,16 @@ public class DescriptorBuilder {
     //
     appendServlet(buffer, Collections.<String, String>emptyMap(), "AssetServlet", AssetServlet.class.getName(), 0, null);
     appendMapping(buffer, "AssetServlet", "/assets/*");
+
+    //
+    if (resourcesEnvRefName.length > 0) {
+      for (int i = 0;i < resourcesEnvRefName.length;i++) {
+        buffer.append("<resource-env-ref>");
+        buffer.append("<resource-env-ref-name>").append(resourcesEnvRefName[i]).append("</resource-env-ref-name>");
+        buffer.append("<resource-env-ref-type>").append(resourcesEnvRefType[i]).append("</resource-env-ref-type>");
+        buffer.append("</resource-env-ref>");
+      }
+    }
 
     //
     buffer.append("</web-app>");

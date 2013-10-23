@@ -78,7 +78,7 @@ public class WeldInjector extends CDIInjector {
         return container.getClassLoader();
       }
       @Override
-      protected BeanManager getBeanManager() {
+      public BeanManager getBeanManager() {
         return container.getManager();
       }
       @Override

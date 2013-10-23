@@ -31,14 +31,25 @@ public enum InjectorProvider {
 
   CDI_WELD("weld") {
     public Injector get() {
+      Object manager = null;
       try {
-        Object manager = new InitialContext().lookup("java:comp/BeanManager");
+        // For EE
+        manager = new InitialContext().lookup("java:comp/BeanManager");
+      }
+      catch (NamingException notFound1) {
+        try {
+          // For Tomcat
+          manager = new InitialContext().lookup("java:comp/env/BeanManager");
+        }
+        catch (NamingException notFound2) {
+          // Empty
+        }
+      }
+      if (manager != null) {
         return ProvidedCDIInjector.get(manager);
+      } else {
+        return new WeldInjector();
       }
-      catch (NamingException e) {
-        // Not found
-      }
-      return new WeldInjector();
     }
   },
 

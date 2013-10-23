@@ -184,6 +184,12 @@
       <artifactId>spring-webmvc</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.weld.servlet</groupId>
+      <artifactId>weld-servlet </artifactId>
+      <version>1.1.8.Final</version>
+      <scope>test</scope>
+    </dependency>
 
     <!-- Arquillian container -->
     <dependency>

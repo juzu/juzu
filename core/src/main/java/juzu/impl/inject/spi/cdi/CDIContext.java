@@ -66,7 +66,7 @@ public abstract class CDIContext extends InjectionContext<Bean<?>, CreationalCon
 
   public abstract ClassLoader getClassLoader();
 
-  protected abstract BeanManager getBeanManager();
+  public abstract BeanManager getBeanManager();
 
   public Bean<?> resolveBean(Class<?> type) {
     BeanManager manager = getBeanManager();
