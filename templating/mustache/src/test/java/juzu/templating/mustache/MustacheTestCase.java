@@ -64,7 +64,7 @@ public class MustacheTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testParameterDeclaration() throws Exception {
-    if (getDI() != InjectorProvider.INJECT_GUICE) {
+    if (getDI() != InjectorProvider.GUICE) {
       MockApplication<?> app = application("parameterdeclaration").init();
       MockClient client = app.client();
       MockViewBridge render = client.render();

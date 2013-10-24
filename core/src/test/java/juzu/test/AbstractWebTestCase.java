@@ -239,7 +239,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   }
 
   public static WebArchive createPortletDeployment(String packageName) {
-    return createPortletDeployment(InjectorProvider.INJECT_GUICE, RunMode.PROD, packageName);
+    return createPortletDeployment(InjectorProvider.GUICE, RunMode.PROD, packageName);
   }
   
   public static WebArchive createPortletDeployment(InjectorProvider injector, String packageName) {
@@ -247,7 +247,7 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
   }
   
   public static WebArchive createPortletDeployment(RunMode runMode, String packageName) {
-    return createPortletDeployment(InjectorProvider.INJECT_GUICE, runMode, packageName);
+    return createPortletDeployment(InjectorProvider.GUICE, runMode, packageName);
   }
 
   public static WebArchive createPortletDeployment(InjectorProvider injector, RunMode runMode, String packageName) {

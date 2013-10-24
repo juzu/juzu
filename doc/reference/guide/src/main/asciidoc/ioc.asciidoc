@@ -24,7 +24,10 @@ to selection is done via the servlet context parameter _juzu.inject_:
 
 * _guice_ for Google Guice
 * _spring_ for Spring
-* _weld_ for JBoss Weld
+* CDI
+** _cdi_ when the container is provided by the server such as
+http://docs.jboss.org/weld/reference/1.0.0/en-US/html/environments.html#d0e4998[Tomcat configured for CDI] or a Java EE server
+** _weld_ when the CDI container is managed by Juzu
 
 .Configuring the Spring container in web.xml
 [source,xml]

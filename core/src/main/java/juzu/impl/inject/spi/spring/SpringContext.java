@@ -23,9 +23,7 @@ import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.InjectionContext;
 import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 
 import java.lang.reflect.InvocationTargetException;
@@ -65,7 +63,7 @@ public class SpringContext extends InjectionContext<String, Object> {
   }
 
   public InjectorProvider getProvider() {
-    return InjectorProvider.INJECT_SPRING;
+    return InjectorProvider.SPRING;
   }
 
   public ClassLoader getClassLoader() {

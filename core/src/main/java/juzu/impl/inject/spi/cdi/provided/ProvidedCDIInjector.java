@@ -15,6 +15,7 @@
  */
 package juzu.impl.inject.spi.cdi.provided;
 
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.common.Filter;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -102,6 +103,10 @@ public class ProvidedCDIInjector extends CDIInjector {
       @Override
       public BeanManager getBeanManager() {
         return beanManager;
+      }
+      @Override
+      public InjectorProvider getProvider() {
+        return InjectorProvider.CDI;
       }
     };
   }

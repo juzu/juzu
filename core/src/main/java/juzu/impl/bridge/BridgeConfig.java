@@ -64,7 +64,7 @@ public class BridgeConfig {
     String inject = config.get(INJECT);
     InjectorProvider implementation;
     if (inject == null) {
-      implementation = InjectorProvider.INJECT_GUICE;
+      implementation = InjectorProvider.GUICE;
     } else {
       inject = inject.trim().toLowerCase();
       implementation = InjectorProvider.find(inject);

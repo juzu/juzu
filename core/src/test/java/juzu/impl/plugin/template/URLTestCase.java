@@ -62,7 +62,7 @@ public class URLTestCase extends AbstractTestCase {
 
   @Test
   public void testContextutal() throws Exception {
-    MockApplication<?> app = application(InjectorProvider.CDI_WELD, "plugin.template.url.contextual").init();
+    MockApplication<?> app = application(InjectorProvider.WELD, "plugin.template.url.contextual").init();
     MockClient client = app.client();
     String url = client.render().assertStringResult();
     assertEquals("pass", ((MockViewBridge)client.invoke(url)).assertStringResult());

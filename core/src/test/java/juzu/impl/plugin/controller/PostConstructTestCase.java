@@ -32,7 +32,7 @@ public class PostConstructTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testRenderPhase() throws Exception {
-    if (getDI() == InjectorProvider.CDI_WELD) {
+    if (getDI() == InjectorProvider.WELD) {
       MockApplication<?> app = application("plugin.controller.postconstruct").init();
 
       //

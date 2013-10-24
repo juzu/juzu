@@ -34,7 +34,7 @@ public class WeatherServletTestCase extends WeatherTestCase {
   @Deployment
   public static WebArchive deployment() {
     String webXml = DescriptorBuilder.DEFAULT.
-        injector(InjectorProvider.INJECT_SPRING).
+        injector(InjectorProvider.SPRING).
         listener("org.springframework.web.context.ContextLoaderListener").
         toWebXml();
     WebArchive war = ShrinkWrap.create(WebArchive.class);

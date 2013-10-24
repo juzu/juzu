@@ -33,7 +33,7 @@ public class WeatherPortletTestCase extends WeatherTestCase {
   @Deployment
   public static WebArchive deployment() {
     DescriptorBuilder desc = DescriptorBuilder.DEFAULT.
-        injector(InjectorProvider.INJECT_SPRING).
+        injector(InjectorProvider.SPRING).
         embedPortletContainer().
         listener("org.springframework.web.context.ContextLoaderListener");
     String webXml = desc.toWebXml();

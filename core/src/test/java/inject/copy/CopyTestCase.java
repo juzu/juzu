@@ -59,7 +59,7 @@ public class CopyTestCase<B, I> extends AbstractInjectTestCase<B, I> {
     Properties p4 = getBean(context, Properties.class);
     assertSame(p3, p4);
     assertNotSame(p1, p3);
-    if (di != InjectorProvider.INJECT_GUICE) {
+    if (di != InjectorProvider.GUICE) {
       assertNull(context.get(Date.class));
     }
     assertSame(singleton, getBean(context, HashSet.class));

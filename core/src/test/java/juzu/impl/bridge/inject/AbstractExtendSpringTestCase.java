@@ -32,7 +32,7 @@ public abstract class AbstractExtendSpringTestCase extends AbstractWebTestCase {
 
   /** . */
   static final DescriptorBuilder CONFIG = DescriptorBuilder.DEFAULT.
-      injector(InjectorProvider.INJECT_SPRING).
+      injector(InjectorProvider.SPRING).
       listener("org.springframework.web.context.ContextLoaderListener");
 
   static WebArchive configure(WebArchive war) {

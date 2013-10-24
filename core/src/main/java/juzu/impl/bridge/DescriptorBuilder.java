@@ -36,7 +36,7 @@ public class DescriptorBuilder {
 
   /** . */
   public static DescriptorBuilder DEFAULT = new DescriptorBuilder(
-      InjectorProvider.INJECT_GUICE,
+      InjectorProvider.GUICE,
       Tools.ISO_8859_1,
       RunMode.PROD,
       null,

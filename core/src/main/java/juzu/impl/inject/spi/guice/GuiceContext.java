@@ -178,7 +178,7 @@ public class GuiceContext extends InjectionContext<GuiceBean, Object> {
   }
 
   public InjectorProvider getProvider() {
-    return InjectorProvider.INJECT_GUICE;
+    return InjectorProvider.GUICE;
   }
 
   @Override

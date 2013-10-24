@@ -31,7 +31,7 @@ public class ProvidedCDITestCase extends AbstractWebTestCase {
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
     DescriptorBuilder config = DescriptorBuilder.DEFAULT.
-        injector(InjectorProvider.CDI_WELD).
+        injector(InjectorProvider.CDI).
         servletApp("bridge.inject.providedcdi").
         listener("org.jboss.weld.environment.servlet.Listener").embedPortletContainer().
         resourceEnvRef("BeanManager", "javax.enterprise.inject.spi.BeanManager");

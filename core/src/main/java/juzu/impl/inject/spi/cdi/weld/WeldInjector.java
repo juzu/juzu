@@ -19,6 +19,7 @@ import juzu.impl.common.Filter;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.inject.spi.Injector;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.cdi.CDIContext;
 import juzu.impl.inject.spi.cdi.CDIInjector;
 import juzu.impl.inject.spi.cdi.Container;
@@ -84,6 +85,10 @@ public class WeldInjector extends CDIInjector {
       @Override
       public void close() {
         container.stop();
+      }
+      @Override
+      public InjectorProvider getProvider() {
+        return InjectorProvider.WELD;
       }
     };
 

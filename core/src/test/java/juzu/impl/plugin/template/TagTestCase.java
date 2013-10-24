@@ -127,7 +127,7 @@ public class TagTestCase extends AbstractInjectTestCase {
 
   @Test
   public void testParam() throws Exception {
-    if (getDI() != InjectorProvider.INJECT_GUICE) {
+    if (getDI() != InjectorProvider.GUICE) {
       MockApplication<?> app = application("plugin.template.tag.param").init();
 
       //

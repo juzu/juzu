@@ -60,10 +60,6 @@ public abstract class CDIContext extends InjectionContext<Bean<?>, CreationalCon
     return injector.scopeController;
   }
 
-  public InjectorProvider getProvider() {
-    return InjectorProvider.CDI_WELD;
-  }
-
   public abstract ClassLoader getClassLoader();
 
   public abstract BeanManager getBeanManager();

@@ -40,9 +40,9 @@ public abstract class AbstractInjectTestCase extends AbstractTestCase {
   @Parameterized.Parameters
   public static Collection<Object[]> data() {
     Object[][] data = new Object[][]{
-      {InjectorProvider.CDI_WELD},
-      {InjectorProvider.INJECT_SPRING},
-      {InjectorProvider.INJECT_GUICE}
+      {InjectorProvider.WELD},
+      {InjectorProvider.SPRING},
+      {InjectorProvider.GUICE}
     };
     return Arrays.asList(data);
   }

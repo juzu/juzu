@@ -29,7 +29,7 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public enum InjectorProvider {
 
-  CDI_WELD("weld") {
+  CDI("cdi") {
     public Injector get() {
       Object manager = null;
       try {
@@ -45,21 +45,23 @@ public enum InjectorProvider {
           // Empty
         }
       }
-      if (manager != null) {
-        return ProvidedCDIInjector.get(manager);
-      } else {
-        return new WeldInjector();
-      }
+      return ProvidedCDIInjector.get(manager);
     }
   },
 
-  INJECT_GUICE("guice") {
+  WELD("weld") {
+    public Injector get() {
+      return new WeldInjector();
+    }
+  },
+
+  GUICE("guice") {
     public Injector get() {
       return new GuiceInjector();
     }
   },
 
-  INJECT_SPRING("spring") {
+  SPRING("spring") {
     public Injector get() {
       return new SpringInjector();
     }
@@ -89,11 +91,13 @@ public enum InjectorProvider {
 
   public static InjectorProvider find(String value) {
     if ("guice".equals(value)) {
-      return INJECT_GUICE;
+      return GUICE;
     } else if ("spring".equals(value)) {
-      return INJECT_SPRING;
+      return SPRING;
     } else if ("weld".equals(value)) {
-      return CDI_WELD;
+      return WELD;
+    } else if ("cdi".equals(value)) {
+      return CDI;
     } else {
       return null;
     }
