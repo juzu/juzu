@@ -8,16 +8,6 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <dependencySets>
 
-    <!-- Booking -->
-    <dependencySet>
-      <includes>
-        <include>org.juzu:juzu-booking:war:gatein</include>
-        <include>org.juzu:juzu-booking:war:liferay</include>
-      </includes>
-      <outputDirectory>/booking/</outputDirectory>
-      <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
-    </dependencySet>
-
     <!-- Tutorial -->
     <dependencySet>
       <includes>

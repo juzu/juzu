@@ -44,8 +44,7 @@ public enum InjectorProvider {
       }
     }
     public Injector get() {
-      Object manager = getManager();
-      return ProvidedCDIInjector.get(manager);
+      return ProvidedCDIInjector.get(Thread.currentThread().getContextClassLoader());
     }
     @Override
     public boolean isAvailable() {

@@ -21,19 +21,6 @@
 
   <dependencies>
 
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-booking</artifactId>
-      <type>war</type>
-      <classifier>gatein</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-booking</artifactId>
-      <type>war</type>
-      <classifier>liferay</classifier>
-    </dependency>
-
     <!-- Tutorial -->
     <dependency>
       <groupId>org.juzu</groupId>

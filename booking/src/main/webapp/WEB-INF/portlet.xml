@@ -7,7 +7,11 @@
    <portlet>
      <portlet-name>BookingPortlet</portlet-name>
      <display-name xml:lang="EN">Juzu Booking Application</display-name>
-     <portlet-class>org.sample.booking.BookingPortlet</portlet-class>
+     <portlet-class>juzu.bridge.portlet.JuzuPortlet</portlet-class>
+     <init-param>
+       <name>juzu.app_name</name>
+       <value>org.sample.booking</value>
+     </init-param>
      <supports>
        <mime-type>text/html</mime-type>
      </supports>

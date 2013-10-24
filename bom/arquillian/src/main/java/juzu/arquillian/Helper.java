@@ -39,12 +39,12 @@ public class Helper {
 
   /**
    * Create a base servlet war file. The returned war file is configured for running the Juzu
-   * servlet with Weld container.
+   * servlet with Guice container.
    *
    * @return the base servlet deployment
    */
   public static WebArchive createBaseServletDeployment() {
-    return createBaseServletDeployment("weld");
+    return createBaseServletDeployment("guice");
   }
 
   /**
@@ -80,7 +80,7 @@ public class Helper {
    * @return the portlet deployment
    */
   public static WebArchive createBasePortletDeployment(WebArchive war, Class... baseClasses) {
-    return createBasePortletDeployment(war, "weld", baseClasses);
+    return createBasePortletDeployment(war, "guice", baseClasses);
   }
 
   /**

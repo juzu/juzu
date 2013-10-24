@@ -147,6 +147,31 @@
 
       <dependency>
         <groupId>org.juzu</groupId>
+        <artifactId>juzu-dep-guice</artifactId>
+        <type>war</type>
+        <version>0.7.0-beta26-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-dep-spring</artifactId>
+        <type>war</type>
+        <version>0.7.0-beta26-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-dep-servlet-cdi</artifactId>
+        <type>war</type>
+        <version>0.7.0-beta26-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-dep-ee-cdi</artifactId>
+        <type>war</type>
+        <version>0.7.0-beta26-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.juzu</groupId>
         <artifactId>juzu-archetype</artifactId>
         <version>0.7.0-beta26-SNAPSHOT</version>
       </dependency>
@@ -427,17 +452,16 @@
         <artifactId>javassist</artifactId>
         <version>3.14.0-GA</version>
       </dependency>
+      <dependency>
+        <groupId>org.jboss.weld.servlet</groupId>
+        <artifactId>weld-servlet </artifactId>
+        <version>1.1.8.Final</version>
+      </dependency>
 
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
         <version>3.2.4.RELEASE</version>
-        <exclusions>
-          <exclusion>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
@@ -836,6 +860,7 @@
 
   <modules>
     <module>core</module>
+    <module>dep</module>
     <module>bom</module>
     <module>vertx</module>
     <module>templating</module>

@@ -16,7 +16,6 @@
 
 @Application(defaultController = org.sample.booking.controllers.Application.class)
 @Bindings({@Binding(Flash.class), @Binding(Login.class)})
-@Portlet
 @Servlet("/")
 @Assets(
     {
@@ -36,6 +35,5 @@ import juzu.plugin.asset.Assets;
 import juzu.plugin.asset.WithAssets;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
-import juzu.plugin.portlet.Portlet;
 import juzu.plugin.servlet.Servlet;
 import org.sample.booking.controllers.Login;
