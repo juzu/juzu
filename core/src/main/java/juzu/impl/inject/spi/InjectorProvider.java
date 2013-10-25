@@ -23,47 +23,82 @@ import juzu.impl.inject.spi.spring.SpringInjector;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import java.util.HashMap;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public enum InjectorProvider {
 
-  CDI("cdi") {
-    public Injector get() {
-      Object manager = null;
+  CDI("cdi", 2) {
+    private Object getManager() {
       try {
         // For EE
-        manager = new InitialContext().lookup("java:comp/BeanManager");
+        return new InitialContext().lookup("java:comp/BeanManager");
       }
       catch (NamingException notFound1) {
         try {
           // For Tomcat
-          manager = new InitialContext().lookup("java:comp/env/BeanManager");
+          return new InitialContext().lookup("java:comp/env/BeanManager");
         }
         catch (NamingException notFound2) {
-          // Empty
+          return null;
         }
       }
+    }
+    public Injector get() {
+      Object manager = getManager();
       return ProvidedCDIInjector.get(manager);
+    }
+    @Override
+    public boolean isAvailable() {
+      return getManager() != null;
     }
   },
 
-  WELD("weld") {
+  WELD("weld", 3) {
     public Injector get() {
       return new WeldInjector();
     }
-  },
-
-  GUICE("guice") {
-    public Injector get() {
-      return new GuiceInjector();
+    @Override
+    public boolean isAvailable() {
+      try {
+        Thread.currentThread().getContextClassLoader().loadClass("org.jboss.weld.bootstrap.WeldBootstrap");
+        return true;
+      }
+      catch (Exception e) {
+        return false;
+      }
     }
   },
 
-  SPRING("spring") {
+  GUICE("guice", 0) {
+    public Injector get() {
+      return new GuiceInjector();
+    }
+
+    @Override
+    public boolean isAvailable() {
+      try {
+        Thread.currentThread().getContextClassLoader().loadClass("com.google.inject.Guice");
+        return true;
+      }
+      catch (Exception e) {
+        return false;
+      }
+    }
+  },
+
+  SPRING("spring", 1) {
     public Injector get() {
       return new SpringInjector();
+    }
+    @Override
+    public boolean isAvailable() {
+      try {
+        Thread.currentThread().getContextClassLoader().loadClass("org.springframework.beans.factory.support.DefaultListableBeanFactory");
+        return true;
+      }
+      catch (Exception e) {
+        return false;
+      }
     }
   };
 
@@ -72,22 +107,29 @@ public enum InjectorProvider {
   /** . */
   final String value;
 
-  private InjectorProvider(String value) {
+  /** . */
+  final int priority;
+
+  private InjectorProvider(String value, int priority) {
     this.value = value;
+    this.priority = priority;
   }
 
   public String getValue() {
     return value;
   }
 
-  /** . */
-  private static final Map<String, InjectorProvider> LOOKUP = new HashMap<String, InjectorProvider>();
-
-  static {
-    for (InjectorProvider injectorProvider : values()) {
-      LOOKUP.put(injectorProvider.getValue(), injectorProvider);
-    }
+  /**
+   * @return the priority of the injector when there is an ambiguity when chosing the injector
+   */
+  public int getPriority() {
+    return priority;
   }
+
+  /**
+   * @return true when the provider is available.
+   */
+  public abstract boolean isAvailable();
 
   public static InjectorProvider find(String value) {
     if ("guice".equals(value)) {

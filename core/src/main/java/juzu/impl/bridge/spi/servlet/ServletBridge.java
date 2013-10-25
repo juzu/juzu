@@ -32,6 +32,7 @@ import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.inject.spi.Injector;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.spring.SpringInjector;
 import juzu.impl.resource.ResourceResolver;
 
@@ -39,6 +40,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
+import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -99,12 +101,15 @@ public class ServletBridge extends HttpServlet {
     }
 
     //
+    Logger servletLogger = JUL.getLogger(ServletBridge.class + "." + getServletConfig().getServletName());
+
+    //
     final ServletConfig servletConfig = getServletConfig();
 
     //
     BridgeConfig config;
     try {
-      config = new BridgeConfig(new SimpleMap<String, String>() {
+      config = new BridgeConfig(servletLogger, new SimpleMap<String, String>() {
         @Override
         protected Iterator<String> keys() {
           return BridgeConfig.NAMES.iterator();
@@ -139,7 +144,13 @@ public class ServletBridge extends HttpServlet {
       throw new ServletException("No application configured");
     }
 
-    // Future resource bundle
+    // Create and configure bridge
+    InjectorProvider injectorProvider = config.injectorProvider;
+    if (injectorProvider == null) {
+      throw new UnavailableException("No inject implementation selected");
+    } else {
+      servletLogger.info("Using inject implementation " + injectorProvider.getValue());
+    }
 
     //
     this.config = config;
@@ -227,7 +238,7 @@ public class ServletBridge extends HttpServlet {
         }
       };
 
-      // Create and configure bridge
+      //
       Injector injector = config.injectorProvider.get();
       if (injector instanceof SpringInjector) {
         SpringInjector springInjector = (SpringInjector)injector;

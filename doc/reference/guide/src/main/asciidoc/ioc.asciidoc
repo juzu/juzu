@@ -38,7 +38,8 @@ http://docs.jboss.org/weld/reference/1.0.0/en-US/html/environments.html#d0e4998[
 </context-param>
 ----
 
-WARNING: When no IOC container is specified the Guice container will be used
+WARNING: When no IOC container is specified, Juzu will look for the available implementations and use the first available
+in the list among Guice, Spring, CDI and Weld.
 
 == Inversion Of Control
 

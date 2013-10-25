@@ -16,14 +16,17 @@
 
 package juzu.impl.bridge;
 
+import juzu.impl.common.Logger;
 import juzu.impl.common.Name;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.common.Tools;
 
 import java.nio.charset.Charset;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class BridgeConfig {
@@ -55,34 +58,53 @@ public class BridgeConfig {
   /** . */
   public final Charset requestEncoding;
 
-  public static Name getApplicationName(Map<String, String> config) {
+  public BridgeConfig(Logger log, Map<String, String> config) throws Exception {
+    this.name = getApplicationName(config);
+    this.injectorProvider = getInjectImplementation(log, config);
+    this.requestEncoding = getRequestEncoding(config);
+  }
+
+  private Name getApplicationName(Map<String, String> config) {
     String applicationName = config.get(APP_NAME);
     return applicationName != null ? Name.parse(applicationName) : null;
   }
 
-  public static InjectorProvider getInjectImplementation(Map<String, String> config) throws Exception {
+  private InjectorProvider getInjectImplementation(Logger log, Map<String, String> config) throws Exception {
     String inject = config.get(INJECT);
-    InjectorProvider implementation;
     if (inject == null) {
-      implementation = InjectorProvider.GUICE;
+      log.debug("No inject implementation specified will detect one available");
+      TreeMap<Integer, InjectorProvider> providers = new TreeMap<Integer, InjectorProvider>();
+      for (InjectorProvider provider : InjectorProvider.values()) {
+        if (provider.isAvailable()) {
+          log.debug("Inject implementation " + provider.getValue() + " available");
+          providers.put(provider.getPriority(), provider);
+        } else {
+          log.debug("Inject implementation " + provider.getValue() + " not available");
+        }
+      }
+      Iterator<InjectorProvider> i = providers.values().iterator();
+      if (i.hasNext()) {
+        InjectorProvider implementation = i.next();
+        log.debug("Selected " + implementation.get() + " inject implementation");
+        return implementation;
+      } else {
+        log.debug("No inject implementation available");
+        return null;
+      }
     } else {
       inject = inject.trim().toLowerCase();
-      implementation = InjectorProvider.find(inject);
+      InjectorProvider implementation = InjectorProvider.find(inject);
       if (implementation == null) {
-        throw new Exception("unrecognized inject vendor " + inject);
+        log.debug("Inject implementation " + inject + " not available");
+        return null;
+      } else {
+        return implementation;
       }
     }
-    return implementation;
   }
 
-  public static Charset getRequestEncoding(Map<String, String> config) {
+  private Charset getRequestEncoding(Map<String, String> config) {
     String requestEncodingParam = config.get(REQUEST_ENCODING);
     return requestEncodingParam != null ? Charset.forName(requestEncodingParam) : Tools.ISO_8859_1;
-  }
-
-  public BridgeConfig(Map<String, String> config) throws Exception {
-    this.name = getApplicationName(config);
-    this.injectorProvider = getInjectImplementation(config);
-    this.requestEncoding = getRequestEncoding(config);
   }
 }

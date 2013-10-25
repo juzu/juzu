@@ -1117,6 +1117,19 @@ public class Tools {
   }
 
   /**
+   * Init the cause of the <code>throwable</code> argument with the <code>cause</code> argument.
+   *
+   * @param throwable the throwable to init
+   * @param cause the cause to init with
+   * @param <T> the throwable generic cause
+   * @return the <code>throwable</code> argument
+   */
+  public static <T extends Throwable> T initCause(T throwable, Throwable cause) {
+    throwable.initCause(cause);
+    return throwable;
+  }
+
+  /**
    * Returns the cause of the argument or the argument itself when its cause is null. So this method
    * should never return null.
    *

@@ -187,7 +187,7 @@ public class Application {
             Map<String, String> cfg = new HashMap<String, String>();
             cfg.put(BridgeConfig.INJECT, InjectorProvider.GUICE.getValue());
             cfg.put(BridgeConfig.APP_NAME, main.toString());
-            BridgeConfig config = new BridgeConfig(cfg);
+            BridgeConfig config = new BridgeConfig(log, cfg);
 
             //
             BridgeContext context = new BridgeContext() {

@@ -35,6 +35,7 @@ import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.Injector;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.spring.SpringInjector;
 import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.impl.plugin.controller.ControllerPlugin;
@@ -58,6 +59,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import javax.portlet.ResourceServingPortlet;
+import javax.portlet.UnavailableException;
 import javax.portlet.WindowState;
 import java.io.File;
 import java.io.IOException;
@@ -92,10 +94,13 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
       config.getPortletContext().setAttribute("asset.server", server);
     }
 
+    // The portlet logger
+    Logger portletLogger = JUL.getLogger(JuzuPortlet.class.getName() + "." + config.getPortletName());
+
     //
     BridgeConfig bridgeConfig;
     try {
-      bridgeConfig = new BridgeConfig(new SimpleMap<String, String>() {
+      bridgeConfig = new BridgeConfig(portletLogger, new SimpleMap<String, String>() {
         @Override
         protected Iterator<String> keys() {
           return BridgeConfig.NAMES.iterator();
@@ -129,7 +134,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
         if (nested != null) {
           msg += ":" + nested;
         }
-        throw new PortletException(msg, e.getCause());
+        throw Tools.initCause(new UnavailableException(msg), e.getCause());
       } else {
         throw new PortletException(msg, e);
       }
@@ -179,7 +184,15 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     };
 
     //
-    Injector injector = bridgeConfig.injectorProvider.get();
+    InjectorProvider injectorProvider = bridgeConfig.injectorProvider;
+    if (injectorProvider == null) {
+      throw new UnavailableException("No inject implementation selected");
+    } else {
+      portletLogger.info("Using inject implementation " + injectorProvider.getValue());
+    }
+
+    //
+    Injector injector = injectorProvider.get();
     if (injector instanceof SpringInjector) {
       SpringInjector springInjector = (SpringInjector)injector;
       Object parent = config.getPortletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");

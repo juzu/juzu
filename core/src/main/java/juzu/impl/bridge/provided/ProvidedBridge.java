@@ -22,7 +22,6 @@ import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.Injector;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.asset.AssetServer;
-import juzu.impl.common.Logger;
 import juzu.impl.common.RunMode;
 import juzu.impl.inject.spi.BeanLifeCycle;
 import juzu.impl.inject.spi.cdi.provided.ProvidedCDIInjector;
