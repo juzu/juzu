@@ -1,0 +1,51 @@
+== Appendix
+
+=== Maven configurations
+
+[[servlet_guice]]
+==== Guice for a Servlet Container
+
+[source,xml,indent=0]
+----
+include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=guice]
+----
+
+[[servlet_spring]]
+==== Spring for a Servlet Container
+
+[source,xml,indent=0]
+----
+include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=spring]
+----
+
+[[servlet_cdi]]
+==== CDI for a Servlet Container
+
+[source,xml,indent=0]
+----
+include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=cdi]
+----
+
+[[ee_guice]]
+==== Guice for an EE Container
+
+[source,xml,indent=0]
+----
+include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=ee-guice]
+----
+
+[[ee_spring]]
+==== Spring for an EE Container
+
+[source,xml,indent=0]
+----
+include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=ee-spring]
+----
+
+[[ee_cdi]]
+==== CDI for an EE Container
+
+[source,xml,indent=0]
+----
+include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=ee-cdi]
+----

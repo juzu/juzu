@@ -26,6 +26,7 @@ import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.common.JUL;
 import juzu.impl.common.Logger;
 import juzu.impl.common.RunMode;
+import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.request.ControlParameter;
 import juzu.io.UndeclaredIOException;
 import juzu.request.Result;
@@ -218,6 +219,8 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     }
     if (RunMode.PROPERTY.equals(propertyType)) {
       propertyValue = bridge.getRunMode();
+    } else if (InjectorProvider.PROPERTY.equals(propertyType)) {
+      return propertyType.cast(bridge.getConfig().injectorProvider);
     }
     return propertyValue == null ? null : propertyType.cast(propertyValue);
   }

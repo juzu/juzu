@@ -46,6 +46,25 @@
               </artifactItems>
             </configuration>
           </execution>
+          <execution>
+            <id>unpack-foo</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/sources</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.juzu</groupId>
+                  <artifactId>juzu-booking</artifactId>
+                  <type>war</type>
+                  <version>${project.version}</version>
+                  <includes>META-INF/maven/org.juzu/juzu-booking/pom.xml,META-INF/context.xml</includes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>

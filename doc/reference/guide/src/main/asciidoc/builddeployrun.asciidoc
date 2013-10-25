@@ -159,114 +159,26 @@ Juzu also provides a set of predefined _war_ that can be reused for simplifying 
 
 * +org.juzu:juzu-dep-guice:war+
 * +org.juzu:juzu-dep-spring:war+
-* +org.juzu:juzu-dep-servlet-cdi:war+
+* +org.juzu:juzu-dep-cdi:war+
 
-NOTE: in the following examples we don't need to depend on the Groovy jar as it is a compile dependency of
+In the following examples we will show the Maven configuration for a couple of examples, all the configurations
+ are listed in the appendix of this guide:
+
+* <<servlet_guice>>
+* <<servlet_spring>>
+* <<servlet_cdi>>
+* <<ee_guice>>
+* <<ee_spring>>
+* <<ee_cdi>>
+
+NOTE: we don't need to depend on the Groovy jar as it is a compile dependency of
 org.juzu:juzu-core artifact
-
-Let's study a few examples!
 
 ==== Example 1: Spring in a Servlet Container
 
 [source,xml]
 .Maven dependencies
 ----
-<dependency>
-  <groupId>org.juzu</groupId>
-  <artifactId>juzu-core</artifactId>
-</dependency>
-<dependency>
-  <groupId>javax.inject</groupId>
-  <artifactId>javax.inject</artifactId>
-</dependency>
-<dependency>
-  <groupId>org.springframework</groupId>
-  <artifactId>spring-core</artifactId>
-</dependency>
-<dependency>
-  <groupId>org.springframework</groupId>
-  <artifactId>spring-beans</artifactId>
-</dependency>
-<dependency>
-  <groupId>org.springframework</groupId>
-  <artifactId>spring-web</artifactId>
-</dependency>
-----
-
-With the war overlay, it becomes:
-
-[source,xml]
-.Maven dependencies using the war overlay
-----
-<dependency>
-  <groupId>org.juzu</groupId>
-  <artifactId>juzu-core</artifactId>
-</dependency>
-<dependency>
-  <groupId>javax.inject</groupId>
-  <artifactId>javax.inject</artifactId>
-</dependency>
-<dependency>
-  <groupId>org.juzu</groupId>
-  <artifactId>juzu-dep-spring</artifactId>
-  <type>war</type>
-</dependency>
-----
-
-==== Example 2: CDI in a EE Container
-
-[source,xml]
-----
-<dependency>
-  <groupId>org.juzu</groupId>
-  <artifactId>juzu-core</artifactId>
-</dependency>
-<dependency>
-  <groupId>javax.inject</groupId>
-  <artifactId>javax.inject</artifactId>
-  <scope>provided</scope>
-</dependency>
-----
-
-NOTE: no need to use an overlay for CDI in a EE container
-
-==== Example 3: CDI in a Servlet Container
-
-Using CDI in a Servlet Container is a special case because there is the need for extra configuration of the web application
-for CDI. The following example reconfigures the overlay to include the files in the _META-INF_ of the overlay as
- it contains a _context.xml_ file for Tomcat that configures CDI, unfortunately this is quite verbose.
-
-[source,xml]
-.Maven dependencies using the war overlay
-----
-<build>
-  <pluginManagement>
-    <plugins>
-      <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>default-war</id>
-            <configuration>
-              <overlays>
-                <overlay>
-                  <groupId>org.juzu</groupId>
-                  <artifactId>juzu-dep-servlet-cdi</artifactId>
-                  <excludes>
-                    <exclude>META-INF/maven/org.juzu/juzu-dep-servlet-cdi/**</exclude>
-                  </excludes>
-                </overlay>
-              </overlays>
-            </configuration>
-            <goals>
-              <goal>war</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </pluginManagement>
-</build>
 <dependencies>
   <dependency>
     <groupId>org.juzu</groupId>
@@ -277,11 +189,74 @@ for CDI. The following example reconfigures the overlay to include the files in 
     <artifactId>javax.inject</artifactId>
   </dependency>
   <dependency>
-    <groupId>org.juzu</groupId>
-    <artifactId>juzu-dep-servlet-cdi</artifactId>
-    <type>war</type>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-core</artifactId>
   </dependency>
-</dependencies>
+  <dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-beans</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-web</artifactId>
+  </dependency>
+<dependencies>
+----
+
+With the predefined war, it becomes:
+
+[source,xml,indent=0]
+.Maven dependencies using the predefined war
+----
+include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=spring]
+----
+
+==== Example 2: CDI
+
+_CDI_ is supported natively by an _EE_ container and requires specific integration for a servlet container like _tomcat_
+
+===== CDI for an EE container
+
+Here are the dependencies for an EE container, note that there is no need to use a predefined way.
+
+[source,xml,indent=0]
+.Maven dependencies for CDI in an EE container
+----
+include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=ee-cdi]
+----
+
+===== CDI for a Servlet container
+
+Using CDI with the Weld reference implementation in a Servlet Container requires  extra configuration of the web application
+described in the http://docs.jboss.org/weld/reference/1.0.0/en-US/html/environments.html#d0e4998[Weld manuel], let's look
+ first at the jar dependencies
+
+[source,xml,indent=0]
+.Maven dependencies for CDI in a servlet container using the predefined war
+----
+include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=cdi]
+----
+
+We need specific elements in _web.xml_ for integrating CDI with a servlet container:
+
+[source,xml,indent=0]
+.Servlet container configuration for CDI
+----
+<listener>
+  <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
+</listener>
+<resource-env-ref>
+  <resource-env-ref-name>BeanManager</resource-env-ref-name>
+  <resource-env-ref-type>javax.enterprise.inject.spi.BeanManager</resource-env-ref-type>
+</resource-env-ref>
+----
+
+In addition we need also a _META-INF/context.xml_ file that contains specific Tomcat configuration:
+
+[source,xml,indent=0]
+.Maven Tomcat context.xml configuration
+----
+include::{sourcesdir}/META-INF/context.xml[]
 ----
 
 ==== Juzu archetype

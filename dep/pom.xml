@@ -15,11 +15,14 @@
   <name>Juzu Dependencies</name>
   <description>The Juzu Dependencies</description>
 
+  <properties>
+    <failOnMissingWebXml>false</failOnMissingWebXml>
+  </properties>
+
   <modules>
     <module>guice</module>
     <module>spring</module>
-    <module>servlet-cdi</module>
-    <module>ee-cdi</module>
+    <module>cdi</module>
   </modules>
 
 </project>

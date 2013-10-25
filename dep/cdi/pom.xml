@@ -10,13 +10,26 @@
     <version>0.7.0-beta26-SNAPSHOT</version>
   </parent>
 
-  <artifactId>juzu-dep-ee-cdi</artifactId>
+  <artifactId>juzu-dep-cdi</artifactId>
   <version>0.7.0-beta26-SNAPSHOT</version>
 
-  <name>Juzu Dependencies for EE CDI</name>
-  <description>The Juzu Dependencies for EE CDI</description>
+  <name>Juzu Dependencies for CDI</name>
+  <description>The Juzu Dependencies for CDI</description>
+
+  <properties>
+    <archiveClasses>true</archiveClasses>
+  </properties>
 
   <dependencies>
+
+    <dependency>
+      <groupId>org.jboss.weld</groupId>
+      <artifactId>weld-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.weld.servlet</groupId>
+      <artifactId>weld-servlet </artifactId>
+    </dependency>
 
   </dependencies>
 

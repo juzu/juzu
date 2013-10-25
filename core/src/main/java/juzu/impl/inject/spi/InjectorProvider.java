@@ -16,6 +16,7 @@
 
 package juzu.impl.inject.spi;
 
+import juzu.PropertyType;
 import juzu.impl.inject.spi.cdi.provided.ProvidedCDIInjector;
 import juzu.impl.inject.spi.cdi.weld.WeldInjector;
 import juzu.impl.inject.spi.guice.GuiceInjector;
@@ -100,6 +101,9 @@ public enum InjectorProvider {
       }
     }
   };
+
+  /** The property. */
+  public static PropertyType<InjectorProvider> PROPERTY = new PropertyType<InjectorProvider>(){};
 
   public abstract Injector get();
 

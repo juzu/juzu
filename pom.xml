@@ -159,13 +159,7 @@
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
-        <artifactId>juzu-dep-servlet-cdi</artifactId>
-        <type>war</type>
-        <version>0.7.0-beta26-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-dep-ee-cdi</artifactId>
+        <artifactId>juzu-dep-cdi</artifactId>
         <type>war</type>
         <version>0.7.0-beta26-SNAPSHOT</version>
       </dependency>

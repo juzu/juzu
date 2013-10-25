@@ -79,3 +79,7 @@ include::servlet.asciidoc[]
 = Portlet
 
 include::portlet.asciidoc[]
+
+= Appendix
+
+include::appendix.asciidoc[]

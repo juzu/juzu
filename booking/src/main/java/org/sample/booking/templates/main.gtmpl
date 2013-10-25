@@ -1,6 +1,6 @@
 <div class="booking">
     <div class="header">
-        <h1>juzu booking demo (adapted from play framework)</h1>
+        <h1>juzu booking demo (<%= juzu.impl.request.Request.getCurrent().getBridge().getProperty(juzu.impl.inject.spi.InjectorProvider.PROPERTY) %> Version)</h1>
         <% if (login.connected) { %>
             <div class="options">
                 Connected as ${login.userName}

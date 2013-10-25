@@ -9,17 +9,23 @@
   Building application :
 
   > mvn package # By default for Guice 3.0 and Servlet Container
-  > mvn package -Dinject=spring # For Spring and Servlet Container
-  > mvn package -Dinject=servlet-cdi # For CDI and Servlet Container
-  > mvn package -Dserver=ee # For Guice 3.0 and Java EE
-  > mvn package -Dinject=spring -Dserver=ee # For Spring and Java EE
-  > mvn package -Dinject=ee-cdi -Dserver=ee # For CDI and Java EE
+  > mvn package -Dtarget=spring # For Spring and Servlet Container
+  > mvn package -Dtarget=cdi # For CDI and Servlet Container
+  > mvn package -Dtarget=ee-guice # For Guice 3.0 and Java EE
+  > mvn package -Dtarget=ee-spring # For Spring and Java EE
+  > mvn package -Dtarget=ee-cdi # For CDI and Java EE
 
-  Testing the application, use integration-test goal with -DskipRun=false and the options above :
+  Testing the application, use the dedicated plugin for running Tomcat or JBoss with the target option above :
 
-  # http://localhost:8080 for Tomcat
-  # http://localhost:8080/juzu-booking for JBoss AS 7
-  > mvn integration-test -DskipRun=false
+  > mvn tomcat7:run-war
+  > mvn -Dtarget=spring tomcat7:run-war
+  > mvn -Dtarget=cdi tomcat7:run-war
+  > mvn -Dtarget=ee-guice jboss-as:run
+  > mvn -Dtarget=ee-spring jboss-as:run
+  > mvn -Dtarget=ee-cdi jboss-as:run
+
+  Open your browser at http://localhost:8080/juzu-booking
+
   -->
 
   <parent>
@@ -35,15 +41,11 @@
   <description>The infamous booking application</description>
 
   <properties>
-    <skipRun>true</skipRun>
+    <failOnMissingWebXml>false</failOnMissingWebXml>
   </properties>
 
   <dependencies>
 
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-core</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-servlet</artifactId>
@@ -119,179 +121,200 @@
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>org.apache.tomcat.maven</groupId>
+        <artifactId>tomcat7-maven-plugin</artifactId>
+        <version>2.1</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jboss.as.plugins</groupId>
+        <artifactId>jboss-as-maven-plugin</artifactId>
+        <version>7.4.Final</version>
+        <executions>
+          <execution>
+            <id>default-run</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <version>7.1.0.Final</version>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
+
+    <pluginManagement>
+      <plugins>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <!-- Generates an executable jar with Tomcat -->
   <profiles>
 
     <profile>
-      <id>servlet</id>
-      <activation>
-        <property>
-          <name>!server</name>
-        </property>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>javax.inject</groupId>
-          <artifactId>javax.inject</artifactId>
-        </dependency>
-      </dependencies>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.tomcat.maven</groupId>
-            <artifactId>tomcat7-maven-plugin</artifactId>
-            <version>2.1</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>run-war</goal>
-                </goals>
-                <phase>integration-test</phase>
-                <configuration>
-                  <skip>${skipRun}</skip>
-                  <path>/</path>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>ee</id>
-      <activation>
-        <property>
-          <name>server</name>
-          <value>ee</value>
-        </property>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>javax.inject</groupId>
-          <artifactId>javax.inject</artifactId>
-          <scope>provided</scope>
-        </dependency>
-      </dependencies>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.jboss.as.plugins</groupId>
-            <artifactId>jboss-as-maven-plugin</artifactId>
-            <version>7.4.Final</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-                <phase>integration-test</phase>
-                <configuration>
-                  <skip>${skipRun}</skip>
-                  <version>7.1.0.Final</version>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
       <id>guice</id>
       <activation>
         <property>
-          <name>!inject</name>
+          <name>!target</name>
         </property>
       </activation>
+      <!-- tag::guice[] -->
       <dependencies>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-core</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+        </dependency>
         <dependency>
           <groupId>org.juzu</groupId>
           <artifactId>juzu-dep-guice</artifactId>
           <type>war</type>
         </dependency>
       </dependencies>
+      <!-- end::guice[] -->
     </profile>
 
     <profile>
       <id>spring</id>
       <activation>
         <property>
-          <name>inject</name>
+          <name>target</name>
           <value>spring</value>
         </property>
       </activation>
+      <!-- tag::spring[] -->
       <dependencies>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-core</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+        </dependency>
         <dependency>
           <groupId>org.juzu</groupId>
           <artifactId>juzu-dep-spring</artifactId>
           <type>war</type>
         </dependency>
       </dependencies>
+      <!-- end::spring[] -->
     </profile>
 
     <profile>
-      <id>servlet-cdi</id>
+      <id>cdi</id>
       <activation>
         <property>
-          <name>inject</name>
-          <value>servlet-cdi</value>
+          <name>target</name>
+          <value>cdi</value>
         </property>
       </activation>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <artifactId>maven-war-plugin</artifactId>
-              <executions>
-                <execution>
-                  <id>default-war</id>
-                  <configuration>
-                    <overlays>
-                      <overlay>
-                        <groupId>org.juzu</groupId>
-                        <artifactId>juzu-dep-servlet-cdi</artifactId>
-                        <excludes>
-                          <exclude>META-INF/maven/org.juzu/juzu-dep-servlet-cdi/**</exclude>
-                        </excludes>
-                      </overlay>
-                    </overlays>
-                  </configuration>
-                  <goals>
-                    <goal>war</goal>
-                  </goals>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
+      <properties>
+        <maven.war.webxml>src/main/web-cdi.xml</maven.war.webxml>
+      </properties>
+      <!-- tag::cdi[] -->
       <dependencies>
         <dependency>
           <groupId>org.juzu</groupId>
-          <artifactId>juzu-dep-servlet-cdi</artifactId>
+          <artifactId>juzu-core</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-dep-cdi</artifactId>
           <type>war</type>
         </dependency>
       </dependencies>
+      <!-- end::cdi[] -->
+    </profile>
+
+    <profile>
+      <id>ee-guice</id>
+      <activation>
+        <property>
+          <name>target</name>
+          <value>ee-guice</value>
+        </property>
+      </activation>
+      <!-- tag::ee-guice[] -->
+      <dependencies>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-core</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-dep-guice</artifactId>
+          <type>war</type>
+        </dependency>
+      </dependencies>
+      <!-- end::ee-guice[] -->
+    </profile>
+
+    <profile>
+      <id>ee-spring</id>
+      <activation>
+        <property>
+          <name>target</name>
+          <value>ee-spring</value>
+        </property>
+      </activation>
+      <!-- tag::ee-spring[] -->
+      <dependencies>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-core</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-dep-spring</artifactId>
+          <type>war</type>
+        </dependency>
+      </dependencies>
+      <!-- end::ee-spring[] -->
     </profile>
 
     <profile>
       <id>ee-cdi</id>
       <activation>
         <property>
-          <name>inject</name>
+          <name>target</name>
           <value>ee-cdi</value>
         </property>
       </activation>
+      <!-- tag::ee-cdi[] -->
       <dependencies>
         <dependency>
           <groupId>org.juzu</groupId>
-          <artifactId>juzu-dep-ee-cdi</artifactId>
-          <type>war</type>
+          <artifactId>juzu-core</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+          <scope>provided</scope>
         </dependency>
       </dependencies>
+      <!-- end::ee-cdi[] -->
     </profile>
   </profiles>
 </project>

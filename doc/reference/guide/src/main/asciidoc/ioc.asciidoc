@@ -7,7 +7,7 @@ on the injection container for wiring the entire Juzu runtime (controllers, temp
 We will explain how Juzu uses IOC for its runtime, we suppose the reader is familliar with IOC and with the +@Inject+
 specification, in particular the notion of injection, scope and qualifier should be familliar.
 
-= Containers =
+== Containers
 
 At the moment Juzu supports three containers implementing the JSR 330:
 
