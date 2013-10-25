@@ -1,11 +1,11 @@
 We will study in this chapter how to build and deploy a Juzu application.
 
-== Build
+== Introduction
 
 Building a Juzu application is usually done in two steps:
 
-* Compile the application to its binary representation
-* Package the application as a war file
+* Compile the application to classes
+* Package the application as a web application (_war_ file)
 
 Compiling an application requires a few jars to be present on the compilation classpath:
 
@@ -16,109 +16,273 @@ Compiling an application requires a few jars to be present on the compilation cl
 After compilation, classes need to be packaged as a web application archive (_war_) and then deployed in a server. We
 will show several ways to package your Juzu application.
 
-NOTE: At the moment Juzu focuses on Maven because it is built with Maven, however that does not mean that Juzu is coupled
-to Maven, in the future we will provide additional examples or quickstart for alternative build systems.
+== Juzu dependencies
 
-=== With Maven
+Let's start by looking at the dependencies required by Juzu, there are several kinds of dependencies:
 
-Juzu libraries are deployed in the http://search.maven.org/[Maven Central repository], compiling an application
- require a few dependencies to find the correct jars.
+* compilation time dependencies like the Less plugin
+* runtime dependencies
+** provided by server like the _@Inject_ jar provided by an EE server but not by a Servlet Container
+** embedded in the web application like Groovy
 
-==== Using the Juzu Maven _bom_
+=== Juzu core dependendencies
 
-The _bom_ is a Juzu artifact that serves the purpose of building and packaging an application:
+Juzu is built on top of a plugin architecture allowing to reduce the number of dependencies to the minimum for the core
+of the framework.
 
-. provide a set of dependencies that will be sufficient for compiling the application using its Maven transitive dependencies
-. provide a predefined assembly descriptor that creates a war file containing the application classes, resources and libraries
+.Juzu core dependencies
+[cols="5*^",options="header"]
+|===
+|
+|GAV
+|Compilation
+|Servlet Container
+|Java EE Server
 
-To achieve the first step, we simply declare the following dependency in a Maven artifact:
+|Juzu
+|org.juzu:juzu-core
+|&#x2611;
+|&#x2611;
+|&#x2611;
 
-[source,xml,subs="attributes,specialcharacters"]
+|Groovy
+|org.codehaus.groovy:groovy-all
+|&#x2610;
+|&#x2611;
+|&#x2611;
+
+|@Inject
+|javax.inject:javax.inject
+|&#x2611;
+|&#x2611;
+|&#x2610;
+|===
+
+=== Injection Container dependendencies
+
+Juzu leverages an Injection Container (IOC) at runtime for wiring the various objects managed by the framework. Several
+implementations can be used and you should configure the correct dependencies according to the container you are using:
+
+* _Spring 3_
+* _Google Guice 3_
+* Context and Dependency Injection
+** _CDI_ provided by the server
+** _Weld_ the CDI implementation managed by Juzu
+
+NOTE: _Context and Dependency Injection_ specification is an extension (JSR 299) of the _@Inject_ specification (JSR-330)
+
+These implementation jars are never required at compilation time, unless you use specific classes in your project, such
+as the +@Autowire+ annotation of Spring, or the +@Produces+ annotation of CDI.
+
+At runtime the jars you needs depends on the implementation you use:
+
+.IOC dependencies
+[cols="3*^",options="header"]
+|===
+|
+|Servlet Container
+|Java EE Server
+
+|Spring
+|&#x2611;
+|&#x2611;
+
+|Google Guice
+|&#x2611;
+|&#x2611;
+
+|Weld
+|&#x2611;
+|&#x2610;
+
+|CDI
+|&#x2611;
+|&#x2610;
+|===
+
+NOTE: When using CDI with a Servlet Container, you need to chose an implementation of CDI and configure it
+specifically for the Servlet Container, for instance you can configure
+http://docs.jboss.org/weld/reference/1.0.0/en-US/html/environments.html#d0e4998[the Weld implementation for Tomcat 7].
+
+== Packaging a Juzu application
+
+Packaging a Juzu application is quite easy to achieve when you know which dependencies Juzu and the runtime expect
+or provide. Juzu jars are deployed in the http://search.maven.org/[Maven Central repository].
+
+When packaging your application you can follow:
+
+[cols="4*^",options="header"]
+|===
+|
+|Compilation
+|Servlet Container
+|EE Container
+
+|+org.juzu:juzu-core+
+|&#x2611;
+|&#x2611;
+|&#x2611;
+
+|+org.codehaus.groovy:groovy-all+
+|&#x2611;
+|&#x2611;
+|&#x2611;
+
+|+javax.inject:javax.inject+
+|&#x2611;
+|&#x2611;
+|&#x2610;
+
+|Guice
+|&#x2610;
+|&#x2611;
+|&#x2611;
+
+|Spring
+|&#x2610;
+|&#x2611;
+|&#x2611;
+
+|CDI
+|&#x2610;
+|&#x2611;
+|&#x2610;
+|===
+
+== Build
+
+=== Maven build
+
+The Maven war packaging is a convenient way for building a web application with Maven.
+
+Juzu also provides a set of predefined _war_ that can be reused for simplifying the building of a web application:
+
+* +org.juzu:juzu-dep-guice:war+
+* +org.juzu:juzu-dep-spring:war+
+* +org.juzu:juzu-dep-servlet-cdi:war+
+
+NOTE: in the following examples we don't need to depend on the Groovy jar as it is a compile dependency of
+org.juzu:juzu-core artifact
+
+Let's study a few examples!
+
+==== Example 1: Spring in a Servlet Container
+
+[source,xml]
+.Maven dependencies
 ----
 <dependency>
   <groupId>org.juzu</groupId>
-  <artifactId>juzu-bom-core</artifactId>
-  <version>{juzu-version}</version>
+  <artifactId>juzu-core</artifactId>
+</dependency>
+<dependency>
+  <groupId>javax.inject</groupId>
+  <artifactId>javax.inject</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.springframework</groupId>
+  <artifactId>spring-core</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.springframework</groupId>
+  <artifactId>spring-beans</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.springframework</groupId>
+  <artifactId>spring-web</artifactId>
 </dependency>
 ----
 
-Assembling the application requires more XML but is very straightforward:
+With the war overlay, it becomes:
 
-[source,xml,subs="attributes,specialcharacters"]
+[source,xml]
+.Maven dependencies using the war overlay
 ----
-<plugin>
-  <artifactId>maven-assembly-plugin</artifactId>
-  <dependencies>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-bom-core</artifactId>
-      <version>{juzu-version}</version>
-    </dependency>
-  </dependencies>
-  <executions>
-    <execution>
-      <goals>
-        <goal>single</goal>
-      </goals>
-      <phase>package</phase>
-      <configuration>
-        <descriptorRefs>
-          <descriptorRef>tomcat-guice</descriptorRef>
-        </descriptorRefs>
-      </configuration>
-    </execution>
-  </executions>
-</plugin>
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-core</artifactId>
+</dependency>
+<dependency>
+  <groupId>javax.inject</groupId>
+  <artifactId>javax.inject</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-dep-spring</artifactId>
+  <type>war</type>
+</dependency>
 ----
 
-The _assembly_ plugin takes care of packaging the application:
+==== Example 2: CDI in a EE Container
 
-. The plugin dependency declares on the _juzu-bom-core_ artifact because it contains the predefined descriptors such
- as the +tomcat-guice+ descriptor
-. The goal _single_ of the assembly plugin is executed during the _package_ phase
-. The predefined descriptor _tomcat-guice_ packages the application for the Tomcat server and with the Guice framework
-.. Any dependency on the application is packaged in _WEB-INF/lib_
-.. The application classes are copied in _WEB-INF/classes_
-.. The web application _src/main/webapp_ files are copied to the root of the archive
-.. Specific deployment descriptors may be copied in the war file depending on the predefined descriptor
+[source,xml]
+----
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-core</artifactId>
+</dependency>
+<dependency>
+  <groupId>javax.inject</groupId>
+  <artifactId>javax.inject</artifactId>
+  <scope>provided</scope>
+</dependency>
+----
 
-In this example we used the _tomcat-guice_ predefined descriptor. The bom relies on the
-http://maven.apache.org/plugins/maven-assembly-plugin/[Maven Assembly plugin], Juzu provides the
-http://maven.apache.org/plugins/maven-assembly-plugin/descriptor-refs.html[predefined assembly descriptors]
-that makes easy to package a Juzu application:
+NOTE: no need to use an overlay for CDI in a EE container
 
+==== Example 3: CDI in a Servlet Container
 
-.The predefined descriptors
-[cols="4*",options="header"]
-|===
-|
-|tomcat
-|gatein
-|liferay
+Using CDI in a Servlet Container is a special case because there is the need for extra configuration of the web application
+for CDI. The following example reconfigures the overlay to include the files in the _META-INF_ of the overlay as
+ it contains a _context.xml_ file for Tomcat that configures CDI, unfortunately this is quite verbose.
 
-|all
-|tomcat
-|gatein
-|liferay
-
-|guice
-|tomcat-guice
-|gatein-guice
-|liferay-guice
-
-|spring
-|tomcat-spring
-|gatein-spring
-|liferay-spring
-
-|cdi
-|tomcat-cdi
-|gatein-cdi
-|liferay-cdi
-|===
-
-NOTE: The predefined assembly descriptor does a similar job to the Maven //war// packaging but with more flexibility. To achieve
-the same result, the usage of a war packaging with the overlay feature.
+[source,xml]
+.Maven dependencies using the war overlay
+----
+<build>
+  <pluginManagement>
+    <plugins>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-war</id>
+            <configuration>
+              <overlays>
+                <overlay>
+                  <groupId>org.juzu</groupId>
+                  <artifactId>juzu-dep-servlet-cdi</artifactId>
+                  <excludes>
+                    <exclude>META-INF/maven/org.juzu/juzu-dep-servlet-cdi/**</exclude>
+                  </excludes>
+                </overlay>
+              </overlays>
+            </configuration>
+            <goals>
+              <goal>war</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </pluginManagement>
+</build>
+<dependencies>
+  <dependency>
+    <groupId>org.juzu</groupId>
+    <artifactId>juzu-core</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>javax.inject</groupId>
+    <artifactId>javax.inject</artifactId>
+  </dependency>
+  <dependency>
+    <groupId>org.juzu</groupId>
+    <artifactId>juzu-dep-servlet-cdi</artifactId>
+    <type>war</type>
+  </dependency>
+</dependencies>
+----
 
 ==== Juzu archetype
 
