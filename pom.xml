@@ -150,31 +150,6 @@
 
       <dependency>
         <groupId>org.juzu</groupId>
-        <artifactId>juzu-dep-guice</artifactId>
-        <type>war</type>
-        <version>0.7.0-beta26-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-dep-spring</artifactId>
-        <type>war</type>
-        <version>0.7.0-beta26-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-dep-cdi</artifactId>
-        <type>war</type>
-        <version>0.7.0-beta26-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-dep-weld</artifactId>
-        <type>war</type>
-        <version>0.7.0-beta26-SNAPSHOT</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.juzu</groupId>
         <artifactId>juzu-archetype</artifactId>
         <version>0.7.0-beta26-SNAPSHOT</version>
       </dependency>
@@ -295,22 +270,7 @@
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-examples</artifactId>
-        <classifier>tomcat</classifier>
         <type>war</type>
-        <version>0.7.0-beta26-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-doc-tutorial-examples</artifactId>
-        <classifier>gatein</classifier>
-        <type>war</type>
-        <version>0.7.0-beta26-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.juzu</groupId>
-        <artifactId>juzu-doc-tutorial-examples</artifactId>
-        <type>war</type>
-        <classifier>liferay</classifier>
         <version>0.7.0-beta26-SNAPSHOT</version>
       </dependency>
       <dependency>
@@ -422,28 +382,6 @@
         <groupId>org.jboss.weld</groupId>
         <artifactId>weld-core</artifactId>
         <version>1.1.8.Final</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-ext</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>ch.qos.cal10n</groupId>
-            <artifactId>cal10n-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>javax.annotation</groupId>
-            <artifactId>jsr250-api</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.glassfish.web</groupId>
@@ -883,7 +821,6 @@
 
   <modules>
     <module>core</module>
-    <module>dep</module>
     <module>bom</module>
     <module>vertx</module>
     <module>templating</module>

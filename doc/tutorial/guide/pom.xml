@@ -29,7 +29,6 @@
       <groupId>org.juzu</groupId>
       <artifactId>juzu-doc-tutorial-examples</artifactId>
       <type>war</type>
-      <classifier>tomcat</classifier>
     </dependency>
   </dependencies>
 
@@ -56,14 +55,13 @@
                 <artifactItem>
                   <groupId>org.juzu</groupId>
                   <artifactId>juzu-doc-tutorial-examples</artifactId>
-                  <classifier>sources</classifier>
+                  <classifier>test-sources</classifier>
                   <version>${project.version}</version>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.juzu</groupId>
                   <artifactId>juzu-doc-tutorial-examples</artifactId>
                   <type>war</type>
-                  <classifier>tomcat</classifier>
                   <version>${project.version}</version>
                 </artifactItem>
               </artifactItems>

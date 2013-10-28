@@ -31,13 +31,6 @@
       <groupId>org.juzu</groupId>
       <artifactId>juzu-doc-tutorial-examples</artifactId>
       <type>war</type>
-      <classifier>liferay</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-doc-tutorial-examples</artifactId>
-      <type>war</type>
-      <classifier>gatein</classifier>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>

@@ -11,8 +11,8 @@
     <!-- Tutorial -->
     <dependencySet>
       <includes>
-        <include>org.juzu:juzu-doc-tutorial-examples:war:gatein</include>
-        <include>org.juzu:juzu-doc-tutorial-examples:war:liferay</include>
+        <include>org.juzu:juzu-doc-tutorial-examples:war</include>
+        <!--<include>org.juzu:juzu-doc-tutorial-examples:war:liferay</include>-->
       </includes>
       <outputDirectory>/tutorial/</outputDirectory>
       <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>

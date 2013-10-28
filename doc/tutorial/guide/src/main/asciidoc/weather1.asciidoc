@@ -91,17 +91,13 @@ The last step of this section is to explain how to package the application, let'
 
 === Packaging the application in Tomcat
 
-We need to provide a _web.xml_ descriptor:
-
-[source,xml]
-----
-include::{sourcesdir}/WEB-INF/web.xml[]
-----
-
 There are two servlets used for serving the application:
 
 * The +JuzuServlet+ serves the Juzu applications contained in the war file
 * The +AssetServlet+ serves the asset of the applications such as stylesheets or JavaScript
+
+By default we don't need to provide a _web.xml_ descriptor since, the +JuzuServet+ is generated thanks to the
+_servlet_ plugin and the +AssetServlet+ is registered by Juzu dynamically.
 
 === Packaging the application for the GateIn portal
 

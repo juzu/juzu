@@ -153,16 +153,8 @@ When packaging your application you can follow:
 
 === Maven build
 
-The Maven war packaging is a convenient way for building a web application with Maven.
-
-Juzu also provides a set of predefined _war_ that can be reused for simplifying the building of a web application:
-
-* +org.juzu:juzu-dep-guice:war+
-* +org.juzu:juzu-dep-spring:war+
-* +org.juzu:juzu-dep-cdi:war+
-
-In the following examples we will show the Maven configuration for a couple of examples, all the configurations
- are listed in the appendix of this guide:
+The Maven war packaging is a convenient way for building a web application with Maven. In the following examples we
+will show the Maven configuration for a couple of examples, all the configurations are listed in the appendix of this guide:
 
 * <<servlet_guice>>
 * <<servlet_spring>>
@@ -176,37 +168,8 @@ org.juzu:juzu-core artifact
 
 ==== Example 1: Spring in a Servlet Container
 
-[source,xml]
-.Maven dependencies
-----
-<dependencies>
-  <dependency>
-    <groupId>org.juzu</groupId>
-    <artifactId>juzu-core</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>javax.inject</groupId>
-    <artifactId>javax.inject</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-core</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-beans</artifactId>
-  </dependency>
-  <dependency>
-    <groupId>org.springframework</groupId>
-    <artifactId>spring-web</artifactId>
-  </dependency>
-<dependencies>
-----
-
-With the predefined war, it becomes:
-
 [source,xml,indent=0]
-.Maven dependencies using the predefined war
+.Maven dependencies for Spring in a servlet container
 ----
 include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=spring]
 ----
@@ -217,7 +180,7 @@ _CDI_ is supported natively by an _EE_ container and requires specific integrati
 
 ===== CDI for an EE container
 
-Here are the dependencies for an EE container, note that there is no need to use a predefined way.
+Here are the dependencies for an EE container.
 
 [source,xml,indent=0]
 .Maven dependencies for CDI in an EE container
@@ -232,7 +195,7 @@ described in the http://docs.jboss.org/weld/reference/1.0.0/en-US/html/environme
  first at the jar dependencies
 
 [source,xml,indent=0]
-.Maven dependencies for CDI in a servlet container using the predefined war
+.Maven dependencies for CDI in a servlet container
 ----
 include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=cdi]
 ----

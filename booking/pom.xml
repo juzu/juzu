@@ -55,7 +55,7 @@
     <dependency>
       <groupId>com.google.inject</groupId>
       <artifactId>guice</artifactId>
-      <scope>test</scope>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -146,9 +146,8 @@
           <artifactId>javax.inject</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.juzu</groupId>
-          <artifactId>juzu-dep-guice</artifactId>
-          <type>war</type>
+          <groupId>com.google.inject</groupId>
+          <artifactId>guice</artifactId>
         </dependency>
       </dependencies>
       <!-- end::guice[] -->
@@ -173,9 +172,8 @@
           <artifactId>javax.inject</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.juzu</groupId>
-          <artifactId>juzu-dep-spring</artifactId>
-          <type>war</type>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-web</artifactId>
         </dependency>
       </dependencies>
       <!-- end::spring[] -->
@@ -203,9 +201,8 @@
           <artifactId>javax.inject</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.juzu</groupId>
-          <artifactId>juzu-dep-cdi</artifactId>
-          <type>war</type>
+          <groupId>org.jboss.weld.servlet</groupId>
+          <artifactId>weld-servlet</artifactId>
         </dependency>
       </dependencies>
       <!-- end::cdi[] -->
@@ -231,9 +228,8 @@
           <scope>provided</scope>
         </dependency>
         <dependency>
-          <groupId>org.juzu</groupId>
-          <artifactId>juzu-dep-guice</artifactId>
-          <type>war</type>
+          <groupId>com.google.inject</groupId>
+          <artifactId>guice</artifactId>
         </dependency>
       </dependencies>
       <!-- end::ee-guice[] -->
@@ -259,9 +255,8 @@
           <scope>provided</scope>
         </dependency>
         <dependency>
-          <groupId>org.juzu</groupId>
-          <artifactId>juzu-dep-spring</artifactId>
-          <type>war</type>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-web</artifactId>
         </dependency>
       </dependencies>
       <!-- end::ee-spring[] -->
