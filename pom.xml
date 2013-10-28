@@ -848,6 +848,26 @@
           <version>1.4</version>
         </plugin>
 
+        <plugin>
+          <groupId>org.apache.tomcat.maven</groupId>
+          <artifactId>tomcat7-maven-plugin</artifactId>
+          <version>2.1</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.jboss.as.plugins</groupId>
+          <artifactId>jboss-as-maven-plugin</artifactId>
+          <version>7.4.Final</version>
+          <executions>
+            <execution>
+              <id>default-run</id>
+              <configuration>
+                <version>7.1.0.Final</version>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+
       </plugins>
     </pluginManagement>
   </build>
