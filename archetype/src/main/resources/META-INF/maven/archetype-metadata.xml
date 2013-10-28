@@ -2,7 +2,7 @@
 
   <requiredProperties>
     <requiredProperty key="juzuServer">
-      <defaultValue>tomcat</defaultValue>
+      <defaultValue>servlet</defaultValue>
     </requiredProperty>
     <requiredProperty key="juzuInject">
       <defaultValue>guice</defaultValue>
@@ -11,19 +11,13 @@
 
   <fileSets>
     <fileSet filtered="true">
-      <directory>src/main/java</directory>
+      <directory>src/main</directory>
       <includes>
         <include>**/*</include>
       </includes>
     </fileSet>
     <fileSet filtered="true">
-      <directory>src/main/webapp</directory>
-      <includes>
-        <include>**/*</include>
-      </includes>
-    </fileSet>
-    <fileSet filtered="true">
-      <directory>src/test/java</directory>
+      <directory>src/test</directory>
       <includes>
         <include>**/*</include>
       </includes>

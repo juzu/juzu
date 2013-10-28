@@ -31,7 +31,7 @@ public class Controller {
   Template index;
 
   @View
-  public Response index() throws IOException {
+  public Response.Content index() throws IOException {
     return index.ok();
   }
 }

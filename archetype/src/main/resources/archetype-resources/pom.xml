@@ -7,7 +7,7 @@
   <groupId>\${groupId}</groupId>
   <artifactId>\${artifactId}</artifactId>
   <version>\${version}</version>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
 
   <name>Juzu Application</name>
 
@@ -21,7 +21,7 @@
     <!-- Application dependencies-->
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-bom-core</artifactId>
+      <artifactId>juzu-core</artifactId>
       <version>${pom.version}</version>
     </dependency>
     <dependency>
@@ -37,6 +37,67 @@
       <version>3.0.1</version>
       <scope>provided</scope>
     </dependency>
+
+#if( \${juzuInject} == "guice" && \${juzuServer} == "servlet")
+    <!-- Dependencies for Guice in a Servlet Container -->
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+    </dependency>
+#elseif( \${juzuInject} == "spring" && \${juzuServer} == "servlet")
+    <!-- Dependencies for Spring in a Servlet Container -->
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
+#elseif( \${juzuInject} == "cdi" && \${juzuServer} == "servlet")
+    <!-- Dependencies for CDI in a Servlet Container -->
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.weld.servlet</groupId>
+      <artifactId>weld-servlet</artifactId>
+    </dependency>
+#elseif( \${juzuInject} == "guice" && \${juzuServer} == "ee")
+    <!-- Dependencies for Guice in an EE server -->
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+    </dependency>
+#elseif( \${juzuInject} == "spring" && \${juzuServer} == "ee")
+    <!-- Dependencies for Spring in an EE server -->
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
+#elseif( \${juzuInject} == "cdi" && \${juzuServer} == "ee")
+    <!-- Dependencies for CDI in an EE server -->
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>provided</scope>
+    </dependency>
+#end
 
     <!-- Junit for testing -->
     <dependency>
@@ -60,46 +121,70 @@
 
   </dependencies>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>javax.inject</groupId>
+        <artifactId>javax.inject</artifactId>
+        <version>1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>3.2.4.RELEASE</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.weld.servlet</groupId>
+        <artifactId>weld-servlet </artifactId>
+        <version>1.1.8.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
+        <version>3.0</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <build>
     <finalName>\${artifactId}</finalName>
-    <plugins>
 
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
-      </plugin>
+    <pluginManagement>
+      <plugins>
 
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.3</version>
-        <dependencies>
-          <dependency>
-            <groupId>org.juzu</groupId>
-            <artifactId>juzu-bom-core</artifactId>
-            <version>${pom.version}</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <attach>true</attach>
-          <appendAssemblyId>false</appendAssemblyId>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <finalName>\${project.build.finalName}</finalName>
-              <descriptorRefs>
-                <descriptorRef>${juzuServer}-${juzuInject}</descriptorRef>
-              </descriptorRefs>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+#if( \${juzuServer} == "servlet")
+        <!--
+          | Test your application with:
+          | >mvn tomcat7:run-war
+          -->
+        <plugin>
+          <groupId>org.apache.tomcat.maven</groupId>
+          <artifactId>tomcat7-maven-plugin</artifactId>
+          <version>2.1</version>
+        </plugin>
+#elseif( \${juzuServer} == "ee")
+        <!--
+          | Test your application with:
+          | >mvn jboss-as:run
+          -->
+        <plugin>
+          <groupId>org.jboss.as.plugins</groupId>
+          <artifactId>jboss-as-maven-plugin</artifactId>
+          <version>7.4.Final</version>
+          <executions>
+            <execution>
+              <id>default-run</id>
+              <configuration>
+                <version>7.1.0.Final</version>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+#end
 
-    </plugins>
+      </plugins>
+    </pluginManagement>
+
   </build>
 
 </project>
