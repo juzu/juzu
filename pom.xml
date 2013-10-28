@@ -87,6 +87,9 @@
     <!-- Tells Sonar where the Jacoco coverage result file is located for Unit Tests -->
     <sonar.jacoco.reportPath>${jacoco.outputDir}/${jacoco.out.ut.file}</sonar.jacoco.reportPath>
 
+    <!-- No failures when no web XML is present -->
+    <failOnMissingWebXml>false</failOnMissingWebXml>
+
   </properties>
 
   <developers>
@@ -160,6 +163,12 @@
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-dep-cdi</artifactId>
+        <type>war</type>
+        <version>0.7.0-beta26-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-dep-weld</artifactId>
         <type>war</type>
         <version>0.7.0-beta26-SNAPSHOT</version>
       </dependency>

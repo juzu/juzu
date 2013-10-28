@@ -40,10 +40,6 @@
   <name>Juzu Booking</name>
   <description>The infamous booking application</description>
 
-  <properties>
-    <failOnMissingWebXml>false</failOnMissingWebXml>
-  </properties>
-
   <dependencies>
 
     <dependency>

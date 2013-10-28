@@ -10,14 +10,38 @@
 
   <artifactId>juzu-doc-tutorial-examples</artifactId>
   <version>0.7.0-beta26-SNAPSHOT</version>
+  <packaging>war</packaging>
 
   <name>Juzu Tutorial Examples</name>
   <description>Various tutorial examples</description>
 
   <dependencies>
+
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.enterprise</groupId>
+      <artifactId>cdi-api</artifactId>
+      <version>1.0-SP4</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.portlet</groupId>
+      <artifactId>portlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-bom-core</artifactId>
+      <artifactId>juzu-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
@@ -30,6 +54,24 @@
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-portlet</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-dep-spring</artifactId>
+      <type>pom</type>
+      <version>0.7.0-beta26-SNAPSHOT</version>
+      <scope>test</scope>
     </dependency>
 
     <!-- -->
@@ -50,38 +92,159 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <finalName>juzu-tutorial-examples</finalName>
-    <plugins>
+  <profiles>
 
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <dependencies>
-          <dependency>
-            <groupId>org.juzu</groupId>
-            <artifactId>juzu-bom-core</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <id>packaging</id>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <phase>package</phase>
-            <configuration>
-              <descriptorRefs>
-                <descriptorRef>tomcat</descriptorRef>
-                <descriptorRef>gatein</descriptorRef>
-                <descriptorRef>liferay</descriptorRef>
-              </descriptorRefs>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
+    <profile>
+      <id>guice</id>
+      <activation>
+        <property>
+          <name>!target</name>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-core</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>javax.portlet</groupId>
+          <artifactId>portlet-api</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-dep-guice</artifactId>
+          <type>war</type>
+        </dependency>
+      </dependencies>
+    </profile>
 
-    </plugins>
-  </build>
+    <profile>
+      <id>spring</id>
+      <activation>
+        <property>
+          <name>target</name>
+          <value>spring</value>
+        </property>
+      </activation>
+      <properties>
+        <maven.war.webxml>src/main/web-spring.xml</maven.war.webxml>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-core</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>javax.portlet</groupId>
+          <artifactId>portlet-api</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-dep-spring</artifactId>
+          <type>war</type>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
+      <id>weld</id>
+      <activation>
+        <property>
+          <name>target</name>
+          <value>weld</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-core</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>javax.portlet</groupId>
+          <artifactId>portlet-api</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-dep-weld</artifactId>
+          <type>war</type>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
+      <id>ee-guice</id>
+      <activation>
+        <property>
+          <name>target</name>
+          <value>ee-guice</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-core</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>javax.portlet</groupId>
+          <artifactId>portlet-api</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-dep-guice</artifactId>
+          <type>war</type>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
+      <id>ee-spring</id>
+      <activation>
+        <property>
+          <name>target</name>
+          <value>ee-spring</value>
+        </property>
+      </activation>
+      <properties>
+        <maven.war.webxml>src/main/web-spring.xml</maven.war.webxml>
+      </properties>
+      <dependencies>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-core</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>javax.portlet</groupId>
+          <artifactId>portlet-api</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-dep-spring</artifactId>
+          <type>war</type>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 
 </project>

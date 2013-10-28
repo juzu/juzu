@@ -23,6 +23,7 @@
     <module>guice</module>
     <module>spring</module>
     <module>cdi</module>
+    <module>weld</module>
   </modules>
 
 </project>
