@@ -11,19 +11,20 @@ Compiling an application requires a few jars to be present on the compilation cl
 
 * The Juzu core jar for the Juzu API
 * The JSR-330 jar for the @Inject API
-* Any Juzu extension jar such as plugins or additinal template engines
+* Any Juzu extension jar such as plugins or additional template engines
 
-After compilation, classes need to be packaged as a web application archive (_war_) and then deployed in a server. We
+After compilation, the compiled classes are packaged as a web application archive (_war_) and then deployed in a server. We
 will show several ways to package your Juzu application.
 
 == Juzu dependencies
 
-Let's start by looking at the dependencies required by Juzu, there are several kinds of dependencies:
+Let's start by looking at the dependencies required by Juzu, there are several types of dependencies:
 
-* compilation time dependencies like the Less plugin
-* runtime dependencies
+* compilation time dependencies used during the compilation of the application: for instance the Less plugin
+ transforms a _less_ file into a _css_
+* runtime dependencies used when the application is running
 ** provided by server like the _@Inject_ jar provided by an EE server but not by a Servlet Container
-** embedded in the web application like Groovy
+** embedded in the application like Groovy
 
 === Juzu core dependendencies
 
@@ -164,7 +165,7 @@ will show the Maven configuration for a couple of examples, all the configuratio
 * <<ee_cdi>>
 
 NOTE: we don't need to depend on the Groovy jar as it is a compile dependency of
-org.juzu:juzu-core artifact
+org.juzu:juzu-core artifact and it will be present thanks to dependencies transitivity
 
 ==== Example 1: Spring in a Servlet Container
 
@@ -229,17 +230,17 @@ The following creates a base Juzu application for Tomcat with the Guice injectio
 .Generating an application for the Tomcat server and the Guice injection container
 [subs="attributes,specialcharacters"]
 ----
-mvn archetype:generate \\
-   -DarchetypeGroupId=org.juzu \\
-   -DarchetypeArtifactId=juzu-archetype \\
-   -DarchetypeVersion={juzu-version} \\
-   -DgroupId=org.example \\
-   -DartifactId=myapp \\
-   -DpackageName=org.example.myapp \\
+mvn archetype:generate \
+   -DarchetypeGroupId=org.juzu \
+   -DarchetypeArtifactId=juzu-archetype \
+   -DarchetypeVersion={juzu-version} \
+   -DgroupId=org.example \
+   -DartifactId=myapp \
+   -DpackageName=org.example.myapp \
    -Dversion=1.0.0-SNAPSHOT
 ----
 
-The generated application is a quickstart ready to can be customzed for developing more complex applications.
+The generated application is a quickstart ready to can be customized for developing more complex applications.
 The archetype uses the packager described in the previous section.
 
 It is possible to generate the application for a different server and injection container:
@@ -247,17 +248,20 @@ It is possible to generate the application for a different server and injection 
 .Generating an application for the Tomcat server and the Spring injection container
 [subs="attributes,specialcharacters"]
 ----
-mvn archetype:generate \\
-   -DarchetypeGroupId=org.juzu \\
-   -DarchetypeArtifactId=juzu-archetype \\
-   -DarchetypeVersion={juzu-version} \\
-   -DgroupId=org.example \\
-   -DartifactId=myapp \\
-   -DpackageName=org.example.myapp \\
-   -Dversion=1.0.0-SNAPSHOT \\
-   -DjuzuServer=tomcat \\
+mvn archetype:generate \
+   -DarchetypeGroupId=org.juzu \
+   -DarchetypeArtifactId=juzu-archetype \
+   -DarchetypeVersion={juzu-version} \
+   -DgroupId=org.example \
+   -DartifactId=myapp \
+   -DpackageName=org.example.myapp \
+   -Dversion=1.0.0-SNAPSHOT \
+   -DjuzuServer=server \
    -DjuzuInject=spring
 ----
+
+Valid _juzuServer_ values are _servlet_ or _ee_.
+Valid _juzuInject_ values are _guice_, _spring_ or _cdi_.
 
 === Using a prepackaged application
 
