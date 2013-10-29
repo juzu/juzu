@@ -4,7 +4,13 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
 
-#if( \${juzuInject} == "cdi" && \${juzuServer} == "servlet")
+  <!-- Run mode: prod, dev or live -->
+  <context-param>
+    <param-name>juzu.run_mode</param-name>
+    <param-value>dev</param-value>
+  </context-param>
+
+  #if( \${juzuInject} == "cdi" && \${juzuServer} == "servlet")
   <!-- Begin declarations for CDI in a Servlet Container -->
   <listener>
     <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
