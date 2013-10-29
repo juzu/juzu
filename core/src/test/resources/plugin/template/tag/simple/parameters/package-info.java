@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-@Application(
-    tags = @Tag(name = "foo", path = "foo.gtmpl")
-)
+@Application
 @Tags(@Tag(name = "foo", path = "foo.gtmpl"))
 package plugin.template.tag.simple.parameters;
 

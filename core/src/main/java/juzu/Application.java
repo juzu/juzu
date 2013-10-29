@@ -16,8 +16,6 @@
 
 package juzu;
 
-import juzu.template.Tag;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -56,12 +54,5 @@ public @interface Application {
    * @return the escape XML value
    */
   boolean escapeXML() default false;
-
-  /**
-   * Returns the application tags.
-   *
-   * @return the application tags
-   */
-  Tag[] tags() default {};
 
 }

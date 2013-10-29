@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-@Application(
-    tags = { @Tag(name = "foo", path = "foo.gtmpl"), @Tag(name = "bar", path = "bar.gtmpl") }
-)
+@Application
 @Tags({ @Tag(name = "foo", path = "foo.gtmpl"), @Tag(name = "bar", path = "bar.gtmpl") })
 package plugin.template.tag.simple.nested;
 
