@@ -256,7 +256,7 @@ mvn archetype:generate \
    -DartifactId=myapp \
    -DpackageName=org.example.myapp \
    -Dversion=1.0.0-SNAPSHOT \
-   -DjuzuServer=server \
+   -DjuzuServer=servlet \
    -DjuzuInject=spring
 ----
 
