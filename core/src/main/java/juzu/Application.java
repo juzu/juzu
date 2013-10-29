@@ -49,7 +49,7 @@ public @interface Application {
   Class<?> defaultController() default Object.class;
 
   /**
-   * Controls if the generated URL should be escaped to valid XML.
+   * Controls if the application generated URL should be escaped to valid XML, this is valid for portlet applications.
    *
    * @return the escape XML value
    */
