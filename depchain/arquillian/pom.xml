@@ -6,15 +6,15 @@
 
   <parent>
     <groupId>org.juzu</groupId>
-    <artifactId>juzu-bom</artifactId>
+    <artifactId>juzu-depchain</artifactId>
     <version>0.7.0-beta26-SNAPSHOT</version>
   </parent>
 
-  <artifactId>juzu-bom-arquillian</artifactId>
+  <artifactId>juzu-depchain-arquillian</artifactId>
   <version>0.7.0-beta26-SNAPSHOT</version>
 
-  <name>Juzu Arquillian BOM</name>
-  <description>The Juzu BOM for Arquillian testing</description>
+  <name>Juzu Arquillian Depchain</name>
+  <description>The Juzu Depchain for Arquillian testing</description>
 
   <dependencies>
 

@@ -8,15 +8,14 @@
     <version>0.7.0-beta26-SNAPSHOT</version>
   </parent>
 
-  <artifactId>juzu-bom</artifactId>
+  <artifactId>juzu-depchain</artifactId>
   <version>0.7.0-beta26-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Juzu BOMs</name>
-  <description>The Juzu BOMs</description>
+  <name>Juzu Depchains</name>
+  <description>The Juzu Depchains</description>
 
   <modules>
-    <module>core</module>
     <module>arquillian</module>
     <module>arquillian-tomcat7</module>
   </modules>

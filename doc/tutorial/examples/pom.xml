@@ -80,12 +80,12 @@
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-bom-arquillian</artifactId>
+      <artifactId>juzu-depchain-arquillian</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-bom-arquillian-tomcat7</artifactId>
+      <artifactId>juzu-depchain-arquillian-tomcat7</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

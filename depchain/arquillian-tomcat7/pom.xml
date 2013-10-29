@@ -6,15 +6,15 @@
 
   <parent>
     <groupId>org.juzu</groupId>
-    <artifactId>juzu-bom</artifactId>
+    <artifactId>juzu-depchain</artifactId>
     <version>0.7.0-beta26-SNAPSHOT</version>
   </parent>
 
-  <artifactId>juzu-bom-arquillian-tomcat7</artifactId>
+  <artifactId>juzu-depchain-arquillian-tomcat7</artifactId>
   <version>0.7.0-beta26-SNAPSHOT</version>
 
-  <name>Juzu Arquillian Tomcat7 BOM</name>
-  <description>The Juzu BOM for Arquillian testing with Tomcat7</description>
+  <name>Juzu Arquillian Tomcat7 Depchain</name>
+  <description>The Juzu Depchain for Arquillian testing with Tomcat7</description>
 
   <properties>
     <!-- No target/classes. Jacoco cannot be launched here -->
@@ -22,14 +22,6 @@
   </properties>
 
   <dependencies>
-
-    <!-- Shrinkwrap/Arquillian -->
-<!--
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-bom-arquillian</artifactId>
-    </dependency>
--->
 
     <!-- Arquillian Tomcat 7 -->
     <dependency>
