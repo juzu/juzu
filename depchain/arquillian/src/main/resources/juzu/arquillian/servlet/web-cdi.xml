@@ -10,6 +10,15 @@
   <listener>
     <listener-class>org.jboss.weld.environment.servlet.Listener</listener-class>
   </listener>
+  <servlet>
+    <servlet-name>AssetServlet</servlet-name>
+    <servlet-class>juzu.impl.asset.AssetServlet</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AssetServlet</servlet-name>
+    <url-pattern>/assets/*</url-pattern>
+  </servlet-mapping>
   <resource-env-ref>
     <resource-env-ref-name>BeanManager</resource-env-ref-name>
     <resource-env-ref-type>javax.enterprise.inject.spi.BeanManager</resource-env-ref-type>

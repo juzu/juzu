@@ -32,15 +32,19 @@
     <!-- Encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <!-- Dependency versions -->
-    <wikbook.version>0.9.45</wikbook.version>
+    <!-- Dependencies -->
+    <cdi-api.version>1.0-SP4</cdi-api.version>
+    <inject.version>1</inject.version>
+    <javassist.version>3.14.0-GA</javassist.version>
+    <weld.version>1.1.8.Final</weld.version>
+    <spring.version>3.2.4.RELEASE</spring.version>
+    <guice.version>3.0</guice.version>
+    <groovy.version>1.7.6</groovy.version>
+    <servlet.version>3.0.1</servlet.version>
     <junit.version>4.10</junit.version>
 
     <!-- Test settings -->
     <juzu.test.compiler>javac</juzu.test.compiler>
-
-    <!-- Used by the wikbook doc -->
-    <juzu.version>${project.version}</juzu.version>
 
     <!-- maven-compiler-plugin -->
     <maven.compiler.target>1.5</maven.compiler.target>
@@ -305,7 +309,12 @@
       <dependency>
         <groupId>javax.inject</groupId>
         <artifactId>javax.inject</artifactId>
-        <version>1</version>
+        <version>${inject.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.enterprise</groupId>
+        <artifactId>cdi-api</artifactId>
+        <version>${cdi-api.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.portlet</groupId>
@@ -321,7 +330,7 @@
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
-        <version>3.0.1</version>
+        <version>${servlet.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.ccpp</groupId>
@@ -347,7 +356,7 @@
       <dependency>
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
-        <version>1.7.6</version>
+        <version>${groovy.version}</version>
       </dependency>
 
       <dependency>
@@ -376,7 +385,7 @@
       <dependency>
         <groupId>org.jboss.weld</groupId>
         <artifactId>weld-core</artifactId>
-        <version>1.1.8.Final</version>
+        <version>${weld.version}</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.web</groupId>
@@ -390,24 +399,29 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.weld.servlet</groupId>
-        <artifactId>weld-servlet </artifactId>
-        <version>1.1.8.Final</version>
+        <artifactId>weld-servlet</artifactId>
+        <version>${weld.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.weld.servlet</groupId>
+        <artifactId>weld-servlet-core</artifactId>
+        <version>${weld.version}</version>
       </dependency>
 
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
-        <version>3.2.4.RELEASE</version>
+        <version>${spring.version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
-        <version>3.2.4.RELEASE</version>
+        <version>${spring.version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
-        <version>3.2.4.RELEASE</version>
+        <version>${spring.version}</version>
         <exclusions>
           <exclusion>
             <groupId>aopalliance</groupId>
@@ -418,7 +432,7 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
-        <version>3.2.4.RELEASE</version>
+        <version>${spring.version}</version>
       </dependency>
 
       <dependency>
@@ -430,7 +444,7 @@
       <dependency>
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
-        <version>3.0</version>
+        <version>${guice.version}</version>
       </dependency>
 
       <dependency>

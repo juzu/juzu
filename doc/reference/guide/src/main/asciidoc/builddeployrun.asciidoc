@@ -163,6 +163,9 @@ will show the Maven configuration for a couple of examples, all the configuratio
 * <<ee_guice>>
 * <<ee_spring>>
 * <<ee_cdi>>
+* <<gatein_guice>>
+* <<gatein_spring>>
+* <<gatein_cdi>>
 
 NOTE: we don't need to depend on the Groovy jar as it is a compile dependency of
 org.juzu:juzu-core artifact and it will be present thanks to dependencies transitivity
@@ -241,7 +244,6 @@ mvn archetype:generate \
 ----
 
 The generated application is a quickstart ready to can be customized for developing more complex applications.
-The archetype uses the packager described in the previous section.
 
 It is possible to generate the application for a different server and injection container:
 
@@ -260,7 +262,7 @@ mvn archetype:generate \
    -DjuzuInject=spring
 ----
 
-Valid _juzuServer_ values are _servlet_ or _ee_.
+Valid _juzuServer_ values are _servlet_, _ee_ or _gatein_.
 Valid _juzuInject_ values are _guice_, _spring_ or _cdi_.
 
 === Using a prepackaged application
@@ -288,53 +290,6 @@ todo
 ==== Netbeans support
 
 todo
-
-== Deploy
-
-At the moment the supported (i.e tested) portal servers are
-
-* Tomcat 6.x and 7.x
-* GateIn 3.2 / 3.3 / 3.4 and 3.5
-* Liferay 6.1
-
-Other server may work but we are not aware of that as it was not tested in other environments.
-
-=== Tomcat
-
-No specific deployment instruction.
-
-=== GateIn
-
-==== GateIn on Tomcat 6/7
-
-No specific deployment instruction.
-
-==== GateIn on JBoss AS 7
-
-GateIn on JBoss AS7 requires a little modification to do:
-
-Open the file _modules/javax/api/main/module.xml_ and add _<path name="javax/annotation/processing"/>_ among the _paths_
-declaration:
-
-[source,xml]
-----
-<module xmlns="urn:jboss:module:1.1" name="javax.api">
-  <dependencies>
-    <system export="true">
-      <paths>
-        <path name="javax/annotation/processing"/>
-        ...
-      </paths>
-    </system>
-  </dependencies>
-</module>
-----
-
-This configuration exposes the +javax.annotation.processing+ package to the classes seen by Juzu.
-
-=== Liferay
-
-Liferay has been tested extensively with the Tomcat version, no specific deployment instruction is required.
 
 == Run
 

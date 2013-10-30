@@ -10,6 +10,12 @@
     <param-value>dev</param-value>
   </context-param>
 
+  <!-- Injection container to use: guice, spring, cdi or weld -->
+  <context-param>
+    <param-name>juzu.inject</param-name>
+    <param-value>\${juzuInject}</param-value>
+  </context-param>
+
   #if( \${juzuInject} == "cdi" && \${juzuServer} == "servlet")
   <!-- Begin declarations for CDI in a Servlet Container -->
   <listener>

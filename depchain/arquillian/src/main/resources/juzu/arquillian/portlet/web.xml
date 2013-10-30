@@ -8,6 +8,15 @@
     <param-value>%s</param-value>
   </context-param>
   <servlet>
+    <servlet-name>AssetServlet</servlet-name>
+    <servlet-class>juzu.impl.asset.AssetServlet</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AssetServlet</servlet-name>
+    <url-pattern>/assets/*</url-pattern>
+  </servlet-mapping>
+  <servlet>
     <servlet-name>EmbedServlet</servlet-name>
     <servlet-class>org.gatein.pc.embed.EmbedServlet</servlet-class>
     <load-on-startup>0</load-on-startup>

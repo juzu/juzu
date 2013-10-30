@@ -49,3 +49,27 @@ include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=ee-sprin
 ----
 include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=ee-cdi]
 ----
+
+[[gatein_guice]]
+==== Guice for GateIn Portal
+
+[source,xml,indent=0]
+----
+include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=gatein-guice]
+----
+
+[[gatein_spring]]
+==== Spring for GateIn Portal
+
+[source,xml,indent=0]
+----
+include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=gatein-spring]
+----
+
+[[gatein_cdi]]
+==== CDI for GateIn Portal
+
+[source,xml,indent=0]
+----
+include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=gatein-cdi]
+----
