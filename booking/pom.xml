@@ -93,6 +93,7 @@
     <finalName>juzu-booking</finalName>
     <plugins>
 
+      <!-- tag::gmaven-plugin[] -->
       <!-- Precompile the template class in maven (this is optional) -->
       <plugin>
         <groupId>org.codehaus.gmaven</groupId>
@@ -116,6 +117,7 @@
           </execution>
         </executions>
       </plugin>
+      <!-- end::gmaven-plugin[] -->
 
     </plugins>
 

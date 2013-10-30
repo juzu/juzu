@@ -93,6 +93,26 @@ The native engine provides taglib support using the +#{tag}...#{/tag}}+ or +#{ta
 
 Available tags are explained in the <<taglib>>.
 
+==== Groovy template compilation
+
+During the compilation phase, the native template engine transforms the _gtmpl_ templates into _groovy_ files. Such files
+are valid Groovy scripts and they need to be compiled sometime into bytecode before execution at runtime. By default
+there is nothing to do, since Juzu will compile the _groovy_ file when it is needed, however you can compile the templates
+ahead of time with your build if you want, doing it provides two advantages:
+
+* since compilation is done before runtime, it will save a bit of time when the template is used since loading a mere
+class is significanly cheaper than compiling a Groovy template. (note we are talking of a few milliseconds here)
+* if your templates contains Groovy code, this code will be validated before execution, this is probably a more valid
+reason than the previous one
+
+Maven builds can use the _gmaven-plugin_ to achieve this:
+
+[source,xml,indent=0]
+.Compiling _groovy_ sources to classes with the _gmaven-plugin_
+----
+include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=gmaven-plugin]
+----
+
 === The Mustache template engine
 
 The Mustache template engine uses _logic-less_ templates based on https://github.com/spullara/mustache.java[Mustache.java>]
