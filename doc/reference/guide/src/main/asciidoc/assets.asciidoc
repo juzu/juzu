@@ -183,7 +183,8 @@ For serving classpath assets, Juzu requires the configuration of the asset serve
 
 This declaration should be in the _web.xml_ of the application whether it is a servlet or a portlet application.
 
-NOTE: If you are using Servlet 3.0, this declaration is not necessary.
+NOTE: If you are using Servlet 3.0, this declaration is not necessary as it will be registered by Juzu dynamically
+using a +javax.servlet.ServletContainerInitializer+
 
 == Asset manager
 
