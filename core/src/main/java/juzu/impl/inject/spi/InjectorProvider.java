@@ -28,7 +28,7 @@ import javax.naming.NamingException;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public enum InjectorProvider {
 
-  CDI("cdi", 2) {
+  CDI("cdi", 1) {
     private Object getManager() {
       try {
         // For EE
@@ -53,7 +53,7 @@ public enum InjectorProvider {
     }
   },
 
-  WELD("weld", 3) {
+  WELD("weld", 2) {
     public Injector get() {
       return new WeldInjector();
     }
@@ -69,7 +69,7 @@ public enum InjectorProvider {
     }
   },
 
-  GUICE("guice", 0) {
+  GUICE("guice", 4) {
     public Injector get() {
       return new GuiceInjector();
     }
@@ -86,7 +86,7 @@ public enum InjectorProvider {
     }
   },
 
-  SPRING("spring", 1) {
+  SPRING("spring", 0) {
     public Injector get() {
       return new SpringInjector();
     }
