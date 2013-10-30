@@ -23,6 +23,7 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.BridgeContext;
 import juzu.impl.bridge.module.ApplicationBridge;
+import juzu.impl.bridge.provided.ProvidedBridge;
 import juzu.impl.bridge.spi.portlet.PortletEventBridge;
 import juzu.impl.bridge.spi.portlet.PortletViewBridge;
 import juzu.impl.common.JUL;
@@ -202,21 +203,24 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     }
 
     //
-    Bridge bridge = new ApplicationBridge(
-        bridgeContext,
-        bridgeConfig,
-        server,
-        new ResourceResolver() {
-          public URL resolve(String uri) {
-            try {
-              return context.getResource(uri);
-            }
-            catch (MalformedURLException e) {
-              return null;
-            }
-          }
-        },
-        injector);
+    ResourceResolver resolver = new ResourceResolver() {
+      public URL resolve(String uri) {
+        try {
+          return context.getResource(uri);
+        }
+        catch (MalformedURLException e) {
+          return null;
+        }
+      }
+    };
+
+    //
+    Bridge bridge;
+    if (injector.isProvided()) {
+      bridge = new ProvidedBridge(bridgeContext, bridgeConfig, server, resolver, injector);
+    } else {
+      bridge = new ApplicationBridge(bridgeContext, bridgeConfig, server, resolver, injector);
+    }
 
     //
     this.config = config;
