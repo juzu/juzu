@@ -152,7 +152,10 @@ When packaging your application you can follow:
 
 == Build
 
-=== Maven build
+Every Juzu application is just a web application, any build system or IDE cab achieve it easily. We are going to
+cover the cases of Maven and Gradle builds as well as a few IDEs.
+
+=== Build with Maven
 
 The Maven war packaging is a convenient way for building a web application with Maven. In the following examples we
 will show the Maven configuration for a couple of examples, all the configurations are listed in the appendix of this guide:
@@ -264,6 +267,26 @@ mvn archetype:generate \
 
 Valid _juzuServer_ values are _servlet_, _ee_ or _gatein_.
 Valid _juzuInject_ values are _guice_, _spring_ or _cdi_.
+
+=== Build with Gradle
+
+Building a Juzu application with Gradle is very easy with the _war_ Gradle plugin, here is an example of _build.gradle_ file:
+
+.Building an application with Gradle
+[subs="attributes,specialcharacters"]
+----
+apply plugin: 'war'
+repositories {
+  mavenCentral()
+}
+dependencies {
+  compile group: 'org.juzu', name: 'juzu-core', version: '{juzu-version}'
+  compile group: 'org.juzu', name: 'juzu-plugins-servlet', version: '{juzu-version}'
+  compile group: 'javax.inject', name: 'javax.inject', version: '{inject-version}'
+  providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '{servlet-version}'
+  runtime group: 'org.springframework', name: 'spring-web', version: '{spring-version}'
+}
+----
 
 === Using a prepackaged application
 

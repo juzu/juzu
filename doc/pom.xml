@@ -100,6 +100,9 @@
                   <stylesheet>foundation-lime.css</stylesheet>
                   <source-highlighter>coderay</source-highlighter>
                   <juzu-version>${project.version}</juzu-version>
+                  <spring-version>${spring.version}</spring-version>
+                  <servlet-version>${servlet.version}</servlet-version>
+                  <inject-version>${inject.version}</inject-version>
                   <sectanchors>1</sectanchors>
                   <icons>font</icons>
                   <sourcesdir>${project.build.directory}/sources</sourcesdir>
