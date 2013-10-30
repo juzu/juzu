@@ -115,7 +115,7 @@ include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=gmaven-p
 
 === The Mustache template engine
 
-The Mustache template engine uses _logic-less_ templates based on https://github.com/spullara/mustache.java[Mustache.java>]
+The Mustache template engine uses _logic-less_ templates based on https://github.com/spullara/mustache.java[Mustache.java]
 the Java port of Mustache. Mustache is very easy to use, you can read the http://mustache.github.com/mustache.5.html[documentation],
 however we will have a quick overview of how it can be used in Juzu:
 
