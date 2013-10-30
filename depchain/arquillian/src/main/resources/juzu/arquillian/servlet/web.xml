@@ -7,13 +7,4 @@
     <param-name>juzu.inject</param-name>
     <param-value>%s</param-value>
   </context-param>
-  <servlet>
-    <servlet-name>AssetServlet</servlet-name>
-    <servlet-class>juzu.impl.asset.AssetServlet</servlet-class>
-    <load-on-startup>0</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>AssetServlet</servlet-name>
-    <url-pattern>/assets/*</url-pattern>
-  </servlet-mapping>
 </web-app>

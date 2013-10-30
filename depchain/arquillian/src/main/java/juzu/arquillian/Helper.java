@@ -55,7 +55,7 @@ public class Helper {
    * @return the base servlet deployment
    */
   public static WebArchive createBaseServletDeployment(String injectorVendor) {
-    return createBaseDeployment(null, "servlet/web.xml", injectorVendor);
+    return createBaseDeployment(null, "servlet", injectorVendor);
   }
 
   /**
@@ -107,7 +107,7 @@ public class Helper {
    * @return the portlet deployment
    */
   public static WebArchive createBasePortletDeployment(WebArchive war, String injectorVendor, Class... baseClasses) {
-    war = createBaseDeployment(war, "portlet/web.xml", injectorVendor);
+    war = createBaseDeployment(war, "portlet", injectorVendor);
     addClasses(war, baseClasses);
     return war;
   }
@@ -150,23 +150,36 @@ public class Helper {
     }
   }
 
-  private static WebArchive createBaseDeployment(WebArchive war, String webXMLPath, String injectorProvider) {
+  private static WebArchive createBaseDeployment(WebArchive war, String prefix, String injectorProvider) {
+    String webXMLPath = prefix + "/" + (injectorProvider.equals("cdi") ? "web-cdi" : "web") + ".xml";
     if (war == null) {
       war = ShrinkWrap.create(WebArchive.class);
     }
+    String webXML = loadResource(webXMLPath);
+    webXML = String.format(webXML, injectorProvider);
+    war.setWebXML(new StringAsset(webXML));
+    if ("cdi".equals(injectorProvider)) {
+      String contextXML = loadResource("context.xml");
+      war.addAsManifestResource(new StringAsset(contextXML), "context.xml");
+    }
+    return war;
+  }
+
+  private static String loadResource(String path) {
     byte[] buffer = new byte[512];
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    InputStream in = Helper.class.getResourceAsStream(webXMLPath);
+    InputStream in = Helper.class.getResourceAsStream(path);
     if (in == null) {
-      throw new AssertionError("Could not locate " + webXMLPath + " web.xml for juzu testing");
+      throw new AssertionError("Could not locate " + path + " web.xml for juzu testing");
     }
     try {
       for (int l = in.read(buffer);l != -1;l = in.read(buffer)) {
         baos.write(buffer, 0, l);
       }
+      return baos.toString();
     }
     catch (IOException e) {
-      throw new AssertionError("Could not find read " + webXMLPath + " web.xml for juzu testing");
+      throw new AssertionError("Could not find read " + path + " for juzu testing");
     }
     finally {
       try {
@@ -175,9 +188,5 @@ public class Helper {
       catch (Throwable ignore) {
       }
     }
-    String webXML = baos.toString();
-    webXML = String.format(webXML, injectorProvider);
-    war.setWebXML(new StringAsset(webXML));
-    return war;
   }
 }
