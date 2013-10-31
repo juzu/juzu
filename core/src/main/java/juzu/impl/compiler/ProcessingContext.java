@@ -88,7 +88,7 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
   private static final Logger log = BaseProcessor.getLogger(ProcessingContext.class);
 
   /** Set for eclipse environment. */
-  private final ReadFileSystem<File> sourcePath;
+  private final DiskFileSystem sourcePath;
 
   /** . */
   private final ProcessingTool tool;
@@ -115,7 +115,7 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
     ClassLoader serviceCL = ProcessingContext.class.getClassLoader();
 
     //
-    ReadFileSystem<File> sourcePath = null;
+    DiskFileSystem sourcePath = null;
     try {
       // As first attempt we tried to use the classpath since eclipse would copy the template to this location
       // but that could a chicken egg problem as a template is coped in the classpath only if the compilation
@@ -224,7 +224,7 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
   }
 
   /** . */
-  private Map<ElementHandle<?>, ReadFileSystem<File>> sourcePathMap = new HashMap<ElementHandle<?>, ReadFileSystem<File>>();
+  private Map<ElementHandle<?>, DiskFileSystem> sourcePathMap = new HashMap<ElementHandle<?>, DiskFileSystem>();
 
   /**
    * Returns the source path, this may return null.
@@ -233,7 +233,7 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
    * @return the source path
    * @throws IllegalArgumentException if the package cannot be resolved
    */
-  public ReadFileSystem<File> getSourcePath(ElementHandle.Package context) throws IllegalArgumentException {
+  public DiskFileSystem getSourcePath(ElementHandle.Package context) throws IllegalArgumentException {
     PackageElement element = context.get(env);
     if (element == null) {
       throw new IllegalArgumentException("Package element cannot be resolved " + context);
@@ -243,7 +243,7 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
       return sourcePath;
     }
     else {
-      ReadFileSystem<File> sourcePath = sourcePathMap.get(context);
+      DiskFileSystem sourcePath = sourcePathMap.get(context);
       if (sourcePath == null) {
         try {
           log.info("Trying to find a native file system for package " + context.getPackageName());

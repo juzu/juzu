@@ -26,6 +26,8 @@ import juzu.impl.bridge.module.ApplicationBridge;
 import juzu.impl.bridge.provided.ProvidedBridge;
 import juzu.impl.bridge.spi.portlet.PortletEventBridge;
 import juzu.impl.bridge.spi.portlet.PortletViewBridge;
+import juzu.impl.bridge.spi.servlet.AbstractBridgeContext;
+import juzu.impl.common.JSON;
 import juzu.impl.common.JUL;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
@@ -65,6 +67,7 @@ import javax.portlet.WindowState;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
@@ -142,7 +145,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     }
 
     //
-    final BridgeContext bridgeContext = new BridgeContext() {
+    final BridgeContext bridgeContext = new AbstractBridgeContext() {
       final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
       final ResourceResolver resolver = new ResourceResolver() {
         public URL resolve(String uri) {
@@ -156,10 +159,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
       };
       public ReadFileSystem<?> getResourcePath() {
         return WarFileSystem.create(context, "/WEB-INF/");
-      }
-      public ReadFileSystem<?> getSourcePath() {
-        String srcPath = context.getInitParameter(BridgeConfig.SOURCE_PATH);
-        return srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(context, "/WEB-INF/src/");
       }
       public ReadFileSystem<?> getClassPath() {
         return WarFileSystem.create(context, "/WEB-INF/classes/");
@@ -178,9 +177,6 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
       }
       public void setAttribute(String key, Object value) {
         context.setAttribute(key, value);
-      }
-      public Logger getLogger(String name) {
-        return JUL.getLogger(name);
       }
     };
 

@@ -211,19 +211,6 @@ public abstract class AbstractWebTestCase extends AbstractTestCase {
     AbstractWebTestCase.path = path;
     AbstractWebTestCase.servlet = true;
 
-    //
-    RunMode runMode = config.getRunMode();
-    String sourcePath;
-    try {
-      sourcePath = runMode.isDynamic() ? getCompiler().getSourcePath().getRoot().getCanonicalFile().getAbsolutePath() : "";
-    }
-    catch (IOException e) {
-      throw failure("Could not read obtain source path", e);
-    }
-    if (sourcePath != null) {
-      config = config.sourcePath(sourcePath);
-    }
-
     // Descriptor
     String servlet = config.toWebXml();
 

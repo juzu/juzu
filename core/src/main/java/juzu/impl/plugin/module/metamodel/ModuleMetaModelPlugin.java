@@ -17,6 +17,9 @@
 package juzu.impl.plugin.module.metamodel;
 
 import juzu.impl.common.JSON;
+import juzu.impl.compiler.ElementHandle;
+import juzu.impl.fs.spi.disk.DiskFileSystem;
+import juzu.impl.metamodel.AnnotationChange;
 import juzu.impl.metamodel.MetaModelPlugin;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -24,6 +27,19 @@ public abstract class ModuleMetaModelPlugin extends MetaModelPlugin<ModuleMetaMo
 
   public ModuleMetaModelPlugin(String name) {
     super(name);
+  }
+
+  @Override
+  public void processAnnotationChange(ModuleMetaModel metaModel, AnnotationChange change) {
+    ElementHandle<?> elt = change.getKey().getElement();
+    if (elt instanceof ElementHandle.Package) {
+      ElementHandle.Package pkgElt = (ElementHandle.Package)elt;
+      DiskFileSystem fs = metaModel.getProcessingContext().getSourcePath(pkgElt);
+      if (fs != null) {
+        metaModel.root = fs.getRoot();
+      }
+    }
+    super.processAnnotationChange(metaModel, change);
   }
 
   /**

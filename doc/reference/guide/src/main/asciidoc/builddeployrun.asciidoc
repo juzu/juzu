@@ -322,20 +322,11 @@ Juzu defines three modes for running an application, called _run modes_:
 
 * Production (_prod_): error reporting is minimal
 * Development (_dev_): provides verbose error reporting
-* Live (_live_): allow to develop the application live with verbose error reporting
+* Live (_live_): allow to develop the application live with verbose error reporting. It provides a live recompilation of
+the sources at runtime providing an increased productivity.
 
-=== How to choose the right run mode
-
-* When you are running an application use the _prod_ run mode
-* When you are developing an application with a build system use the _dev_ run mode
-* When you are live developing an application use the _live_ run mode
-
-=== Configuring the run mode
-
-Run mode is configured via servlet context parameters, by default the _prod_ mode is enabled:
-
-* _juzu.run_mode_ : possible values _prod_, _dev_ or _live_
-* _juzu.src_path_ : the source path of the source to compile for the live mode
+Run mode is configured via the servlet context parameters for Servlet or Portlet applications this the scope
+ of the run mode is for the entire bridge.
 
 .Configuring the dev mode in web.xml
 [source,xml]
@@ -345,3 +336,6 @@ Run mode is configured via servlet context parameters, by default the _prod_ mod
   <param-value>dev</param-value>
 </context-param>
 ----
+
+NOTE: live mode is experimental and you may experience issues when using it. When this happens recompile your application
+with your build system and redeploy it, this will reinitialize the runtime and you can use live mode again.

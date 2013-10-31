@@ -29,7 +29,6 @@ import juzu.impl.common.Logger;
 import juzu.impl.common.SimpleMap;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.inject.spi.Injector;
 import juzu.impl.inject.spi.InjectorProvider;
@@ -44,7 +43,6 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -185,7 +183,7 @@ public class ServletBridge extends HttpServlet {
       }
 
       //
-      BridgeContext bridgeContext = new BridgeContext() {
+      BridgeContext bridgeContext = new AbstractBridgeContext() {
         final ResourceResolver resolver = new ResourceResolver() {
           public URL resolve(String uri) {
             try {
@@ -202,10 +200,6 @@ public class ServletBridge extends HttpServlet {
         public ReadFileSystem<?> getClassPath() {
           return WarFileSystem.create(getServletContext(), "/WEB-INF/classes/");
         }
-        public ReadFileSystem<?> getSourcePath() {
-          String srcPath = getServletContext().getInitParameter(BridgeConfig.SOURCE_PATH);
-          return srcPath != null ? new DiskFileSystem(new File(srcPath)) : WarFileSystem.create(getServletContext(), "/WEB-INF/src/");
-        }
         public ClassLoader getClassLoader() {
           return getServletContext().getClassLoader();
         }
@@ -220,9 +214,6 @@ public class ServletBridge extends HttpServlet {
         }
         public void setAttribute(String key, Object value) {
           getServletContext().setAttribute(key, value);
-        }
-        public Logger getLogger(String name) {
-          return JUL.getLogger(name);
         }
       };
 

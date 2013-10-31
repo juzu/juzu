@@ -94,7 +94,7 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
   }
 
   @Override
-  public File getRoot() throws IOException {
+  public File getRoot() {
     return root;
   }
 

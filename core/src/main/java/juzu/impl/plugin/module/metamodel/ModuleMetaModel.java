@@ -25,6 +25,7 @@ import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashSet;
@@ -38,6 +39,9 @@ public class ModuleMetaModel extends MetaModel<ModuleMetaModelPlugin, ModuleMeta
 
   /** . */
   private Set<Class<? extends java.lang.annotation.Annotation>> supportedAnnotations;
+
+  /** . */
+  File root;
 
   public ModuleMetaModel() {
   }
@@ -95,6 +99,8 @@ public class ModuleMetaModel extends MetaModel<ModuleMetaModelPlugin, ModuleMeta
   }
 
   private void emitConfig(ProcessingContext env) {
+
+    //
     env.info("Emitting module config");
 
     // Merge plugins
@@ -107,6 +113,14 @@ public class ModuleMetaModel extends MetaModel<ModuleMetaModelPlugin, ModuleMeta
         }
         descriptor.set(plugin.getName(), pluginDesc);
       }
+    }
+
+    // Add source path if any
+    if (root != null) {
+      if (descriptor == null) {
+        descriptor = new JSON();
+      }
+      descriptor.set("sourcepath", root.getAbsolutePath());
     }
 
     // Emit descriptor
