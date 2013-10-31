@@ -194,6 +194,7 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
   void removeMethod(ElementHandle.Method handle) {
     ProcessingContext.log.log(Level.FINE, "Removing method " + handle + " from controller class " + handle);
     if (removeChild(Key.of(handle, MethodMetaModel.class)) != null) {
+      modified = true;
       ProcessingContext.log.log(Level.FINE, "Removed method " + handle + " from controller class " + handle);
     }
   }

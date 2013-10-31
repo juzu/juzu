@@ -411,9 +411,11 @@ public class ControllerTestCase extends AbstractTestCase {
 
     //
     List<MetaModelEvent> events = mm.getQueue().clear();
-    assertEquals(1, events.size());
+    assertEquals(2, events.size());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
     assertInstanceOf(MethodMetaModel.class, events.get(0).getObject());
+    assertEquals(MetaModelEvent.UPDATED, events.get(1).getType());
+    assertInstanceOf(ControllerMetaModel.class, events.get(1).getObject());
   }
 
   @Test
@@ -466,9 +468,11 @@ public class ControllerTestCase extends AbstractTestCase {
 
     //
     List<MetaModelEvent> events = mm.getQueue().clear();
-    assertEquals(1, events.size());
+    assertEquals(2, events.size());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
     assertInstanceOf(MethodMetaModel.class, events.get(0).getObject());
+    assertEquals(MetaModelEvent.UPDATED, events.get(1).getType());
+    assertInstanceOf(ControllerMetaModel.class, events.get(1).getObject());
   }
 
   @Test
