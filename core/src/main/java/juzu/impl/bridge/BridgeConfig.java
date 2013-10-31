@@ -32,16 +32,10 @@ import java.util.TreeMap;
 public class BridgeConfig {
 
   /** . */
-  public static final String RUN_MODE = "juzu.run_mode";
-
-  /** . */
   public static final String INJECT = "juzu.inject";
 
   /** . */
   public static final String APP_NAME = "juzu.app_name";
-
-  /** . */
-  public static final String SOURCE_PATH = "juzu.src_path";
 
   /** The default request encoding charset. */
   public static final String REQUEST_ENCODING = "juzu.request_encoding";

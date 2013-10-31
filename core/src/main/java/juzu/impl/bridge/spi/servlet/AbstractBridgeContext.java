@@ -15,7 +15,6 @@
  */
 package juzu.impl.bridge.spi.servlet;
 
-import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.BridgeContext;
 import juzu.impl.common.JSON;
 import juzu.impl.common.JUL;
@@ -32,11 +31,14 @@ import java.net.URL;
 public abstract class AbstractBridgeContext implements BridgeContext {
 
   /** . */
+  public static final String SOURCE_PATH = "juzu.src_path";
+
+  /** . */
   ReadFileSystem<?> sourcePath;
 
   public final ReadFileSystem<?> getSourcePath() {
     if (sourcePath == null) {
-      String sourcePathParam = getInitParameter(BridgeConfig.SOURCE_PATH);
+      String sourcePathParam = getInitParameter(SOURCE_PATH);
       if (sourcePathParam != null) {
         sourcePath = new DiskFileSystem(new File(sourcePathParam));
       } else {
