@@ -18,6 +18,7 @@ package juzu.impl.plugin.controller.metamodel;
 
 import juzu.Mapped;
 import juzu.Param;
+import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerMetaModel extends MetaModelObject implements Iterable<MethodMetaModel> {
@@ -92,27 +94,20 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
     return getChildren(MethodMetaModel.class);
   }
 
-  public void remove(ElementHandle.Method handle) {
-    removeChild(Key.of(handle, MethodMetaModel.class));
-  }
-
-  void addMethod(
-    ModuleMetaModel context,
-    AnnotationKey key2,
-    AnnotationState annotation) {
+  void addMethod(ModuleMetaModel context, AnnotationKey annotationKey, AnnotationState annotationState) {
 
     //
-    String id = (String)annotation.get("id");
-
-    ExecutableElement methodElt = (ExecutableElement)context.processingContext.get(key2.getElement());
+    String id = (String)annotationState.get("id");
+    ElementHandle.Method methodHandle = (ElementHandle.Method)annotationKey.getElement();
+    ExecutableElement methodElt = context.processingContext.get(methodHandle);
+    ProcessingContext.log.log(Level.FINE, "Adding method " + methodElt + " to controller class " + handle);
 
     //
     for (Phase phase : Phase.values()) {
-      if (phase.annotation.getName().equals(key2.getType().toString())) {
-        ElementHandle.Method origin = (ElementHandle.Method)key2.getElement();
+      if (phase.annotation.getName().equals(annotationKey.getType().toString())) {
 
         // First remove the previous method
-        Key<MethodMetaModel> key = Key.of(origin, MethodMetaModel.class);
+        Key<MethodMetaModel> key = Key.of(methodHandle, MethodMetaModel.class);
         if (getChild(key) == null) {
           // Parameters
           ArrayList<ParameterMetaModel> parameters = new ArrayList<ParameterMetaModel>();
@@ -182,16 +177,24 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
 
           //
           MethodMetaModel method = new MethodMetaModel(
-            origin,
+            methodHandle,
             id,
             phase,
             methodElt.getSimpleName().toString(),
             parameters);
           addChild(key, method);
           modified = true;
+          ProcessingContext.log.log(Level.FINE, "Added method " + methodHandle + " to controller class " + handle);
         }
         break;
       }
+    }
+  }
+
+  void removeMethod(ElementHandle.Method handle) {
+    ProcessingContext.log.log(Level.FINE, "Removing method " + handle + " from controller class " + handle);
+    if (removeChild(Key.of(handle, MethodMetaModel.class)) != null) {
+      ProcessingContext.log.log(Level.FINE, "Removed method " + handle + " from controller class " + handle);
     }
   }
 

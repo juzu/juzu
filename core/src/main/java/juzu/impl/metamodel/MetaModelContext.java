@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends MetaModel<P, M>>
@@ -175,6 +176,7 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
       Element element = processingContext.get(key.element);
       if (element == null) {
         delta.add(new AnnotationChange(key, entry.getValue(), null));
+        processingContext.log(Level.FINER, "Annotation removed " + key);
       } else {
         AnnotationMirror found = null;
         for (AnnotationMirror mirror : element.getAnnotationMirrors()) {
@@ -186,11 +188,18 @@ public final class MetaModelContext<P extends MetaModelPlugin<M, P>, M extends M
         }
         if (found == null) {
           delta.add(new AnnotationChange(key, entry.getValue(), null));
+          processingContext.log(Level.FINER, "Annotation removed " + key);
         }
       }
     }
     for (Map.Entry<AnnotationKey, AnnotationState> annotation : annotations) {
-      delta.add(new AnnotationChange(annotation.getKey(), knownAnnotations.get(annotation.getKey()), annotation.getValue()));
+      AnnotationState knownAnnotation = knownAnnotations.get(annotation.getKey());
+      if (knownAnnotation != null) {
+        processingContext.log(Level.FINER, "Annotation updated " + annotation.getKey());
+      } else {
+        processingContext.log(Level.FINER, "Annotation added " + annotation.getKey());
+      }
+      delta.add(new AnnotationChange(annotation.getKey(), knownAnnotation, annotation.getValue()));
     }
     processAnnotationChanges(delta);
   }

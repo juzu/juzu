@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.logging.Level;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
@@ -129,7 +130,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     ControllersMetaModel controllers = metaModel.getChild(ControllersMetaModel.KEY);
     ControllerMetaModel controller = controllers.get(controllerHandle);
     if (controller != null) {
-      controller.remove(methodHandle);
+      controller.removeMethod(methodHandle);
       if (controller.getMethods().isEmpty()) {
         controller.remove();
       }

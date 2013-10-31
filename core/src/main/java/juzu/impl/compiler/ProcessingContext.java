@@ -85,7 +85,7 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
   private ProcessingEnvironment env;
 
   /** . */
-  private static final Logger log = BaseProcessor.getLogger(ProcessingContext.class);
+  public static final Logger log = BaseProcessor.getLogger(ProcessingContext.class);
 
   /** Set for eclipse environment. */
   private final DiskFileSystem sourcePath;
