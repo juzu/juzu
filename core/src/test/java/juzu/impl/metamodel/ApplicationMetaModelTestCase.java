@@ -39,7 +39,7 @@ import java.util.List;
 import static juzu.impl.common.JSON.json;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationTestCase extends AbstractTestCase {
+public class ApplicationMetaModelTestCase extends AbstractTestCase {
 
   @Test
   public void testAdd() throws Exception {

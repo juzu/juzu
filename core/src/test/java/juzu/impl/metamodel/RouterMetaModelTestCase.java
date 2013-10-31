@@ -35,7 +35,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouterTestCase extends AbstractTestCase {
+public class RouterMetaModelTestCase extends AbstractTestCase {
 
   @Test
   public void testDuplicateMethodRoute() throws Exception {

@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplateTestCase extends AbstractTestCase {
+public class TemplateMetaModelTestCase extends AbstractTestCase {
 
   @Test
   public void testTemplatePathMatching() {

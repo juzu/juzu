@@ -29,7 +29,7 @@ import java.util.List;
 import static juzu.impl.common.JSON.json;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PathTestCase extends AbstractTestCase {
+public class PathMetaModelTestCase extends AbstractTestCase {
 
   @Test
   public void testBuild() throws Exception {

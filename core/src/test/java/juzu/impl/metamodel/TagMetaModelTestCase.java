@@ -34,7 +34,7 @@ import java.io.File;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TagTestCase extends AbstractTestCase {
+public class TagMetaModelTestCase extends AbstractTestCase {
 
   @Test
   public void testUpdateAnnotation() throws Exception {

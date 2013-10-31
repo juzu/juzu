@@ -50,7 +50,7 @@ import java.util.List;
 import static juzu.impl.common.JSON.json;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerTestCase extends AbstractTestCase {
+public class ControllerMetaModelTestCase extends AbstractTestCase {
 
   @Test
   public void testBuild() throws Exception {

@@ -31,7 +31,7 @@ import java.io.File;
 import static juzu.impl.common.JSON.json;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ParamTestCase extends AbstractTestCase {
+public class ParamMetaModelTestCase extends AbstractTestCase {
 
   /** . */
   private static JSON expectedJSON = json()
