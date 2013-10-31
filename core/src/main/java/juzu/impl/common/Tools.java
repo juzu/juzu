@@ -1602,4 +1602,97 @@ public class Tools {
       throw new UnsupportedOperationException("Could not resolve MD5", e);
     }
   }
+
+  /** . */
+  private static final int ESCAPE = -1;
+
+  /** . */
+  private static final int SCANNING = 0;
+
+  /** . */
+  private static final int DOLLAR = 1;
+
+  /** . */
+  private static final int EVALUATING = 2;
+
+  /**
+   * Interpolate a string and replace the occurence from a context map.
+   *
+   * @param interpolated the value to interpolate
+   * @param context the context
+   * @return the interpolated string
+   * @throws NullPointerException if the interpolated argument is null
+   */
+  public static String interpolate(String interpolated, Map<String, ?> context) throws NullPointerException {
+    StringBuilder sb = new StringBuilder();
+    int status = 0;
+    int prev = 0;
+    int length = interpolated.length();
+    for (int i = 0;i < length;i++) {
+      char c = interpolated.charAt(i);
+      switch (status) {
+        case ESCAPE:
+          if (c == '$') {
+            sb.append('$');
+          } else {
+            sb.append('\\').append(c);
+          }
+          status = SCANNING;
+          break;
+        case SCANNING:
+          if (c == '$') {
+            status = DOLLAR;
+          } else if (c == '\\') {
+            status = ESCAPE;
+          } else {
+            sb.append(c);
+          }
+          break;
+        case DOLLAR:
+          if (c == '{') {
+            status = EVALUATING;
+            prev = i + 1;
+          } else {
+            sb.append('$').append(c);
+          }
+          break;
+        case EVALUATING:
+          if (c == '}') {
+            int j = i;
+            while (j > prev) {
+              if (interpolated.charAt(j) == ':') {
+                break;
+              } else {
+                j--;
+              }
+            }
+            Object value;
+            if (j > prev) {
+              String key = interpolated.substring(prev, j);
+              value = context.get(key);
+              if (value == null) {
+                value = interpolated.substring(j + 1, i);
+              }
+            } else {
+              String key = interpolated.substring(prev, i);
+              value = context.get(key);
+            }
+            if (value != null) {
+              sb.append(value);
+            }
+            status = SCANNING;
+          }
+          break;
+      }
+    }
+    switch (status) {
+      case DOLLAR:
+        sb.append('$');
+        break;
+      case EVALUATING:
+        sb.append("${").append(interpolated, prev, interpolated.length());
+        break;
+    }
+    return sb.toString();
+  }
 }

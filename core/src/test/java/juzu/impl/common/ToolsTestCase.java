@@ -28,6 +28,7 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -239,5 +240,18 @@ public class ToolsTestCase extends AbstractTestCase {
     StringWriter writer = new StringWriter();
     Tools.encodeHtml(elt, writer);
     assertEquals(expectedMarkup, writer.toString());
+  }
+
+  @Test
+  public void testInterpolate() {
+    Map<String,String> context = Collections.singletonMap("foo", "bar");
+    assertEquals("", Tools.interpolate("", context));
+    assertEquals("$", Tools.interpolate("$", context));
+    assertEquals("${foo}", Tools.interpolate("\\${foo}", context));
+    assertEquals("${", Tools.interpolate("${", context));
+    assertEquals("${a", Tools.interpolate("${a", context));
+    assertEquals("bar", Tools.interpolate("${foo}", context));
+    assertEquals("", Tools.interpolate("${bar}", context));
+    assertEquals("juu", Tools.interpolate("${bar:juu}", context));
   }
 }
