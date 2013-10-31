@@ -45,6 +45,11 @@ include::templating.asciidoc[]
 
 include::taglib.asciidoc[]
 
+[[i18n]]
+= Internationalization
+
+include::i18n.asciidoc[]
+
 [[templatespi]]
 = Templating SPI
 
@@ -72,6 +77,7 @@ include::less.asciidoc[]
 
 include::webjars.asciidoc[]
 
+[[servlet]]
 = Servlet
 
 include::servlet.asciidoc[]

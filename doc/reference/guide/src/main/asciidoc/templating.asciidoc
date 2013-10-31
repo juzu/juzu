@@ -67,6 +67,7 @@ can be used to prefix the url expression and remove the ambiguity:
 Under the hood the controller URL syntax uses the controller compagnion for creating the URL: the +Controller.purchase(product=1)+
 will uses the controller compagnion +Controller_#purchase(String product)+.
 
+[[messages]]
 ==== Messages
 
 You can resolve a message in resource bundles in a template with the +&{...}+ syntax:
@@ -78,10 +79,7 @@ You can resolve a message in resource bundles in a template with the +&{...}+ sy
 ----
 
 When the message is not found, no output will be done. The resource bundle is resolved with
-the current user locale.
-
-WARNING: This feature at the moment only works with portlets that supports resource bundle
-declaration natively
+the current user locale. The <<i18n>> section explains resource bundle configuration.
 
 ==== Taglib
 

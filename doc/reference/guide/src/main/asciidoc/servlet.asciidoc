@@ -2,7 +2,7 @@
 
 The servlet plugin enhance Juzu servlet applications.
 
-=== Servlet class generation
+=== Servlet declaration
 
 A Juzu servlet application is managed by a ##JuzuServlet## configured with the application name. Since Servlet 3.0,
 configuration can be easier thanks to servlet annotations. Juzu leverages this capability and is able to generate a
@@ -16,6 +16,19 @@ servlet for an application with the ##juzu.plugin.servlet.Servlet## annotation:
 package my.application;
 ----
 <1> The application _url-pattern_
+
+[[servlet_bundle]]
+=== Resource bundle declaration
+
+The +@Servlet+ annotation allows to declare a resource bundle:
+
+.Servlet resource bundle configuration via annotations
+[source,java]
+----
+@Application
+@Servlet(value = "/", resourceBundle = "MyBundle")
+package myapp;
+----
 
 === Asset server automatic registration
 

@@ -1,0 +1,52 @@
+
+== Application resource bundle
+
+Juzu allows an application to use a resource bundle.
+
+This feature is supported natively by the Portlet API and its configuration occurs in the _portlet.xml_ file:
+
+.Portlet resource bundle configuration
+[source,xml]
+----
+<portlet>
+  <portlet-name>MyPortlet</portlet-name>
+  ...
+  <resource-bundle>MyBundle</resource-bundle>
+  ...
+</portlet>
+----
+
+For the servlet bridge a custom implementation is provided by Juzu at the servlet level:
+
+.Servlet resource bundle configuration
+[source,xml]
+----
+<servlet>
+  <servlet-name>MyServlet</servlet-name>
+  ...
+  <init-param>
+    <param-name>juzu.resource_bundle</param-name>
+    <param-value>MyBundle</param-value>
+  </init-param>
+  ...
+</servlet>
+----
+
+If you are using the <<servlet>> plugin, the +@Servlet+ annotation allows to configure, please refer to the <<servlet_bundle>>
+part.
+
+=== Bundle injection
+
+When you provide a resource bundle along with your application, the bundle object is available for injection:
+
+.Resource bundle injection
+[source,java]
+----
+@Inject
+ResourceBundle bundle;
+----
+
+=== Template messages
+
+The native template engine supports the resolution of <<messages>> from the resource bundle.
+
