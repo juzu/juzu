@@ -15,7 +15,7 @@ if you project contains several applications, you should configure a Juzu servle
 
 === Servlet configuration
 
-Declaring a Juzu servlet is done in the //web.xml// file of the web application:
+Declaring a Juzu servlet is done in the _web.xml_ file of the web application:
 
 .The Juzu servlet configuration
 [source,xml]
@@ -86,3 +86,58 @@ Declaring a Juzu portlet is done in the _portlet.xml_ file of the portlet applic
 ----
 
 The _juzu.app_name_ init parameter tells Juzu the package of the application to use.
+
+== Bridge configuration
+
+Bridge can be configured via the the servlet context parameters of the web application or the servlet/portlet
+ init parameters:
+
+.Bridge configuration parameters
+[cols="6*^",options="header"]
+|===
+|Parameter
+|Name
+|Description
+|Scope
+|Bridge
+|Interpolation
+
+|Application name
+|_juzu.app_name_
+|application package name
+|init param
+|servlet/portlet
+|none
+
+|Run mode
+|_juzu.run_mode_
+|_prod_, _dev_ or _live_
+|context param
+|servlet/Portlet
+|system properties
+
+|Request encoding
+|_juzu.request_encoding_
+|charset name for decoding post requests
+|init param
+|servlet
+|system properties
+
+|Injection container
+|_juzu.inject_
+|injection container name
+|init param/context param
+|servlet/portlet
+|none
+|===
+
+When interpolation occurs, the interpolation format allows to define a default value when the value cannot be resolved:
+
+.Get the run mode from the JVM system properties or use prod value
+[source,xml]
+----
+<context-param>
+  <param-name>juzu.run_mode</param-name>
+  <param-value>${my_run_mode:prod}</param-value>
+</context-param>
+----

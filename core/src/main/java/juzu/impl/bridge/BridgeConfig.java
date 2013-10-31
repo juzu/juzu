@@ -99,6 +99,11 @@ public class BridgeConfig {
 
   private Charset getRequestEncoding(Map<String, String> config) {
     String requestEncodingParam = config.get(REQUEST_ENCODING);
-    return requestEncodingParam != null ? Charset.forName(requestEncodingParam) : Tools.ISO_8859_1;
+    if (requestEncodingParam != null) {
+      requestEncodingParam = Tools.interpolate(requestEncodingParam, System.getProperties());
+      return Charset.forName(requestEncodingParam);
+    } else {
+      return Tools.ISO_8859_1;
+    }
   }
 }

@@ -1623,7 +1623,7 @@ public class Tools {
    * @return the interpolated string
    * @throws NullPointerException if the interpolated argument is null
    */
-  public static String interpolate(String interpolated, Map<String, ?> context) throws NullPointerException {
+  public static String interpolate(String interpolated, Map<?, ?> context) throws NullPointerException {
     StringBuilder sb = new StringBuilder();
     int status = 0;
     int prev = 0;

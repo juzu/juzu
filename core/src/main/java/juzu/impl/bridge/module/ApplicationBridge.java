@@ -66,6 +66,7 @@ public class ApplicationBridge extends Bridge {
     if (runMode == null) {
       String runModeValue = context.getInitParameter("juzu.run_mode");
       if (runModeValue != null) {
+        runModeValue = Tools.interpolate(runModeValue, System.getProperties());
         runMode = RunMode.parse(runModeValue);
         if (runMode == null) {
           log.info("Unparseable run mode " + runModeValue + " will use prod instead");
