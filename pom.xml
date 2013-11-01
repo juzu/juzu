@@ -209,6 +209,18 @@
 
       <dependency>
         <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-less4j</artifactId>
+        <version>0.7.0-beta27-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-less4j</artifactId>
+        <classifier>sources</classifier>
+        <version>0.7.0-beta27-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-servlet</artifactId>
         <version>0.7.0-beta27-SNAPSHOT</version>
       </dependency>
