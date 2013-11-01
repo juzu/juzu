@@ -225,7 +225,7 @@ public class Name implements Iterable<String>, Serializable, CharSequence {
   }
 
   public Path.Absolute resolve(String path) {
-    String[] atoms = Lexers.parsePath(Lexers.PARSE_ANY, identifiers, identifiers.length, path, 0);
+    String[] atoms = Lexers.parsePath(Lexers.PARSE_ANY, identifiers, size, path, 0);
     return new Path.Absolute(new Name(atoms, atoms.length - 1), atoms[atoms.length - 1]);
   }
 

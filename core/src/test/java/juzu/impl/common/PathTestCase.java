@@ -126,4 +126,12 @@ public class PathTestCase {
   private void assertPath(boolean absolute, String[] names, String name, String extension, String test) {
     assertPath(absolute, names, name, extension, Path.parse(test));
   }
+
+  @Test
+  public void testResolveBug() {
+    Path.Absolute path = (Path.Absolute)Path.parse("/plugin/less/ancestor/assets/folder/stylesheet.less");
+    Name dirs = path.getDirs();
+    Path.Absolute resolved = dirs.resolve("../stylesheet.less");
+    assertEquals(Path.parse("/plugin/less/ancestor/assets/stylesheet.less"), resolved);
+  }
 }
