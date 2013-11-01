@@ -304,7 +304,80 @@ may work differently when using Maven in your project, the Maven and APT support
 
 ==== Intellij support
 
-todo
+In this Intellij walkthrough we will work with project called _myapp_ that was created by the Juzu Maven archetype.
+
+===== Importing the Maven project
+
+Let's first import this Maven project in Maven
+
+.Click the Import Project from the Quick Start screen
+image::images/builddeployrun/intellij01.png[Interactions,700,align="center"]
+
+.Select the pom.xml file of our myapp project
+image::images/builddeployrun/intellij02.png[Interactions,400,align="center"]
+
+.The project view after import
+image::images/builddeployrun/intellij03.png[Interactions,400,align="center"]
+
+We can see in the _target_ directory the generated annotations folders, it contains several classes generated
+by Juzu such as +Application+ or +Controller_+ but also other files like templates
+
+.The imported project structure
+image::images/builddeployrun/intellij04.png[Interactions,700,align="center"]
+
+The generated annotations folders should be visible from the project.
+
+TIP: you should build the project before importing it, this will help Intellij to detect the
+_target/generated-sources/annotations_ and _target/generated-sources/test-annotations_ folder and configure
+those as source folders of the project. If you don't do that then you will have to do it manually in the
+_Project Structure_ screen. In the screenshot we can see that all folders of _target_ have been excluded
+except the generated annotations sources.
+
+===== Compiler configuration
+
+Integration of Juzu in your IDE requires to properly configure and activate the Java compiler for using the
+Juzu annotation processor.
+
+.Java compiler configuration
+image::images/builddeployrun/intellij05.png[Interactions,700,align="center"]
+
+Java compiler configures requires to *disable* the _external build_ feature that does not support annotation
+processing.
+
+.Annotation processor configuration
+image::images/builddeployrun/intellij06.png[Interactions,700,align="center"]
+
+After that, the Juzu annotation processor shall be http://www.jetbrains.com/idea/webhelp/configuring-annotation-processing.html[configured] to +juzu.processor.MainProcessor+.
+
+===== Processing annotations
+
+When using annotation processing it is important to keep your generated sources in sync with your code. There are two
+ways to achieve it in our case:
+- let Maven do the job for you either via the IDE integration or command line
+- ask Intellij to process the sources
+
+In this part we are going to study how annotation generation work within the IDE with the +Controller+ class. The
+controller compagnion +Controller+ looks like after the initial generation:
+
+.The Controller_ generated class
+image::images/builddeployrun/intellij08.png[Interactions,600,align="center"]
+
+Let's add a new controller method +process+ in our controller.
+
+.The modified controller
+image::images/builddeployrun/intellij10.png[Interactions,600,align="center"]
+
+Now let's generate the new source code via the IDE.
+
+.Processing annotations
+image::images/builddeployrun/intellij09.png[Interactions,400,align="center"]
+
+After generate our +Controller+ class has been updated.
+
+.The updated Controller_ class
+image::images/builddeployrun/intellij11.png[Interactions,600,align="center"]
+
+We can see that a new +method_1+ field in +Controller_+ reflects the +process+ method we added in +Controller+.
 
 ==== Eclipse support
 
