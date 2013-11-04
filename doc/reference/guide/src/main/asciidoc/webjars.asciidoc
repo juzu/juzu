@@ -38,12 +38,7 @@ If we want this file to be served with the application we simply add the corresp
 ----
 @Application
 @WebJars("foo.js")
-@Assets(scripts = { 
-  @Script(
-    id = "foo", 
-    src="foo.js"
-  ) 
-})
+@Assets(@Asset(id = "foo",  value="foo.js"))
 package myapp;
 
 import juzu.Application;
