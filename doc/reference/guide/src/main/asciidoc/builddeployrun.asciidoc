@@ -459,9 +459,7 @@ image::images/builddeployrun/intellij11.png[Interactions,600,align="center"]
 
 We can see that a new +method_1+ field in +Controller_+ reflects the +process+ method we added in +Controller+.
 
-== Run
-
-=== Run modes
+== Run modes
 
 Juzu defines three modes for running an application, called _run modes_:
 
