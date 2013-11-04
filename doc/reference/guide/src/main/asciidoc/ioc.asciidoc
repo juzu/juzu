@@ -331,4 +331,11 @@ the bean will be duplicated and you will use the wrong bean instance
 
 === Provided CDI
 
-todo
+Provided CDI is supported since Juzu 0.7.0, it provides an integration managed by the server:
+
+- in case of a Java EE server, CDI is provided natively.
+- in case of a Servlet Container, the Weld CDI implementation supports the
+http://docs.jboss.org/weld/reference/1.0.0/en-US/html/environments.html[integration in Tomcat or Jetty].
+
+In both case you need to comply to CDI applications rules such as having a _beans.xml_ file in your _WEB-INF_
+directory.
