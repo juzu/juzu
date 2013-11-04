@@ -17,10 +17,9 @@
 package juzu.plugin.less;
 
 import juzu.impl.compiler.CompilationError;
-import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.common.Tools;
 import juzu.plugin.less.impl.LessMetaModelPlugin;
-import juzu.test.AbstractInjectTestCase;
+import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
 import org.junit.Test;
 
@@ -28,10 +27,9 @@ import java.io.File;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LessPluginTestCase extends AbstractInjectTestCase {
+public class LessPluginTestCase extends AbstractTestCase {
 
-  public LessPluginTestCase(InjectorProvider di) {
-    super(di);
+  public LessPluginTestCase() {
   }
 
   @Test

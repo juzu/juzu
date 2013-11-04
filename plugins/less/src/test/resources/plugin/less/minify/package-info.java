@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-@Less(value = ".foo", minify = true) package plugin.less4j.malformedpath;
+@Less(value = "stylesheet.less", minify = true) package plugin.less.minify;
 
 import juzu.plugin.less.Less;

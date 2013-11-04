@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-@Less(value = "stylesheet.less", minify = true) package plugin.less4j.minify;
+@Less("folder/stylesheet.less") package plugin.less.ancestor;
 
 import juzu.plugin.less.Less;

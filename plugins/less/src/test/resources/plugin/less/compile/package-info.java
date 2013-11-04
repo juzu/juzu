@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-@Less("stylesheet.less") package plugin.less4j.cannotresolve;
+@Less("stylesheet.less") package plugin.less.compile;
 
 import juzu.plugin.less.Less;
