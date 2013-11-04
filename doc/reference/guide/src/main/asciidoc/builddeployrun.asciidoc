@@ -288,12 +288,93 @@ dependencies {
 }
 ----
 
-=== Using a prepackaged application
+=== Eclipse support
 
-The Juzu distribution contains the Booking and Tutorial applications for GateIn and Liferay servers. They can be used
-as basis to create applications.
+Eclipse IDE provides the best support for annotation processing among all IDEs. Annotation processing is integrated
+natively at the heart of Eclipse incremental compiler providing an high level of interaction between the developer
+and its project.
 
-=== Using an IDE
+In this section we will see how to import the Maven based Juzu sample in Eclipse and configure it for annotation processing.
+
+==== Importing the Maven project
+
+Let's first import our Maven application in Eclipse.
+
+.Click the Import from the File menu and then chose Maven/Existing Maven Project
+image::images/builddeployrun/eclipse01.png[Interactions,500,align="center"]
+
+.Complete the import
+image::images/builddeployrun/eclipse02.png[Interactions,500,align="center"]
+
+At this point the project should be imported in Eclipse.
+
+==== Compiler configuration
+
+Now we need to configure annotation processing in the compiler configuration.
+
+.Edit the project properties
+image::images/builddeployrun/eclipse03.png[Interactions,300,align="center"]
+
+.In the Java Compiler tab configure the Annotation Processing
+image::images/builddeployrun/eclipse04.png[Interactions,600,align="center"]
+
+Set the generated source directory to _target/generated-sources/annotations_ to share it with the Maven build.
+
+.In the same tab edit the Factory Path
+image::images/builddeployrun/eclipse05.png[Interactions,600,align="center"]
+
+Enable the project specific settings and add the Juzu core jar by clicking on _Add Variable..._
+
+.Pick M2_REPO
+image::images/builddeployrun/eclipse06.png[Interactions,550,align="center"]
+
+Then click on _Extend..._
+
+.In the Variable Extension select the juzu-core jar in the hierarchy
+image::images/builddeployrun/eclipse07.png[Interactions,450,align="center"]
+
+.Eclipse is now configured to use our processor
+image::images/builddeployrun/eclipse08.png[Interactions,600,align="center"]
+
+.Don't forget to build the project automatically
+image::images/builddeployrun/eclipse09.png[Interactions,250,align="center"]
+
+==== Processing annotations
+
+Our project is now properly configured
+
+.Eclipse is now configured to use our processor
+image::images/builddeployrun/eclipse10.png[Interactions,300,align="center"]
+
+The _target/generated-sources/annotations_ is now recognized by Eclipse as a source folder.
+
+.The controller
+image::images/builddeployrun/eclipse11.png[Interactions,600,align="center"]
+
+Let's add a process controller method
+
+.Controller_ is updated
+image::images/builddeployrun/eclipse12.png[Interactions,600,align="center"]
+
+Eclipse will update the +Controller_+ class transparently just after we save the +Controller+ class.
+
+==== Maven m2e-apt plugin
+
+If you want to make your life easier you can install the _m2e-apt_ plugin, this plugin will automatically configure
+the Eclipse project as we have seen before.
+
+NOTE: installing this plugin is optional, it is however nice to use with annotation processing
+
+.Install the plugin in the Install panel
+image::images/builddeployrun/eclipse13.png[Interactions,600,align="center"]
+
+You can get this plugin by adding http://download.jboss.org/jbosstools/updates/m2e-extensions/m2e-apt in the Install
+panel.
+
+.Configuration of the m2e-apt plugin
+image::images/builddeployrun/eclipse14.png[Interactions,600,align="center"]
+
+=== Intellij support
 
 Juzu uses Annotation Processing Tool to perform many tasks at compilation time. APT is a standard extension of a Java compiler.
 All Java IDE (Eclipse, Intellij and Netbeans) provide good support for APT, we will show in the section how to configure
@@ -302,13 +383,12 @@ and uses APT within those IDEs.
 IDEs provide also Maven support, we will focus in this section on using APT without the Maven support. Indeed the APT support
 may work differently when using Maven in your project, the Maven and APT support within IDEs has a dedicated section.
 
-==== Intellij support
 
 In this Intellij walkthrough we will work with project called _myapp_ that was created by the Juzu Maven archetype.
 
-===== Importing the Maven project
+==== Importing the Maven project
 
-Let's first import this Maven project in Maven
+Let's first import our Maven project in Intellij.
 
 .Click the Import Project from the Quick Start screen
 image::images/builddeployrun/intellij01.png[Interactions,700,align="center"]
@@ -333,7 +413,7 @@ those as source folders of the project. If you don't do that then you will have 
 _Project Structure_ screen. In the screenshot we can see that all folders of _target_ have been excluded
 except the generated annotations sources.
 
-===== Compiler configuration
+==== Compiler configuration
 
 Integration of Juzu in your IDE requires to properly configure and activate the Java compiler for using the
 Juzu annotation processor.
@@ -349,7 +429,7 @@ image::images/builddeployrun/intellij06.png[Interactions,700,align="center"]
 
 After that, the Juzu annotation processor shall be http://www.jetbrains.com/idea/webhelp/configuring-annotation-processing.html[configured] to +juzu.processor.MainProcessor+.
 
-===== Processing annotations
+==== Processing annotations
 
 When using annotation processing it is important to keep your generated sources in sync with your code. There are two
 ways to achieve it in our case:
@@ -379,11 +459,7 @@ image::images/builddeployrun/intellij11.png[Interactions,600,align="center"]
 
 We can see that a new +method_1+ field in +Controller_+ reflects the +process+ method we added in +Controller+.
 
-==== Eclipse support
-
-todo
-
-==== Netbeans support
+=== Netbeans support
 
 todo
 
