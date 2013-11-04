@@ -459,10 +459,6 @@ image::images/builddeployrun/intellij11.png[Interactions,600,align="center"]
 
 We can see that a new +method_1+ field in +Controller_+ reflects the +process+ method we added in +Controller+.
 
-=== Netbeans support
-
-todo
-
 == Run
 
 === Run modes
