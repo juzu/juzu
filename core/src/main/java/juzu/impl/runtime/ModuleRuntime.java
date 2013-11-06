@@ -110,20 +110,20 @@ public abstract class ModuleRuntime<C> {
 
     @Override
     public Completion<Boolean> refresh(boolean recompile) {
-      try {
-        return Completion.completed(_refresh(recompile));
-      }
-      catch (Exception e) {
-        return Completion.failed(e);
+      if (!recompile) {
+        throw new UnsupportedOperationException("Not yet implemented");
+      } else {
+        try {
+          return Completion.completed(refresh());
+        }
+        catch (Exception e) {
+          return Completion.failed(e);
+        }
       }
     }
 
-    private boolean _refresh(boolean recompile) throws Exception, CompilationException {
+    private boolean refresh() throws Exception, CompilationException {
 
-      //
-      if (!recompile) {
-        throw new UnsupportedOperationException("Not yet implemented");
-      }
 
       // Lazy initialize
       if (classPath == null) {
