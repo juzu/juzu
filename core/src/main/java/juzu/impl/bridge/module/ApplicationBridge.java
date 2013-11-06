@@ -68,7 +68,7 @@ public class ApplicationBridge extends Bridge {
     if (module == null) {
       module = (ModuleContextImpl)context.getAttribute("juzu.module");
       if (module == null) {
-        context.setAttribute("juzu.module", module = new ModuleContextImpl(log, this, context, resolver));
+        context.setAttribute("juzu.module", module = new ModuleContextImpl(log, context, resolver));
       }
       module.lease();
     }

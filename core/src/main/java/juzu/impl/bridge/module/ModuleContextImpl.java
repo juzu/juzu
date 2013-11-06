@@ -46,15 +46,12 @@ class ModuleContextImpl implements ModuleContext {
   final ResourceResolver resolver;
 
   /** . */
-  final ApplicationBridge bridge;
-
-  /** . */
   final ModuleRuntime<?> runtime;
 
   /** . */
   final RunMode runMode;
 
-  protected ModuleContextImpl(Logger log, ApplicationBridge bridge, BridgeContext bridgeContext, ResourceResolver resolver) {
+  protected ModuleContextImpl(Logger log, BridgeContext bridgeContext, ResourceResolver resolver) {
 
     //
     String runModeValue = bridgeContext.getInitParameter("juzu.run_mode");
@@ -83,7 +80,6 @@ class ModuleContextImpl implements ModuleContext {
     //
     this.bridgeContext = bridgeContext;
     this.resolver = resolver;
-    this.bridge = bridge;
     this.runtime = lifeCycle;
     this.leases = new AtomicInteger();
     this.runMode = runMode;
