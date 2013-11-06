@@ -298,6 +298,9 @@
           <execution>
             <id>default-test</id>
             <configuration>
+<!--
+              <argLine>-agentpath:/Users/julien/java/jprofiler7/bin/macos/libjprofilerti.jnilib=port=15000</argLine>
+-->
               <additionalClasspathElements>
                 <additionalClasspathElement>${basedir}/src/test/resources</additionalClasspathElement>
               </additionalClasspathElements>
