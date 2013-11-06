@@ -57,8 +57,21 @@ class ModuleContextImpl implements ModuleContext {
   protected ModuleContextImpl(Logger log, ApplicationBridge bridge, BridgeContext bridgeContext, ResourceResolver resolver) {
 
     //
+    String runModeValue = bridgeContext.getInitParameter("juzu.run_mode");
+    RunMode runMode;
+    if (runModeValue != null) {
+      runModeValue = Tools.interpolate(runModeValue, System.getProperties());
+      runMode = RunMode.parse(runModeValue);
+      if (runMode == null) {
+        log.info("Unparseable run mode " + runModeValue + " will use prod instead");
+        runMode = RunMode.PROD;
+      }
+    } else {
+      runMode = RunMode.PROD;
+    }
+
+    //
     ModuleRuntime<?> lifeCycle;
-    RunMode runMode = bridge.getRunMode();
     if (runMode.isDynamic()) {
       ReadFileSystem<?> sourcePath = bridgeContext.getSourcePath();
       lifeCycle = new ModuleRuntime.Dynamic(log, Thread.currentThread().getContextClassLoader(), sourcePath);

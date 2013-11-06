@@ -45,9 +45,6 @@ public class ApplicationBridge extends Bridge {
   private final Injector injector;
 
   /** . */
-  private RunMode runMode;
-
-  /** . */
   private final Logger log;
 
   public ApplicationBridge(
@@ -64,37 +61,24 @@ public class ApplicationBridge extends Bridge {
   }
 
   public RunMode getRunMode() {
-    if (runMode == null) {
-      String runModeValue = context.getInitParameter("juzu.run_mode");
-      if (runModeValue != null) {
-        runModeValue = Tools.interpolate(runModeValue, System.getProperties());
-        runMode = RunMode.parse(runModeValue);
-        if (runMode == null) {
-          log.info("Unparseable run mode " + runModeValue + " will use prod instead");
-          runMode = RunMode.PROD;
-        }
-      } else {
-        runMode = RunMode.PROD;
+    return getModule().getRunMode();
+  }
+
+  private ModuleContextImpl getModule() {
+    if (module == null) {
+      module = (ModuleContextImpl)context.getAttribute("juzu.module");
+      if (module == null) {
+        context.setAttribute("juzu.module", module = new ModuleContextImpl(log, this, context, resolver));
       }
+      module.lease();
     }
-    return runMode;
+    return module;
   }
 
   public Completion<Boolean> refresh(boolean recompile) {
 
-    if (module == null) {
-
-      //
-      module = (ModuleContextImpl)context.getAttribute("juzu.module");
-      if (module == null) {
-        context.setAttribute("juzu.module", module = new ModuleContextImpl(log, this, context, resolver));
-        Completion<Boolean> refresh = module.runtime.refresh(true);
-        if (refresh.isFailed()) {
-          return refresh;
-        }
-      }
-      module.lease();
-    }
+    //
+    ModuleContextImpl module = getModule();
 
     // For now refresh module first
     Completion<Boolean> refresh = module.runtime.refresh(recompile);
