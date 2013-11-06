@@ -67,26 +67,21 @@ public class ApplicationBridge extends Bridge {
   }
 
   public Completion<Boolean> refresh(boolean recompile) {
-
-    // For now refresh module first
     Completion<Boolean> refresh = module.runtime.refresh(recompile);
     if (refresh.isFailed()) {
       return refresh;
+    } else {
+      if (application == null) {
+        application = new ApplicationRuntime(
+            log,
+            module.runtime,
+            injector,
+            config.name,
+            server,
+            resolver);
+      }
+      return application.refresh();
     }
-
-    //
-    if (application == null) {
-      application = new ApplicationRuntime(
-          log,
-          module.runtime,
-          injector,
-          config.name,
-          server,
-          resolver);
-    }
-
-    //
-    return application.refresh();
   }
 
   public Application getApplication() {
