@@ -109,7 +109,7 @@ public abstract class ModuleRuntime<C> {
     }
 
     @Override
-    public Completion<Boolean> refresh(boolean recompile) {
+    public synchronized Completion<Boolean> refresh(boolean recompile) {
       if (!recompile) {
         throw new UnsupportedOperationException("Not yet implemented");
       } else {

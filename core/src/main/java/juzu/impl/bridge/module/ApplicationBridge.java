@@ -28,6 +28,8 @@ import juzu.impl.inject.spi.Injector;
 import juzu.impl.resource.ResourceResolver;
 import juzu.impl.runtime.ApplicationRuntime;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * Bridge an application.
  *
@@ -39,7 +41,7 @@ public class ApplicationBridge extends Bridge {
   private final ModuleContextImpl module;
 
   /** . */
-  private ApplicationRuntime<?, ?> application;
+  private final AtomicReference<ApplicationRuntime<?, ?>> application;
 
   /** . */
   private final Injector injector;
@@ -60,6 +62,7 @@ public class ApplicationBridge extends Bridge {
     this.module = moduleContext;
     this.log = context.getLogger(ApplicationBridge.class.getName());
     this.injector = injector;
+    this.application = new AtomicReference<ApplicationRuntime<?, ?>>();
   }
 
   public RunMode getRunMode() {
@@ -71,24 +74,27 @@ public class ApplicationBridge extends Bridge {
     if (refresh.isFailed()) {
       return refresh;
     } else {
-      if (application == null) {
-        application = new ApplicationRuntime(
+      while (application.get() == null) {
+        application.compareAndSet(null, new ApplicationRuntime(
             log,
             module.runtime,
             injector,
             config.name,
             server,
-            resolver);
+            resolver));
       }
-      return application.refresh();
+      return application.get().refresh();
     }
   }
 
   public Application getApplication() {
-    return application.getApplication();
+    return application.get().getApplication();
   }
 
   public void close() {
-    Tools.safeClose(application);
+    ApplicationRuntime<?, ?> runtime = application.getAndSet(null);
+    if (runtime != null) {
+      Tools.safeClose(runtime);
+    }
   }
 }

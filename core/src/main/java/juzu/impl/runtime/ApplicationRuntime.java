@@ -115,7 +115,7 @@ public class ApplicationRuntime<P, R> implements Closeable {
     return injectionContext.resolveInstances(beanType);
   }
 
-  public Completion<Boolean> refresh() {
+  public synchronized Completion<Boolean> refresh() {
     if (application != null) {
       if (classLoader != moduleLifeCycle.getClassLoader()) {
         stop();
