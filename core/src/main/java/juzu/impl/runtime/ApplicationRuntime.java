@@ -124,7 +124,6 @@ public class ApplicationRuntime<P, R> implements Closeable {
 
     //
     if (application == null) {
-      log.info("Starting application");
       try {
         start();
         return Completion.completed(true);
