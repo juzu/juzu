@@ -27,7 +27,6 @@ import juzu.impl.resource.ResourceResolver;
 import juzu.impl.runtime.ModuleRuntime;
 
 import java.net.URL;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The shared module context for a bridge.
@@ -35,9 +34,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 public class ModuleContextImpl implements ModuleContext {
-
-  /** . */
-  final AtomicInteger leases;
 
   /** . */
   final BridgeContext bridgeContext;
@@ -81,7 +77,6 @@ public class ModuleContextImpl implements ModuleContext {
     this.bridgeContext = bridgeContext;
     this.resolver = resolver;
     this.runtime = lifeCycle;
-    this.leases = new AtomicInteger();
     this.runMode = runMode;
   }
 
@@ -106,18 +101,5 @@ public class ModuleContextImpl implements ModuleContext {
 
   public ResourceResolver getServerResolver() {
     return resolver;
-  }
-
-  public synchronized void lease() {
-    leases.incrementAndGet();
-  }
-
-  /**
-   * Return true if the module has no references pointing to it.
-   *
-   * @return true when the module is not referenced anymore
-   */
-  public synchronized boolean release() {
-    return leases.decrementAndGet() == 0;
   }
 }

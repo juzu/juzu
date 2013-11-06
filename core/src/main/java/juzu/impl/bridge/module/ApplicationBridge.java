@@ -57,9 +57,6 @@ public class ApplicationBridge extends Bridge {
     super(context, config, server, resolver);
 
     //
-    moduleContext.lease();
-
-    //
     this.module = moduleContext;
     this.log = context.getLogger(ApplicationBridge.class.getName());
     this.injector = injector;
