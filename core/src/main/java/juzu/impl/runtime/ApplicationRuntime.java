@@ -18,6 +18,7 @@ package juzu.impl.runtime;
 
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
+import juzu.impl.common.Completion;
 import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -114,7 +115,7 @@ public class ApplicationRuntime<P, R> implements Closeable {
     return injectionContext.resolveInstances(beanType);
   }
 
-  public boolean refresh() throws Exception {
+  public Completion<Boolean> refresh() {
     if (application != null) {
       if (classLoader != moduleLifeCycle.getClassLoader()) {
         stop();
@@ -124,10 +125,15 @@ public class ApplicationRuntime<P, R> implements Closeable {
     //
     if (application == null) {
       log.info("Starting application");
-      start();
-      return true;
+      try {
+        start();
+        return Completion.completed(true);
+      }
+      catch (Exception e) {
+        return Completion.failed(e);
+      }
     } else {
-      return false;
+      return Completion.completed(false);
     }
   }
 

@@ -16,6 +16,7 @@
 
 package juzu.impl.bridge;
 
+import juzu.impl.common.Completion;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.common.RunMode;
 import juzu.impl.asset.AssetServer;
@@ -55,13 +56,13 @@ public abstract class Bridge implements Closeable {
     return config;
   }
 
-  public boolean refresh() throws Exception {
+  public Completion<Boolean> refresh() throws Exception {
     return refresh(true);
   }
 
   public abstract RunMode getRunMode();
 
-  public abstract boolean refresh(boolean recompile) throws Exception;
+  public abstract Completion<Boolean> refresh(boolean recompile);
 
   public abstract Application getApplication();
 

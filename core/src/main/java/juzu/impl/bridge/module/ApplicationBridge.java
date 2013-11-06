@@ -18,6 +18,7 @@ package juzu.impl.bridge.module;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.BridgeContext;
+import juzu.impl.common.Completion;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.common.Logger;
@@ -79,7 +80,7 @@ public class ApplicationBridge extends Bridge {
     return runMode;
   }
 
-  public boolean refresh(boolean recompile) throws Exception {
+  public Completion<Boolean> refresh(boolean recompile) {
 
     if (module == null) {
 
@@ -87,13 +88,19 @@ public class ApplicationBridge extends Bridge {
       module = (ModuleContextImpl)context.getAttribute("juzu.module");
       if (module == null) {
         context.setAttribute("juzu.module", module = new ModuleContextImpl(log, this, context, resolver));
-        module.runtime.refresh(true);
+        Completion<Boolean> refresh = module.runtime.refresh(true);
+        if (refresh.isFailed()) {
+          return refresh;
+        }
       }
       module.lease();
     }
 
     // For now refresh module first
-    module.runtime.refresh(recompile);
+    Completion<Boolean> refresh = module.runtime.refresh(recompile);
+    if (refresh.isFailed()) {
+      return refresh;
+    }
 
     //
     if (application == null) {

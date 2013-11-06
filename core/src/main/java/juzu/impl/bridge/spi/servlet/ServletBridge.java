@@ -23,6 +23,7 @@ import juzu.impl.bridge.BridgeContext;
 import juzu.impl.bridge.module.ApplicationBridge;
 import juzu.impl.bridge.provided.ProvidedBridge;
 import juzu.impl.bridge.spi.web.Handler;
+import juzu.impl.common.Completion;
 import juzu.impl.common.JUL;
 import juzu.impl.common.Tools;
 import juzu.impl.common.Logger;
@@ -248,8 +249,10 @@ public class ServletBridge extends HttpServlet {
     }
 
     //
-    boolean stale = bridge.refresh();
-    if (stale) {
+    Completion<Boolean> refresh = bridge.refresh();
+    if (refresh.isFailed()) {
+      throw refresh.getCause();
+    } else if (refresh.get()) {
       if (handler != null) {
         Tools.safeClose(handler);
         handler = null;

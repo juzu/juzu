@@ -16,6 +16,7 @@
 
 package juzu.test.protocol.mock;
 
+import juzu.impl.common.Completion;
 import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
@@ -90,8 +91,12 @@ public class MockApplication<P> implements Closeable, ApplicationContext {
   }
 
   public MockApplication<P> init() throws Exception {
-    lifeCycle.refresh();
-    return this;
+    Completion refresh = lifeCycle.refresh();
+    if (refresh.isFailed()) {
+      throw refresh.getCause();
+    } else {
+      return this;
+    }
   }
 
   public ApplicationRuntime<P, ?> getLifeCycle() {

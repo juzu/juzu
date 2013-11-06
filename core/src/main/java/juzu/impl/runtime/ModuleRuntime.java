@@ -16,6 +16,7 @@
 
 package juzu.impl.runtime;
 
+import juzu.impl.common.Completion;
 import juzu.impl.common.LiveClassLoader;
 import juzu.impl.common.ParentJarClassLoader;
 import juzu.impl.common.Logger;
@@ -51,10 +52,8 @@ public abstract class ModuleRuntime<C> {
    *
    * @param recompile true if recompilation can occur
    * @return true when the refresh operation has triggered changes
-   * @throws Exception any exception
-   * @throws CompilationException any compilation exception
    */
-  public abstract boolean refresh(boolean recompile) throws Exception, CompilationException ;
+  public abstract Completion<Boolean> refresh(boolean recompile) ;
 
   /**
    * Returns the module classloader.
@@ -110,7 +109,16 @@ public abstract class ModuleRuntime<C> {
     }
 
     @Override
-    public boolean refresh(boolean recompile) throws Exception, CompilationException {
+    public Completion<Boolean> refresh(boolean recompile) {
+      try {
+        return Completion.completed(_refresh(recompile));
+      }
+      catch (Exception e) {
+        return Completion.failed(e);
+      }
+    }
+
+    private boolean _refresh(boolean recompile) throws Exception, CompilationException {
 
       //
       if (!recompile) {
@@ -198,8 +206,8 @@ public abstract class ModuleRuntime<C> {
     }
 
     @Override
-    public boolean refresh(boolean recompile) {
-      return false;
+    public Completion<Boolean> refresh(boolean recompile) {
+      return Completion.completed(false);
     }
 
     @Override

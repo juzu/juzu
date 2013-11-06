@@ -24,6 +24,7 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.BridgeContext;
 import juzu.impl.bridge.module.ApplicationBridge;
+import juzu.impl.common.Completion;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
@@ -277,11 +278,16 @@ public class Application {
 
         //
         try {
-          if (bridge.refresh(true)) {
-            h = null;
-          }
-          if (h == null) {
-            h = new juzu.impl.bridge.spi.web.Handler(bridge);
+          Completion<Boolean> refresh = bridge.refresh(true);
+          if (refresh.isFailed()) {
+            throw refresh.getCause();
+          } else {
+            if (refresh.get()) {
+              h = null;
+            }
+            if (h == null) {
+              h = new juzu.impl.bridge.spi.web.Handler(bridge);
+            }
           }
         }
         catch (CompilationException e) {

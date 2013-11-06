@@ -18,6 +18,7 @@ package juzu.impl.bridge.provided;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.BridgeContext;
+import juzu.impl.common.Completion;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.Injector;
 import juzu.impl.plugin.application.Application;
@@ -28,6 +29,7 @@ import juzu.impl.inject.spi.cdi.provided.ProvidedCDIInjector;
 import juzu.impl.resource.ResourceResolver;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 /** @author Julien Viet */
 public class ProvidedBridge extends Bridge {
@@ -59,7 +61,7 @@ public class ProvidedBridge extends Bridge {
   }
 
   @Override
-  public boolean refresh(boolean recompile) throws Exception {
+  public Completion<Boolean> refresh(boolean recompile) {
 
     if (application == null) {
 
@@ -73,12 +75,19 @@ public class ProvidedBridge extends Bridge {
       applicationLifeCycle = application.getInjectionContext().get(Application.class);
 
       // Complete application start
-      applicationLifeCycle.get();
+      try {
+        applicationLifeCycle.get();
+      }
+      catch (InvocationTargetException e) {
+        return Completion.failed(e);
+      }
 
       //
       server.register(application);
     }
-    return false;
+
+    //
+    return Completion.completed(false);
   }
 
   @Override
