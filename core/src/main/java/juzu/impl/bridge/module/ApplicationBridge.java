@@ -36,7 +36,7 @@ import juzu.impl.runtime.ApplicationRuntime;
 public class ApplicationBridge extends Bridge {
 
   /** . */
-  private ModuleContextImpl module;
+  private final ModuleContextImpl module;
 
   /** . */
   private ApplicationRuntime<?, ?> application;
@@ -48,6 +48,7 @@ public class ApplicationBridge extends Bridge {
   private final Logger log;
 
   public ApplicationBridge(
+      ModuleContextImpl moduleContext,
       BridgeContext context,
       BridgeConfig config,
       AssetServer server,
@@ -56,29 +57,19 @@ public class ApplicationBridge extends Bridge {
     super(context, config, server, resolver);
 
     //
+    moduleContext.lease();
+
+    //
+    this.module = moduleContext;
     this.log = context.getLogger(ApplicationBridge.class.getName());
     this.injector = injector;
   }
 
   public RunMode getRunMode() {
-    return getModule().getRunMode();
-  }
-
-  private ModuleContextImpl getModule() {
-    if (module == null) {
-      module = (ModuleContextImpl)context.getAttribute("juzu.module");
-      if (module == null) {
-        context.setAttribute("juzu.module", module = new ModuleContextImpl(log, context, resolver));
-      }
-      module.lease();
-    }
-    return module;
+    return module.getRunMode();
   }
 
   public Completion<Boolean> refresh(boolean recompile) {
-
-    //
-    ModuleContextImpl module = getModule();
 
     // For now refresh module first
     Completion<Boolean> refresh = module.runtime.refresh(recompile);

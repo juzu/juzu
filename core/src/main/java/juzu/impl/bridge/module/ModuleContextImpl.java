@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-class ModuleContextImpl implements ModuleContext {
+public class ModuleContextImpl implements ModuleContext {
 
   /** . */
   final AtomicInteger leases;
@@ -51,7 +51,7 @@ class ModuleContextImpl implements ModuleContext {
   /** . */
   final RunMode runMode;
 
-  protected ModuleContextImpl(Logger log, BridgeContext bridgeContext, ResourceResolver resolver) {
+  public ModuleContextImpl(Logger log, BridgeContext bridgeContext, ResourceResolver resolver) {
 
     //
     String runModeValue = bridgeContext.getInitParameter("juzu.run_mode");

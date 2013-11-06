@@ -23,14 +23,13 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.BridgeContext;
 import juzu.impl.bridge.module.ApplicationBridge;
+import juzu.impl.bridge.module.ModuleContextImpl;
 import juzu.impl.bridge.provided.ProvidedBridge;
 import juzu.impl.bridge.spi.portlet.PortletEventBridge;
 import juzu.impl.bridge.spi.portlet.PortletViewBridge;
 import juzu.impl.bridge.spi.servlet.AbstractBridgeContext;
-import juzu.impl.common.JSON;
 import juzu.impl.common.JUL;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.war.WarFileSystem;
 import juzu.impl.bridge.spi.portlet.PortletActionBridge;
 import juzu.impl.bridge.spi.portlet.PortletResourceBridge;
@@ -64,10 +63,8 @@ import javax.portlet.ResourceResponse;
 import javax.portlet.ResourceServingPortlet;
 import javax.portlet.UnavailableException;
 import javax.portlet.WindowState;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
@@ -86,16 +83,18 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
   private Bridge bridge;
 
   /** . */
-  private PortletContext context;
-
-  /** . */
   private PortletConfig config;
 
   public void init(final PortletConfig config) throws PortletException {
-    AssetServer server = (AssetServer)config.getPortletContext().getAttribute("asset.server");
+
+    //
+    final PortletContext context = config.getPortletContext();
+
+    //
+    AssetServer server = (AssetServer)context.getAttribute("asset.server");
     if (server == null) {
       server = new AssetServer();
-      config.getPortletContext().setAttribute("asset.server", server);
+      context.setAttribute("asset.server", server);
     }
 
     // The portlet logger
@@ -120,7 +119,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
             // 2/ serlvet context init param
             String inject = config.getInitParameter((String)key);
             if (inject == null) {
-              inject = config.getPortletContext().getInitParameter((String)key);
+              inject = context.getInitParameter((String)key);
             }
             return inject;
           } else if (BridgeConfig.NAMES.contains(key)) {
@@ -192,7 +191,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     Injector injector = injectorProvider.get();
     if (injector instanceof SpringInjector) {
       SpringInjector springInjector = (SpringInjector)injector;
-      Object parent = config.getPortletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
+      Object parent = context.getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
       if (parent != null) {
         springInjector.setParent(parent);
       }
@@ -211,17 +210,22 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     };
 
     //
+    ModuleContextImpl module = (ModuleContextImpl)context.getAttribute("juzu.module");
+    if (module == null) {
+      context.setAttribute("juzu.module", module = new ModuleContextImpl(portletLogger, bridgeContext, resolver));
+    }
+
+    //
     Bridge bridge;
     if (injector.isProvided()) {
       bridge = new ProvidedBridge(bridgeContext, bridgeConfig, server, resolver, injector);
     } else {
-      bridge = new ApplicationBridge(bridgeContext, bridgeConfig, server, resolver, injector);
+      bridge = new ApplicationBridge(module, bridgeContext, bridgeConfig, server, resolver, injector);
     }
 
     //
     this.config = config;
     this.bridge = bridge;
-    this.context = config.getPortletContext();
   }
 
   /**

@@ -21,6 +21,7 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.BridgeContext;
 import juzu.impl.bridge.module.ApplicationBridge;
+import juzu.impl.bridge.module.ModuleContextImpl;
 import juzu.impl.bridge.provided.ProvidedBridge;
 import juzu.impl.bridge.spi.web.Handler;
 import juzu.impl.common.Completion;
@@ -69,6 +70,9 @@ public class ServletBridge extends HttpServlet {
 
   /** . */
   private String bundleName;
+
+  /** . */
+  private Logger servletLogger;
 
   /** . */
   ServletApplicationContext applicationContext;
@@ -156,6 +160,7 @@ public class ServletBridge extends HttpServlet {
     this.handler = null;
     this.path = path;
     this.bundleName = servletConfig.getInitParameter(BUNDLE_NAME);
+    this.servletLogger = servletLogger;
   }
 
   static ServletException wrap(Throwable e) {
@@ -241,10 +246,16 @@ public class ServletBridge extends HttpServlet {
       }
 
       //
+      ModuleContextImpl module = (ModuleContextImpl)getServletContext().getAttribute("juzu.module");
+      if (module == null) {
+        getServletContext().setAttribute("juzu.module", module = new ModuleContextImpl(servletLogger, bridgeContext, resolver));
+      }
+
+      //
       if (injector.isProvided()) {
         bridge = new ProvidedBridge(bridgeContext, this.config, server, resolver, injector);
       } else {
-        bridge = new ApplicationBridge(bridgeContext, this.config, server, resolver, injector);
+        bridge = new ApplicationBridge(module, bridgeContext, this.config, server, resolver, injector);
       }
     }
 
