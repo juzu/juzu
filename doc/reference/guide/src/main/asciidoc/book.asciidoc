@@ -31,7 +31,7 @@ include::responses.asciidoc[]
 include::bridges.asciidoc[]
 
 [[ioc]]
-== Inversion of Control
+= Inversion of Control
 
 include::ioc.asciidoc[]
 
