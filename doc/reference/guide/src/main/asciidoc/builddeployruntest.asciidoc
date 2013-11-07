@@ -1,4 +1,4 @@
-We will study in this chapter how to build and deploy a Juzu application.
+We will study in this chapter the life cycle of a Juzu application: Build, Deploy, Run and Test!
 
 == Introduction
 
@@ -301,10 +301,10 @@ In this section we will see how to import the Maven based Juzu sample in Eclipse
 Let's first import our Maven application in Eclipse.
 
 .Click the Import from the File menu and then chose Maven/Existing Maven Project
-image::images/builddeployrun/eclipse01.png[Interactions,500,align="center"]
+image::images/builddeployruntest/eclipse01.png[Interactions,500,align="center"]
 
 .Complete the import
-image::images/builddeployrun/eclipse02.png[Interactions,500,align="center"]
+image::images/builddeployruntest/eclipse02.png[Interactions,500,align="center"]
 
 At this point the project should be imported in Eclipse.
 
@@ -313,48 +313,48 @@ At this point the project should be imported in Eclipse.
 Now we need to configure annotation processing in the compiler configuration.
 
 .Edit the project properties
-image::images/builddeployrun/eclipse03.png[Interactions,300,align="center"]
+image::images/builddeployruntest/eclipse03.png[Interactions,300,align="center"]
 
 .In the Java Compiler tab configure the Annotation Processing
-image::images/builddeployrun/eclipse04.png[Interactions,600,align="center"]
+image::images/builddeployruntest/eclipse04.png[Interactions,600,align="center"]
 
 Set the generated source directory to _target/generated-sources/annotations_ to share it with the Maven build.
 
 .In the same tab edit the Factory Path
-image::images/builddeployrun/eclipse05.png[Interactions,600,align="center"]
+image::images/builddeployruntest/eclipse05.png[Interactions,600,align="center"]
 
 Enable the project specific settings and add the Juzu core jar by clicking on _Add Variable..._
 
 .Pick M2_REPO
-image::images/builddeployrun/eclipse06.png[Interactions,550,align="center"]
+image::images/builddeployruntest/eclipse06.png[Interactions,550,align="center"]
 
 Then click on _Extend..._
 
 .In the Variable Extension select the juzu-core jar in the hierarchy
-image::images/builddeployrun/eclipse07.png[Interactions,450,align="center"]
+image::images/builddeployruntest/eclipse07.png[Interactions,450,align="center"]
 
 .Eclipse is now configured to use our processor
-image::images/builddeployrun/eclipse08.png[Interactions,600,align="center"]
+image::images/builddeployruntest/eclipse08.png[Interactions,600,align="center"]
 
 .Don't forget to build the project automatically
-image::images/builddeployrun/eclipse09.png[Interactions,250,align="center"]
+image::images/builddeployruntest/eclipse09.png[Interactions,250,align="center"]
 
 ==== Processing annotations
 
 Our project is now properly configured
 
 .Eclipse is now configured to use our processor
-image::images/builddeployrun/eclipse10.png[Interactions,300,align="center"]
+image::images/builddeployruntest/eclipse10.png[Interactions,300,align="center"]
 
 The _target/generated-sources/annotations_ is now recognized by Eclipse as a source folder.
 
 .The controller
-image::images/builddeployrun/eclipse11.png[Interactions,600,align="center"]
+image::images/builddeployruntest/eclipse11.png[Interactions,600,align="center"]
 
 Let's add a process controller method
 
 .Controller_ is updated
-image::images/builddeployrun/eclipse12.png[Interactions,600,align="center"]
+image::images/builddeployruntest/eclipse12.png[Interactions,600,align="center"]
 
 Eclipse will update the +Controller_+ class transparently just after we save the +Controller+ class.
 
@@ -366,13 +366,13 @@ the Eclipse project as we have seen before.
 NOTE: installing this plugin is optional, it is however nice to use with annotation processing
 
 .Install the plugin in the Install panel
-image::images/builddeployrun/eclipse13.png[Interactions,600,align="center"]
+image::images/builddeployruntest/eclipse13.png[Interactions,600,align="center"]
 
 You can get this plugin by adding http://download.jboss.org/jbosstools/updates/m2e-extensions/m2e-apt in the Install
 panel.
 
 .Configuration of the m2e-apt plugin
-image::images/builddeployrun/eclipse14.png[Interactions,600,align="center"]
+image::images/builddeployruntest/eclipse14.png[Interactions,600,align="center"]
 
 === Intellij support
 
@@ -391,19 +391,19 @@ In this Intellij walkthrough we will work with project called _myapp_ that was c
 Let's first import our Maven project in Intellij.
 
 .Click the Import Project from the Quick Start screen
-image::images/builddeployrun/intellij01.png[Interactions,700,align="center"]
+image::images/builddeployruntest/intellij01.png[Interactions,700,align="center"]
 
 .Select the pom.xml file of our myapp project
-image::images/builddeployrun/intellij02.png[Interactions,400,align="center"]
+image::images/builddeployruntest/intellij02.png[Interactions,400,align="center"]
 
 .The project view after import
-image::images/builddeployrun/intellij03.png[Interactions,400,align="center"]
+image::images/builddeployruntest/intellij03.png[Interactions,400,align="center"]
 
 We can see in the _target_ directory the generated annotations folders, it contains several classes generated
 by Juzu such as +Application+ or +Controller_+ but also other files like templates
 
 .The imported project structure
-image::images/builddeployrun/intellij04.png[Interactions,700,align="center"]
+image::images/builddeployruntest/intellij04.png[Interactions,700,align="center"]
 
 The generated annotations folders should be visible from the project.
 
@@ -419,13 +419,13 @@ Integration of Juzu in your IDE requires to properly configure and activate the 
 Juzu annotation processor.
 
 .Java compiler configuration
-image::images/builddeployrun/intellij05.png[Interactions,700,align="center"]
+image::images/builddeployruntest/intellij05.png[Interactions,700,align="center"]
 
 Java compiler configures requires to *disable* the _external build_ feature that does not support annotation
 processing.
 
 .Annotation processor configuration
-image::images/builddeployrun/intellij06.png[Interactions,700,align="center"]
+image::images/builddeployruntest/intellij06.png[Interactions,700,align="center"]
 
 After that, the Juzu annotation processor shall be http://www.jetbrains.com/idea/webhelp/configuring-annotation-processing.html[configured] to +juzu.processor.MainProcessor+.
 
@@ -440,22 +440,22 @@ In this part we are going to study how annotation generation work within the IDE
 controller compagnion +Controller+ looks like after the initial generation:
 
 .The Controller_ generated class
-image::images/builddeployrun/intellij08.png[Interactions,600,align="center"]
+image::images/builddeployruntest/intellij08.png[Interactions,600,align="center"]
 
 Let's add a new controller method +process+ in our controller.
 
 .The modified controller
-image::images/builddeployrun/intellij10.png[Interactions,600,align="center"]
+image::images/builddeployruntest/intellij10.png[Interactions,600,align="center"]
 
 Now let's generate the new source code via the IDE.
 
 .Processing annotations
-image::images/builddeployrun/intellij09.png[Interactions,400,align="center"]
+image::images/builddeployruntest/intellij09.png[Interactions,400,align="center"]
 
 After generate our +Controller+ class has been updated.
 
 .The updated Controller_ class
-image::images/builddeployrun/intellij11.png[Interactions,600,align="center"]
+image::images/builddeployruntest/intellij11.png[Interactions,600,align="center"]
 
 We can see that a new +method_1+ field in +Controller_+ reflects the +process+ method we added in +Controller+.
 
@@ -482,3 +482,8 @@ Run mode is configured via the servlet context parameters for Servlet or Portlet
 
 NOTE: live mode is experimental and you may experience issues when using it. When this happens recompile your application
 with your build system and redeploy it, this will reinitialize the runtime and you can use live mode again.
+
+== Testing
+
+Juzu applications are web applications, so you can test your application like any other web application. The Juzu tutorial
+provides an extensive chapter that covers an example of testing an application with the JUnit, Arquillian and Selenium.
