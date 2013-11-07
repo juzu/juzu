@@ -29,7 +29,7 @@ can be used for outputting markup:
 
 ----
 <ul>
-<% ["red","green","blue"].each({ color -> out.print("<li>The sky is ${blue}</li>") }) %>
+<% ["red","green","blue"].each { color -> out.print("<li>The sky is ${color}</li>") } %>
 </ul>
 ----
 
