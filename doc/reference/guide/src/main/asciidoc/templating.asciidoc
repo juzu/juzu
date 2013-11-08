@@ -85,11 +85,23 @@ the current user locale. The <<i18n>> section explains resource bundle configura
 
 The native engine provides taglib support using the +#{tag}...#{/tag}}+ or +#{tag/}+ syntax:
 
+.A tag evaluation
 ----
 #{title value=Hello/}
 ----
 
-Available tags are explained in the <<taglib>>.
+Tag parameter values
+
+* can be quoted with simple quotes or double quotes or not quoted at all
+* are transformed to Groovy string, so they can reference variables with the +${...}+ syntax
+
+.A variable referenced in a tag parameter
+----
+#{title value="${theTitle}"/}
+----
+
+A taglib of predefined tags are explained in the <<taglib>>, the application can also provide <<simpletags>>
+which are tags made from templates.
 
 ==== Groovy template compilation
 

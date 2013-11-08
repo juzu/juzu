@@ -87,6 +87,7 @@ public Content.Response index() {
 
 Since Juzu 0.7.0, custom tags can be implemented, either as Java class or as templates, we will study both ways in this section.
 
+[[simpletags]]
 === Simple tags
 
 Simple tags allow creation of custom tags with templates located in the +tags+ package of your application.
