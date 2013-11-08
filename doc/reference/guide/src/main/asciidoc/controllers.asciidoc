@@ -278,7 +278,7 @@ Action controller are executed during the action phase of a Juzu application. Us
 * configure the next view phase: setting the next view controller to display and configuring its view parameters
 of the method when they exist
 
-[controller_action_view]
+[[controller_action_view]]
 In the following example, the controller method +createUser+  creates a user and
 returns a +Response.View+ object that will tell Juzu to use the +showUser+ view controller during the next view phase:
 

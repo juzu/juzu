@@ -42,8 +42,8 @@ public Response.Content index() {
 == View response
 
 _View_ response is returned after the _action_ phase to configure the next _view_ phase. Usually view responses are not
-created directly using static factory methods, instead they are created using controller companion static methods, this will
-be [[explained>>#controller_action_view]] in the controller chapter.
+created directly using static factory methods, instead they are created using controller companion static methods, this is
+<<controller_action_view,explained>> in the controller chapter.
 
 == Redirect response
 
