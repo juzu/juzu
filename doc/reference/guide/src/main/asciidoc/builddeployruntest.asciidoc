@@ -246,7 +246,13 @@ mvn archetype:generate \
    -Dversion=1.0.0-SNAPSHOT
 ----
 
-The generated application is a quickstart ready to can be customized for developing more complex applications.
+The generated application is a quickstart ready to can be customized for developing more complex applications that
+provides out of the box:
+
+- Arquillian / Selenium tests
+- A preconfigured server to test the application
+
+===== Selecting the injection container
 
 It is possible to generate the application for a different server and injection container:
 
@@ -267,6 +273,53 @@ mvn archetype:generate \
 
 Valid _juzuServer_ values are _servlet_, _ee_ or _gatein_.
 Valid _juzuInject_ values are _guice_, _spring_ or _cdi_.
+
+===== Running the application
+
+The application can be executed in Maven with the http://tomcat.apache.org/maven-plugin-2.0/tomcat7-maven-plugin/run-mojo.html[Tomcat7 Maven Plugin]
+or the http://docs.jboss.org/jbossas/7/plugins/maven/latest/[JBoss AS7 Deployment Plugin] depending on the selected server.
+
+.Running in Tomcat7
+----
+> mvn tomcat7:run
+...
+[INFO] Running war on http://localhost:8080/myapp
+[INFO] Using existing Tomcat server configuration at /Users/julien/java/tmp/myapp/target/tomcat
+[INFO] create webapp with contextPath: /myapp
+Nov 12, 2013 9:38:00 AM org.apache.coyote.AbstractProtocol init
+INFO: Initializing ProtocolHandler ["http-bio-8080"]
+Nov 12, 2013 9:38:00 AM org.apache.catalina.core.StandardService startInternal
+INFO: Starting service Tomcat
+Nov 12, 2013 9:38:00 AM org.apache.catalina.core.StandardEngine startInternal
+INFO: Starting Servlet Engine: Apache Tomcat/7.0.37
+Nov 12, 2013 9:38:03 AM org.apache.coyote.AbstractProtocol start
+INFO: Starting ProtocolHandler ["http-bio-8080"]
+Nov 12, 2013 9:38:12 AM juzu.impl.common.JUL send
+INFO: Using inject implementation guice
+Nov 12, 2013 9:38:12 AM juzu.impl.common.JUL send
+INFO: Starting Application
+----
+
+Likewise it is possible to run the application with JBoss AS7 (or later)
+
+.Running with JBoss AS7
+----
+> mvn jboss-as:run
+...
+----
+
+===== Running in Live Mode
+
+The live mode allows you to edit the application while it is running, in this mode Juzu recompiles the application
+on the fly when it is detecting changes (see <<run_modes>>), the archetype comes with a preconfigured _live_ Maven profile:
+
+.Live mode with Tomcat 7
+----
+> mvn tomcat7:run -Plive
+...
+----
+
+NOTE: live mode works only for Tomcat server at the moment
 
 === Build with Gradle
 
@@ -459,6 +512,7 @@ image::images/builddeployruntest/intellij11.png[Interactions,600,align="center"]
 
 We can see that a new +method_1+ field in +Controller_+ reflects the +process+ method we added in +Controller+.
 
+[[run_modes]]
 == Run modes
 
 Juzu defines three modes for running an application, called _run modes_:
