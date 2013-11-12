@@ -22,8 +22,8 @@ Build the project
 
 Build the project and generate tests coverage information (not human readable they are useful to be integrated in another software like SonarQube)
 
-   mvn verify -Pcoverage
+    mvn verify -Pcoverage
 
 Build the project and generate tests coverage reports (in target/site/jacoco)
 
-   mvn verify -Pcoverage-report
+    mvn verify -Pcoverage-report
