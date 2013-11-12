@@ -15,7 +15,8 @@ if you project contains several applications, you should configure a Juzu servle
 
 === Servlet configuration
 
-Declaring a Juzu servlet is done in the _web.xml_ file of the web application:
+Declaring a Juzu servlet is done in the _web.xml_ file of the web application or using annotations. Annotation
+based is described in the <<servlet>> chapter.
 
 .The Juzu servlet configuration
 [source,xml]
@@ -49,7 +50,7 @@ In case of several applications, each can be configured with a _path mapping_ in
 ----
 
 WARNING: Any other kind of _url-pattern_ than the default servlet (_/_) or path mapping is not supported
-and will raise an error during startup
+and will raise an error during startup.
 
 == Portlet bridge
 
