@@ -240,4 +240,28 @@
 
   </build>
 
+#if( \${juzuServer} == "servlet")
+  <!-- Activate this profile for using Juzu live mode -->
+  <profiles>
+    <profile>
+      <id>live</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.tomcat.maven</groupId>
+              <artifactId>tomcat7-maven-plugin</artifactId>
+              <configuration>
+                <systemProperties>
+                  <juzu.run_mode>live</juzu.run_mode>
+                </systemProperties>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+  </profiles>
+#end
+
 </project>
