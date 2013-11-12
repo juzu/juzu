@@ -67,8 +67,10 @@ public class ModuleContextImpl implements ModuleContext {
     ModuleRuntime<?> lifeCycle;
     if (runMode.isDynamic()) {
       ReadFileSystem<?> sourcePath = bridgeContext.getSourcePath();
+      log.info("Initializing live module at " + sourcePath.getDescription());
       lifeCycle = new ModuleRuntime.Dynamic(log, Thread.currentThread().getContextClassLoader(), sourcePath);
     } else {
+      log.info("Initializing module in " + runMode.name().toLowerCase() + " mode");
       ReadFileSystem<?> classPath = bridgeContext.getClassPath();
       lifeCycle = new ModuleRuntime.Static(log, Thread.currentThread().getContextClassLoader(), classPath);
     }
