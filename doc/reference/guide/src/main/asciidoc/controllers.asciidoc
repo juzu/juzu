@@ -107,7 +107,7 @@ The +@Route+ annotation declares the route for a controller with a +path+ and an
 
 [source,java]
 ----
-include::{sourcesdir}/juzu/Route.java[]
+include::{sourcesdir}/juzu/Route.java[tags=class]
 ----
 
 Controller method should declare an +@Route+ annotation, in practice with http the

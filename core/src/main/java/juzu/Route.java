@@ -61,6 +61,7 @@ import java.lang.annotation.Target;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
+// tag::class[]
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 public @interface Route {
@@ -80,3 +81,4 @@ public @interface Route {
   int priority() default 0;
 
 }
+// end::class[]
