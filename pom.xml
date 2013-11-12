@@ -836,6 +836,11 @@
           </executions>
         </plugin>
 
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>1.1</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
@@ -1007,6 +1012,31 @@
         <maven.assembly.recompressZippedFiles>true</maven.assembly.recompressZippedFiles>
         <maven.war.recompressZippedFiles>true</maven.war.recompressZippedFiles>
       </properties>
+      <build>
+        <plugins>
+          <!-- Release with Java 7 -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>enforce-java</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <requireJavaVersion>
+                      <message>You must release with Java 7!</message>
+                      <version>[1.7,1.8)</version>
+                    </requireJavaVersion>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
 
   </profiles>
