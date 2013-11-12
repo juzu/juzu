@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-templating-parent</artifactId>
-    <version>0.7.0</version>
+    <version>0.8.0-beta1-SNAPSHOT</version>
   </parent>
 
   <artifactId>juzu-templating-mustache</artifactId>
-  <version>0.7.0</version>
+  <version>0.8.0-beta1-SNAPSHOT</version>
 
   <name>Juzu Mustache templating engine</name>
   <description>The Mustache templating engine</description>
