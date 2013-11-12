@@ -353,13 +353,7 @@ When the controller wants to deal with the dispatch in a generic manner (i.e det
 .The RequestLifeCycle interface
 [source,java]
 ----
-public interface RequestLifeCycle {
-
-  void beginRequest(RequestContext context);
-
-  void endRequest(RequestContext context);
-
-}
+include::{sourcesdir}/juzu/request/RequestLifeCycle.java[tags=class]
 ----
 
 * The +beginRequest+ method is invoked before the controller method invocation and the +endRequest+ is invoked
