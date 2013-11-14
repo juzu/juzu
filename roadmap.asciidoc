@@ -60,6 +60,16 @@
 |Web security
 |Any serious web application needs XSS security and such.
 
+|JSON integration
+|Feature
+|Integrate with JSON parsing
+|JSON datatype should be supported natively either as a JSON object or with a bean mapper
+
+|Simple authorization plugin
+|Feature
+|Authorization
+|Provide a simple implemententation of JAX-RS annotations for servlet/portlet container
+
 |Asset Shiro plugin
 |Feature
 |Authentication and Authorization
