@@ -1,0 +1,72 @@
+.Juzu 0.8
+[cols="2,2,4,8",options="header"]
+|===
+|Name
+|Type
+|Description
+|Use case
+
+|Controller Reuse
+|Improvement
+|An application can import an existing controller
+|Provide controller reusability
+
+|Asset controller
+|Improvement
+|Expose a controller for the asset plugin as a controller
+|Make easy to generate URL assets in templates, for instance @{Asset.render(css = “toto.js”)}
+
+|Asset pipeline
+|Improvement
+|Refactor to provide a compilation pipeline
+|Consolidate the existing asset treatment at compilation time to have a compilation pipeline where plugin can feed the pipeline, treatment occurs (such as minification), output is written in the application asset package
+
+|Asset caching
+|Feature
+|Declarative and programmtic asset caching
+|Web performances
+
+|Require.js improvement
+|Improvement
+|Improve the integration
+|Simplify Require.js integration
+
+|Webjars plugin improvement
+|Improvement
+|Improve the integration
+|Webjars plugin feeds the (future) asset pipeline at compilation time
+|===
+
+.Juzu 1.0
+[cols="2,2,4,8",options="header"]
+|===
+|Name
+|Type
+|Description
+|Use case
+
+|Bean Validation
+|Feature
+|Provide bean validation with JSR 303
+|Validate form beans and request parameters
+
+|Vert.x bridge
+|Improvement
+|Finish and document
+|Make it easily usable and deploy it in Vert.x module registry
+
+|Hdiv plugin
+|Feature
+|Web security
+|Any serious web application needs XSS security and such.
+
+|Asset Shiro plugin
+|Feature
+|Authentication and Authorization
+|The plugin already exists but it has not yet been integrated in Juzu codebase : https://github.com/haint/juzu/tree/shiro-plugin/plugins/shiro
+
+|Thymeleaf templating
+|Feature
+|Thymeleaf based templates
+|Use Thymeleaf templates in an application
+|===
