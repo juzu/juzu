@@ -123,42 +123,39 @@ class MetaModelProcessContext extends ProcessContext {
   }
 
   private <M extends Serializable> Path.Absolute resolveTemplate(Path.Absolute path) throws TemplateException {
-    TemplateMetaModel tmm;
+    Template template;
     if (path.equals(metaModel.path)) {
-      tmm = metaModel;
+      template = metaModel;
     } else {
-      tmm = (TemplateMetaModel)owner.add(path, Collections.<TemplateRefMetaModel>singletonList(this.metaModel));
+      template = owner.add(path, Collections.<TemplateRefMetaModel>singletonList(this.metaModel));
     }
-    if (tmm.templateModel == null) {
-      Resource<Timestamped<Content>> resource = resolveResource(path);
-      if (resource == null) {
-        throw TemplateMetaModel.TEMPLATE_NOT_RESOLVED.failure(path);
-      } else {
-        TemplateProvider<M> provider = (TemplateProvider<M>)owner.resolveTemplateProvider(path.getExt());
-
-        //
-        M templateAST;
-        try {
-          templateAST = provider.parse(new ParseContext(), resource.content.getObject().getCharSequence());
-        }
-        catch (TemplateException e1) {
-          throw TemplateMetaModel.TEMPLATE_SYNTAX_ERROR.failure(path).initCause(e1);
-        }
-
-        //
-        TemplateModel<M> templateModel =  new TemplateModel<M>(
-            templateAST,
-            resource.path,
-            resource.content.getTime(),
-            Tools.md5(resource.content.getObject().getBytes()));
-
-        //
-        tmm.templateModel = templateModel;
-        try {
-          provider.process(new MetaModelProcessContext(owner, tmm), templateModel);
-        }
-        catch (TemplateException e) {
-          throw TemplateMetaModel.TEMPLATE_VALIDATION_ERROR.failure(path);
+    if (template instanceof TemplateMetaModel) {
+      TemplateMetaModel tmm = (TemplateMetaModel)template;
+      if (tmm.templateModel == null) {
+        Resource<Timestamped<Content>> resource = resolveResource(path);
+        if (resource == null) {
+          throw TemplateMetaModel.TEMPLATE_NOT_RESOLVED.failure(path);
+        } else {
+          TemplateProvider<M> provider = (TemplateProvider<M>)owner.resolveTemplateProvider(path.getExt());
+          M templateAST;
+          try {
+            templateAST = provider.parse(new ParseContext(), resource.content.getObject().getCharSequence());
+          }
+          catch (TemplateException e1) {
+            throw TemplateMetaModel.TEMPLATE_SYNTAX_ERROR.failure(path).initCause(e1);
+          }
+          TemplateModel<M> templateModel =  new TemplateModel<M>(
+              templateAST,
+              resource.path,
+              resource.content.getTime(),
+              Tools.md5(resource.content.getObject().getBytes()));
+          tmm.templateModel = templateModel;
+          try {
+            provider.process(new MetaModelProcessContext(owner, tmm), templateModel);
+          }
+          catch (TemplateException e) {
+            throw TemplateMetaModel.TEMPLATE_VALIDATION_ERROR.failure(path);
+          }
         }
       }
     }

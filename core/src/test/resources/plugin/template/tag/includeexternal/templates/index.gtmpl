@@ -1,0 +1,1 @@
+#{include path="/plugin/template/simple/templates/index.gtmpl"}#{/include}

@@ -16,6 +16,7 @@
 
 package juzu.impl.plugin.template;
 
+import juzu.impl.common.Name;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
@@ -30,11 +31,13 @@ import juzu.impl.plugin.template.metadata.TemplateDescriptor;
 import juzu.impl.common.Path;
 import juzu.template.TagHandler;
 import juzu.test.AbstractInjectTestCase;
+import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
 import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +69,23 @@ public class TagTestCase extends AbstractInjectTestCase {
     MockViewBridge render = client.render();
     String out = render.assertStringResult();
     assertEquals("<juu><foo>bar</foo></juu>", out);
+  }
+
+  @Test
+  public void testDecorateExternal() throws Exception {
+    CompilerAssert<File, File> simpleHelper = compiler("plugin.template.tag.decorate");
+    simpleHelper.assertCompile();
+    CompilerAssert<File, File> helper  = compiler("plugin.template.tag.decorateexternal");
+    helper.addClassPath(simpleHelper.getClassOutput());
+    helper.assertCompile();
+    MockApplication<?> app = new MockApplication<File>(
+        helper.getClassOutput(),
+        helper.getClassLoader(),
+        di,
+        Name.parse("plugin.template.tag.decorateexternal"));
+    app.init();
+    MockClient client = app.client();
+    assertEquals("<foo>bar</foo>", client.render().assertStringResult());
   }
 
   @Test
@@ -108,6 +128,23 @@ public class TagTestCase extends AbstractInjectTestCase {
     CompilationError error = errors.get(0);
     assertEquals(TemplateMetaModel.TEMPLATE_CYCLE, error.getCode());
     assertEquals("[TEMPLATE_CYCLE](Path[/plugin/template/tag/includecircular/templates/index.gtmpl],/plugin/template/tag/includecircular/templates/index.gtmpl->/plugin/template/tag/includecircular/templates/foo.gtmpl)", error.getMessage());
+  }
+
+  @Test
+  public void testIncludeExternal() throws Exception {
+    CompilerAssert<File, File> simpleHelper = compiler("plugin.template.simple");
+    simpleHelper.assertCompile();
+    CompilerAssert<File, File> helper  = compiler("plugin.template.tag.includeexternal");
+    helper.addClassPath(simpleHelper.getClassOutput());
+    helper.assertCompile();
+    MockApplication<?> app = new MockApplication<File>(
+        helper.getClassOutput(),
+        helper.getClassLoader(),
+        di,
+        Name.parse("plugin.template.tag.includeexternal"));
+    app.init();
+    MockClient client = app.client();
+    assertEquals("hello", client.render().assertStringResult());
   }
 
   @Test
