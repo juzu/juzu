@@ -94,7 +94,7 @@ class MetaModelProcessContext extends ProcessContext {
       return provider.parse(new ParseContext(), s);
     }
     catch (TemplateException e) {
-      throw TemplateMetaModel.TEMPLATE_SYNTAX_ERROR.failure(path);
+      throw TemplateMetaModel.TEMPLATE_SYNTAX_ERROR.failure(path).initCause(e);
     }
   }
 
