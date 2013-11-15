@@ -35,6 +35,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Formatter;
@@ -175,7 +176,12 @@ public abstract class BaseProcessor extends AbstractProcessor {
               new Formatter(msg).format(Locale.getDefault(), code.getMessage(), (Object[])args).flush();
             }
             catch (Exception e1) {
-              e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+              e1.printStackTrace();
+              System.out.println("---------------------------------------");
+              System.out.println(code.getMessage());
+              System.out.println(Arrays.toString(args));
+              e.printStackTrace();
+              System.out.println("---------------------------------------");
             }
           }
 

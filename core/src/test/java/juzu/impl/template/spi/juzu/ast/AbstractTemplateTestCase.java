@@ -37,6 +37,7 @@ import juzu.template.TemplateRenderContext;
 import juzu.test.AbstractTestCase;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.Collections;
@@ -56,6 +57,10 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
     GroovyTemplateEmitter generator = new GroovyTemplateEmitter(fqn);
     try {
       ProcessPhase processPhase = new ProcessPhase(new SimpleProcessContext(Collections.<Path.Absolute, TemplateModel<?>>emptyMap()) {
+        @Override
+        public <M extends Serializable> Path.Absolute resolveTemplate(Path path) throws TemplateException {
+          return null;
+        }
         @Override
         public TagHandler resolveTagHandler(String name) {
           if ("title".equals(name)) {

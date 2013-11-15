@@ -38,7 +38,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class TemplateMetaModel extends TemplateRefMetaModel {
+public class TemplateMetaModel extends TemplateRefMetaModel implements Template {
 
   /** . */
   public static final MessageCode CANNOT_WRITE_TEMPLATE_STUB = new MessageCode("CANNOT_WRITE_TEMPLATE_STUB", "The template stub %1$s cannot be written");
@@ -65,7 +65,7 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
   public static final MessageCode CANNOT_WRITE_TEMPLATE_SCRIPT = new MessageCode("CANNOT_WRITE_TEMPLATE_SCRIPT", "The template script %1$s cannot be written");
 
   /** . */
-  public static final MessageCode TEMPLATE_CYCLE = new MessageCode("TEMPLATE_CYCLE", "Detected a template cycle when registering %1$ conflicting with %2$");
+  public static final MessageCode TEMPLATE_CYCLE = new MessageCode("TEMPLATE_CYCLE", "Detected a template cycle when registering %1$s conflicting with %2$s");
 
   /** . */
   public static final MessageCode CONTROLLER_NOT_RESOLVED = new MessageCode("CONTROLLER_NOT_RESOLVED",
@@ -177,6 +177,7 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
 
   @Override
   protected void postConstruct() {
+    container.templates.put(path, this);
     queue(MetaModelEvent.createAdded(this));
   }
 

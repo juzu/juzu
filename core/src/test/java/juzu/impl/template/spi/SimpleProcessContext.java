@@ -27,7 +27,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class SimpleProcessContext extends ProcessContext {
+public abstract class SimpleProcessContext extends ProcessContext {
 
   /** . */
   protected final Map<Path.Absolute, TemplateModel<?>> templates;
@@ -36,22 +36,9 @@ public class SimpleProcessContext extends ProcessContext {
     this.templates = templates;
   }
 
-  protected <M extends Serializable> TemplateModel<M> getTemplate(Path.Absolute path) {
-    return (TemplateModel<M>)templates.get(path);
-  }
-
-  @Override
-  protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, TemplateModel<M> templateModel) throws TemplateException {
-    templates.put(templateModel.getPath(), templateModel);
-    super.processTemplate(provider, templateModel);
-  }
-
   @Override
   protected Path.Absolute resolvePath(Path.Relative path) {
     return Path.Absolute.absolute(path.getName(), path.getExt());
-  }
-
-  protected <M extends Serializable> void linkTemplate(TemplateModel<M> templateModel) {
   }
 
   @Override
@@ -61,11 +48,6 @@ public class SimpleProcessContext extends ProcessContext {
 
   @Override
   public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws ProcessingException {
-    return null;
-  }
-
-  @Override
-  protected TemplateProvider resolverProvider(String ext) {
     return null;
   }
 }

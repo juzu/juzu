@@ -23,6 +23,7 @@ import juzu.impl.template.spi.TemplateProvider;
 import juzu.template.TagHandler;
 
 import javax.lang.model.element.Element;
+import java.util.Collections;
 
 /** @author Julien Viet */
 class TagContainerMetaModel extends AbstractContainerMetaModel {
@@ -47,9 +48,9 @@ class TagContainerMetaModel extends AbstractContainerMetaModel {
     return null;
   }
 
-  public TemplateMetaModel add(String name, Path.Absolute path) {
+  public Template add(String name, Path.Absolute path) {
     TagMetaModel ref = addChild(Key.of(name, TagMetaModel.class), new TagMetaModel(name));
-    return add(path, ref);
+    return add(path, Collections.<TemplateRefMetaModel>singletonList(ref));
   }
 
   @Override

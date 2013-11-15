@@ -16,6 +16,7 @@
 
 package juzu.impl.plugin.template.metamodel;
 
+import juzu.impl.common.CycleDetectionException;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Name;
 import juzu.impl.compiler.BaseProcessor;
@@ -32,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -147,10 +149,7 @@ public abstract class AbstractContainerMetaModel extends MetaModelObject impleme
         Element[] elements = getElements(template);
         application.getProcessingContext().executeWithin(elements[0], new Callable<Void>() {
           public Void call() throws Exception {
-            MetaModelProcessContext processContext = new MetaModelProcessContext(
-                AbstractContainerMetaModel.this,
-                // Initially empty since those are the roots
-                Collections.<TemplateRefMetaModel>emptyList());
+            MetaModelProcessContext processContext = new MetaModelProcessContext(AbstractContainerMetaModel.this, template);
             processContext.resolve(template);
             return null;
           }
@@ -169,17 +168,44 @@ public abstract class AbstractContainerMetaModel extends MetaModelObject impleme
 
   protected abstract Element[] getElements(TemplateMetaModel template);
 
-  public TemplateMetaModel add(Path.Relative path, TemplateRefMetaModel ref) {
+  public Template add(Path.Relative path, List<TemplateRefMetaModel> ref) {
     return add(resolvePath(path), ref);
   }
 
-  public TemplateMetaModel add(Path.Absolute path, TemplateRefMetaModel ref) {
-    TemplateMetaModel template = templates.get(path);
-    if (template == null) {
-      templates.put(path, template = new TemplateMetaModel(this, path));
+  public Template add(Path.Absolute path, Iterable<TemplateRefMetaModel> refs) {
+    if (qn.isPrefix(path.getName())) {
+      TemplateMetaModel template = templates.get(path);
+      if (template == null) {
+        template = new TemplateMetaModel(this, path);
+      }
+      for (TemplateRefMetaModel ref : refs) {
+        try {
+          ref.add(template);
+        }
+        catch (CycleDetectionException e) {
+          // We have a template cycle and we want to prevent it
+          StringBuilder path1 = new StringBuilder();
+          for (Object node : e.getPath()) {
+            if (path1.length() > 0) {
+              path1.append("->");
+            }
+            if (node instanceof TemplateMetaModel) {
+              TemplateMetaModel templateNode = (TemplateMetaModel)node;
+              path1.append(templateNode.getPath().getValue());
+            } else {
+              // WTF ?
+              path1.append(node);
+            }
+          }
+          throw TemplateMetaModel.TEMPLATE_CYCLE.failure(path, path1);
+        }
+      }
+      return template;
+    } else {
+      return new Template() {
+        // Unmanaged template
+      };
     }
-    ref.add(template);
-    return template;
   }
 
   protected abstract AbstractEmitter createEmitter();

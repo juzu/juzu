@@ -22,6 +22,7 @@ import juzu.impl.metamodel.Key;
 import juzu.impl.template.spi.TemplateProvider;
 
 import javax.lang.model.element.Element;
+import java.util.Collections;
 
 /** @author Julien Viet */
 public class TemplateContainerMetaModel extends AbstractContainerMetaModel {
@@ -42,11 +43,7 @@ public class TemplateContainerMetaModel extends AbstractContainerMetaModel {
 
   public TemplateRefMetaModel add(ElementHandle.Field handle, Path.Absolute path) {
     TemplateRefMetaModel ref = addChild(Key.of(handle, TemplateRefMetaModel.class), new ElementMetaModel(handle, path));
-    if (qn.isPrefix(path.getName())) {
-      add(path, ref);
-    } else {
-      // It's an unmanaged template by this container
-    }
+    add(path, Collections.singletonList(ref));
     return ref;
   }
 

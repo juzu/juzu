@@ -19,9 +19,7 @@ package juzu.impl.template.spi;
 import juzu.impl.common.Resource;
 import juzu.impl.common.Content;
 import juzu.impl.common.Timestamped;
-import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingException;
-import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.Path;
 
@@ -57,47 +55,6 @@ public abstract class ProcessContext extends PhaseContext {
 
   public abstract MethodInvocation resolveMethodInvocation( String typeName, String methodName, Map<String, String> parameterMap) throws ProcessingException;
 
-  protected abstract TemplateProvider resolverProvider(String ext);
-
-  protected abstract <M extends Serializable> TemplateModel<M> getTemplate(Path.Absolute path);
-
-  protected abstract <M extends Serializable> void linkTemplate(TemplateModel<M> templateModel);
-
   protected abstract Path.Absolute resolvePath(Path.Relative path);
 
-  protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, TemplateModel<M> templateModel) throws TemplateException {
-    provider.process(this, templateModel);
-  }
-
-  protected <M extends Serializable> M parseTemplate(TemplateProvider<M> provider, Path.Absolute path, CharSequence s) throws TemplateException {
-    return provider.parse(new ParseContext(), s);
-  }
-
-  public <M extends Serializable> Path.Absolute resolveTemplate(Path path) throws TemplateException {
-    Path.Absolute abs;
-    if (path instanceof Path.Relative) {
-      abs = resolvePath((Path.Relative)path);
-    } else {
-      abs = (Path.Absolute)path;
-    }
-    TemplateModel<M> templateModel = getTemplate(abs);
-    if (templateModel == null) {
-      Resource<Timestamped<Content>> resolved = resolveResource(abs);
-      if (resolved == null) {
-        throw TemplateMetaModel.TEMPLATE_NOT_RESOLVED.failure(path);
-      } else {
-        TemplateProvider<M> provider = (TemplateProvider<M>)resolverProvider(path.getExt());
-        M templateAST = parseTemplate(provider, abs, resolved.content.getObject().getCharSequence());
-        templateModel =  new TemplateModel<M>(
-            templateAST,
-            resolved.path,
-            resolved.content.getTime(),
-            Tools.md5(resolved.content.getObject().getBytes()));
-        processTemplate(provider, templateModel);
-      }
-    } else {
-      linkTemplate(templateModel);
-    }
-    return templateModel.getPath();
-  }
-}
+  public abstract <M extends Serializable> Path.Absolute resolveTemplate(Path path) throws TemplateException;}

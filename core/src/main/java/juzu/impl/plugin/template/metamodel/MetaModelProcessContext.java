@@ -16,7 +16,6 @@
 
 package juzu.impl.plugin.template.metamodel;
 
-import juzu.impl.common.CycleDetectionException;
 import juzu.impl.common.Timestamped;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingException;
@@ -40,7 +39,6 @@ import javax.tools.FileObject;
 import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -55,17 +53,16 @@ class MetaModelProcessContext extends ProcessContext {
   private final ProcessingContext env;
 
   /** . */
-  private final Collection<? extends TemplateRefMetaModel> refs;
+  private final TemplateMetaModel metaModel;
 
-  MetaModelProcessContext(AbstractContainerMetaModel owner, Collection<? extends TemplateRefMetaModel> refs) {
-    this.refs = refs;
+  MetaModelProcessContext(AbstractContainerMetaModel owner, TemplateMetaModel metaModel) {
     this.owner = owner;
     this.env = owner.application.getProcessingContext();
+    this.metaModel = metaModel;
   }
 
   void resolve(final TemplateMetaModel metaModel) throws TemplateException {
-    Path.Absolute abs = owner.getQN().resolve(metaModel.path);
-    resolveTemplate(abs);
+    resolveTemplate(metaModel.path);
   }
 
   @Override
@@ -76,87 +73,6 @@ class MetaModelProcessContext extends ProcessContext {
   @Override
   protected Path.Absolute resolvePath(Path.Relative path) {
     return owner.resolvePath(path);
-  }
-
-  @Override
-  protected <M extends Serializable> TemplateModel<M> getTemplate(Path.Absolute path) {
-    TemplateMetaModel tmm = owner.get(path);
-    if (tmm != null) {
-      return (TemplateModel<M>)tmm.templateModel;
-    } else {
-      return null;
-    }
-  }
-
-  @Override
-  protected <M extends Serializable> M parseTemplate(TemplateProvider<M> provider, Path.Absolute path, CharSequence s) throws TemplateException {
-    try {
-      return provider.parse(new ParseContext(), s);
-    }
-    catch (TemplateException e) {
-      throw TemplateMetaModel.TEMPLATE_SYNTAX_ERROR.failure(path).initCause(e);
-    }
-  }
-
-  @Override
-  protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, TemplateModel<M> templateModel) throws TemplateException {
-    Path.Absolute path = templateModel.getPath();
-    if (owner.getQN().isPrefix(path.getName())) {
-      TemplateMetaModel metaModel;
-      if (!refs.isEmpty()) {
-        if (owner.templates.get(path) != null) {
-          throw new AssertionError();
-        } else {
-          for (TemplateRefMetaModel ref : refs) {
-            owner.add(path, ref);
-          }
-        }
-      }
-      if ((metaModel = owner.templates.get(path)) == null) {
-        throw new AssertionError();
-      }
-      metaModel.templateModel = templateModel;
-      try {
-        provider.process(new MetaModelProcessContext(owner, Collections.singletonList(metaModel)), templateModel);
-      }
-      catch (TemplateException e) {
-        throw TemplateMetaModel.TEMPLATE_VALIDATION_ERROR.failure(path);
-      }
-    } else {
-      throw new AssertionError("Should not happen");
-    }
-  }
-
-  @Override
-  protected <M extends Serializable> void linkTemplate(TemplateModel<M> templateModel) {
-    TemplateMetaModel a = owner.get(templateModel.getPath());
-    for (TemplateRefMetaModel ref : refs) {
-      try {
-        ref.add(a);
-      }
-      catch (CycleDetectionException e) {
-        // We have a template cycle and we want to prevent it
-        StringBuilder path = new StringBuilder();
-        for (Object node : e.getPath()) {
-          if (path.length() > 0) {
-            path.append("->");
-          }
-          if (node instanceof TemplateMetaModel) {
-            TemplateMetaModel templateNode = (TemplateMetaModel)node;
-            path.append(templateNode.getPath().getValue());
-          } else {
-            // WTF ?
-            path.append(node);
-          }
-        }
-        throw TemplateMetaModel.TEMPLATE_CYCLE.failure(templateModel.getPath(), path);
-      }
-    }
-  }
-
-  @Override
-  protected TemplateProvider resolverProvider(String ext) {
-    return owner.resolveTemplateProvider(ext);
   }
 
   @Override
@@ -194,5 +110,58 @@ class MetaModelProcessContext extends ProcessContext {
       }
     }
     return null;
+  }
+
+  public <M extends Serializable> Path.Absolute resolveTemplate(Path path) throws TemplateException {
+    Path.Absolute absolute;
+    if (path instanceof Path.Relative) {
+      absolute = resolvePath((Path.Relative)path);
+    } else {
+      absolute = (Path.Absolute)path;
+    }
+    return resolveTemplate(absolute);
+  }
+
+  private <M extends Serializable> Path.Absolute resolveTemplate(Path.Absolute path) throws TemplateException {
+    TemplateMetaModel tmm;
+    if (path.equals(metaModel.path)) {
+      tmm = metaModel;
+    } else {
+      tmm = (TemplateMetaModel)owner.add(path, Collections.<TemplateRefMetaModel>singletonList(this.metaModel));
+    }
+    if (tmm.templateModel == null) {
+      Resource<Timestamped<Content>> resource = resolveResource(path);
+      if (resource == null) {
+        throw TemplateMetaModel.TEMPLATE_NOT_RESOLVED.failure(path);
+      } else {
+        TemplateProvider<M> provider = (TemplateProvider<M>)owner.resolveTemplateProvider(path.getExt());
+
+        //
+        M templateAST;
+        try {
+          templateAST = provider.parse(new ParseContext(), resource.content.getObject().getCharSequence());
+        }
+        catch (TemplateException e1) {
+          throw TemplateMetaModel.TEMPLATE_SYNTAX_ERROR.failure(path).initCause(e1);
+        }
+
+        //
+        TemplateModel<M> templateModel =  new TemplateModel<M>(
+            templateAST,
+            resource.path,
+            resource.content.getTime(),
+            Tools.md5(resource.content.getObject().getBytes()));
+
+        //
+        tmm.templateModel = templateModel;
+        try {
+          provider.process(new MetaModelProcessContext(owner, tmm), templateModel);
+        }
+        catch (TemplateException e) {
+          throw TemplateMetaModel.TEMPLATE_VALIDATION_ERROR.failure(path);
+        }
+      }
+    }
+    return path;
   }
 }
