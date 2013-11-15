@@ -22,11 +22,10 @@ import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.tags.DecorateTag;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.SimpleProcessContext;
-import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateEmitter;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.impl.template.spi.juzu.compiler.EmitPhase;
 import juzu.impl.template.spi.juzu.compiler.ProcessPhase;
-import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateModel;
 import juzu.impl.plugin.template.metadata.TemplateDescriptor;
 import juzu.impl.common.Path;
 import juzu.template.TagHandler;
@@ -37,7 +36,6 @@ import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
@@ -147,14 +145,14 @@ public class TagTestCase extends AbstractInjectTestCase {
     // but for now it will be enough
     TemplateDescriptor desc = app.getLifeCycle().resolveBean(TemplatePlugin.class).getDescriptor().getTemplate("/plugin/template/tag/decorate/templates/index.gtmpl");
     assertNotNull(desc);
-    Template<?> foo = new Template<ASTNode.Template>(
+    TemplateModel<?> foo = new TemplateModel<ASTNode.Template>(
       new ASTNode.Template(),
       (Path.Absolute)Path.parse("/" + desc.getType().getName().replace('.', '/') + "/foo.gtmpl"),
       System.currentTimeMillis(),
       0);
 
     //
-    HashMap<Path.Absolute, Template<?>> templates = new HashMap<Path.Absolute, Template<?>>();
+    HashMap<Path.Absolute, TemplateModel<?>> templates = new HashMap<Path.Absolute, TemplateModel<?>>();
     templates.put((Path.Absolute)Path.parse("/foo.gtmpl"), foo);
     ProcessPhase process = new ProcessPhase(new SimpleProcessContext(templates) {
       @Override

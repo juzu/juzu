@@ -66,12 +66,12 @@ public abstract class TemplateProvider<M extends Serializable> {
    * Process the template.
    *
    * @param context the process context
-   * @param template  the template to process
+   * @param templateModel  the template to process
    * @throws TemplateException any template related exception
    */
   public abstract void process(
       ProcessContext context,
-      Template<M> template) throws TemplateException;
+      TemplateModel<M> templateModel) throws TemplateException;
   // end::process[]
 
   // tag::emit[]
@@ -79,13 +79,13 @@ public abstract class TemplateProvider<M extends Serializable> {
    * Provide an opportunity for emitting a file on the disk.
    *
    * @param context the emit context
-   * @param template the template
+   * @param templateModel the template
    * @throws TemplateException any template related exception
    * @throws IOException any io exception
    */
   public abstract void emit(
       EmitContext context,
-      Template<M> template) throws TemplateException, IOException;
+      TemplateModel<M> templateModel) throws TemplateException, IOException;
   // end::emit[]
 
 }

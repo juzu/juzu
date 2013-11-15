@@ -27,7 +27,7 @@ import java.util.LinkedHashSet;
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @param <M> the template model
  */
-public class Template<M extends Serializable> implements Serializable {
+public class TemplateModel<M extends Serializable> implements Serializable {
 
   /** . */
   private final M model;
@@ -44,11 +44,11 @@ public class Template<M extends Serializable> implements Serializable {
   /** . */
   private final long md5;
 
-  public Template(
-    M model,
-    Path.Absolute path,
-    long lastModified,
-    long md5) {
+  public TemplateModel(
+      M model,
+      Path.Absolute path,
+      long lastModified,
+      long md5) {
     this.model = model;
     this.parameters = new LinkedHashSet<String>();
     this.lastModified = lastModified;

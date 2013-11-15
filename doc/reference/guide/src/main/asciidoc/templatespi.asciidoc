@@ -110,9 +110,9 @@ safe parameters declaration at this moment. During the process:
   is simply returned
 ** The implementation can resolve controller methods and translate them into method invocation, this is used for
   checking type safe URL and translating them into controller companion invocation
-** The +juzu.impl.template.spi.Template+ argument represents the template, it has several fields such as the template
+** The +juzu.impl.template.spi.TemplateModel+ argument models the template, it has several fields such as the underlying
 model or the template path
-** The implementation can declare type safe parameters using the +Template#addParameter(String)+ method. The declared
+** The implementation can declare type safe parameters using the +TemplateModel#addParameter(String)+ method. The declared
 parameters will be generated on the +juzu.template.Template+ subclass
 * The +emit+ method is invoked when the template processing is over. The +EmitContext+ interface can be used
 to create resources during this round.

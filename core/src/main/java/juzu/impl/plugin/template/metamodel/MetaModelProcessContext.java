@@ -30,7 +30,7 @@ import juzu.impl.template.spi.ParseContext;
 import juzu.impl.template.spi.TemplateException;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.ProcessContext;
-import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateModel;
 import juzu.impl.common.Content;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.Path;
@@ -79,10 +79,10 @@ class MetaModelProcessContext extends ProcessContext {
   }
 
   @Override
-  protected <M extends Serializable> Template<M> getTemplate(Path.Absolute path) {
+  protected <M extends Serializable> TemplateModel<M> getTemplate(Path.Absolute path) {
     TemplateMetaModel tmm = owner.get(path);
     if (tmm != null) {
-      return (Template<M>)tmm.template;
+      return (TemplateModel<M>)tmm.templateModel;
     } else {
       return null;
     }
@@ -99,8 +99,8 @@ class MetaModelProcessContext extends ProcessContext {
   }
 
   @Override
-  protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, Template<M> template) throws TemplateException {
-    Path.Absolute path = template.getPath();
+  protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, TemplateModel<M> templateModel) throws TemplateException {
+    Path.Absolute path = templateModel.getPath();
     if (owner.getQN().isPrefix(path.getName())) {
       TemplateMetaModel metaModel;
       if (!refs.isEmpty()) {
@@ -115,9 +115,9 @@ class MetaModelProcessContext extends ProcessContext {
       if ((metaModel = owner.templates.get(path)) == null) {
         throw new AssertionError();
       }
-      metaModel.template = template;
+      metaModel.templateModel = templateModel;
       try {
-        provider.process(new MetaModelProcessContext(owner, Collections.singletonList(metaModel)), template);
+        provider.process(new MetaModelProcessContext(owner, Collections.singletonList(metaModel)), templateModel);
       }
       catch (TemplateException e) {
         throw TemplateMetaModel.TEMPLATE_VALIDATION_ERROR.failure(path);
@@ -128,8 +128,8 @@ class MetaModelProcessContext extends ProcessContext {
   }
 
   @Override
-  protected <M extends Serializable> void linkTemplate(Template<M> template) {
-    TemplateMetaModel a = owner.get(template.getPath());
+  protected <M extends Serializable> void linkTemplate(TemplateModel<M> templateModel) {
+    TemplateMetaModel a = owner.get(templateModel.getPath());
     for (TemplateRefMetaModel ref : refs) {
       try {
         ref.add(a);
@@ -149,7 +149,7 @@ class MetaModelProcessContext extends ProcessContext {
             path.append(node);
           }
         }
-        throw TemplateMetaModel.TEMPLATE_CYCLE.failure(template.getPath(), path);
+        throw TemplateMetaModel.TEMPLATE_CYCLE.failure(templateModel.getPath(), path);
       }
     }
   }

@@ -18,14 +18,12 @@ package juzu.impl.template.spi.juzu;
 
 import juzu.impl.template.spi.ParseContext;
 import juzu.impl.template.spi.ProcessContext;
-import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateModel;
 import juzu.impl.template.spi.TemplateException;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.impl.template.spi.juzu.ast.ParseException;
 import juzu.impl.template.spi.juzu.compiler.ProcessPhase;
-
-import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class DialectTemplateProvider extends TemplateProvider<ASTNode.Template> {
@@ -41,7 +39,7 @@ public abstract class DialectTemplateProvider extends TemplateProvider<ASTNode.T
   }
 
   @Override
-  public final void process(ProcessContext context, Template<ASTNode.Template> template) throws TemplateException {
-    new ProcessPhase(context).process(template);
+  public final void process(ProcessContext context, TemplateModel<ASTNode.Template> templateModel) throws TemplateException {
+    new ProcessPhase(context).process(templateModel);
   }
 }

@@ -59,14 +59,14 @@ public abstract class ProcessContext extends PhaseContext {
 
   protected abstract TemplateProvider resolverProvider(String ext);
 
-  protected abstract <M extends Serializable> Template<M> getTemplate(Path.Absolute path);
+  protected abstract <M extends Serializable> TemplateModel<M> getTemplate(Path.Absolute path);
 
-  protected abstract <M extends Serializable> void linkTemplate(Template<M> template);
+  protected abstract <M extends Serializable> void linkTemplate(TemplateModel<M> templateModel);
 
   protected abstract Path.Absolute resolvePath(Path.Relative path);
 
-  protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, Template<M> template) throws TemplateException {
-    provider.process(this, template);
+  protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, TemplateModel<M> templateModel) throws TemplateException {
+    provider.process(this, templateModel);
   }
 
   protected <M extends Serializable> M parseTemplate(TemplateProvider<M> provider, Path.Absolute path, CharSequence s) throws TemplateException {
@@ -80,24 +80,24 @@ public abstract class ProcessContext extends PhaseContext {
     } else {
       abs = (Path.Absolute)path;
     }
-    Template<M> template = getTemplate(abs);
-    if (template == null) {
+    TemplateModel<M> templateModel = getTemplate(abs);
+    if (templateModel == null) {
       Resource<Timestamped<Content>> resolved = resolveResource(abs);
       if (resolved == null) {
         throw TemplateMetaModel.TEMPLATE_NOT_RESOLVED.failure(path);
       } else {
         TemplateProvider<M> provider = (TemplateProvider<M>)resolverProvider(path.getExt());
         M templateAST = parseTemplate(provider, abs, resolved.content.getObject().getCharSequence());
-        template =  new Template<M>(
+        templateModel =  new TemplateModel<M>(
             templateAST,
             resolved.path,
             resolved.content.getTime(),
             Tools.md5(resolved.content.getObject().getBytes()));
-        processTemplate(provider, template);
+        processTemplate(provider, templateModel);
       }
     } else {
-      linkTemplate(template);
+      linkTemplate(templateModel);
     }
-    return template.getPath();
+    return templateModel.getPath();
   }
 }

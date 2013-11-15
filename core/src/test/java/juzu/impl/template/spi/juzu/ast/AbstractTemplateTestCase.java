@@ -22,7 +22,7 @@ import juzu.impl.compiler.ProcessingException;
 import juzu.impl.tags.TitleTag;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.SimpleProcessContext;
-import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateModel;
 import juzu.impl.template.spi.TemplateException;
 import juzu.impl.template.spi.juzu.compiler.ProcessPhase;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.GroovyTemplateEmitter;
@@ -55,7 +55,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
     Path.Relative relative = Path.relative(name, ".gtmpl");
     GroovyTemplateEmitter generator = new GroovyTemplateEmitter(fqn);
     try {
-      ProcessPhase processPhase = new ProcessPhase(new SimpleProcessContext(Collections.<Path.Absolute, Template<?>>emptyMap()) {
+      ProcessPhase processPhase = new ProcessPhase(new SimpleProcessContext(Collections.<Path.Absolute, TemplateModel<?>>emptyMap()) {
         @Override
         public TagHandler resolveTagHandler(String name) {
           if ("title".equals(name)) {
@@ -80,12 +80,12 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
           }
         }
       });
-      Template<ASTNode.Template> template = new Template<ASTNode.Template>(
+      TemplateModel<ASTNode.Template> templateModel = new TemplateModel<ASTNode.Template>(
           ASTNode.Template.parse(text),
           absolute,
           0,
           0);
-      processPhase.process(template);
+      processPhase.process(templateModel);
 
       // Emit
       EmitPhase emitPhase = new EmitPhase(new EmitContext(){
@@ -102,7 +102,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
           throw new UnsupportedOperationException();
         }
       });
-      emitPhase.emit(generator, template.getModel());
+      emitPhase.emit(generator, templateModel.getModel());
     }
     catch (juzu.impl.template.spi.juzu.ast.ParseException e) {
       throw failure(e);

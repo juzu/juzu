@@ -47,7 +47,7 @@ class TagEmitter extends AbstractEmitter {
     writer.append("@").append(Generated.class.getName()).append("({})\n");
     writer.append("public class ").append(path.getRawName()).append(" extends ").append(SimpleTag.class.getName()).append("\n");
     writer.append("{\n");
-    writer.append("public static final long MD5 = 0x").append(Long.toHexString(template.template.getMD5())).append("L;\n");
+    writer.append("public static final long MD5 = 0x").append(Long.toHexString(template.templateModel.getMD5())).append("L;\n");
     writer.append("public ").append(path.getRawName()).append("()\n");
     writer.append("{\n");
     writer.append("super(\"").

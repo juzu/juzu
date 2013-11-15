@@ -30,20 +30,20 @@ import java.util.Map;
 public class SimpleProcessContext extends ProcessContext {
 
   /** . */
-  protected final Map<Path.Absolute, Template<?>> templates;
+  protected final Map<Path.Absolute, TemplateModel<?>> templates;
 
-  public SimpleProcessContext(Map<Path.Absolute, Template<?>> templates) {
+  public SimpleProcessContext(Map<Path.Absolute, TemplateModel<?>> templates) {
     this.templates = templates;
   }
 
-  protected <M extends Serializable> Template<M> getTemplate(Path.Absolute path) {
-    return (Template<M>)templates.get(path);
+  protected <M extends Serializable> TemplateModel<M> getTemplate(Path.Absolute path) {
+    return (TemplateModel<M>)templates.get(path);
   }
 
   @Override
-  protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, Template<M> template) throws TemplateException {
-    templates.put(template.getPath(), template);
-    super.processTemplate(provider, template);
+  protected <M extends Serializable> void processTemplate(TemplateProvider<M> provider, TemplateModel<M> templateModel) throws TemplateException {
+    templates.put(templateModel.getPath(), templateModel);
+    super.processTemplate(provider, templateModel);
   }
 
   @Override
@@ -51,7 +51,7 @@ public class SimpleProcessContext extends ProcessContext {
     return Path.Absolute.absolute(path.getName(), path.getExt());
   }
 
-  protected <M extends Serializable> void linkTemplate(Template<M> template) {
+  protected <M extends Serializable> void linkTemplate(TemplateModel<M> templateModel) {
   }
 
   @Override

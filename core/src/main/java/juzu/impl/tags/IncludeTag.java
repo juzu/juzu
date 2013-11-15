@@ -21,7 +21,7 @@ import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.impl.template.spi.juzu.compiler.ExtendedTagHandler;
 import juzu.impl.template.spi.juzu.compiler.ProcessPhase;
-import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateModel;
 import juzu.impl.common.Path;
 import juzu.template.Renderable;
 import juzu.template.TemplateRenderContext;
@@ -37,7 +37,7 @@ public class IncludeTag extends ExtendedTagHandler {
   }
 
   @Override
-  public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) throws TemplateException {
+  public void compile(ProcessPhase phase, ASTNode.Tag tag, TemplateModel t) throws TemplateException {
     String path = tag.getArgs().get("path");
     Path.Absolute template = phase.resolveTemplate(Path.parse(path));
     tag.getArgs().put("path", template.getCanonical());

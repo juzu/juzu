@@ -19,7 +19,7 @@ package juzu.impl.tags;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.impl.template.spi.juzu.compiler.ExtendedTagHandler;
 import juzu.impl.template.spi.juzu.compiler.ProcessPhase;
-import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateModel;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ParamTag extends ExtendedTagHandler {
@@ -29,7 +29,7 @@ public class ParamTag extends ExtendedTagHandler {
   }
 
   @Override
-  public void process(ProcessPhase phase, ASTNode.Tag tag, Template t) {
+  public void process(ProcessPhase phase, ASTNode.Tag tag, TemplateModel t) {
     String parameterName = tag.getArgs().get("name");
     t.addParameter(parameterName);
   }

@@ -21,7 +21,7 @@ import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.impl.template.spi.juzu.compiler.ExtendedTagHandler;
 import juzu.impl.template.spi.juzu.compiler.ProcessPhase;
-import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateModel;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.common.Path;
 import juzu.template.Renderable;
@@ -39,7 +39,7 @@ public class DecorateTag extends ExtendedTagHandler {
   }
 
   @Override
-  public void process(ProcessPhase phase, ASTNode.Tag tag, Template t) {
+  public void process(ProcessPhase phase, ASTNode.Tag tag, TemplateModel t) {
 
     // Find the root template tag
     ASTNode current = tag;
@@ -67,7 +67,7 @@ public class DecorateTag extends ExtendedTagHandler {
   }
 
   @Override
-  public void compile(ProcessPhase phase, ASTNode.Tag tag, Template t) throws TemplateException {
+  public void compile(ProcessPhase phase, ASTNode.Tag tag, TemplateModel t) throws TemplateException {
     String path = tag.getArgs().get("path");
     Path.Absolute resolved = phase.resolveTemplate(Path.parse(path));
     if (resolved == null) {

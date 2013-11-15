@@ -121,16 +121,16 @@ public abstract class AbstractContainerMetaModel extends MetaModelObject impleme
   private void evictTemplates() {
     log.info("Synchronizing existing templates");
     for (TemplateMetaModel template : templates.values()) {
-      if (template.template != null) {
+      if (template.templateModel != null) {
         FileObject resource = application.resolveResource(template.getPath());
         if (resource == null) {
           // That will generate a template not found error
-          template.template = null;
+          template.templateModel = null;
           log.info("Detected template removal " + template.getPath());
         }
-        else if (resource.getLastModified() > template.template.getLastModified()) {
+        else if (resource.getLastModified() > template.templateModel.getLastModified()) {
           // That will force the regeneration of the template
-          template.template = null;
+          template.templateModel = null;
           log.info("Detected stale template " + template.getPath());
         }
         else {
@@ -143,7 +143,7 @@ public abstract class AbstractContainerMetaModel extends MetaModelObject impleme
   void resolve() {
     //
     for (final TemplateMetaModel template : new ArrayList<TemplateMetaModel>(templates.values())) {
-      if (template.template == null) {
+      if (template.templateModel == null) {
         Element[] elements = getElements(template);
         application.getProcessingContext().executeWithin(elements[0], new Callable<Void>() {
           public Void call() throws Exception {

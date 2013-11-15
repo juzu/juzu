@@ -24,7 +24,7 @@ import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Path;
-import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateModel;
 
 import javax.lang.model.element.Element;
 import java.util.Collection;
@@ -84,12 +84,12 @@ public class TemplateMetaModel extends TemplateRefMetaModel {
   final Path.Absolute path;
 
   /** The related template. */
-  Template<?> template;
+  TemplateModel<?> templateModel;
 
   public TemplateMetaModel(AbstractContainerMetaModel container, Path.Absolute path) {
     this.path = path;
     this.container = container;
-    this.template = null;
+    this.templateModel = null;
   }
 
   public AbstractContainerMetaModel getContainer() {

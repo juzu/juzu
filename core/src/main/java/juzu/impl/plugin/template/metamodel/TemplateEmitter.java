@@ -62,14 +62,14 @@ class TemplateEmitter extends AbstractEmitter {
     writer.
         append("public static final ").append(TemplateDescriptor.class.getName()).append(" DESCRIPTOR = new ").append(TemplateDescriptor.class.getName()).append("(").
         append("\"").append(path.getValue()).append("\",").
-        append("0x").append(Long.toHexString(template.template.getMD5())).append("L,").
+        append("0x").append(Long.toHexString(template.templateModel.getMD5())).append("L,").
         append(path.getName()).append(".class,").
         append(provider.getTemplateStubType().getName()).append(".class").
         append(");\n");
 
     //
     String baseBuilderName = juzu.template.Template.Builder.class.getCanonicalName();
-    if (template.template.getParameters() != null) {
+    if (template.templateModel.getParameters() != null) {
       // Implement abstract method with this class Builder covariant return type
       writer.append("public Builder builder() {\n");
       writer.append("return new Builder();\n");
@@ -83,7 +83,7 @@ class TemplateEmitter extends AbstractEmitter {
       // Setters on builders
       writer.append("public class Builder extends ").append(baseBuilderName).append("\n");
       writer.append("{\n");
-      for (String paramName : template.template.getParameters()) {
+      for (String paramName : template.templateModel.getParameters()) {
         writer.append("public Builder ").append(paramName).append("(Object ").append(paramName).append(") {\n");
         writer.append("set(\"").append(paramName).append("\",").append(paramName).append(");\n");
         writer.append("return this;\n");

@@ -20,7 +20,7 @@ import juzu.impl.common.Location;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.template.spi.ProcessContext;
-import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateModel;
 import juzu.impl.template.spi.TemplateException;
 import juzu.impl.template.spi.juzu.ast.ASTNode;
 import juzu.impl.common.MethodInvocation;
@@ -43,21 +43,21 @@ public class ProcessPhase extends CompilationPhase {
     this.context = context;
   }
 
-  public void process(Template<ASTNode.Template> template) throws TemplateException {
-    doAttribute(template.getModel());
-    doProcess(template, template.getModel());
-    doResolve(template, template.getModel());
-    doUnattribute(template.getModel());
+  public void process(TemplateModel<ASTNode.Template> templateModel) throws TemplateException {
+    doAttribute(templateModel.getModel());
+    doProcess(templateModel, templateModel.getModel());
+    doResolve(templateModel, templateModel.getModel());
+    doUnattribute(templateModel.getModel());
   }
 
   public Path.Absolute resolveTemplate(Path path) throws ProcessingException, TemplateException {
     return context.resolveTemplate(path);
   }
 
-  private void doProcess(Template<ASTNode.Template> template, ASTNode<?> node) throws ProcessingException, TemplateException {
+  private void doProcess(TemplateModel<ASTNode.Template> templateModel, ASTNode<?> node) throws ProcessingException, TemplateException {
     if (node instanceof ASTNode.Template) {
       for (ASTNode.Block child : node.getChildren()) {
-        doProcess(template, child);
+        doProcess(templateModel, child);
       }
     }
     else if (node instanceof ASTNode.Section) {
@@ -78,7 +78,7 @@ public class ProcessPhase extends CompilationPhase {
         Location location = urlNode.getBegin().getPosition();
         throw TemplateMetaModel.CONTROLLER_NOT_RESOLVED.failure(
             controller,
-            template.getPath().getCanonical(),
+            templateModel.getPath().getCanonical(),
             location.getLine(),
             location.getCol());
       } else {
@@ -89,18 +89,18 @@ public class ProcessPhase extends CompilationPhase {
       ASTNode.Tag nodeTag = (ASTNode.Tag)node;
       TagHandler handler = get(nodeTag);
       if (handler instanceof ExtendedTagHandler) {
-        ((ExtendedTagHandler)handler).process(this, nodeTag, template);
+        ((ExtendedTagHandler)handler).process(this, nodeTag, templateModel);
       }
       for (ASTNode.Block child : nodeTag.getChildren()) {
-        doProcess(template, child);
+        doProcess(templateModel, child);
       }
     }
   }
 
-  private void doResolve(Template<ASTNode.Template> template, ASTNode<?> node) throws ProcessingException, TemplateException {
+  private void doResolve(TemplateModel<ASTNode.Template> templateModel, ASTNode<?> node) throws ProcessingException, TemplateException {
     if (node instanceof ASTNode.Template) {
       for (ASTNode.Block child : node.getChildren()) {
-        doResolve(template, child);
+        doResolve(templateModel, child);
       }
     }
     else if (node instanceof ASTNode.Section) {
@@ -113,10 +113,10 @@ public class ProcessPhase extends CompilationPhase {
       ASTNode.Tag nodeTag = (ASTNode.Tag)node;
       TagHandler handler = get(nodeTag);
       if (handler instanceof ExtendedTagHandler) {
-        ((ExtendedTagHandler)handler).compile(this, nodeTag, template);
+        ((ExtendedTagHandler)handler).compile(this, nodeTag, templateModel);
       }
       for (ASTNode.Block child : nodeTag.getChildren()) {
-        doResolve(template, child);
+        doResolve(templateModel, child);
       }
     }
   }

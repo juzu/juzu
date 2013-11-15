@@ -27,7 +27,7 @@ import juzu.impl.common.Timestamped;
 import juzu.impl.template.spi.EmitContext;
 import juzu.impl.template.spi.ParseContext;
 import juzu.impl.template.spi.ProcessContext;
-import juzu.impl.template.spi.Template;
+import juzu.impl.template.spi.TemplateModel;
 import juzu.impl.template.spi.TemplateException;
 import juzu.impl.template.spi.TemplateProvider;
 import juzu.impl.template.spi.TemplateStub;
@@ -51,7 +51,7 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
   }
 
   @Override
-  public void process(final ProcessContext context, final Template<MustacheContext> mustacheTemplate) {
+  public void process(final ProcessContext context, final TemplateModel<MustacheContext> mustacheTemplateModel) {
     // Nothing to do for now
 
     // Visit the mustache
@@ -73,7 +73,7 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
           @Override
           public void pragma(TemplateContext templateContext, String pragma, String args) {
             if ("param".equals(pragma)) {
-              mustacheTemplate.addParameter(args);
+              mustacheTemplateModel.addParameter(args);
             } else {
               super.pragma(templateContext, pragma, args);
             }
@@ -83,11 +83,11 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
     };
 
     // Does the name count ?
-    factory.compile(new StringReader(mustacheTemplate.getModel().source), mustacheTemplate.getPath().getSimpleName());
+    factory.compile(new StringReader(mustacheTemplateModel.getModel().source), mustacheTemplateModel.getPath().getSimpleName());
   }
 
   @Override
-  public void emit(EmitContext context, Template<MustacheContext> template) throws TemplateException, IOException {
+  public void emit(EmitContext context, TemplateModel<MustacheContext> templateModel) throws TemplateException, IOException {
   }
 
   @Override

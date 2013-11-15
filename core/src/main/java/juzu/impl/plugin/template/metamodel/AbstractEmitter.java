@@ -111,7 +111,7 @@ abstract class AbstractEmitter implements Serializable {
             };
 
             //
-            provider.emit(emitCtx, template.template);
+            provider.emit(emitCtx, template.templateModel);
 
             // Put it in cache
             emitted.add(path);
