@@ -50,7 +50,7 @@ public class ProcessPhase extends CompilationPhase {
     doUnattribute(template.getModel());
   }
 
-  public Template resolveTemplate(Path path) throws ProcessingException, TemplateException {
+  public Path.Absolute resolveTemplate(Path path) throws ProcessingException, TemplateException {
     return context.resolveTemplate(path);
   }
 

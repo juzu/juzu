@@ -73,7 +73,7 @@ public abstract class ProcessContext extends PhaseContext {
     return provider.parse(new ParseContext(), s);
   }
 
-  public <M extends Serializable> Template resolveTemplate(Path path) throws TemplateException {
+  public <M extends Serializable> Path.Absolute resolveTemplate(Path path) throws TemplateException {
     Path.Absolute abs;
     if (path instanceof Path.Relative) {
       abs = resolvePath((Path.Relative)path);
@@ -98,6 +98,6 @@ public abstract class ProcessContext extends PhaseContext {
     } else {
       linkTemplate(template);
     }
-    return template;
+    return template.getPath();
   }
 }

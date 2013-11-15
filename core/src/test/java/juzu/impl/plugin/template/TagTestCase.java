@@ -158,26 +158,16 @@ public class TagTestCase extends AbstractInjectTestCase {
     templates.put((Path.Absolute)Path.parse("/foo.gtmpl"), foo);
     ProcessPhase process = new ProcessPhase(new SimpleProcessContext(templates) {
       @Override
-      public <A extends Serializable> Template<A> resolveTemplate(Path path) {
+      public Path.Absolute resolveTemplate(Path path) {
         if (path.getCanonical().equals("index.gtmpl")) {
-          try {
-            return (Template<A>)new Template<ASTNode.Template>(
-              ASTNode.Template.parse("#{decorate path=foo.gtmpl/}juu"),
-              (Path.Absolute)Path.parse("/plugin/template/tag/decorate/templates/index.gtmpl"),
-              System.currentTimeMillis(),
-              0
-            );
-          }
-          catch (juzu.impl.template.spi.juzu.ast.ParseException e) {
-            throw failure(e);
-          }
+          return (Path.Absolute)Path.parse("/plugin/template/tag/decorate/templates/index.gtmpl");
         }
         else {
           return null;
         }
       }
     });
-    Template<ASTNode.Template> template = (Template<ASTNode.Template>)process.resolveTemplate(Path.parse("index.gtmpl"));
+    Path.Absolute template = process.resolveTemplate(Path.parse("index.gtmpl"));
     assertNotNull(template);
 
     // Now emit the template
@@ -193,7 +183,6 @@ public class TagTestCase extends AbstractInjectTestCase {
         throw new UnsupportedOperationException();
       }
     });
-    emit.emit(new GroovyTemplateEmitter(), template.getModel());
   }
 
   @Test
