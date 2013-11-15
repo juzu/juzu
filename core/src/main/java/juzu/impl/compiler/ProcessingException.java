@@ -61,7 +61,7 @@ public class ProcessingException extends RuntimeException implements Iterable<Me
   }
 
   @Override
-  public synchronized ProcessingException initCause(Throwable cause) {
+  public ProcessingException initCause(Throwable cause) {
     return (ProcessingException)super.initCause(cause);
   }
 
