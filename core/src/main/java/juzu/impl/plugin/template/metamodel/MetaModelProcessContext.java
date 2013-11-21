@@ -75,24 +75,8 @@ class MetaModelProcessContext extends ProcessContext {
     return owner.resolvePath(path);
   }
 
-  @Override
   public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws ProcessingException {
-    MethodMetaModel method = owner.getApplication().getChild(ControllersMetaModel.KEY).resolve(typeName, methodName, parameterMap.keySet());
-
-    //
-    if (method == null) {
-      return null;
-    }
-
-    //
-    List<String> args = new ArrayList<String>();
-    for (ParameterMetaModel param : method.getParameters()) {
-      if (param instanceof PhaseParameterMetaModel) {
-        String value = parameterMap.get(param.getName());
-        args.add(value);
-      }
-    }
-    return new MethodInvocation(method.getController().getHandle().getName() + "_", method.getName(), args);
+    return owner.getApplication().resolveMethodInvocation(typeName, methodName, parameterMap);
   }
 
   @Override
@@ -112,7 +96,7 @@ class MetaModelProcessContext extends ProcessContext {
     return null;
   }
 
-  public <M extends Serializable> Path.Absolute resolveTemplate(Path path) throws TemplateException {
+  public Path.Absolute resolveTemplate(Path path) throws TemplateException {
     Path.Absolute absolute;
     if (path instanceof Path.Relative) {
       absolute = resolvePath((Path.Relative)path);

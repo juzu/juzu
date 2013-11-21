@@ -16,6 +16,9 @@
 
 package juzu.impl.plugin.controller.metamodel;
 
+import juzu.impl.common.MethodInvocation;
+import juzu.impl.compiler.ProcessingException;
+import juzu.impl.common.MethodInvocationResolver;
 import juzu.impl.plugin.controller.AmbiguousResolutionException;
 import juzu.impl.common.Name;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
@@ -24,11 +27,14 @@ import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllersMetaModel extends MetaModelObject implements Iterable<ControllerMetaModel> {
+public class ControllersMetaModel extends MetaModelObject implements Iterable<ControllerMetaModel>, MethodInvocationResolver {
 
   /** . */
   public final static Key<ControllersMetaModel> KEY = Key.of(ControllersMetaModel.class);
@@ -70,6 +76,22 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
       throw new IllegalArgumentException();
     }
     removeChild(Key.of(controller.handle, ControllerMetaModel.class));
+  }
+
+  public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws ProcessingException {
+    MethodMetaModel method = resolve(typeName, methodName, parameterMap.keySet());
+    if (method == null) {
+      return null;
+    } else {
+      List<String> args = new ArrayList<String>();
+      for (ParameterMetaModel param : method.getParameters()) {
+        if (param instanceof PhaseParameterMetaModel) {
+          String value = parameterMap.get(param.getName());
+          args.add(value);
+        }
+      }
+      return new MethodInvocation(method.getController().getHandle().getName() + "_", method.getName(), args);
+    }
   }
 
   public MethodMetaModel resolve(String typeName, String methodName, Set<String> parameterNames) throws AmbiguousResolutionException {

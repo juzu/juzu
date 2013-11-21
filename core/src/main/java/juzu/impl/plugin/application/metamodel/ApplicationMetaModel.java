@@ -16,10 +16,13 @@
 
 package juzu.impl.plugin.application.metamodel;
 
+import juzu.impl.common.MethodInvocation;
+import juzu.impl.common.MethodInvocationResolver;
 import juzu.impl.common.Name;
 import juzu.impl.common.Path;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
+import juzu.impl.compiler.ProcessingException;
 import juzu.impl.metamodel.MetaModelEvent;
 import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
 import juzu.impl.metamodel.MetaModel;
@@ -29,9 +32,10 @@ import juzu.impl.common.JSON;
 import juzu.impl.plugin.template.metamodel.TemplateContainerMetaModel;
 
 import javax.tools.FileObject;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, ApplicationMetaModel> {
+public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, ApplicationMetaModel> implements MethodInvocationResolver {
 
   /** . */
   public static final MessageCode CANNOT_WRITE_APPLICATION_CONFIG = new MessageCode("CANNOT_WRITE_APPLICATION_CONFIG", "The application %1$s configuration cannot be written");
@@ -76,6 +80,24 @@ public class ApplicationMetaModel extends MetaModel<ApplicationMetaModelPlugin, 
 
   public ElementHandle.Package getHandle() {
     return handle;
+  }
+
+  public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws ProcessingException {
+    MethodInvocation method = null;
+    for (MetaModelObject child : getChildren()) {
+      if (child instanceof MethodInvocationResolver) {
+        MethodInvocationResolver childResolver = (MethodInvocationResolver)child;
+        MethodInvocation next = childResolver.resolveMethodInvocation(typeName, methodName, parameterMap);
+        if (next != null) {
+          if (method != null) {
+            throw new UnsupportedOperationException("handle me gracefully");
+          } else {
+            method = next;
+          }
+        }
+      }
+    }
+    return method;
   }
 
   /**

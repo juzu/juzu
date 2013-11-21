@@ -19,15 +19,11 @@ package juzu.impl.template.spi;
 import juzu.impl.common.Resource;
 import juzu.impl.common.Content;
 import juzu.impl.common.Timestamped;
-import juzu.impl.compiler.ProcessingException;
-import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.Path;
-
-import java.io.Serializable;
-import java.util.Map;
+import juzu.impl.common.MethodInvocationResolver;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ProcessContext extends PhaseContext {
+public abstract class ProcessContext extends PhaseContext implements MethodInvocationResolver {
 
   /**
    * Resolve a resource for the provided relative path.
@@ -53,8 +49,6 @@ public abstract class ProcessContext extends PhaseContext {
     return resolveResource(abs);
   }
 
-  public abstract MethodInvocation resolveMethodInvocation( String typeName, String methodName, Map<String, String> parameterMap) throws ProcessingException;
-
   protected abstract Path.Absolute resolvePath(Path.Relative path);
 
-  public abstract <M extends Serializable> Path.Absolute resolveTemplate(Path path) throws TemplateException;}
+  public abstract Path.Absolute resolveTemplate(Path path) throws TemplateException;}

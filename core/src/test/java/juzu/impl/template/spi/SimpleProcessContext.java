@@ -46,7 +46,6 @@ public abstract class SimpleProcessContext extends ProcessContext {
     return null;
   }
 
-  @Override
   public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws ProcessingException {
     return null;
   }

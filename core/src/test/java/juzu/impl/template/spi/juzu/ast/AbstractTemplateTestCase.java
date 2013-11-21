@@ -58,7 +58,7 @@ public abstract class AbstractTemplateTestCase extends AbstractTestCase {
     try {
       ProcessPhase processPhase = new ProcessPhase(new SimpleProcessContext(Collections.<Path.Absolute, TemplateModel<?>>emptyMap()) {
         @Override
-        public <M extends Serializable> Path.Absolute resolveTemplate(Path path) throws TemplateException {
+        public Path.Absolute resolveTemplate(Path path) throws TemplateException {
           return null;
         }
         @Override
