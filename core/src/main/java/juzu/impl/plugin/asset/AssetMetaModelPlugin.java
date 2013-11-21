@@ -20,7 +20,6 @@ import juzu.asset.AssetLocation;
 import juzu.impl.common.Name;
 import juzu.impl.common.Path;
 import juzu.impl.common.Tools;
-import juzu.impl.compiler.ElementHandle;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.metamodel.AnnotationKey;
@@ -37,7 +36,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,8 +46,6 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   /** . */
   private static final String[] KINDS = {"value"};
 
-  /** . */
-  private HashMap<ElementHandle.Package, AnnotationState> annotations = new HashMap<ElementHandle.Package, AnnotationState>();
 
   public AssetMetaModelPlugin() {
     super("asset");
@@ -61,13 +57,18 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   }
 
   @Override
+  public void init(ApplicationMetaModel metaModel) {
+    metaModel.addChild(AssetsMetaModel.KEY, new AssetsMetaModel());
+  }
+
+  @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
-    annotations.put(metaModel.getHandle(), added);
+    metaModel.getChild(AssetsMetaModel.KEY).annotations.put(metaModel.getHandle(), added);
   }
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    annotations.remove(metaModel.getHandle());
+    metaModel.getChild(AssetsMetaModel.KEY).annotations.remove(metaModel.getHandle());
   }
 
   private List<JSON> build(List<Map<String, Object>> scripts) {
@@ -88,7 +89,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void prePassivate(ApplicationMetaModel metaModel) {
     ProcessingContext context = metaModel.getProcessingContext();
     if(!context.isCopyFromSourcesExternallyManaged()) {
-      AnnotationState annotation = annotations.get(metaModel.getHandle());
+      AnnotationState annotation = metaModel.getChild(AssetsMetaModel.KEY).annotations.get(metaModel.getHandle());
       if (annotation != null) {
         String location = (String)annotation.get("location");
         boolean classpath = location == null || AssetLocation.APPLICATION.equals(AssetLocation.safeValueOf(location));
@@ -145,7 +146,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public JSON getDescriptor(ApplicationMetaModel application) {
-    AnnotationState annotation = annotations.get(application.getHandle());
+    AnnotationState annotation = application.getChild(AssetsMetaModel.KEY).annotations.get(application.getHandle());
     if (annotation != null) {
       JSON json = new JSON();
       List<JSON> assets = build((List<Map<String, Object>>)annotation.get("value"));
