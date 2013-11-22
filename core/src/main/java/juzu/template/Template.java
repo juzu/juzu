@@ -31,7 +31,7 @@ import juzu.impl.common.Path;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.MessageKey;
 import juzu.request.ApplicationContext;
-import juzu.request.MimeContext;
+import juzu.request.RequestContext;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -137,7 +137,7 @@ public abstract class Template {
   }
 
   /**
-   * Renders the template and set the response on the current {@link MimeContext}.
+   * Renders the template and set the response on the current {@link RequestContext}.
    *
    * @param parameters the parameters
    * @return the ok resource response
@@ -457,7 +457,7 @@ public abstract class Template {
     }
 
     /**
-     * Renders the template and set the response on the current {@link MimeContext}.
+     * Renders the template and set the response on the current {@link RequestContext}.
      *
      * @return the ok resource response
      */

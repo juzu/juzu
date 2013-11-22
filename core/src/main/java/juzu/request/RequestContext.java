@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class RequestContext {
+public class RequestContext {
 
   /** . */
   private static final Object[] EMPTY = new Object[0];
@@ -51,6 +51,10 @@ public abstract class RequestContext {
 
   public Map<String, RequestParameter> getParameters() {
     return request.getParameters();
+  }
+
+  public ClientContext getClientContext() {
+    return getBridge().getClientContext();
   }
 
   public HttpContext getHttpContext() {

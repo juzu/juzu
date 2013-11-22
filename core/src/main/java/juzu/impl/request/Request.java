@@ -30,17 +30,13 @@ import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
-import juzu.request.ActionContext;
 import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
 import juzu.request.Dispatch;
-import juzu.request.EventContext;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
-import juzu.request.ViewContext;
 import juzu.request.RequestContext;
 import juzu.request.RequestParameter;
-import juzu.request.ResourceContext;
 import juzu.request.Result;
 import juzu.request.SecurityContext;
 import juzu.request.UserContext;
@@ -327,19 +323,7 @@ public class Request implements ScopingContext {
   private <B, I> Response dispatch(Request request, InjectionContext<B, I> manager) {
 
     // Create context
-    RequestContext context;
-    if (bridge.getPhase() == Phase.VIEW) {
-      context = new ViewContext(this, method);
-    }
-    else if (bridge.getPhase() == Phase.ACTION) {
-      context = new ActionContext(this, method);
-    }
-    else if (bridge.getPhase() == Phase.EVENT) {
-      context = new EventContext(this, method);
-    }
-    else {
-      context = new ResourceContext(this, method);
-    }
+    RequestContext context = new RequestContext(this, method);
 
     //
     for (ControlParameter parameter : method.getParameters()) {
@@ -350,12 +334,8 @@ public class Request implements ScopingContext {
         tryInject(request, contextualParameter, SecurityContext.class, request.getSecurityContext());
         tryInject(request, contextualParameter, ApplicationContext.class, request.getApplicationContext());
         tryInject(request, contextualParameter, UserContext.class, request.getUserContext());
-        if (context instanceof ResourceContext) {
-          ResourceContext resourceContext = (ResourceContext)context;
-          tryInject(request, contextualParameter, ClientContext.class, resourceContext.getClientContext());
-        } else if (context instanceof ActionContext) {
-          ActionContext actionContext = (ActionContext)context;
-          tryInject(request, contextualParameter, ClientContext.class, actionContext.getClientContext());
+        if (bridge.getPhase() == Phase.RESOURCE || bridge.getPhase() == Phase.ACTION) {
+          tryInject(request, contextualParameter, ClientContext.class, request.getClientContext());
         }
       }
     }
