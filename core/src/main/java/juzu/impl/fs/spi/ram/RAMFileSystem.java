@@ -16,11 +16,11 @@
 
 package juzu.impl.fs.spi.ram;
 
+import juzu.impl.common.Resource;
 import juzu.impl.common.Timestamped;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.PathType;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
-import juzu.impl.common.Content;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,7 +101,7 @@ public class RAMFileSystem extends ReadWriteFileSystem<String[]> {
   }
 
   @Override
-  public long setContent(String[] file, Content content) throws IOException {
+  public long updateResource(String[] file, Resource resource) throws IOException {
     long lastModified = System.currentTimeMillis();
     RAMDir current = root;
     for (int i = 0;i < file.length;i++) {
@@ -109,10 +109,10 @@ public class RAMFileSystem extends ReadWriteFileSystem<String[]> {
       RAMPath next = current.children.get(name);
       if (i == file.length - 1) {
         if (next == null) {
-          current.children.put(name, next = new RAMFile(current, name, content));
+          current.children.put(name, next = new RAMFile(current, name, resource));
           next.parent = current;
         } else if (next instanceof RAMFile) {
-          ((RAMFile)next).content = new Timestamped<Content>(lastModified, content);
+          ((RAMFile)next).resource = new Timestamped<Resource>(lastModified, resource);
         } else {
           throw new IOException("A file already exist");
         }
@@ -133,12 +133,12 @@ public class RAMFileSystem extends ReadWriteFileSystem<String[]> {
   }
 
   @Override
-  public Timestamped<Content> getContent(String[] file) throws IOException {
+  public Timestamped<Resource> getResource(String[] file) throws IOException {
     if (file == null) {
       throw new NullPointerException("No null file argument accepted");
     }
     RAMPath path = get(file);
-    return path instanceof RAMFile ? ((RAMFile)path).content : null;
+    return path instanceof RAMFile ? ((RAMFile)path).resource : null;
   }
 
   @Override

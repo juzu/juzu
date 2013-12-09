@@ -16,18 +16,14 @@
 
 package juzu.impl.bridge.runmode;
 
-import juzu.impl.common.Content;
-import juzu.impl.common.RunMode;
 import juzu.test.AbstractWebTestCase;
 import juzu.test.FileResource;
-import juzu.test.JavaFile;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */

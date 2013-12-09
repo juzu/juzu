@@ -15,7 +15,7 @@
  */
 package juzu.test;
 
-import juzu.impl.common.Content;
+import juzu.impl.common.Resource;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 
 /** @author Julien Viet */
@@ -34,7 +34,7 @@ public class FileResource<I> {
 
   public String assertContent() {
     try {
-      Content content = sourcePath.getContent(path).getObject();
+      Resource content = sourcePath.getResource(path).getObject();
       return content.getCharSequence().toString();
     }
     catch (Exception e) {
@@ -44,8 +44,8 @@ public class FileResource<I> {
 
   public void assertTouch() {
     try {
-      Content content = sourcePath.getContent(path).getObject();
-      sourcePath.setContent(path, content);
+      Resource content = sourcePath.getResource(path).getObject();
+      sourcePath.updateResource(path, content);
     }
     catch (Exception e) {
       throw AbstractTestCase.failure(e);
@@ -54,7 +54,7 @@ public class FileResource<I> {
 
   public void assertSave(String content) {
     try {
-      sourcePath.setContent(path, new Content(content));
+      sourcePath.updateResource(path, new Resource(content));
     }
     catch (Exception e) {
       throw AbstractTestCase.failure(e);

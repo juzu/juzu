@@ -16,7 +16,7 @@
 
 package juzu.impl.fs.spi.url;
 
-import juzu.impl.common.Content;
+import juzu.impl.common.Resource;
 import juzu.impl.common.Timestamped;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.PathType;
@@ -33,7 +33,6 @@ import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -262,7 +261,7 @@ public class URLFileSystem extends ReadFileSystem<Node> {
   }
 
   @Override
-  public Timestamped<Content> getContent(Node file) throws IOException {
+  public Timestamped<Resource> getResource(Node file) throws IOException {
     if (file.url == null) {
       throw new IOException("Cannot find file " + file.getPath());
     }
@@ -271,7 +270,7 @@ public class URLFileSystem extends ReadFileSystem<Node> {
     URLConnection conn = file.url.openConnection();
     long lastModified = conn.getLastModified();
     byte[] bytes = Tools.bytes(conn.getInputStream());
-    return new Timestamped<Content>(lastModified, new Content(bytes, Charset.defaultCharset()));
+    return new Timestamped<Resource>(lastModified, new Resource(bytes, Charset.defaultCharset()));
   }
 
   @Override

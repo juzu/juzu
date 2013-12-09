@@ -17,10 +17,10 @@
 package juzu.impl.compiler.file;
 
 import juzu.impl.common.FileKey;
+import juzu.impl.common.Resource;
 import juzu.impl.common.Timestamped;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
-import juzu.impl.common.Content;
 
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.NestingKind;
@@ -52,7 +52,7 @@ public class JavaFileObjectImpl<P> implements JavaFileObject {
   private final P file;
 
   /** . */
-  Timestamped<Content> content;
+  Timestamped<Resource> content;
 
   /** . */
   private boolean writing;
@@ -88,12 +88,12 @@ public class JavaFileObjectImpl<P> implements JavaFileObject {
     return key;
   }
 
-  private Timestamped<Content> assertContent() throws IOException {
+  private Timestamped<Resource> assertContent() throws IOException {
     if (writing) {
       throw new IllegalStateException("Opened for writing");
     } else {
       if (content == null) {
-        content = fs.getContent(file);
+        content = fs.getResource(file);
         if (content == null) {
           throw new FileNotFoundException("File " + key + " cannot be found");
         }
@@ -197,9 +197,9 @@ public class JavaFileObjectImpl<P> implements JavaFileObject {
       return new ByteArrayOutputStream() {
         @Override
         public void close() throws IOException {
-          Content content = new Content(toByteArray(), null);
-          long lastModified = fs.setContent(file, content);
-          JavaFileObjectImpl.this.content = new Timestamped<Content>(lastModified, content);
+          Resource content = new Resource(toByteArray(), null);
+          long lastModified = fs.updateResource(file, content);
+          JavaFileObjectImpl.this.content = new Timestamped<Resource>(lastModified, content);
           JavaFileObjectImpl.this.writing = false;
         }
       };
@@ -218,9 +218,9 @@ public class JavaFileObjectImpl<P> implements JavaFileObject {
       return new StringWriter() {
         @Override
         public void close() throws IOException {
-          Content content = new Content(getBuffer());
-          long lastModified = fs.setContent(file, content);
-          JavaFileObjectImpl.this.content = new Timestamped<Content>(lastModified, content);
+          Resource content = new Resource(getBuffer());
+          long lastModified = fs.updateResource(file, content);
+          JavaFileObjectImpl.this.content = new Timestamped<Resource>(lastModified, content);
           JavaFileObjectImpl.this.writing = false;
         }
       };

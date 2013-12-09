@@ -13,23 +13,65 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package juzu.impl.common;
 
-/**
- * A resource: something with an absolute path.
- *
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- */
-public class Resource<T> {
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 
-  /** The resource path. */
-  public final Path.Absolute path;
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class Resource {
 
-  /** The resource content. */
-  public final T content;
+  /** . */
+  private byte[] data;
 
-  public Resource(Path.Absolute path, T content) {
-    this.path = path;
-    this.content = content;
+  /** . */
+  private Charset encoding;
+
+  public Resource(byte[] data, Charset encoding) {
+    if (data == null) {
+      throw new NullPointerException("No null data accepted");
+    }
+
+    //
+    this.data = data;
+    this.encoding = encoding;
+  }
+
+  public Resource(CharSequence s) {
+    this(s, Charset.defaultCharset());
+  }
+
+  public Resource(CharSequence s, Charset encoding) {
+    this.encoding = encoding;
+    this.data = s.toString().getBytes(encoding);
+  }
+
+  public Charset getEncoding() {
+    return encoding;
+  }
+
+  public byte[] getBytes() {
+    return data.clone();
+  }
+
+  public InputStream getInputStream() {
+    return new ByteArrayInputStream(data);
+  }
+
+  public CharSequence getCharSequence(Charset encoding) {
+    return new String(data, encoding);
+  }
+
+  public CharSequence getCharSequence() {
+    if (encoding == null) {
+      throw new IllegalStateException("No encoding set");
+    }
+    return new String(data, encoding);
+  }
+
+  public int getSize() {
+    return data.length;
   }
 }

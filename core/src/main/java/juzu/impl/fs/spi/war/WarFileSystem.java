@@ -16,11 +16,11 @@
 
 package juzu.impl.fs.spi.war;
 
+import juzu.impl.common.Resource;
 import juzu.impl.common.Spliterator;
 import juzu.impl.common.Timestamped;
 import juzu.impl.fs.spi.PathType;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.common.Content;
 import juzu.impl.common.Tools;
 
 import javax.portlet.PortletContext;
@@ -116,7 +116,7 @@ public abstract class WarFileSystem extends ReadFileSystem<String> {
     if (path.endsWith("/")) {
       return PathType.DIR;
     } else {
-      URL url = getResource(path);
+      URL url = getResourceURL(path);
       if (url != null) {
         return PathType.FILE;
       } else {
@@ -126,19 +126,19 @@ public abstract class WarFileSystem extends ReadFileSystem<String> {
   }
 
   @Override
-  public Timestamped<Content> getContent(String file) throws IOException {
-    URL url = getResource(file);
+  public Timestamped<Resource> getResource(String file) throws IOException {
+    URL url = getResourceURL(file);
     if (url != null) {
       URLConnection conn = url.openConnection();
       long lastModified = conn.getLastModified();
       InputStream in = conn.getInputStream();
       try {
-        ByteArrayOutputStream content = new ByteArrayOutputStream();
+        ByteArrayOutputStream resource = new ByteArrayOutputStream();
         byte[] buffer = new byte[256];
         for (int l = in.read(buffer);l != -1;l = in.read(buffer)) {
-          content.write(buffer, 0, l);
+          resource.write(buffer, 0, l);
         }
-        return new Timestamped<Content>(lastModified, new Content(content.toByteArray(), Charset.defaultCharset()));
+        return new Timestamped<Resource>(lastModified, new Resource(resource.toByteArray(), Charset.defaultCharset()));
       }
       finally {
         Tools.safeClose(in);
@@ -151,14 +151,14 @@ public abstract class WarFileSystem extends ReadFileSystem<String> {
 
   @Override
   public long getLastModified(String path) throws IOException {
-    URL url = getResource(path);
+    URL url = getResourceURL(path);
     URLConnection conn = url.openConnection();
     return conn.getLastModified();
   }
 
   @Override
   public URL getURL(String path) throws IOException {
-    return getResource(path);
+    return getResourceURL(path);
   }
 
   protected abstract Set<String> doGetResourcePaths(String path) throws IOException;
@@ -187,7 +187,7 @@ public abstract class WarFileSystem extends ReadFileSystem<String> {
     return realPath == null ? null : new File(realPath);
   }
 
-  private URL getResource(String path) throws IOException {
+  private URL getResourceURL(String path) throws IOException {
     return doGetResource(mountPoint + path);
   }
 

@@ -21,8 +21,8 @@ import japa.parser.ast.CompilationUnit;
 import japa.parser.ast.PackageDeclaration;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
 import japa.parser.ast.body.TypeDeclaration;
+import juzu.impl.common.Resource;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
-import juzu.impl.common.Content;
 
 import java.io.InputStream;
 import java.util.List;
@@ -47,7 +47,7 @@ public class JavaFile<I> extends FileResource<I> {
   public CompilationUnit assertCompilationUnit() {
     if (cu == null) {
       try {
-        Content content = sourcePath.getContent(path).getObject();
+        Resource content = sourcePath.getResource(path).getObject();
         InputStream in = content.getInputStream();
         cu = JavaParser.parse(in);
       }

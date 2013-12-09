@@ -16,14 +16,12 @@
 
 package juzu.impl.template.spi;
 
-import juzu.impl.common.Content;
+import juzu.impl.common.Resource;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.Path;
-import juzu.impl.common.Resource;
 import juzu.impl.common.Timestamped;
 import juzu.impl.compiler.ProcessingException;
 
-import java.io.Serializable;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -42,7 +40,7 @@ public abstract class SimpleProcessContext extends ProcessContext {
   }
 
   @Override
-  public Resource<Timestamped<Content>> resolveResource(Path.Absolute path) {
+  public Timestamped<Resource> resolveResource(Path.Absolute path) {
     return null;
   }
 

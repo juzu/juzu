@@ -16,13 +16,13 @@
 
 package juzu.impl.fs.spi.jar;
 
+import juzu.impl.common.Resource;
 import juzu.impl.common.Spliterator;
 import juzu.io.UndeclaredIOException;
 import juzu.impl.common.Timestamped;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.PathType;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.common.Content;
 
 import java.io.File;
 import java.io.IOException;
@@ -256,12 +256,12 @@ public class JarFileSystem extends ReadFileSystem<String> {
   }
 
   @Override
-  public Timestamped<Content> getContent(String file) throws IOException {
+  public Timestamped<Resource> getResource(String file) throws IOException {
     URL url = getURL(file);
     URLConnection conn = url.openConnection();
     long lastModified = conn.getLastModified();
     byte[] bytes = Tools.bytes(conn.getInputStream());
-    return new Timestamped<Content>(lastModified, new Content(bytes, Charset.defaultCharset()));
+    return new Timestamped<Resource>(lastModified, new Resource(bytes, Charset.defaultCharset()));
   }
 
   @Override

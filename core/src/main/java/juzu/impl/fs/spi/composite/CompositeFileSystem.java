@@ -16,7 +16,7 @@
 
 package juzu.impl.fs.spi.composite;
 
-import juzu.impl.common.Content;
+import juzu.impl.common.Resource;
 import juzu.impl.common.Timestamped;
 import juzu.impl.fs.spi.PathType;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -101,18 +101,18 @@ public class CompositeFileSystem extends ReadFileSystem<Context> {
   }
 
   @Override
-  public Timestamped<Content> getContent(Context file) throws IOException {
+  public Timestamped<Resource> getResource(Context file) throws IOException {
     for (int i = 0;i < file.paths.length;i++) {
       ReadFileSystem compound = compounds[i];
       Object p = file.paths[i];
       if (p != null) {
         PathType type = compound.typeOf(p);
         if (type == PathType.FILE) {
-          return compound.getContent(p);
+          return compound.getResource(p);
         }
       }
     }
-    throw new IOException("No content at " + file);
+    throw new IOException("No resource at " + file);
   }
 
   @Override

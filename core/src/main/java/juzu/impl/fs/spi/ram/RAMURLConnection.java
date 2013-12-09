@@ -16,7 +16,7 @@
 
 package juzu.impl.fs.spi.ram;
 
-import juzu.impl.common.Content;
+import juzu.impl.common.Resource;
 import juzu.impl.common.Timestamped;
 
 import java.io.IOException;
@@ -28,13 +28,13 @@ import java.net.URLConnection;
 class RAMURLConnection extends URLConnection {
 
   /** . */
-  private final Timestamped<Content> content;
+  private final Timestamped<Resource> resource;
 
-  public RAMURLConnection(URL url, Timestamped<Content> content) {
+  public RAMURLConnection(URL url, Timestamped<Resource> resource) {
     super(url);
 
     //
-    this.content = content;
+    this.resource = resource;
   }
 
   @Override
@@ -43,11 +43,11 @@ class RAMURLConnection extends URLConnection {
 
   @Override
   public InputStream getInputStream() throws IOException {
-    return content.getObject().getInputStream();
+    return resource.getObject().getInputStream();
   }
 
   @Override
   public long getLastModified() {
-    return content.getTime();
+    return resource.getTime();
   }
 }

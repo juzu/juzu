@@ -16,7 +16,7 @@
 
 package juzu.impl.fs.spi.ram;
 
-import juzu.impl.common.Content;
+import juzu.impl.common.Resource;
 import juzu.impl.fs.spi.AbstractReadWriteFileSystemTestCase;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import org.junit.Test;
@@ -35,11 +35,11 @@ public class RAMFileSystemTestCase extends AbstractReadWriteFileSystemTestCase<S
   public void testLastModified() throws IOException {
     RAMFileSystem fs = new RAMFileSystem();
     String[] fooTxt = fs.makePath(fs.getRoot(), "foo.txt");
-    fs.setContent(fooTxt, new Content("abc"));
+    fs.updateResource(fooTxt, new Resource("abc"));
     long now = waitForOneMillis();
     assertTrue(fs.getLastModified(fooTxt) < now);
     waitForOneMillis();
-    fs.setContent(fooTxt, new Content("def"));
+    fs.updateResource(fooTxt, new Resource("def"));
     assertTrue(now < fs.getLastModified(fooTxt));
   }
 

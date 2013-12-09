@@ -19,13 +19,13 @@ package juzu.impl.compiler;
 import junit.framework.AssertionFailedError;
 import juzu.impl.common.FileKey;
 import juzu.impl.common.Name;
+import juzu.impl.common.Resource;
 import juzu.impl.common.Timestamped;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.jar.JarFileSystem;
 import juzu.impl.fs.spi.ram.RAMFileSystem;
-import juzu.impl.common.Content;
 import juzu.impl.common.Tools;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.test.AbstractTestCase;
@@ -206,23 +206,23 @@ public class CompilationTestCase extends AbstractTestCase {
     String[] root = ramFS.getRoot();
     String[] foo = ramFS.makePath(root, "foo");
     String[] a = ramFS.makePath(foo, "A.java");
-    ramFS.setContent(a, new Content("package foo; public class A {}"));
+    ramFS.updateResource(a, new Resource("package foo; public class A {}"));
     String[] b = ramFS.makePath(foo, "B.java");
-    ramFS.setContent(b, new Content("package foo; public class B {}"));
+    ramFS.updateResource(b, new Resource("package foo; public class B {}"));
 
     //
     RAMFileSystem output = new RAMFileSystem();
     Compiler compiler = Compiler.builder().sourcePath(ramFS).output(output).build();
     compiler.compile();
     assertEquals(2, output.size(ReadFileSystem.FILE));
-    Timestamped<Content> aClass = output.getContent(new String[]{"foo", "A"});
+    Timestamped<Resource> aClass = output.getResource(new String[]{"foo", "A"});
     assertNotNull(aClass);
-    Timestamped<Content> bClass = output.getContent(new String[]{"foo", "B"});
+    Timestamped<Resource> bClass = output.getResource(new String[]{"foo", "B"});
     assertNotNull(bClass);
 
     //
     while (true) {
-      ramFS.setContent(b, new Content("package foo; public class B extends A {}"));
+      ramFS.updateResource(b, new Resource("package foo; public class B extends A {}"));
       if (bClass.getTime() < ramFS.getLastModified(b)) {
         break;
       }
@@ -234,7 +234,7 @@ public class CompilationTestCase extends AbstractTestCase {
     //
     compiler.compile();
     assertEquals(1, output.size(ReadFileSystem.FILE));
-    bClass = output.getContent(new String[]{"foo", "B"});
+    bClass = output.getResource(new String[]{"foo", "B"});
     assertNotNull(bClass);
   }
 
@@ -464,7 +464,7 @@ public class CompilationTestCase extends AbstractTestCase {
     //
     ReadWriteFileSystem<File> sourcePath = (ReadWriteFileSystem<File>)compiler.getSourcePath();
     File b = sourcePath.makePath(sourcePath.getPath("compiler", "incremental"), "B.java");
-    sourcePath.setContent(b, new Content("package compiler.incremental; public class B extends A {}"));
+    sourcePath.updateResource(b, new Resource("package compiler.incremental; public class B extends A {}"));
     compiler.assertCompile();
     assertEquals(2, classOutput.size(ReadFileSystem.FILE));
   }
@@ -556,7 +556,7 @@ public class CompilationTestCase extends AbstractTestCase {
 
     //
     File foo = output.makePath(output.getRoot(), "foo.txt");
-    output.setContent(foo, new Content("foo_value"));
+    output.updateResource(foo, new Resource("foo_value"));
 
     //
     compiler.assertCompile();
@@ -572,9 +572,9 @@ public class CompilationTestCase extends AbstractTestCase {
     }
     assertEquals(2, children.size());
     foo = children.get("foo.txt");
-    assertEquals("new_foo_value", output.getContent(foo).getObject().getCharSequence(Charset.defaultCharset()));
+    assertEquals("new_foo_value", output.getResource(foo).getObject().getCharSequence(Charset.defaultCharset()));
     File juu = children.get("juu.txt");
-    assertEquals("juu_value", output.getContent(juu).getObject().getCharSequence(Charset.defaultCharset()).toString());
+    assertEquals("juu_value", output.getResource(juu).getObject().getCharSequence(Charset.defaultCharset()).toString());
   }
 
   @Test

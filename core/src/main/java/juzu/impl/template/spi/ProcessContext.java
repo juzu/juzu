@@ -17,7 +17,6 @@
 package juzu.impl.template.spi;
 
 import juzu.impl.common.Resource;
-import juzu.impl.common.Content;
 import juzu.impl.common.Timestamped;
 import juzu.impl.common.Path;
 import juzu.impl.common.MethodInvocationResolver;
@@ -31,7 +30,7 @@ public abstract class ProcessContext extends PhaseContext implements MethodInvoc
    * @param path the resource path
    * @return the resource or null if the resource could not be resolved
    */
-  public abstract Resource<Timestamped<Content>> resolveResource(Path.Absolute path);
+  public abstract Timestamped<Resource> resolveResource(Path.Absolute path);
 
   /**
    * Resolve a resource for the provided relative path.
@@ -39,7 +38,7 @@ public abstract class ProcessContext extends PhaseContext implements MethodInvoc
    * @param path the resource path
    * @return the resource or null if the resource could not be resolved
    */
-  public Resource<Timestamped<Content>> resolveResource(Path path) {
+  public Timestamped<Resource> resolveResource(Path path) {
     Path.Absolute abs;
     if (path instanceof Path.Absolute) {
       abs = (Path.Absolute)path;

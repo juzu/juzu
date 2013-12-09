@@ -16,8 +16,8 @@
 
 package juzu.impl.fs;
 
+import juzu.impl.common.Resource;
 import juzu.impl.fs.spi.ReadFileSystem;
-import juzu.impl.common.Content;
 import juzu.impl.common.Tools;
 
 import java.io.IOException;
@@ -58,8 +58,8 @@ public abstract class FileSystemScanner<P> implements Filter<P> {
 
     @Override
     protected long stampOf(P file) throws IOException {
-      juzu.impl.common.Timestamped<Content> content = fs.getContent(file);
-      InputStream in = content.getObject().getInputStream();
+      juzu.impl.common.Timestamped<Resource> resource = fs.getResource(file);
+      InputStream in = resource.getObject().getInputStream();
       byte[] bytes = Tools.bytes(in);
       return Tools.md5(bytes);
     }

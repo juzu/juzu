@@ -16,7 +16,7 @@
 
 package juzu.impl.fs.spi.composite;
 
-import juzu.impl.common.Content;
+import juzu.impl.common.Resource;
 import juzu.impl.common.Timestamped;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.PathType;
@@ -33,7 +33,7 @@ public class CompositeFileSystemTestCase extends AbstractTestCase {
   public void testFoo() throws IOException {
 
     RAMFileSystem ramFS = new RAMFileSystem();
-    ramFS.setContent(new String[]{"a","b"}, new Content("foo"));
+    ramFS.updateResource(new String[]{"a", "b"}, new Resource("foo"));
 
     //
     CompositeFileSystem composite = new CompositeFileSystem(ramFS);
@@ -50,7 +50,7 @@ public class CompositeFileSystemTestCase extends AbstractTestCase {
     assertEquals(Tools.list("a", "b"), composite.getNames(b));
 
     //
-    Timestamped<Content> content = composite.getContent(b);
+    Timestamped<Resource> content = composite.getResource(b);
     assertNotNull(content);
     assertEquals("foo", content.getObject().getCharSequence().toString());
 

@@ -16,10 +16,10 @@
 
 package juzu.impl.fs.spi;
 
+import juzu.impl.common.Resource;
 import juzu.impl.common.Timestamped;
 import juzu.impl.fs.Filter;
 import juzu.impl.fs.Visitor;
-import juzu.impl.common.Content;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.disk.DiskFileSystem;
 import juzu.impl.fs.spi.jar.JarFileSystem;
@@ -123,7 +123,7 @@ public abstract class ReadFileSystem<P> {
 
   public abstract PathType typeOf(P path) throws IOException;
 
-  public abstract Timestamped<Content> getContent(P file) throws IOException;
+  public abstract Timestamped<Resource> getResource(P file) throws IOException;
 
   /**
    * Attempt to return a {@link java.io.File} associated with this file or null if no physical file exists.
@@ -176,10 +176,10 @@ public abstract class ReadFileSystem<P> {
     });
   }
 
-  public final Timestamped<Content> getContent(Iterable<String> names) throws IOException {
+  public final Timestamped<Resource> getResource(Iterable<String> names) throws IOException {
     P path = getPath(names);
     if (path != null && isFile(path)) {
-      return getContent(path);
+      return getResource(path);
     }
     else {
       return null;
@@ -296,7 +296,7 @@ public abstract class ReadFileSystem<P> {
     switch (kind) {
       case 0: {
         if (filter.acceptFile(srcPath, srcName)) {
-          dst.setContent(dstPath, getContent(srcPath).getObject());
+          dst.updateResource(dstPath, getResource(srcPath).getObject());
         }
         break;
       }

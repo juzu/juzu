@@ -16,7 +16,7 @@
 
 package juzu.impl.fs.spi;
 
-import juzu.impl.common.Content;
+import juzu.impl.common.Resource;
 
 import java.io.IOException;
 
@@ -55,7 +55,15 @@ public abstract class ReadWriteFileSystem<P> extends ReadFileSystem<P> {
    */
   public abstract void createDir(P dir) throws IOException;
 
-  public abstract long setContent(P file, Content content) throws IOException;
+  /**
+   * Update the file resource.
+   *
+   * @param file the file to update
+   * @param resource the resource
+   * @return the resource time stamp after the update
+   * @throws IOException any io exception
+   */
+  public abstract long updateResource(P file, Resource resource) throws IOException;
 
   public abstract boolean removePath(P path) throws IOException;
 

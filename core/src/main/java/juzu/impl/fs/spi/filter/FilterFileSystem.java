@@ -16,8 +16,8 @@
 
 package juzu.impl.fs.spi.filter;
 
+import juzu.impl.common.Resource;
 import juzu.io.UndeclaredIOException;
-import juzu.impl.common.Content;
 import juzu.impl.common.Timestamped;
 import juzu.impl.fs.Filter;
 import juzu.impl.fs.spi.PathType;
@@ -128,8 +128,8 @@ public class FilterFileSystem<P> extends ReadFileSystem<P> {
   }
 
   @Override
-  public Timestamped<Content> getContent(P file) throws IOException {
-    return filtered.getContent(file);
+  public Timestamped<Resource> getResource(P file) throws IOException {
+    return filtered.getResource(file);
   }
 
   @Override

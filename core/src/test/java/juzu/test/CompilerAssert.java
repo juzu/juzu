@@ -16,9 +16,8 @@
 
 package juzu.test;
 
-import juzu.impl.common.Content;
+import juzu.impl.common.Resource;
 import juzu.impl.common.Name;
-import juzu.impl.common.Path;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.compiler.Compiler;
@@ -258,7 +257,7 @@ public class CompilerAssert<I, O> {
         path = fs.getRoot();
       }
       path = fs.makePath(path, atoms[atoms.length - 1] + "." + ext);
-      fs.setContent(path, new Content(content));
+      fs.updateResource(path, new Resource(content));
       return new FileResource<I>(fs, path);
     }
     catch (IOException e) {

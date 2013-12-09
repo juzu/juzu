@@ -17,10 +17,10 @@
 package juzu.impl.fs.spi.disk;
 
 import juzu.impl.common.Name;
+import juzu.impl.common.Resource;
 import juzu.impl.common.Timestamped;
 import juzu.impl.fs.spi.PathType;
 import juzu.impl.fs.spi.ReadWriteFileSystem;
-import juzu.impl.common.Content;
 import juzu.impl.common.Tools;
 
 import java.io.ByteArrayOutputStream;
@@ -32,13 +32,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class DiskFileSystem extends ReadWriteFileSystem<File> {
@@ -147,15 +143,15 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
   }
 
   @Override
-  public Timestamped<Content> getContent(File file) throws IOException {
+  public Timestamped<Resource> getResource(File file) throws IOException {
     FileInputStream in = new FileInputStream(file);
     try {
-      ByteArrayOutputStream content = new ByteArrayOutputStream();
+      ByteArrayOutputStream resource = new ByteArrayOutputStream();
       byte[] buffer = new byte[256];
       for (int l = in.read(buffer);l != -1;l = in.read(buffer)) {
-        content.write(buffer, 0, l);
+        resource.write(buffer, 0, l);
       }
-      return new Timestamped<Content>(file.lastModified(), new Content(content.toByteArray(), encoding));
+      return new Timestamped<Resource>(file.lastModified(), new Resource(resource.toByteArray(), encoding));
     }
     finally {
       Tools.safeClose(in);
@@ -200,7 +196,7 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
   }
 
   @Override
-  public long setContent(File file, Content content) throws IOException {
+  public long updateResource(File file, Resource resource) throws IOException {
     File parent = file.getParentFile();
     if (parent != null) {
       if (!parent.exists()) {
@@ -209,7 +205,7 @@ public class DiskFileSystem extends ReadWriteFileSystem<File> {
         }
       }
     }
-    InputStream in = content.getInputStream();
+    InputStream in = resource.getInputStream();
     FileOutputStream out = new FileOutputStream(file);
     try {
       Tools.copy(in, out);

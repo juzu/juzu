@@ -16,29 +16,29 @@
 
 package juzu.impl.fs.spi.ram;
 
-import juzu.impl.common.Content;
+import juzu.impl.common.Resource;
 import juzu.impl.common.Timestamped;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 class RAMFile extends RAMPath {
 
   /** . */
-  Timestamped<Content> content;
+  Timestamped<Resource> resource;
 
-  RAMFile(RAMDir parent, String name, Content content) {
+  RAMFile(RAMDir parent, String name, Resource resource) {
     super(parent, name);
 
     //
-    this.content = new Timestamped<Content>(System.currentTimeMillis(), content);
+    this.resource = new Timestamped<Resource>(System.currentTimeMillis(), resource);
   }
 
   @Override
   long getLastModified() {
-    return content.getTime();
+    return resource.getTime();
   }
 
   @Override
   void touch() {
-    content = content.touch();
+    resource = resource.touch();
   }
 }

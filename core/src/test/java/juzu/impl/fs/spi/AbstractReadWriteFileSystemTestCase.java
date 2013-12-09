@@ -16,7 +16,7 @@
 
 package juzu.impl.fs.spi;
 
-import juzu.impl.common.Content;
+import juzu.impl.common.Resource;
 import juzu.impl.common.Tools;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
@@ -55,7 +55,7 @@ public abstract class AbstractReadWriteFileSystemTestCase<P> extends AbstractTes
     assertEquals(1, fs.size(ReadFileSystem.PATH));
 
     // Now create
-    fs.setContent(bar, new Content("FOO"));
+    fs.updateResource(bar, new Resource("FOO"));
 
     //
     assertEquals(3, fs.size(ReadFileSystem.PATH));

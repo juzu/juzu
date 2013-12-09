@@ -16,7 +16,7 @@
 
 package juzu.impl.fs;
 
-import juzu.impl.common.Content;
+import juzu.impl.common.Resource;
 import juzu.impl.fs.spi.ram.RAMFileSystem;
 import juzu.test.AbstractTestCase;
 import org.junit.Test;
@@ -44,7 +44,7 @@ public class ScannerTestCase extends AbstractTestCase {
 
     //
     String[] bar = fs.makePath(foo, "bar.txt");
-    fs.setContent(bar, new Content(""));
+    fs.updateResource(bar, new Resource(""));
     waitForOneMillis();
     snapshot = snapshot.scan();
     assertEquals(Collections.singletonMap("/foo/bar.txt", Change.ADD), snapshot.getChanges());
@@ -53,7 +53,7 @@ public class ScannerTestCase extends AbstractTestCase {
     assertEquals(Collections.<String, Change>emptyMap(), snapshot.getChanges());
 
     //
-    fs.setContent(bar, new Content("value"));
+    fs.updateResource(bar, new Resource("value"));
     waitForOneMillis();
     snapshot = snapshot.scan();
     assertEquals(Collections.singletonMap("/foo/bar.txt", Change.UPDATE), snapshot.getChanges());
@@ -77,7 +77,7 @@ public class ScannerTestCase extends AbstractTestCase {
     Snapshot<String[]> snapshot = scanner.take();
     assertEquals(Collections.<String, Change>emptyMap(), snapshot.getChanges());
     String[] foo = fs.makePath(fs.getRoot(), ".foo");
-    fs.setContent(foo, new Content(""));
+    fs.updateResource(foo, new Resource(""));
     waitForOneMillis();
     snapshot = snapshot.scan();
     assertEquals(Collections.<String, Change>emptyMap(), snapshot.getChanges());
@@ -92,7 +92,7 @@ public class ScannerTestCase extends AbstractTestCase {
     Snapshot<String[]> snapshot = scanner.take();
     assertEquals(Collections.<String, Change>emptyMap(), snapshot.getChanges());
     String[] bar = fs.makePath(fs.makePath(fs.getRoot(), ".foo"), "bar.txt");
-    fs.setContent(bar, new Content(""));
+    fs.updateResource(bar, new Resource(""));
     waitForOneMillis();
     snapshot = snapshot.scan();
     assertEquals(Collections.<String, Change>emptyMap(), snapshot.getChanges());

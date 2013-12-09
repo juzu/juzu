@@ -21,7 +21,6 @@ import com.github.mustachejava.DefaultMustacheVisitor;
 import com.github.mustachejava.MustacheFactory;
 import com.github.mustachejava.MustacheVisitor;
 import com.github.mustachejava.TemplateContext;
-import juzu.impl.common.Content;
 import juzu.impl.common.Resource;
 import juzu.impl.common.Timestamped;
 import juzu.impl.template.spi.EmitContext;
@@ -60,9 +59,9 @@ public class TemplateProviderImpl extends TemplateProvider<MustacheContext> {
       @Override
       public Reader getReader(String resourceName) {
         Path.Relative partialPath = (Path.Relative)Path.parse(resourceName);
-        Resource<Timestamped<Content>> partial = context.resolveResource(partialPath);
+        Timestamped<Resource> partial = context.resolveResource(partialPath);
         if (partial != null) {
-          return new StringReader(partial.content.getObject().getCharSequence().toString());
+          return new StringReader(partial.getObject().getCharSequence().toString());
         } else {
           return null;
         }
