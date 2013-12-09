@@ -320,6 +320,7 @@ public abstract class ReadFileSystem<P> {
               case 0:
                 remove = !filter.acceptFile(a, name);
                 break;
+              case 1:
               case 3:
                 remove = !filter.acceptDir(a, name);
                 break;
