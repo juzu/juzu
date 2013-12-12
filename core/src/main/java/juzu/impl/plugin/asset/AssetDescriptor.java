@@ -22,7 +22,6 @@ import juzu.impl.asset.AssetMetaData;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.BeanDescriptor;
-import juzu.impl.resource.ResourceResolver;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
@@ -48,7 +47,6 @@ public class AssetDescriptor extends PluginDescriptor {
         BeanDescriptor.createFromBean(
             AssetManager.class,
             Scope.SINGLETON,
-            Collections.<Annotation>emptyList()),
-        BeanDescriptor.createFromImpl(ResourceResolver.class, Scope.SINGLETON, null, AssetResolver.class));
+            Collections.<Annotation>emptyList()));
   }
 }

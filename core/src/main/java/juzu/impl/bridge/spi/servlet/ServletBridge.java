@@ -282,7 +282,7 @@ public class ServletBridge extends HttpServlet {
   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
     //
-    ServletRequestContext ctx = new ServletRequestContext(config.requestEncoding, req, resp, path);
+    ServletRequestContext ctx = new ServletRequestContext(config.name, config.requestEncoding, req, resp, path);
 
     //
     ServletWebBridge bridge = new ServletWebBridge(this, ctx);

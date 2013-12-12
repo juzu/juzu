@@ -22,6 +22,7 @@ import juzu.impl.common.FormURLEncodedParser;
 import juzu.impl.common.JUL;
 import juzu.impl.common.Lexers;
 import juzu.impl.common.Logger;
+import juzu.impl.common.Name;
 import juzu.impl.common.Spliterator;
 import juzu.impl.common.Tools;
 import juzu.impl.io.BinaryOutputStream;
@@ -31,7 +32,6 @@ import juzu.request.RequestParameter;
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -67,7 +67,11 @@ public class ServletRequestContext extends WebRequestContext {
   /** . */
   private AsyncContext context;
 
+  /** . */
+  private final String prefix;
+
   public ServletRequestContext(
+      Name application,
       Charset defaultEncoding,
       HttpServletRequest req,
       HttpServletResponse resp,
@@ -118,12 +122,21 @@ public class ServletRequestContext extends WebRequestContext {
     }
 
     //
+    StringBuilder prefix = new StringBuilder();
+    for (String atom : application) {
+      prefix.append('/').append(atom);
+    }
+    prefix.append("/assets/");
+
+    //
     this.defaultEncoding = defaultEncoding;
     this.requestPath = req.getRequestURI().substring(req.getContextPath().length());
     this.requestParameters = requestParameters;
     this.req = req;
     this.path = path;
     this.resp = resp;
+    this.prefix = prefix.toString();
+
   }
 
   public Map<String, RequestParameter> getParameters() {
@@ -239,6 +252,10 @@ public class ServletRequestContext extends WebRequestContext {
         break;
       case APPLICATION:
         appendable.append(req.getContextPath()).append("/assets");
+        if (location == AssetLocation.APPLICATION && !uri.startsWith("/")) {
+          appendable.append(prefix);
+          appendable.append(uri);
+        }
         appendable.append(uri);
         break;
       case URL:

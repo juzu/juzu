@@ -13,27 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package juzu.impl.plugin.asset;
 
-import juzu.asset.AssetLocation;
-import juzu.impl.resource.ResourceResolver;
+@Application()
+@Assets(value = @Asset(id = "test.js", value = "test.js"))
+package plugin.asset.controller.inject;
 
-import javax.inject.Inject;
-import java.net.URL;
-
-/** @author Julien Viet */
-public class AssetResolver implements ResourceResolver {
-
-  @Inject AssetPlugin plugin;
-
-  public URL resolve(String uri) {
-    URL url = plugin.assetManager.resolveAsset(uri);
-    if (url == null) {
-      String assetsPath = plugin.getAssetsPath();
-      if (assetsPath != null && uri.startsWith(assetsPath)) {
-        url = plugin.resolve(AssetLocation.APPLICATION, uri);
-      }
-    }
-    return url;
-  }
-}
+import juzu.Application;
+import juzu.plugin.asset.Asset;
+import juzu.plugin.asset.Assets;

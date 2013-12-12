@@ -15,15 +15,20 @@
  */
 package juzu.impl.plugin.asset;
 
+import juzu.impl.asset.AssetServer;
+import juzu.impl.common.MethodInvocation;
+import juzu.impl.common.MethodInvocationResolver;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 /** @author Julien Viet */
-public class AssetsMetaModel extends MetaModelObject {
+public class AssetsMetaModel extends MetaModelObject implements MethodInvocationResolver {
 
   /** . */
   public final static Key<AssetsMetaModel> KEY = Key.of(AssetsMetaModel.class);
@@ -31,4 +36,13 @@ public class AssetsMetaModel extends MetaModelObject {
   /** . */
   final HashMap<ElementHandle.Package, AnnotationState> annotations = new HashMap<ElementHandle.Package, AnnotationState>();
 
+  public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) {
+    if ("Assets".equals(typeName) && methodName.equals("url")) {
+      String path = parameterMap.get("path");
+      if (path != null) {
+        return new MethodInvocation(AssetServer.class.getName(), "renderAssetURL", Collections.singletonList(path));
+      }
+    }
+    return null;
+  }
 }

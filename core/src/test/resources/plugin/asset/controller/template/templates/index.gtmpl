@@ -1,0 +1,1 @@
+<script type="application/javascript" src="@{Assets.url(path='test.js')}"></script>

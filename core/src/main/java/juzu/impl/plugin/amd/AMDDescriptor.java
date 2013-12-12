@@ -26,7 +26,6 @@ import juzu.impl.common.NameLiteral;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.plugin.PluginDescriptor;
-import juzu.impl.resource.ResourceResolver;
 
 /**
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
@@ -58,7 +57,6 @@ public class AMDDescriptor extends PluginDescriptor {
       BeanDescriptor.createFromBean(
         ModuleManager.class,
         Scope.SINGLETON,
-        Collections.<Annotation>singletonList(new NameLiteral("juzu.asset_manager.amd"))),
-        BeanDescriptor.createFromImpl(ResourceResolver.class, Scope.SINGLETON, null, ModuleResolver.class));
+        Collections.<Annotation>singletonList(new NameLiteral("juzu.asset_manager.amd"))));
   }
 }

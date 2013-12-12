@@ -18,7 +18,9 @@ package juzu.impl.asset;
 
 import juzu.asset.AssetLocation;
 import juzu.impl.common.Tools;
+import juzu.impl.plugin.application.Application;
 
+import javax.inject.Inject;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +39,19 @@ public class AssetManager {
   protected final LinkedHashMap<String, AssetNode> assets = new LinkedHashMap<String, AssetNode>();
 
   /** . */
-  protected final HashMap<String, URL> resources = new HashMap<String, URL>();
+  public final HashMap<String, URL> resources = new HashMap<String, URL>();
+
+  /** . */
+  protected final String prefix;
+
+  /** . */
+  protected final Application application;
+
+  @Inject
+  public AssetManager(Application application) {
+    this.prefix = "/" + application.getDescriptor().getPackageName().replace('.', '/') + "/assets/";
+    this.application = application;
+  }
 
   public boolean addAsset(String id, AssetLocation location, String value, URL url, String... dependencies) throws NullPointerException, IllegalArgumentException {
     return addAsset(id, location, Collections.singletonMap(value, url), Tools.set(dependencies));
@@ -91,11 +105,49 @@ public class AssetManager {
   /**
    * Resolve an asset as a resource URL or return null if it cannot be found.
    *
+   * @param asset the asset
+   * @return the resource
+   */
+  public URL resolveURL(Asset asset) {
+    switch (asset.getLocation()) {
+      case APPLICATION:
+        return resources.get(asset.getURI());
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * Resolve an asset as a resource URL or return null if it cannot be found.
+   *
    * @param path the path
    * @return the resource
    */
-  public URL resolveAsset(String path) {
-    return resources.get(path);
+  public URL resolveURL(AssetLocation location, String path) {
+    switch (location) {
+      case APPLICATION:
+        URL url = resources.get(path);
+        if (url == null && path.startsWith(prefix)) {
+          url = application.getClassLoader().getResource(path.substring(1));
+        }
+        return url;
+      default:
+        return null;
+    }
+  }
+
+  /**
+   * Returns the assets forthe specifid id.
+   *
+   * @param id the asset id
+   * @return the corresponding assets
+   * @throws NullPointerException
+   */
+  public Iterable<Asset> getAssets(String id) throws NullPointerException {
+    if (id == null) {
+      throw new NullPointerException("No null id accepted");
+    }
+    return assets.get(id);
   }
 
   /**
@@ -109,6 +161,11 @@ public class AssetManager {
   public Iterable<Asset> resolveAssets(Iterable<String> ids) throws
     NullPointerException,
     IllegalArgumentException {
+
+    //
+    if (ids == null) {
+      throw new NullPointerException("No null asset ids accepted");
+    }
 
     // Compute the closure
     LinkedHashMap<String, HashSet<String>> sub = new LinkedHashMap<String, HashSet<String>>();

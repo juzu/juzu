@@ -17,6 +17,7 @@
 package juzu.impl.plugin.controller;
 
 import juzu.impl.plugin.PluginDescriptor;
+import juzu.impl.plugin.application.Application;
 import juzu.request.Result;
 import juzu.io.UndeclaredIOException;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -46,11 +47,16 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
   /** . */
   public ArrayList<RequestFilter> filters;
 
+  /** . */
   @Inject
-  private InjectionContext injectionContext;
+  private Application application;
 
   public ControllerPlugin() {
     super("controller");
+  }
+
+  public Application getApplication() {
+    return application;
   }
 
   public ControllersDescriptor getDescriptor() {
@@ -67,7 +73,7 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
   }
 
   public InjectionContext<?, ?> getInjectionContext() {
-    return injectionContext;
+    return application.getInjectionContext();
   }
 
   public void invoke(RequestBridge bridge) {
@@ -108,7 +114,7 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
     //
     ClassLoader oldCL = Thread.currentThread().getContextClassLoader();
     try {
-      ClassLoader classLoader = injectionContext.getClassLoader();
+      ClassLoader classLoader = application.getClassLoader();
       Thread.currentThread().setContextClassLoader(classLoader);
       bridge.begin(request);
 

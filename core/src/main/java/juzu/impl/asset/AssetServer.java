@@ -16,9 +16,10 @@
 
 package juzu.impl.asset;
 
+import juzu.asset.AssetLocation;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.common.Tools;
-import juzu.impl.resource.ResourceResolver;
+import juzu.impl.request.Request;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -34,6 +35,9 @@ public class AssetServer {
   /** . */
   HashSet<Application> runtimes = new HashSet<Application>();
 
+  /** . */
+  private static final ThreadLocal<AssetServer> current = new ThreadLocal<AssetServer>();
+
   public AssetServer() {
   }
 
@@ -48,10 +52,10 @@ public class AssetServer {
   public boolean doGet(String path, ServletContext ctx, HttpServletResponse resp) throws ServletException, IOException {
     if (path != null && path.length() > 0) {
       for (Application runtime : runtimes) {
-        Iterable<ResourceResolver> resolvers = runtime.resolveBeans(ResourceResolver.class);
-        for (ResourceResolver resolver : resolvers) {
+        Iterable<AssetManager> resolvers = runtime.resolveBeans(AssetManager.class);
+        for (AssetManager resolver : resolvers) {
           // For now we only have resource of URL type ...
-          URL content = resolver.resolve(path);
+          URL content = resolver.resolveURL(AssetLocation.APPLICATION, path);
           InputStream in;
           if (content != null) {
             in = content.openStream();
@@ -74,5 +78,27 @@ public class AssetServer {
       }
     }
     return false;
+  }
+
+  public static String renderAssetURL(String path) throws NullPointerException {
+    return renderAssetURL(AssetLocation.APPLICATION, path);
+  }
+
+  public static String renderAssetURL(AssetLocation location, String uri) throws NullPointerException {
+    Request current = Request.getCurrent();
+    if (current != null) {
+      StringBuilder buffer = new StringBuilder();
+      switch (location) {
+        case APPLICATION:
+          current.renderAssetURL(location, uri, buffer);
+          break;
+        default:
+          current.renderAssetURL(location, uri, buffer);
+          break;
+      }
+      return buffer.toString();
+    } else {
+      return null;
+    }
   }
 }

@@ -470,6 +470,8 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
           appendable.append(req.getContextPath()).append("/assets");
           if (!uri.startsWith("/")) {
             appendable.append('/');
+            appendable.append(bridge.getApplication().getDescriptor().getPackageName().replace('.', '/'));
+            appendable.append("/assets/");
           }
           appendable.append(uri);
         }

@@ -20,11 +20,12 @@ import juzu.asset.AssetLocation;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AssetNode {
+public class AssetNode implements Iterable<Asset> {
 
   /** . */
   private static final Set<String> EMPTY_SET = Collections.emptySet();
@@ -73,5 +74,9 @@ public class AssetNode {
 
   public List<String> getValue() {
     return value;
+  }
+
+  public Iterator<Asset> iterator() {
+    return assets.iterator();
   }
 }

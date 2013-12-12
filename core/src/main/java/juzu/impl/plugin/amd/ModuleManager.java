@@ -17,6 +17,9 @@
  */
 package juzu.impl.plugin.amd;
 
+import juzu.impl.asset.AssetManager;
+
+import javax.inject.Inject;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +27,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
@@ -39,7 +41,12 @@ public class ModuleManager {
   protected final LinkedHashMap<String, Module> modules = new LinkedHashMap<String, Module>();
 
   /** . */
-  protected final HashMap<String, URL> resources = new HashMap<String, URL>();
+  private final AssetManager assetManager;
+
+  @Inject
+  public ModuleManager(AssetManager assetManager) {
+    this.assetManager = assetManager;
+  }
 
   public Module addAMD(ModuleMetaData data, URL url) throws NullPointerException, IllegalArgumentException, IOException {
     String name = data.getId();
@@ -58,15 +65,15 @@ public class ModuleManager {
       switch (data.getLocation()) {
         case APPLICATION :
           if (data instanceof ModuleMetaData.Require) {
-            resources.put(data.getPath(), url);
+            assetManager.resources.put(data.getPath(), url);
           } else {
-            resources.put(data.getPath(), new URL("amd", null, 0, "/", new AMDURLStreamHandler((ModuleMetaData.Define)data, url)));
+            assetManager.resources.put(data.getPath(), new URL("amd", null, 0, "/", new AMDURLStreamHandler((ModuleMetaData.Define)data, url)));
           }
           break;
         case SERVER :
         case URL:
           if (data instanceof ModuleMetaData.Require) {
-            resources.put(data.getPath(), url);
+            assetManager.resources.put(data.getPath(), url);
           }
           break;
         default :
@@ -77,10 +84,6 @@ public class ModuleManager {
 
     //
     return module;
-  }
-
-  public URL resolveAsset(String path) {
-    return resources.get(path);
   }
 
   private class AMDURLStreamHandler extends URLStreamHandler {

@@ -18,6 +18,7 @@ package juzu.impl.request;
 
 import juzu.Response;
 import juzu.Scope;
+import juzu.asset.AssetLocation;
 import juzu.impl.bridge.Parameters;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.bridge.spi.ScopedContext;
@@ -28,8 +29,10 @@ import juzu.impl.inject.ScopingContext;
 import juzu.impl.inject.spi.BeanLifeCycle;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.bridge.spi.RequestBridge;
+import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
+import juzu.io.UndeclaredIOException;
 import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
 import juzu.request.Dispatch;
@@ -41,6 +44,7 @@ import juzu.request.Result;
 import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -92,7 +96,6 @@ public class Request implements ScopingContext {
     Method method,
     Map<String, RequestParameter> parameters,
     RequestBridge bridge) {
-    RequestContext context;
 
     // Make a copy of the original arguments provided by the bridge
     Map<ControlParameter, Object> arguments = new HashMap<ControlParameter, Object>(bridge.getArguments());
@@ -103,6 +106,10 @@ public class Request implements ScopingContext {
     this.arguments = arguments;
     this.controllerPlugin = controllerPlugin;
     this.method = method;
+  }
+
+  public Application getApplication() {
+    return controllerPlugin.getApplication();
   }
 
   public ClientContext getClientContext() {
@@ -491,5 +498,14 @@ public class Request implements ScopingContext {
 
   public static Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method, Object[] args) {
     return (Phase.Resource.Dispatch)safeCreateDispatch(method, args);
+  }
+
+  public void renderAssetURL(AssetLocation location, String uri, Appendable appendable) throws NullPointerException, UnsupportedOperationException, UndeclaredIOException {
+    try {
+      getBridge().renderAssetURL(location, uri, appendable);
+    }
+    catch (IOException e) {
+      throw new UndeclaredIOException(e);
+    }
   }
 }

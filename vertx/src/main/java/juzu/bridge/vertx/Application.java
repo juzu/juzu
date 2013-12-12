@@ -20,6 +20,8 @@
 package juzu.bridge.vertx;
 
 import juzu.Response;
+import juzu.asset.AssetLocation;
+import juzu.impl.asset.AssetManager;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.BridgeContext;
@@ -317,10 +319,10 @@ public class Application {
         //
         boolean served = false;
         HttpServerResponse response = ctx.req.response;
-        Iterable<ResourceResolver> resolvers = bridge.getApplication().resolveBeans(ResourceResolver.class);
-        for (Iterator<ResourceResolver> i = resolvers.iterator();i.hasNext() && !served;) {
-          ResourceResolver resolver = i.next();
-          URL assetURL = resolver.resolve(ctx.req.path);
+        Iterable<AssetManager> resolvers = bridge.getApplication().resolveBeans(AssetManager.class);
+        for (Iterator<AssetManager> i = resolvers.iterator();i.hasNext() && !served;) {
+          AssetManager resolver = i.next();
+          URL assetURL = resolver.resolveURL(AssetLocation.APPLICATION, ctx.req.path);
           if (assetURL != null) {
             served = true;
             if ("file".equals(assetURL.getProtocol())) {

@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Declares assets.
+ * A container for asset declarations.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
