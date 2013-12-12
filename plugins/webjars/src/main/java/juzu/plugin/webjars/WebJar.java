@@ -17,26 +17,24 @@
  */
 package juzu.plugin.webjars;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Declare a set of web jars for an application.
+ * Specify a webjar by its coordinates (artifactId, version), for example <code>@WebJar("jquery", "2.0.0")</code>.
  *
- * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
- * @version $Id$
- *
+ * @author Julien Viet
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.PACKAGE)
-public @interface WebJars {
+public @interface WebJar {
 
   /**
-   * The application web jars.
+   * The webjar artifact id.
    *
-   * @return the web jars
+   * @return the artifact id
    */
-  WebJar[] value() default {};
+  String id();
+
+  /**
+   * The webjar version.
+   *
+   * @return the version
+   */
+  String version();
 }

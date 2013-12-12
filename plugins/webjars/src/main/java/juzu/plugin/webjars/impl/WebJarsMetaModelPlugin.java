@@ -99,37 +99,37 @@ public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
       AnnotationState annotation = entry.getValue();
       Name pkg = entry.getKey();
       ProcessingContext env = metaModel.processingContext;
-      ElementHandle.Package pkgHandle = ElementHandle.Package.create(pkg);
-      List<String> resources = (List<String>)annotation.get("value");
-      
-      //
-      if (resources != null && resources.size() > 0) {
-
-        // For now we use the hardcoded assets package
+      List<AnnotationState> webJars = (List<AnnotationState>)annotation.get("value");
+      if (webJars != null && webJars.size() > 0) {
         Name assetPkg = pkg.append("assets");
-        for(String resource : resources) {
-          log.info("Processing declared webjars " + resource);
-          
-          String resourcePath = new WebJarAssetLocator().getFullPath(resource);
-          URL url = WebJarAssetLocator.class.getClassLoader().getResource(resourcePath);
-          
-          if (url != null) {
-            Path.Absolute to = assetPkg.resolve(resource).as("js");
-            try {
-              log.info("Webjars " + resource + " write on disk as " + to);
-              FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, to);
-              Writer writer = fo.openWriter();
+        for(AnnotationState webJar : webJars) {
+          log.info("Processing declared webjars " + webJar);
+          String id = (String)webJar.get("id");
+          String version = (String)webJar.get("version");
+          WebJarAssetLocator locator = new WebJarAssetLocator();
+          String folderPath = "/" + id + "/" + version;
+          Set<String> assetsPaths = locator.listAssets(folderPath);
+          for (String assetPath : assetsPaths) {
+            URL assetURL = WebJarAssetLocator.class.getClassLoader().getResource(assetPath);
+            if (assetURL != null) {
+              String dst = assetPath.substring(WebJarAssetLocator.WEBJARS_PATH_PREFIX.length() + folderPath.length() + 1);
+              Path.Absolute to = assetPkg.resolve(Path.parse(dst));
               try {
-                writer.write(Tools.read(url));
+                log.info("Webjars " + webJar + " write on disk as " + to);
+                FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, to);
+                Writer writer = fo.openWriter();
+                try {
+                  writer.write(Tools.read(assetURL));
+                }
+                finally {
+                  Tools.safeClose(writer);
+                }
+              } catch (IOException e) {
+                log.info("Resource " + to + " could not be written on disk", e);
               }
-              finally {
-                Tools.safeClose(writer);
-              }
-            } catch (IOException e) {
-              log.info("Resource " + to + " could not be written on disk", e);
+            } else {
+              log.info("Could not resolve WebJars asset " + webJar + " with resource path " + assetURL);
             }
-          } else {
-            log.info("Could not resolve WebJars asset " + resource + " with resource path " + resourcePath);
           }
         }
       }

@@ -13,7 +13,7 @@ plugin or the _AMD_ plugin.
 [source,java]
 ----
 @Application
-@WebJars("foo.js")
+@WebJars(@WebJar(id = "foo", version = "1.0"))
 package myapp;
 
 import juzu.Application;
@@ -29,7 +29,8 @@ import juzu.plugin.webjars.WebJars;
 </dependency>
 ----
 
-The _foo.js_ file will be located in the +myapp.assets+ package.
+The plugin will copy the content of the _foo_ webjar to the application +assets+ directory, they will be available as
+any other asset. For this example _foo.js_ file will be located in the +myapp.assets+ package.
 
 If we want this file to be served with the application we simply add the corresponding +@Assets+ annotation:
 
@@ -37,7 +38,7 @@ If we want this file to be served with the application we simply add the corresp
 [source,java]
 ----
 @Application
-@WebJars("foo.js")
+@WebJars(@WebJar(id = "foo", version = "1.0"))
 @Assets(@Asset(id = "foo",  value="foo.js"))
 package myapp;
 
@@ -53,7 +54,7 @@ It can also be used as a JavaScript module with the _AMD_ plugin:
 [source,java]
 ----
 @Application
-@WebJars("foo.js")
+@WebJars(@WebJar(id = "foo", version = "1.0"))
 @Defines({
   @Define(
     name = "Foo", 
@@ -73,7 +74,6 @@ import juzu.plugin.amd.Defines;
 import juzu.plugin.amd.Dependency;
 import juzu.plugin.webjars.WebJars;
 ----
-
 
 === Building
 
