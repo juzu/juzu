@@ -17,15 +17,12 @@
  */
 package juzu.plugin.webjars;
 
-import java.io.File;
-
 import juzu.test.AbstractWebTestCase;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -36,13 +33,11 @@ import org.openqa.selenium.WebElement;
  * @version $Id$
  *
  */
-public class WebJarsWithAssetTestCase extends AbstractWebTestCase {
+public class WebJarTestCase extends AbstractWebTestCase {
   
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    WebArchive war = createServletDeployment(true, "juzu.webjars");
-    File[] webjars = Maven.resolver().resolve("org.webjars:jquery:2.0.0").withTransitivity().asFile();
-    return war.addAsLibraries(webjars);
+    return createServletDeployment(true, "juzu.webjar");
   }
   
   @Drone
@@ -52,6 +47,6 @@ public class WebJarsWithAssetTestCase extends AbstractWebTestCase {
   public void test() throws Exception {
     driver.get(applicationURL().toString());
     WebElement script = driver.findElement(By.tagName("script"));
-    assertEquals("http://localhost:" + getContainerPort() + "/juzu/assets/juzu/webjars/assets/jquery.js", script.getAttribute("src"));
+    assertEquals("http://localhost:" + getContainerPort() + "/juzu/assets/juzu/webjar/assets/jquery.js", script.getAttribute("src"));
   }
 }

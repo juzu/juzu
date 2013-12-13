@@ -13,7 +13,7 @@ plugin or the _AMD_ plugin.
 [source,java]
 ----
 @Application
-@WebJars(@WebJar(id = "foo", version = "1.0"))
+@WebJars(@WebJar("foo"))
 package myapp;
 
 import juzu.Application;
@@ -38,8 +38,8 @@ If we want this file to be served with the application we simply add the corresp
 [source,java]
 ----
 @Application
-@WebJars(@WebJar(id = "foo", version = "1.0"))
-@Assets(@Asset(id = "foo",  value="foo.js"))
+@WebJars(@WebJar("foo"))
+@Assets(@Asset("foo.js"))
 package myapp;
 
 import juzu.Application;
@@ -54,7 +54,7 @@ It can also be used as a JavaScript module with the _AMD_ plugin:
 [source,java]
 ----
 @Application
-@WebJars(@WebJar(id = "foo", version = "1.0"))
+@WebJars(@WebJar("foo"))
 @Defines({
   @Define(
     name = "Foo", 

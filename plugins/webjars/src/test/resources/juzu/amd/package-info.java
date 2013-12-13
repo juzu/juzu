@@ -1,5 +1,5 @@
 @Application
-@WebJars(@WebJar(id = "jquery", version = "2.0.0"))
+@WebJars(@WebJar("jquery"))
 @Defines({
   @Define(id = "jquery", path="jquery.js", adapter="(function() { @{include} return jQuery.noConflict(true);})();"),
   @Define(
@@ -8,7 +8,7 @@
     dependencies = {@Dependency(id = "jquery", alias = "$")}
   )
 })
-package juzu.amd.webjars;
+package juzu.amd;
 
 import juzu.Application;
 import juzu.plugin.amd.Define;

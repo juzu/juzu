@@ -17,18 +17,18 @@
  */
 package juzu.plugin.webjars;
 
+import juzu.test.AbstractTestCase;
+import org.junit.Test;
+
 /**
- * Specify a webjar by its coordinates (artifactId, version), for example <code>@WebJar("jquery", "2.0.0")</code>.
+ * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
+ * @version $Id$
  *
- * @author Julien Viet
  */
-public @interface WebJar {
-
-  /**
-   * The webjar artifact id.
-   *
-   * @return the artifact id
-   */
-  String value();
-
+public class MissingWebJarTestCase extends AbstractTestCase {
+  
+  @Test
+  public void test() throws Exception {
+    compiler("juzu.missingwebjar").failCompile();
+  }
 }

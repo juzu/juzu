@@ -17,17 +17,13 @@
  */
 package juzu.plugin.webjars;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNodeList;
@@ -42,13 +38,11 @@ import juzu.test.UserAgent;
  * @version $Id$
  *
  */
-public class WebJarsWithAMDTestCase extends AbstractAMDTestCase {
+public class AMDTestCase extends AbstractAMDTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    WebArchive war = createServletDeployment(true, "juzu.amd.webjars");
-    File[] webjars = Maven.resolver().resolve("org.webjars:jquery:2.0.0").withTransitivity().asFile();
-    return war.addAsLibraries(webjars);
+    return createServletDeployment(true, "juzu.amd");
   }
 
   @Test @RunAsClient
@@ -70,10 +64,10 @@ public class WebJarsWithAMDTestCase extends AbstractAMDTestCase {
     
     assertList(Tools.list("/juzu/assets/juzu/impl/plugin/amd/require.js",
         "/juzu/assets/juzu/impl/plugin/amd/wrapper.js",
-        "/juzu/assets/juzu/amd/webjars/assets/foo.js",
-        "/juzu/assets/juzu/amd/webjars/assets/jquery.js"), sources);
+        "/juzu/assets/juzu/amd/assets/foo.js",
+        "/juzu/assets/juzu/amd/assets/jquery.js"), sources);
     
-    String jquery = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/juzu/amd/webjars/assets/jquery.js"));
+    String jquery = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/juzu/amd/assets/jquery.js"));
     boolean actual = jquery.endsWith("})( window );\n return jQuery.noConflict(true);})();\n});");
     assertTrue(actual);
   }

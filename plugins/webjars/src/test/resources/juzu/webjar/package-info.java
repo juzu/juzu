@@ -1,8 +1,8 @@
 @Application
-@WebJars(@WebJar(id = "jquery", version = "2.0.0"))
+@WebJars(@WebJar("jquery"))
 @Assets(@Asset("jquery.js"))
 @WithAssets
-package juzu.webjars;
+package juzu.webjar;
 
 import juzu.Application;
 import juzu.plugin.asset.Asset;

@@ -18,14 +18,17 @@
 package juzu.plugin.webjars.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
+import javax.lang.model.element.PackageElement;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
@@ -35,6 +38,7 @@ import juzu.impl.common.Path;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.ElementHandle;
+import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
@@ -50,7 +54,17 @@ import org.webjars.WebJarAssetLocator;
  *
  */
 public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
-  
+
+  /** . */
+  public static final MessageCode MISSING_WEBJAR = new MessageCode(
+      "MISSING_WEBJAR",
+      "Missing Webjar %1$s");
+
+  /** . */
+  public static final MessageCode INVALID_WEBJAR = new MessageCode(
+      "INVALID_WEBJAR",
+      "Invalid Webjar %1$s %2$s");
+
   /** . */
   static final Logger log = BaseProcessor.getLogger(WebJarsMetaModelPlugin.class);
   
@@ -104,8 +118,34 @@ public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
         Name assetPkg = pkg.append("assets");
         for(AnnotationState webJar : webJars) {
           log.info("Processing declared webjars " + webJar);
-          String id = (String)webJar.get("id");
-          String version = (String)webJar.get("version");
+          String id = (String)webJar.get("value");
+          String path = "META-INF/maven/org.webjars/" + id + "/pom.properties";
+          URL resource = WebJarAssetLocator.class.getClassLoader().getResource(path);
+          ElementHandle.Package pkgHandle = ElementHandle.Package.create(pkg);
+          PackageElement pkgElt = env.get(pkgHandle);
+          String version;
+          if (resource == null) {
+            throw MISSING_WEBJAR.failure(pkgElt, id);
+          } else {
+            Properties props = new Properties();
+            InputStream in = null;
+            try {
+              in = resource.openStream();
+              props.load(in);
+              version = props.getProperty("version");
+            }
+            catch (IOException e) {
+              throw INVALID_WEBJAR.failure(pkgElt, id, "Could not read " + path).initCause(e);
+            }
+            finally {
+              Tools.safeClose(in);
+            }
+            if (version == null) {
+              throw INVALID_WEBJAR.failure(pkgElt, id, "No version found in " + path);
+            }
+          }
+
+          //
           WebJarAssetLocator locator = new WebJarAssetLocator();
           String folderPath = "/" + id + "/" + version;
           Set<String> assetsPaths = locator.listAssets(folderPath);

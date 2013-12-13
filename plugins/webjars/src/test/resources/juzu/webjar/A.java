@@ -15,20 +15,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package juzu.plugin.webjars;
+package juzu.webjar;
+
+import juzu.Response;
+import juzu.View;
 
 /**
- * Specify a webjar by its coordinates (artifactId, version), for example <code>@WebJar("jquery", "2.0.0")</code>.
+ * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
+ * @version $Id$
  *
- * @author Julien Viet
  */
-public @interface WebJar {
+public class A {
 
-  /**
-   * The webjar artifact id.
-   *
-   * @return the artifact id
-   */
-  String value();
-
+  @View
+  public Response index() {
+    return Response.ok("hello");
+  }
 }
