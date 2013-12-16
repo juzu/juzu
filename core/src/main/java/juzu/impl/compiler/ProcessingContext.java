@@ -622,8 +622,12 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
   }
 
   public FileObject createResource(JavaFileManager.Location location, CharSequence pkg, CharSequence relativeName, Element... originatingElements) throws IOException {
+    return createResource(location, Name.parse(pkg), relativeName, originatingElements);
+  }
+
+  public FileObject createResource(JavaFileManager.Location location, Name pkg, CharSequence relativeName, Element... originatingElements) throws IOException {
     if (tool.getOverwriteReadingResource()) {
-      Key key = new Key(location, pkg.toString(), relativeName.toString());
+      Key key = new Key(location, pkg, relativeName.toString());
       FileObject resource = resources != null ? resources.get(key) : null;
       if (resource == null) {
         log.info("Creating resource file for location=" + location + " pkg=" + pkg + " relativeName=" + relativeName + " elements=" + Arrays.asList(originatingElements));
@@ -631,7 +635,7 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
         if (resources == null) {
           resources = new HashMap<Key, FileObject>();
         }
-        resources.put(new Key(location, pkg.toString(), relativeName.toString()), resource);
+        resources.put(new Key(location, pkg, relativeName.toString()), resource);
       }
       return resource;
     } else {
@@ -648,7 +652,11 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
   }
 
   public FileObject getResource(JavaFileManager.Location location, CharSequence pkg, CharSequence relativeName) throws IOException {
-    Key key = new Key(location, pkg.toString(), relativeName.toString());
+    return getResource(location, Name.parse(pkg), relativeName);
+  }
+
+  public FileObject getResource(JavaFileManager.Location location, Name pkg, CharSequence relativeName) throws IOException {
+    Key key = new Key(location, pkg, relativeName.toString());
     FileObject resource = resources != null ? resources.get(key) : null;
     if (resource == null) {
       try {
@@ -683,9 +691,9 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
    */
   private static final class Key {
     final JavaFileManager.Location location;
-    final String pkg;
+    final Name pkg;
     final String relativeName;
-    private Key(JavaFileManager.Location location, String pkg, String relativeName) {
+    private Key(JavaFileManager.Location location, Name pkg, String relativeName) {
       this.location = location;
       this.pkg = pkg;
       this.relativeName = relativeName;

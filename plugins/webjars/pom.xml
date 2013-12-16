@@ -35,6 +35,13 @@
 	  <scope>test</scope>
 	</dependency>
 
+	<dependency>
+	  <groupId>org.webjars</groupId>
+	  <artifactId>bootswatch</artifactId>
+	  <version>3.0.0</version>
+	  <scope>test</scope>
+	</dependency>
+
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-depchain-arquillian</artifactId>
