@@ -17,25 +17,26 @@
  */
 package juzu.plugin.webjars;
 
+import juzu.test.AbstractTestCase;
+import juzu.test.CompilerAssert;
+import org.junit.Test;
+import juzu.impl.compiler.Compiler;
+
+import java.io.File;
+
 /**
- * Specify a webjar by its coordinates (artifactId, version), for example <code>@WebJar("jquery", "2.0.0")</code>.
+ * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
+ * @version $Id$
  *
- * @author Julien Viet
  */
-public @interface WebJar {
-
-  /**
-   * The webjar artifact id.
-   *
-   * @return the artifact id
-   */
-  String value();
-
-  /**
-   * The optional version.
-   *
-   * @return the version
-   */
-  String version() default "";
-
+public class OverrideVersionTestCase extends AbstractTestCase {
+  @Test
+  public void test() throws Exception {
+    CompilerAssert<File,File> compilerAssert = compiler("juzu.overrideversion");
+    Compiler compiler = compilerAssert.assertCompile();
+    File root = compilerAssert.getClassOutput().getRoot();
+    File resource = new File(root, "juzu/overrideversion/assets/ui-bootstrap.js");
+    assertTrue(resource.exists());
+    assertTrue(resource.isFile());
+  }
 }

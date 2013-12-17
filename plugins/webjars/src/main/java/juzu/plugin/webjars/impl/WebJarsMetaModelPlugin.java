@@ -119,29 +119,33 @@ public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
         for(AnnotationState webJar : webJars) {
           log.info("Processing declared webjars " + webJar);
           String id = (String)webJar.get("value");
-          String path = "META-INF/maven/org.webjars/" + id + "/pom.properties";
-          URL resource = WebJarAssetLocator.class.getClassLoader().getResource(path);
-          ElementHandle.Package pkgHandle = ElementHandle.Package.create(pkg);
-          PackageElement pkgElt = env.get(pkgHandle);
-          String version;
-          if (resource == null) {
-            throw MISSING_WEBJAR.failure(pkgElt, id);
-          } else {
-            Properties props = new Properties();
-            InputStream in = null;
-            try {
-              in = resource.openStream();
-              props.load(in);
-              version = props.getProperty("version");
-            }
-            catch (IOException e) {
-              throw INVALID_WEBJAR.failure(pkgElt, id, "Could not read " + path).initCause(e);
-            }
-            finally {
-              Tools.safeClose(in);
-            }
-            if (version == null) {
-              throw INVALID_WEBJAR.failure(pkgElt, id, "No version found in " + path);
+          String version = (String)webJar.get("version");
+
+          //
+          if (version == null || version.length() == 0) {
+            String path = "META-INF/maven/org.webjars/" + id + "/pom.properties";
+            URL resource = WebJarAssetLocator.class.getClassLoader().getResource(path);
+            ElementHandle.Package pkgHandle = ElementHandle.Package.create(pkg);
+            PackageElement pkgElt = env.get(pkgHandle);
+            if (resource == null) {
+              throw MISSING_WEBJAR.failure(pkgElt, id);
+            } else {
+              Properties props = new Properties();
+              InputStream in = null;
+              try {
+                in = resource.openStream();
+                props.load(in);
+                version = props.getProperty("version");
+              }
+              catch (IOException e) {
+                throw INVALID_WEBJAR.failure(pkgElt, id, "Could not read " + path).initCause(e);
+              }
+              finally {
+                Tools.safeClose(in);
+              }
+              if (version == null) {
+                throw INVALID_WEBJAR.failure(pkgElt, id, "No version found in " + path);
+              }
             }
           }
 

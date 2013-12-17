@@ -75,6 +75,53 @@ import juzu.plugin.amd.Dependency;
 import juzu.plugin.webjars.WebJars;
 ----
 
+You don't need to specify the WebJar version because the WebJars plugin will find it automatically (by examining the Maven
+metadata stored in the jar). However some jars have files that don't correspond to the WebJar version (usually patch
+releases), in that case you can specify the version to help the plugin find the files:
+
+[source,xml]
+----
+<dependency>
+	  <groupId>org.webjars</groupId>
+	  <artifactId>angular-ui-bootstrap</artifactId>
+	  <version>0.7.0-1</version>
+</dependency>
+----
+
+For this particular version _0.7.0-1_ the effective version to use it _0.7.0_. This can be achieved by examining the
+ jar:
+
+----
+> cd .m2/repository/org/webjars/angular-ui-bootstrap/0.7.0-1/
+> jar -tvf angular-ui-bootstrap-0.7.0-1.jar
+     0 Fri Dec 06 08:50:36 CET 2013 META-INF/
+   125 Fri Dec 06 08:50:34 CET 2013 META-INF/MANIFEST.MF
+     0 Fri Dec 06 08:50:30 CET 2013 META-INF/resources/
+     0 Fri Dec 06 08:50:30 CET 2013 META-INF/resources/webjars/
+     0 Fri Dec 06 08:50:30 CET 2013 META-INF/resources/webjars/angular-ui-bootstrap/
+     0 Fri Dec 06 08:50:34 CET 2013 META-INF/resources/webjars/angular-ui-bootstrap/0.7.0/
+   230 Fri Dec 06 08:50:30 CET 2013 META-INF/resources/webjars/angular-ui-bootstrap/0.7.0/webjars-requirejs.js
+ 51488 Fri Dec 06 08:50:34 CET 2013 META-INF/resources/webjars/angular-ui-bootstrap/0.7.0/ui-bootstrap-tpls.min.js
+122931 Fri Dec 06 08:50:34 CET 2013 META-INF/resources/webjars/angular-ui-bootstrap/0.7.0/ui-bootstrap-tpls.js
+ 40129 Fri Dec 06 08:50:34 CET 2013 META-INF/resources/webjars/angular-ui-bootstrap/0.7.0/ui-bootstrap.min.js
+109195 Fri Dec 06 08:50:34 CET 2013 META-INF/resources/webjars/angular-ui-bootstrap/0.7.0/ui-bootstrap.js
+     0 Fri Dec 06 08:50:36 CET 2013 META-INF/maven/
+     0 Fri Dec 06 08:50:36 CET 2013 META-INF/maven/org.webjars/
+     0 Fri Dec 06 08:50:36 CET 2013 META-INF/maven/org.webjars/angular-ui-bootstrap/
+  5217 Fri Dec 06 08:50:26 CET 2013 META-INF/maven/org.webjars/angular-ui-bootstrap/pom.xml
+   118 Fri Dec 06 08:50:34 CET 2013 META-INF/maven/org.webjars/angular-ui-bootstrap/pom.properties
+----
+
+In this special case, we need to tell the version to the plugin:
+
+.WebJars and Asset plugin in action
+[source,java]
+----
+@Application
+@WebJars(@WebJar(value = "angular-ui-bootstrap", version = "0.7.0"))
+package myapp;
+----
+
 === Building
 
 Add the WebJars plugin jar to your compilation classpath.
