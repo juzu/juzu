@@ -24,10 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import juzu.impl.common.JSON;
-import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
-import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
@@ -44,14 +41,6 @@ import juzu.plugin.amd.Requires;
  * 
  */
 public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
-
-  /** . */
-  private HashMap<ElementHandle.Package, AnnotationState> defines =
-    new HashMap<ElementHandle.Package, AnnotationState>();
-
-  /** . */
-  private HashMap<ElementHandle.Package, AnnotationState> requires =
-    new HashMap<ElementHandle.Package, AnnotationState>();
 
   public AMDMetaModelPlugin() {
     super("amd");
@@ -107,78 +96,14 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
         assetsMetaModel.addAsset(amdAsset);
       }
     }
-
-    if (key.getType().equals(Name.create(Defines.class))) {
-      defines.put(metaModel.getHandle(), added);
-    } else if (key.getType().equals(Name.create(Requires.class))) {
-      requires.put(metaModel.getHandle(), added);
-    }
   }
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-
     if (metaModel.getHandle().equals(key.getElement())) {
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
       boolean define = key.getType().getIdentifier().equals("Defines");
       assetsMetaModel.removeAssets(define ? "define" : "require");
     }
-
-    if (key.getType().equals(Name.create(Defines.class))) {
-      defines.remove(metaModel.getHandle());
-    } else if (key.getType().equals(Name.create(Requires.class))) {
-      requires.remove(metaModel.getHandle());
-    }
-  }
-
-  @Override
-  public void prePassivate(ApplicationMetaModel metaModel) {
-    AnnotationState defineState = defines.get(metaModel.getHandle());
-    AnnotationState requireState = requires.get(metaModel.getHandle());
-  }
-
-  private List<JSON> build(List<Map<String, Object>> scripts) {
-    List<JSON> foo = Collections.emptyList();
-    if (scripts != null && scripts.size() > 0) {
-      foo = new ArrayList<JSON>(scripts.size());
-      for (Map<String, Object> script : scripts) {
-        JSON bar = new JSON();
-        for (Map.Entry<String, Object> entry : script.entrySet()) {
-          bar.set(entry.getKey(), entry.getValue());
-        }
-        foo.add(bar);
-      }
-    }
-    return foo;
-  }
-
-  @Override
-  public JSON getDescriptor(ApplicationMetaModel application) {
-    AnnotationState definesState = defines.get(application.getHandle());
-    AnnotationState requiresState = requires.get(application.getHandle());
-    JSON config = null;
-    if (definesState != null) {
-      config = new JSON();
-      JSON definesJSON = new JSON();
-      List<Map<String, Object>> defines = (List<Map<String, Object>>)definesState.get("value");
-      definesJSON.set("value", build(defines));
-      config.set("defines", definesJSON);
-    }
-    if (requiresState != null) {
-      if (config == null) {
-        config = new JSON();
-      }
-      JSON requiresJSON = new JSON();
-      List<Map<String, Object>> requires = (List<Map<String, Object>>)requiresState.get("value");
-      requiresJSON.set("value", build(requires));
-      requiresJSON.set("location", requiresState.get("location"));
-      config.set("requires", requiresJSON);
-    }
-
-    if (config != null) {
-      config.set("package", "assets");
-    }
-
-    return config;
   }
 }

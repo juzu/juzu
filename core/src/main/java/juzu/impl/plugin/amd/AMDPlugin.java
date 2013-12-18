@@ -19,19 +19,19 @@ package juzu.impl.plugin.amd;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import juzu.PropertyType;
 import juzu.asset.AssetLocation;
+import juzu.impl.asset.Asset;
 import juzu.impl.asset.AssetManager;
-import juzu.impl.common.JSON;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.io.Chunk;
@@ -54,9 +54,6 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
   private Module[] requires;
 
   /** . */
-  private AMDDescriptor descriptor;
-
-  /** . */
   private PluginContext context;
 
   /** . */
@@ -66,6 +63,10 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
   /** . */
   @Inject
   ModuleManager manager;
+
+  /** Force load of assets to avoid lazy load of the asset plugin (and thus population of the asset manager). */
+  @Inject
+  AssetPlugin assetPlugin;
 
   public AMDPlugin() {
     super("amd");
@@ -77,91 +78,8 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
 
   @Override
   public PluginDescriptor init(PluginContext context) throws Exception {
-    JSON config = context.getConfig();
-    List<ModuleMetaData.Define> defines = Collections.emptyList();
-    List<ModuleMetaData.Require> requires = Collections.emptyList();
-
-    if (config != null) {
-      String packageName = config.getString("package");
-      JSON definesJSON = config.getJSON("defines");
-      JSON requiresJSON = config.getJSON("requires");
-
-      if (definesJSON != null) {
-        defines = loadDefines(packageName, definesJSON.getList("value", JSON.class));
-      }
-
-      if (requiresJSON != null) {
-        AssetLocation defaultLocation = AssetLocation.safeValueOf(requiresJSON.getString("location"));
-        if (defaultLocation == null) {
-          defaultLocation = AssetLocation.APPLICATION;
-        }
-        requires = loadRequires(packageName, defaultLocation, requiresJSON.getList("value", JSON.class));
-      }
-    }
-
-    this.descriptor = new AMDDescriptor(defines, requires);
     this.context = context;
-    return descriptor;
-  }
-
-  private List<ModuleMetaData.Define> loadDefines(String packageName, List<? extends JSON> modules) throws Exception {
-    List<ModuleMetaData.Define> defines = Collections.emptyList();
-    if (modules != null && modules.size() > 0) {
-      defines = new ArrayList<ModuleMetaData.Define>();
-      for (JSON module : modules) {
-        String name = module.getString("id");
-        List<JSON> dependencies = (List<JSON>)module.getList("dependencies");
-
-        //
-        String value = module.getString("path");
-        if (!value.startsWith("/")) {
-          value = "/" + application.getPackageName().replace('.', '/') + "/" + packageName.replace('.', '/') + "/" + value;
-        }
-
-        //
-        String adapter = module.getString("adapter");
-
-        //
-        ModuleMetaData.Define descriptor = new ModuleMetaData.Define(name, value, adapter);
-        if (dependencies != null && !dependencies.isEmpty()) {
-          for (JSON dependency : dependencies) {
-            String depName = dependency.getString("id");
-            String depAlias = dependency.getString("alias");
-            descriptor.addDependency(new AMDDependency(depName, depAlias));
-          }
-        }
-
-        defines.add(descriptor);
-      }
-    }
-    return defines;
-  }
-
-  private List<ModuleMetaData.Require> loadRequires(String packageName, AssetLocation defaultLocation, List<? extends JSON> modules) throws Exception {
-    List<ModuleMetaData.Require> defines = Collections.emptyList();
-    if (modules != null && modules.size() > 0) {
-      defines = new ArrayList<ModuleMetaData.Require>();
-      for (JSON module : modules) {
-        String name = module.getString("id");
-        AssetLocation location = AssetLocation.safeValueOf(module.getString("location"));
-
-        // We handle here location / perhaps we could handle it at compile time
-        // instead?
-        if (location == null) {
-          location = defaultLocation;
-        }
-
-        //
-        String value = module.getString("path");
-        if (!value.startsWith("/") && location == AssetLocation.APPLICATION) {
-          value = "/" + application.getPackageName().replace('.', '/') + "/" + packageName.replace('.', '/') + "/" + value;
-        }
-
-        //
-        defines.add(new ModuleMetaData.Require(name, value, location));
-      }
-    }
-    return defines;
+    return new AMDDescriptor();
   }
 
   @PostConstruct
@@ -182,28 +100,28 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
     assetManager.addAsset("juzu.amd.wrapper", "asset", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/wrapper.js", wrapperjsURL);
 
     //
-    this.defines = process(descriptor.getDefines(), manager);
-    this.requires = process(descriptor.getRequires(), manager);
+    this.defines = process("define", manager);
+    this.requires = process("require", manager);
   }
 
-  private Module[] process(List<? extends ModuleMetaData> modules, ModuleManager manager) throws Exception {
+  private Module[] process(String type, ModuleManager manager) throws Exception {
     ArrayList<Module> assets = new ArrayList<Module>();
-    for (ModuleMetaData module : modules) {
-
+    for (Map.Entry<String, Asset> m : assetManager.getAssets(type).entrySet()) {
+      Asset asset = m.getValue();
       // Validate assets
-      AssetLocation location = module.getLocation();
+      AssetLocation location = asset.getLocation();
       URL url;
       if (location == AssetLocation.APPLICATION) {
-        String path = module.getPath();
+        String path = asset.getURI();
         url = context.getApplicationResolver().resolve(path);
         if (url == null) {
-          throw new Exception("Could not resolve application asset " + module.getPath());
+          throw new Exception("Could not resolve application asset " + asset.getURI());
         }
       } else if (location == AssetLocation.SERVER) {
-        if (!module.getPath().startsWith("/")) {
-          url = context.getServerResolver().resolve("/" + module.getPath());
+        if (!asset.getURI().startsWith("/")) {
+          url = context.getServerResolver().resolve("/" + asset.getURI());
           if (url == null) {
-            throw new Exception("Could not resolve server asset " + module.getPath());
+            throw new Exception("Could not resolve server asset " +asset.getURI());
           }
         } else {
           url = null;
@@ -213,7 +131,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
       }
 
       //
-      Module id = manager.addAMD(module, url);
+      Module id = manager.addAMD(m.getKey(), asset, url);
       assets.add(id);
     }
 

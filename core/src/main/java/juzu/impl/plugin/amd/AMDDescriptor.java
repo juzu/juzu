@@ -19,7 +19,6 @@ package juzu.impl.plugin.amd;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
-import java.util.List;
 
 import juzu.Scope;
 import juzu.impl.common.NameLiteral;
@@ -33,23 +32,6 @@ import juzu.impl.plugin.PluginDescriptor;
  *
  */
 public class AMDDescriptor extends PluginDescriptor {
-  
-  private final List<ModuleMetaData.Define> defines;
-  
-  private final List<ModuleMetaData.Require> requires;
-  
-  public AMDDescriptor(List<ModuleMetaData.Define> defines, List<ModuleMetaData.Require> requires) {
-    this.defines = defines;
-    this.requires = requires;
-  }
-  
-  public List<ModuleMetaData.Define> getDefines() {
-    return defines;
-  }
-  
-  public List<ModuleMetaData.Require> getRequires() {
-    return requires;
-  }
   
   @Override
   public Iterable<BeanDescriptor> getBeans() {

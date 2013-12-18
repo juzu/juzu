@@ -17,6 +17,7 @@
  */
 package juzu.impl.plugin.amd;
 
+import juzu.impl.asset.Asset;
 import juzu.impl.asset.AssetManager;
 
 import javax.inject.Inject;
@@ -42,28 +43,28 @@ public class ModuleManager {
     this.assetManager = assetManager;
   }
 
-  public Module addAMD(ModuleMetaData data, URL url) throws NullPointerException, IllegalArgumentException, IOException {
-    String name = data.getId();
+  public Module addAMD(String id, Asset data, URL url) throws NullPointerException, IllegalArgumentException, IOException {
+    String name = id;
 
     // Use value hashcode if no id is provided
     if (name == null) {
-      name = "" + data.getPath().hashCode();
+      name = "" + data.getURI().hashCode();
     }
 
     //
     Module module = modules.get(name);
     if (module == null) {
-      modules.put(name, module = new Module(name, data.getLocation(), data.getPath()));
+      modules.put(name, module = new Module(name, data.getLocation(), data.getURI()));
 
       //
       switch (data.getLocation()) {
         case APPLICATION :
-          assetManager.resources.put(data.getPath(), url);
+          assetManager.resources.put(data.getURI(), url);
           break;
         case SERVER :
         case URL:
-          if (data instanceof ModuleMetaData.Require) {
-            assetManager.resources.put(data.getPath(), url);
+          if (data.getType().equals("require")) {
+            assetManager.resources.put(data.getURI(), url);
           }
           break;
         default :

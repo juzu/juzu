@@ -22,6 +22,7 @@ import juzu.impl.plugin.application.Application;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -49,6 +50,10 @@ public class AssetManager {
   public AssetManager(Application application) {
     this.prefix = "/" + application.getDescriptor().getPackageName().replace('.', '/') + "/assets/";
     this.application = application;
+  }
+
+  public boolean addAsset(String id, AssetLocation location, String value, URL url, String... dependencies) throws NullPointerException, IllegalArgumentException {
+    return addAsset(id, "asset", location, value, url, Tools.set(dependencies));
   }
 
   public boolean addAsset(String id, String type, AssetLocation location, String value, URL url, String... dependencies) throws NullPointerException, IllegalArgumentException {
@@ -135,13 +140,32 @@ public class AssetManager {
   }
 
   /**
+   * Find all assets of the specified type and returns a map of id -> Asset.
+   *
+   * @param type the asset type
+   * @return the asset map
+   */
+  public Map<String, Asset> getAssets(String type) {
+    Map<String, Asset> ret = Collections.emptyMap();
+    for (AssetNode node : assets.values()) {
+      if (node.asset.getType().equals(type)) {
+        if (ret.isEmpty()) {
+          ret = new HashMap<String, Asset>();
+        }
+        ret.put(node.id, node.asset);
+      }
+    }
+    return ret;
+  }
+
+  /**
    * Returns the assets forthe specifid id.
    *
    * @param id the asset id
    * @return the corresponding assets
    * @throws NullPointerException
    */
-  public Asset getAssets(String id) throws NullPointerException {
+  public Asset getAsset(String id) throws NullPointerException {
     if (id == null) {
       throw new NullPointerException("No null id accepted");
     }
