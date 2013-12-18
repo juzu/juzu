@@ -52,7 +52,7 @@ public class AssetNode implements Iterable<Asset> {
 
     List<Asset> assets = new ArrayList<Asset>(value.size());
     for (String v : value) {
-      assets.add(Asset.of(location, v));
+      assets.add(Asset.of(location, "asset", v));
     }
 
     //

@@ -142,7 +142,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public JSON getDescriptor(ApplicationMetaModel application) {
     AssetsMetaModel assetsMetaModel = application.getChild(AssetsMetaModel.KEY);
-    Iterator<Asset> assets = assetsMetaModel.getAssets("asset").iterator();
+    Iterator<Asset> assets = assetsMetaModel.getAssets().iterator();
     if (assets.hasNext()) {
       JSON json = new JSON();
       List<JSON> list = new ArrayList<JSON>();
