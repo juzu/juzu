@@ -100,9 +100,9 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
             }
           }
           String adapter = (String)asset.get("adapter");
-          amdAsset = new AMDAsset(assetId, "amd", Collections.singletonList(assetValue), depends, assetLocation, adapter, aliases);
+          amdAsset = new AMDAsset(assetId, "define", assetValue, depends, assetLocation, adapter, aliases);
         } else {
-          amdAsset = new Asset(assetId, "amd", Collections.singletonList(assetValue), Collections.<String>emptyList(), assetLocation);
+          amdAsset = new Asset(assetId, "require", assetValue, Collections.<String>emptyList(), assetLocation);
         }
         assetsMetaModel.addAsset(amdAsset);
       }

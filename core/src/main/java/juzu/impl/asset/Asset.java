@@ -57,6 +57,10 @@ public class Asset {
     return new Asset(location, type, uri);
   }
 
+  public String getType() {
+    return type;
+  }
+
   public AssetLocation getLocation() {
     return location;
   }

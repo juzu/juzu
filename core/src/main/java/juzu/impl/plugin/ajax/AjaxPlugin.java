@@ -70,7 +70,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
     }
 
     //
-    manager.addAsset("juzu.ajax", AssetLocation.APPLICATION, "/juzu/impl/plugin/ajax/script.js", url, "jquery");
+    manager.addAsset("juzu.ajax", "asset", AssetLocation.APPLICATION, "/juzu/impl/plugin/ajax/script.js", url, "jquery");
 
     //
     Map<String, Method> table = new HashMap<String, Method>();

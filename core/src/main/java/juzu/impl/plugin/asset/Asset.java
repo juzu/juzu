@@ -34,7 +34,7 @@ public class Asset implements Serializable {
   public final String type;
 
   /** . */
-  public final List<String> value;
+  public final String value;
 
   /** . */
   public final List<String> depends;
@@ -42,7 +42,7 @@ public class Asset implements Serializable {
   /** . */
   public final String location;
 
-  public Asset(String id, String type, List<String> value, List<String> depends, String location) {
+  public Asset(String id, String type, String value, List<String> depends, String location) {
     this.id = id;
     this.type = type;
     this.value = value;

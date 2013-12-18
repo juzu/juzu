@@ -21,7 +21,7 @@ public class AMDAsset extends Asset {
   /** . */
   private final String adapter;
 
-  public AMDAsset(String id, String type, List<String> value, List<String> depends, String location, String adapter, Map<String, String> aliases) {
+  public AMDAsset(String id, String type, String value, List<String> depends, String location, String adapter, Map<String, String> aliases) {
     super(id, type, value, depends, location);
 
     //

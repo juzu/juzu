@@ -178,8 +178,8 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
     }
 
     //
-    assetManager.addAsset("juzu.amd", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/require.js", requirejsURL);
-    assetManager.addAsset("juzu.amd.wrapper", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/wrapper.js", wrapperjsURL);
+    assetManager.addAsset("juzu.amd", "asset", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/require.js", requirejsURL);
+    assetManager.addAsset("juzu.amd.wrapper", "asset", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/wrapper.js", wrapperjsURL);
 
     //
     this.defines = process(descriptor.getDefines(), manager);

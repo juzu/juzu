@@ -67,7 +67,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       assetsMetaModel.removeAssets("asset");
       for (Map<String, Object> asset : value) {
         String assetId = (String)asset.get("id");
-        List<String> assetValue = (List<String>)asset.get("value");
+        String assetValue = (String)asset.get("value");
         List<String> assetDepends = (List<String>)asset.get("depends");
         String assetLocation = (String)asset.get("location");
         if (assetLocation == null) {
@@ -96,41 +96,39 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
         while (assets.hasNext()) {
           Asset asset = assets.next();
           if (asset.location == null || AssetLocation.APPLICATION.equals(AssetLocation.safeValueOf(asset.location))) {
-            for (String value : asset.value) {
-              Path path = Path.parse(value);
-              if (path.isRelative()) {
-                context.info("Found classpath asset to copy " + value);
-                Name qn = metaModel.getHandle().getPackageName().append("assets");
-                Path.Absolute absolute = qn.resolve(path);
-                FileObject src = context.resolveResourceFromSourcePath(metaModel.getHandle(), absolute);
-                if (src != null) {
-                  URI srcURI = src.toUri();
-                  context.info("Found asset " + absolute + " on source path " + srcURI);
-                  InputStream in = null;
-                  OutputStream out = null;
-                  try {
-                    FileObject dst = context.getResource(StandardLocation.CLASS_OUTPUT, absolute);
-                    if (dst == null || dst.getLastModified() < src.getLastModified()) {
-                      in = src.openInputStream();
-                      dst = context.createResource(StandardLocation.CLASS_OUTPUT, absolute, context.get(metaModel.getHandle()));
-                      context.info("Copying asset from source path " + srcURI + " to class output " + dst.toUri());
-                      in = asset.filter(in);
-                      out = dst.openOutputStream();
-                      Tools.copy(in, out);
-                    } else {
-                      context.info("Found up to date related asset in class output for " + srcURI);
-                    }
+            Path path = Path.parse(asset.value);
+            if (path.isRelative()) {
+              context.info("Found classpath asset to copy " + asset.value);
+              Name qn = metaModel.getHandle().getPackageName().append("assets");
+              Path.Absolute absolute = qn.resolve(path);
+              FileObject src = context.resolveResourceFromSourcePath(metaModel.getHandle(), absolute);
+              if (src != null) {
+                URI srcURI = src.toUri();
+                context.info("Found asset " + absolute + " on source path " + srcURI);
+                InputStream in = null;
+                OutputStream out = null;
+                try {
+                  FileObject dst = context.getResource(StandardLocation.CLASS_OUTPUT, absolute);
+                  if (dst == null || dst.getLastModified() < src.getLastModified()) {
+                    in = src.openInputStream();
+                    dst = context.createResource(StandardLocation.CLASS_OUTPUT, absolute, context.get(metaModel.getHandle()));
+                    context.info("Copying asset from source path " + srcURI + " to class output " + dst.toUri());
+                    in = asset.filter(in);
+                    out = dst.openOutputStream();
+                    Tools.copy(in, out);
+                  } else {
+                    context.info("Found up to date related asset in class output for " + srcURI);
                   }
-                  catch (IOException e) {
-                    context.info("Could not copy asset " + path + " ", e);
-                  }
-                  finally {
-                    Tools.safeClose(in);
-                    Tools.safeClose(out);
-                  }
-                } else {
-                  context.info("Could not find asset " + absolute + " on source path");
                 }
+                catch (IOException e) {
+                  context.info("Could not copy asset " + path + " ", e);
+                }
+                finally {
+                  Tools.safeClose(in);
+                  Tools.safeClose(out);
+                }
+              } else {
+                context.info("Could not find asset " + absolute + " on source path");
               }
             }
           }
