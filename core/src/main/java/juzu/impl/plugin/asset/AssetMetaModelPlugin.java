@@ -114,6 +114,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
                       in = src.openInputStream();
                       dst = context.createResource(StandardLocation.CLASS_OUTPUT, absolute, context.get(metaModel.getHandle()));
                       context.info("Copying asset from source path " + srcURI + " to class output " + dst.toUri());
+                      in = asset.filter(in);
                       out = dst.openOutputStream();
                       Tools.copy(in, out);
                     } else {
@@ -141,7 +142,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public JSON getDescriptor(ApplicationMetaModel application) {
     AssetsMetaModel assetsMetaModel = application.getChild(AssetsMetaModel.KEY);
-    Iterator<Asset> assets = assetsMetaModel.getAssets().iterator();
+    Iterator<Asset> assets = assetsMetaModel.getAssets("asset").iterator();
     if (assets.hasNext()) {
       JSON json = new JSON();
       List<JSON> list = new ArrayList<JSON>();

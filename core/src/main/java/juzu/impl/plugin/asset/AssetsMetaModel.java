@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 /** @author Julien Viet */
 public class AssetsMetaModel extends MetaModelObject implements MethodInvocationResolver {
@@ -44,6 +45,38 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
 
   public Iterable<Asset> getAssets() {
     return assets;
+  }
+
+  public Iterable<Asset> getAssets(final String type) {
+    return new Iterable<Asset>() {
+      public Iterator<Asset> iterator() {
+        final Iterator<Asset> i = assets.iterator();
+        return new Iterator<Asset>() {
+          Asset next = null;
+          public boolean hasNext() {
+            while (next == null && i.hasNext()) {
+              Asset asset = i.next();
+              if (asset.type.equals(type)) {
+                next = asset;
+              }
+            }
+            return next != null;
+          }
+          public Asset next() {
+            if (hasNext()) {
+              Asset tmp = next;
+              next = null;
+              return tmp;
+            } else {
+              throw new NoSuchElementException();
+            }
+          }
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
+        };
+      }
+    };
   }
 
   public void removeAssets(String type) {

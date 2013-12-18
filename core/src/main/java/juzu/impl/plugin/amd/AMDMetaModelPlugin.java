@@ -17,10 +17,6 @@
  */
 package juzu.impl.plugin.amd;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,13 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
-
-import juzu.asset.AssetLocation;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Name;
-import juzu.impl.common.Path;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
@@ -42,6 +33,8 @@ import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
+import juzu.impl.plugin.asset.Asset;
+import juzu.impl.plugin.asset.AssetsMetaModel;
 import juzu.plugin.amd.Defines;
 import juzu.plugin.amd.Requires;
 
@@ -71,6 +64,50 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
+
+    if (metaModel.getHandle().equals(key.getElement())) {
+      String location = (String)added.get("location");
+      List<Map<String, Object>> value = (List<Map<String, Object>>)added.get("value");
+      AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
+      boolean define = key.getType().getIdentifier().equals("Defines");
+      assetsMetaModel.removeAssets(define ? "define" : "require");
+      for (Map<String, Object> asset : value) {
+        String assetId = (String)asset.get("id");
+        String assetValue = (String)asset.get("path");
+        String assetLocation = (String)asset.get("location");
+        if (assetLocation == null) {
+          assetLocation = location;
+        }
+        Asset amdAsset;
+        if (define) {
+          List<AnnotationState> dependencies = (List<AnnotationState>)asset.get("dependencies");
+          Map<String, String> aliases =  Collections.emptyMap();
+          List<String> depends = Collections.emptyList();
+          if (dependencies != null && dependencies.size() > 0) {
+            for (AnnotationState dependency : dependencies) {
+              String id = (String)dependency.get("id");
+              String alias = (String)dependency.get("alias");
+              if (depends.isEmpty()) {
+                depends = new ArrayList<String>(dependencies.size());
+              }
+              depends.add(id);
+              if (alias != null && alias.length() > 0) {
+                if (aliases.isEmpty()) {
+                  aliases = new HashMap<String, String>(dependencies.size());
+                }
+                aliases.put(id, alias);
+              }
+            }
+          }
+          String adapter = (String)asset.get("adapter");
+          amdAsset = new AMDAsset(assetId, "amd", Collections.singletonList(assetValue), depends, assetLocation, adapter, aliases);
+        } else {
+          amdAsset = new Asset(assetId, "amd", Collections.singletonList(assetValue), Collections.<String>emptyList(), assetLocation);
+        }
+        assetsMetaModel.addAsset(amdAsset);
+      }
+    }
+
     if (key.getType().equals(Name.create(Defines.class))) {
       defines.put(metaModel.getHandle(), added);
     } else if (key.getType().equals(Name.create(Requires.class))) {
@@ -80,6 +117,13 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
+
+    if (metaModel.getHandle().equals(key.getElement())) {
+      AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
+      boolean define = key.getType().getIdentifier().equals("Defines");
+      assetsMetaModel.removeAssets(define ? "define" : "require");
+    }
+
     if (key.getType().equals(Name.create(Defines.class))) {
       defines.remove(metaModel.getHandle());
     } else if (key.getType().equals(Name.create(Requires.class))) {
@@ -90,60 +134,7 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void prePassivate(ApplicationMetaModel metaModel) {
     AnnotationState defineState = defines.get(metaModel.getHandle());
-    process(defineState, metaModel);
     AnnotationState requireState = requires.get(metaModel.getHandle());
-    process(requireState, metaModel);
-  }
-
-  private void process(AnnotationState annotation, ApplicationMetaModel metaModel) {
-    if (annotation != null) {
-      String location = (String)annotation.get("location");
-      boolean classpath = location == null || AssetLocation.APPLICATION.equals(AssetLocation.safeValueOf(location));
-      List<AnnotationState> modules = (List<AnnotationState>)annotation.get("value");
-      ProcessingContext context = metaModel.getProcessingContext();
-      if (modules != null) {
-        for (AnnotationState module : modules) {
-          location = (String)module.get("location");
-          if ((location == null && classpath) || AssetLocation.APPLICATION.equals(AssetLocation.safeValueOf(location))) {
-            String value = (String)module.get("path");
-            Path path = Path.parse(value);
-            if (path.isRelative()) {
-              context.info("Found classpath asset to copy " + value);
-              Name qn = metaModel.getHandle().getPackageName().append("assets");
-              Path.Absolute absolute = qn.resolve(path);
-              FileObject src = context.resolveResourceFromSourcePath(metaModel.getHandle(), absolute);
-              if (src != null) {
-                URI srcURI = src.toUri();
-                context.info("Found asset " + absolute + " on source path " + srcURI);
-                InputStream in = null;
-                OutputStream out = null;
-                try {
-                  FileObject dst = context.getResource(StandardLocation.CLASS_OUTPUT, absolute);
-                  if (dst == null || dst.getLastModified() < src.getLastModified()) {
-                    in = src.openInputStream();
-                    dst =
-                      context.createResource(StandardLocation.CLASS_OUTPUT, absolute,
-                        context.get(metaModel.getHandle()));
-                    context.info("Copying asset from source path " + srcURI + " to class output " + dst.toUri());
-                    out = dst.openOutputStream();
-                    Tools.copy(in, out);
-                  } else {
-                    context.info("Found up to date related asset in class output for " + srcURI);
-                  }
-                } catch (IOException e) {
-                  context.info("Could not copy asset " + path + " ", e);
-                } finally {
-                  Tools.safeClose(in);
-                  Tools.safeClose(out);
-                }
-              } else {
-                context.info("Could not find asset " + absolute + " on source path");
-              }
-            }
-          }
-        }
-      }
-    }
   }
 
   private List<JSON> build(List<Map<String, Object>> scripts) {

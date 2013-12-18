@@ -17,6 +17,8 @@ package juzu.impl.plugin.asset;
 
 import juzu.impl.common.JSON;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 
@@ -60,5 +62,14 @@ public class Asset implements Serializable {
       json.set("location", location);
     }
     return json;
+  }
+
+  /**
+   * Provide an opportunity to process the asset stream.
+   * @param stream the stream to filter
+   * @return the filtered stream
+   */
+  public InputStream filter(InputStream stream) throws IOException {
+    return stream;
   }
 }
