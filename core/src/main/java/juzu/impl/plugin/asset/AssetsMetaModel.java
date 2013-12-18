@@ -23,8 +23,10 @@ import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /** @author Julien Viet */
@@ -34,7 +36,24 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
   public final static Key<AssetsMetaModel> KEY = Key.of(AssetsMetaModel.class);
 
   /** . */
-  final HashMap<ElementHandle.Package, AnnotationState> annotations = new HashMap<ElementHandle.Package, AnnotationState>();
+  private final ArrayList<Asset> assets = new ArrayList<Asset>();
+
+  public void addAsset(Asset asset) {
+    assets.add(asset);
+  }
+
+  public Iterable<Asset> getAssets() {
+    return assets;
+  }
+
+  public void removeAssets(String type) {
+    for (Iterator<Asset> i = assets.iterator();i.hasNext();) {
+      Asset asset = i.next();
+      if (asset.type.equals(type)) {
+        i.remove();
+      }
+    }
+  }
 
   public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) {
     if ("Assets".equals(typeName) && methodName.equals("url")) {

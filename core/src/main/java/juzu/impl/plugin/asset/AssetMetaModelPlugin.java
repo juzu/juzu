@@ -36,16 +36,13 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
-
-  /** . */
-  private static final String[] KINDS = {"value"};
-
 
   public AssetMetaModelPlugin() {
     super("asset");
@@ -63,78 +60,75 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
-    metaModel.getChild(AssetsMetaModel.KEY).annotations.put(metaModel.getHandle(), added);
+    if (metaModel.getHandle().equals(key.getElement())) {
+      String location = (String)added.get("location");
+      List<Map<String, Object>> value = (List<Map<String, Object>>)added.get("value");
+      AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
+      assetsMetaModel.removeAssets("asset");
+      for (Map<String, Object> asset : value) {
+        String assetId = (String)asset.get("id");
+        List<String> assetValue = (List<String>)asset.get("value");
+        List<String> assetDepends = (List<String>)asset.get("depends");
+        String assetLocation = (String)asset.get("location");
+        if (assetLocation == null) {
+          assetLocation = location;
+        }
+        assetsMetaModel.addAsset(new Asset(assetId, "asset", assetValue, assetDepends, assetLocation));
+      }
+    }
   }
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    metaModel.getChild(AssetsMetaModel.KEY).annotations.remove(metaModel.getHandle());
-  }
-
-  private List<JSON> build(List<Map<String, Object>> scripts) {
-    List<JSON> foo = new ArrayList<JSON>();
-    if (scripts != null) {
-      for (Map<String, Object> script : scripts) {
-        JSON bar = new JSON();
-        for (Map.Entry<String, Object> entry : script.entrySet()) {
-          bar.set(entry.getKey(), entry.getValue());
-        }
-        foo.add(bar);
-      }
+    if (metaModel.getHandle().equals(key.getElement())) {
+      AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
+      assetsMetaModel.removeAssets("asset");
     }
-    return foo;
   }
 
   @Override
   public void prePassivate(ApplicationMetaModel metaModel) {
     ProcessingContext context = metaModel.getProcessingContext();
     if(!context.isCopyFromSourcesExternallyManaged()) {
-      AnnotationState annotation = metaModel.getChild(AssetsMetaModel.KEY).annotations.get(metaModel.getHandle());
-      if (annotation != null) {
-        String location = (String)annotation.get("location");
-        boolean classpath = location == null || AssetLocation.APPLICATION.equals(AssetLocation.safeValueOf(location));
-        for (String kind : KINDS) {
-          List<AnnotationState> scripts = (List<AnnotationState>)annotation.get(kind);        
-          if (scripts != null) {
-            for (AnnotationState script : scripts) {
-              location = (String)script.get("location");
-              if ((location == null && classpath) || AssetLocation.APPLICATION.equals(AssetLocation.safeValueOf(location))) {
-                List<String> values = (List<String>)script.get("value");
-                for (String value : values) {
-                  Path path = Path.parse(value);
-                  if (path.isRelative()) {
-                    context.info("Found classpath asset to copy " + value);
-                    Name qn = metaModel.getHandle().getPackageName().append("assets");
-                    Path.Absolute absolute = qn.resolve(path);
-                    FileObject src = context.resolveResourceFromSourcePath(metaModel.getHandle(), absolute);
-                    if (src != null) {
-                      URI srcURI = src.toUri();
-                      context.info("Found asset " + absolute + " on source path " + srcURI);
-                      InputStream in = null;
-                      OutputStream out = null;
-                      try {
-                        FileObject dst = context.getResource(StandardLocation.CLASS_OUTPUT, absolute);
-                        if (dst == null || dst.getLastModified() < src.getLastModified()) {
-                          in = src.openInputStream();
-                          dst = context.createResource(StandardLocation.CLASS_OUTPUT, absolute, context.get(metaModel.getHandle()));
-                          context.info("Copying asset from source path " + srcURI + " to class output " + dst.toUri());
-                          out = dst.openOutputStream();
-                          Tools.copy(in, out);
-                        } else {
-                          context.info("Found up to date related asset in class output for " + srcURI);
-                        }
-                      }
-                      catch (IOException e) {
-                        context.info("Could not copy asset " + path + " ", e);
-                      }
-                      finally {
-                        Tools.safeClose(in);
-                        Tools.safeClose(out);
-                      }
+      AssetsMetaModel annotation = metaModel.getChild(AssetsMetaModel.KEY);
+      Iterator<Asset> assets = annotation.getAssets().iterator();
+      if (assets.hasNext()) {
+        while (assets.hasNext()) {
+          Asset asset = assets.next();
+          if (asset.location == null || AssetLocation.APPLICATION.equals(AssetLocation.safeValueOf(asset.location))) {
+            for (String value : asset.value) {
+              Path path = Path.parse(value);
+              if (path.isRelative()) {
+                context.info("Found classpath asset to copy " + value);
+                Name qn = metaModel.getHandle().getPackageName().append("assets");
+                Path.Absolute absolute = qn.resolve(path);
+                FileObject src = context.resolveResourceFromSourcePath(metaModel.getHandle(), absolute);
+                if (src != null) {
+                  URI srcURI = src.toUri();
+                  context.info("Found asset " + absolute + " on source path " + srcURI);
+                  InputStream in = null;
+                  OutputStream out = null;
+                  try {
+                    FileObject dst = context.getResource(StandardLocation.CLASS_OUTPUT, absolute);
+                    if (dst == null || dst.getLastModified() < src.getLastModified()) {
+                      in = src.openInputStream();
+                      dst = context.createResource(StandardLocation.CLASS_OUTPUT, absolute, context.get(metaModel.getHandle()));
+                      context.info("Copying asset from source path " + srcURI + " to class output " + dst.toUri());
+                      out = dst.openOutputStream();
+                      Tools.copy(in, out);
                     } else {
-                      context.info("Could not find asset " + absolute + " on source path");
+                      context.info("Found up to date related asset in class output for " + srcURI);
                     }
                   }
+                  catch (IOException e) {
+                    context.info("Could not copy asset " + path + " ", e);
+                  }
+                  finally {
+                    Tools.safeClose(in);
+                    Tools.safeClose(out);
+                  }
+                } else {
+                  context.info("Could not find asset " + absolute + " on source path");
                 }
               }
             }
@@ -146,13 +140,16 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public JSON getDescriptor(ApplicationMetaModel application) {
-    AnnotationState annotation = application.getChild(AssetsMetaModel.KEY).annotations.get(application.getHandle());
-    if (annotation != null) {
+    AssetsMetaModel assetsMetaModel = application.getChild(AssetsMetaModel.KEY);
+    Iterator<Asset> assets = assetsMetaModel.getAssets().iterator();
+    if (assets.hasNext()) {
       JSON json = new JSON();
-      List<JSON> assets = build((List<Map<String, Object>>)annotation.get("value"));
-      json.set("assets", assets);
+      List<JSON> list = new ArrayList<JSON>();
+      while (assets.hasNext()) {
+        list.add(assets.next().getJSON());
+      }
+      json.set("assets", list);
       json.set("package", "assets");
-      json.set("location", annotation.get("location"));
       return json;
     } else {
       return null;

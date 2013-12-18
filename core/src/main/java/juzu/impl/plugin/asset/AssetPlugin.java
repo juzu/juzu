@@ -90,11 +90,9 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     List<AssetMetaData> assets;
     if (config != null) {
       String packageName = config.getString("package");
-      AssetLocation location = AssetLocation.safeValueOf(config.getString("location"));
-      if (location == null) {
-        location = AssetLocation.APPLICATION;
-      }
-      assets = load(packageName, location, config.getList("assets", JSON.class));
+
+
+      assets = load(packageName, config.getList("assets", JSON.class));
       assetsPath = "/" + Name.parse(application.getPackageName()).append(packageName).toString().replace('.', '/') + "/";
     } else {
       assets = Collections.emptyList();
@@ -108,7 +106,6 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
 
   private List<AssetMetaData> load(
       String packageName,
-      AssetLocation defaultLocation,
       List<? extends JSON> scripts) throws Exception {
     List<AssetMetaData> abc = Collections.emptyList();
     if (scripts != null && scripts.size() > 0) {
@@ -117,9 +114,9 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
         String id = script.getString("id");
         AssetLocation location = AssetLocation.safeValueOf(script.getString("location"));
 
-        // We handle here location / perhaps we could handle it at compile time instead?
+        //
         if (location == null) {
-          location = defaultLocation;
+          location = AssetLocation.APPLICATION;
         }
 
         //
