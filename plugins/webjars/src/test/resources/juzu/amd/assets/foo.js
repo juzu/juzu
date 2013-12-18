@@ -1,5 +1,5 @@
 (function($) {
-	$(document).ready(function() {
-		$("p.result").html('hello world');
-	});
+  $(document).ready(function() {
+    $("html").attr("foo", "foo_value");
+  });
 })($);

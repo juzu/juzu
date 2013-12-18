@@ -33,9 +33,9 @@ public class FilterTestCase<B, I> extends AbstractInjectTestCase<B, I> {
     init();
     bootstrap.declareBean(Bean.class, null, null, Bean1.class);
     bootstrap.declareBean(Injected.class, null, null, null);
-    boot(new Filter<Class<?>>() {
-      public boolean accept(Class<?> elt) {
-        return !elt.equals(Bean2.class);
+    boot(new Filter<Class<?>, Boolean>() {
+      public Boolean filter(Class<?> source) {
+        return !source.equals(Bean2.class);
       }
     });
 

@@ -18,13 +18,8 @@ package juzu.plugin.asset;
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
-import juzu.impl.common.Tools;
-import juzu.impl.request.Request;
-import juzu.io.UndeclaredIOException;
 
 import javax.inject.Inject;
-import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * The asset controller.
@@ -66,46 +61,5 @@ public class AssetController {
    */
   public String url(AssetLocation location, String uri) throws NullPointerException {
     return AssetServer.renderAssetURL(location, uri);
-  }
-
-  /**
-   * Render the current asset id.
-   */
-  public Iterable<String> render(String assetId) {
-    final Request current = Request.getCurrent();
-    final Iterable<juzu.impl.asset.Asset> assets = manager.getAssets(assetId);
-    if (assets == null) {
-      return Tools.emptyIterable();
-    } else {
-      return new Iterable<String>() {
-        Iterator<juzu.impl.asset.Asset> iterator = assets.iterator();
-        public Iterator<String> iterator() {
-          return new Iterator<String>() {
-            StringBuilder buffer;
-            public boolean hasNext() {
-              return iterator().hasNext();
-            }
-            public String next() {
-              juzu.impl.asset.Asset asset = iterator.next();
-              if (buffer == null) {
-                buffer = new StringBuilder(100);
-              } else {
-                buffer.setLength(0);
-              }
-              try {
-                current.getBridge().renderAssetURL(asset.getLocation(), asset.getURI(), buffer);
-              }
-              catch (IOException e) {
-                throw new UndeclaredIOException(e);
-              }
-              return buffer.toString();
-            }
-            public void remove() {
-              throw new UnsupportedOperationException();
-            }
-          };
-        }
-      };
-    }
   }
 }

@@ -21,9 +21,7 @@ import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.junit.Assert;
 
 import java.io.IOException;
 import java.net.URL;
@@ -105,26 +103,6 @@ public class UserAgent {
 
   public HtmlPage getHomePage() {
     return getPage(homeURL);
-  }
-
-  public void assertRedirect(String expectedLocation, String url) {
-    boolean redirectEnabled = client.isRedirectEnabled();
-    boolean throwExceptionOnFailingStatusCode = client.isThrowExceptionOnFailingStatusCode();
-    try {
-      client.setRedirectEnabled(false);
-      client.setThrowExceptionOnFailingStatusCode(false);
-      Page redirect = client.getPage(url);
-      WebResponse resp = redirect.getWebResponse();
-      Assert.assertEquals(302, resp.getStatusCode());
-      Assert.assertEquals(expectedLocation, resp.getResponseHeaderValue("Location"));
-    }
-    catch (IOException e) {
-      throw AbstractTestCase.failure("Cannot get load " + url, e);
-    }
-    finally {
-      client.setRedirectEnabled(redirectEnabled);
-      client.setThrowExceptionOnFailingStatusCode(throwExceptionOnFailingStatusCode);
-    }
   }
 
   public List<String> getAlerts(Page page) {

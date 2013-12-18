@@ -68,10 +68,10 @@ public abstract class AbstractInjectTestCase<B, I> extends juzu.test.AbstractInj
   }
 
   protected final void boot(Scope... scopes) throws Exception {
-    boot((Filter<Class<?>>)null, scopes);
+    boot((Filter<Class<?>, Boolean>)null, scopes);
   }
 
-  protected final void boot(Filter<Class<?>> filter, Scope... scopes) throws Exception {
+  protected final void boot(Filter<Class<?>, Boolean> filter, Scope... scopes) throws Exception {
     mgr = boot(bootstrap, filter, scopes);
   }
 
@@ -79,7 +79,7 @@ public abstract class AbstractInjectTestCase<B, I> extends juzu.test.AbstractInj
     return boot(injector, null, scopes);
   }
 
-  protected static <B, I> InjectionContext<B, I> boot(Injector injector, Filter<Class<?>> filter, Scope... scopes) throws Exception {
+  protected static <B, I> InjectionContext<B, I> boot(Injector injector, Filter<Class<?>, Boolean> filter, Scope... scopes) throws Exception {
     for (Scope scope : scopes) {
       injector.addScope(scope);
     }

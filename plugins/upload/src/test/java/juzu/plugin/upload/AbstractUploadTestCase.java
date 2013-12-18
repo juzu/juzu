@@ -68,7 +68,7 @@ public abstract class AbstractUploadTestCase extends AbstractWebTestCase {
     AbstractUploadTestCase.content = null;
     AbstractUploadTestCase.text = null;
     submit.submit();
-    assertEquals("text/plain", AbstractUploadTestCase.contentType);
+    assertTrue(AbstractUploadTestCase.contentType.startsWith("text/plain"));
     assertEquals("HELLO", AbstractUploadTestCase.content);
     assertEquals("text_value", AbstractUploadTestCase.text);
     assertEquals("field_value", AbstractUploadTestCase.field);

@@ -22,7 +22,6 @@ import juzu.impl.plugin.application.Application;
 
 import javax.inject.Inject;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,7 +53,11 @@ public class AssetManager {
   }
 
   public boolean addAsset(String id, AssetLocation location, String value, URL url, String... dependencies) throws NullPointerException, IllegalArgumentException {
-    return addAsset(id, location, Collections.singletonMap(value, url), Tools.set(dependencies));
+    return addAsset(id, "asset", location, value, url, Tools.set(dependencies));
+  }
+
+  public boolean addAsset(String id, String type, AssetLocation location, String value, URL url, String... dependencies) throws NullPointerException, IllegalArgumentException {
+    return addAsset(id, type, location, value, url, Tools.set(dependencies));
   }
 
   /**
@@ -65,18 +68,20 @@ public class AssetManager {
    * the longest trailing substring that contains no <code>/</code> char.</p>
    *
    * @param id the asset id
+   * @param type the asset type
    * @param location the asset location
-   * @param resources the asset resources
+   * @param value the asset value
+   * @param resource the asset resource
    * @param dependencies the asset dependencies
    * @return true if the asset was registered
    * @throws NullPointerException     if the metaData argument is nul
    * @throws IllegalArgumentException if the metaData does not have an id set
    */
-  public boolean addAsset(String id, AssetLocation location, Map<String, URL> resources, Set<String> dependencies) throws NullPointerException, IllegalArgumentException {
+  public boolean addAsset(String id, String type, AssetLocation location, String value, URL resource, Set<String> dependencies) throws NullPointerException, IllegalArgumentException {
 
     //
     if (!assets.keySet().contains(id)) {
-      AssetNode asset = new AssetNode(id, location, new ArrayList<String>(resources.keySet()), dependencies);
+      AssetNode asset = new AssetNode(id, type, location, value, dependencies);
       for (AssetNode deployed : assets.values()) {
         if (deployed.iDependOn.contains(id)) {
           asset.dependsOnMe = Tools.addToHashSet(asset.dependsOnMe, deployed.id);
@@ -88,10 +93,8 @@ public class AssetManager {
       assets.put(id, asset);
 
       //
-      for (Map.Entry<String, URL> resource : resources.entrySet()) {
-        if (resource.getValue() != null) {
-          this.resources.put(resource.getKey(), resource.getValue());
-        }
+      if (resource != null) {
+        this.resources.put(value, resource);
       }
 
       //
@@ -137,17 +140,37 @@ public class AssetManager {
   }
 
   /**
+   * Find all assets of the specified type and returns a map of id -> Asset.
+   *
+   * @param type the asset type
+   * @return the asset map
+   */
+  public Map<String, Asset> getAssets(String type) {
+    Map<String, Asset> ret = Collections.emptyMap();
+    for (AssetNode node : assets.values()) {
+      if (node.asset.getType().equals(type)) {
+        if (ret.isEmpty()) {
+          ret = new HashMap<String, Asset>();
+        }
+        ret.put(node.id, node.asset);
+      }
+    }
+    return ret;
+  }
+
+  /**
    * Returns the assets forthe specifid id.
    *
    * @param id the asset id
    * @return the corresponding assets
    * @throws NullPointerException
    */
-  public Iterable<Asset> getAssets(String id) throws NullPointerException {
+  public Asset getAsset(String id) throws NullPointerException {
     if (id == null) {
       throw new NullPointerException("No null id accepted");
     }
-    return assets.get(id);
+    AssetNode node = assets.get(id);
+    return node != null ? node.asset : null;
   }
 
   /**
@@ -194,7 +217,7 @@ public class AssetManager {
         if (entry.getValue().isEmpty()) {
           i.remove();
           AssetNode asset = this.assets.get(entry.getKey());
-          resolved.addAll(asset.assets);
+          resolved.add(asset.asset);
           for (String dependency : asset.dependsOnMe) {
             HashSet<String> foo = sub.get(dependency);
             if (foo != null) {

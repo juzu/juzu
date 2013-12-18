@@ -39,7 +39,7 @@ public @interface Asset {
   /**
    * @return the value for resolving the asset
    */
-  String[] value() default {};
+  String value();
 
   /**
    * @return the asset dependencies, i.e the asset that are needed by this asset.

@@ -31,17 +31,15 @@
 	<dependency>
 	  <groupId>org.webjars</groupId>
 	  <artifactId>jquery</artifactId>
-	  <version>2.0.0</version>
+	  <version>1.10.2</version>
 	  <scope>test</scope>
 	</dependency>
-
 	<dependency>
 	  <groupId>org.webjars</groupId>
 	  <artifactId>angular-ui-bootstrap</artifactId>
 	  <version>0.7.0-1</version>
 	  <scope>test</scope>
 	</dependency>
-
 	<dependency>
 	  <groupId>org.webjars</groupId>
 	  <artifactId>bootswatch</artifactId>
@@ -49,17 +47,21 @@
 	  <scope>test</scope>
 	</dependency>
 
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-depchain-arquillian</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.juzu</groupId>
-      <artifactId>juzu-depchain-arquillian-tomcat7</artifactId>
-      <scope>test</scope>
-    </dependency>
+  <dependency>
+    <groupId>org.juzu</groupId>
+    <artifactId>juzu-depchain-arquillian</artifactId>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>org.juzu</groupId>
+    <artifactId>juzu-depchain-arquillian-tomcat7</artifactId>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>com.github.detro.ghostdriver</groupId>
+    <artifactId>phantomjsdriver</artifactId>
+    <scope>test</scope>
+  </dependency>
 
   </dependencies>
 

@@ -17,10 +17,10 @@ package juzu.impl.bridge.spi.web;
 
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetManager;
+import juzu.impl.plugin.amd.AmdPlugin;
 import juzu.impl.plugin.amd.ModuleManager;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.io.SafeStream;
-import juzu.impl.plugin.amd.AMDPlugin;
 import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.request.Result;
 import juzu.request.RequestParameter;
@@ -40,7 +40,7 @@ public abstract class WebRequestContext {
     send(null, null, error.asStatus(verbose));
   }
 
-  public final void send(AssetPlugin assetPlugin, AMDPlugin amdPlugin, Result.Status response) throws IOException {
+  public final void send(AssetPlugin assetPlugin, AmdPlugin amdPlugin, Result.Status response) throws IOException {
 
     //
     AsyncStream stream = getStream(response.code);

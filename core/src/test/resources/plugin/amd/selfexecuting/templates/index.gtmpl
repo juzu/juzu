@@ -1,0 +1,5 @@
+<script type="text/javascript">
+    require(["Bar"], function(bar) {
+        document.querySelector("html").setAttribute("bar", bar.text);
+    });
+</script>

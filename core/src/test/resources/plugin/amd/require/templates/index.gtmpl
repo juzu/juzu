@@ -1,4 +1,0 @@
-<script type="text/javascript">
-	require(["Bar"]);
-	require(["Foo"]);
-</script>

@@ -18,14 +18,11 @@ package juzu.impl.asset;
 
 import juzu.asset.AssetLocation;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AssetNode implements Iterable<Asset> {
+public class AssetNode {
 
   /** . */
   private static final Set<String> EMPTY_SET = Collections.emptySet();
@@ -37,10 +34,10 @@ public class AssetNode implements Iterable<Asset> {
   final AssetLocation location;
 
   /** . */
-  final List<String> value;
+  final String value;
 
   /** . */
-  final List<Asset> assets;
+  final Asset asset;
 
   /** . */
   Set<String> dependsOnMe;
@@ -48,12 +45,7 @@ public class AssetNode implements Iterable<Asset> {
   /** . */
   Set<String> iDependOn;
 
-  public AssetNode(String id, AssetLocation location, List<String> value, Set<String> iDependOn) {
-
-    List<Asset> assets = new ArrayList<Asset>(value.size());
-    for (String v : value) {
-      assets.add(Asset.of(location, v));
-    }
+  public AssetNode(String id, String type, AssetLocation location, String value, Set<String> iDependOn) {
 
     //
     this.id = id;
@@ -61,7 +53,7 @@ public class AssetNode implements Iterable<Asset> {
     this.value = value;
     this.dependsOnMe = EMPTY_SET;
     this.iDependOn = iDependOn;
-    this.assets = assets;
+    this.asset = Asset.of(location, type, value);
   }
 
   public String getId() {
@@ -72,11 +64,11 @@ public class AssetNode implements Iterable<Asset> {
     return location;
   }
 
-  public List<String> getValue() {
+  public String getValue() {
     return value;
   }
 
-  public Iterator<Asset> iterator() {
-    return assets.iterator();
+  public Asset getAsset() {
+    return asset;
   }
 }

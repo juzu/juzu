@@ -19,7 +19,6 @@ package juzu.plugin.webjars.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Writer;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -29,12 +28,9 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.lang.model.element.PackageElement;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 
 import juzu.impl.common.Logger;
 import juzu.impl.common.Name;
-import juzu.impl.common.Path;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.BaseProcessor;
 import juzu.impl.compiler.ElementHandle;
@@ -42,8 +38,9 @@ import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
-import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
-import juzu.impl.plugin.module.metamodel.ModuleMetaModelPlugin;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
+import juzu.impl.plugin.asset.AssetsMetaModel;
 import juzu.plugin.webjars.WebJars;
 
 import org.webjars.WebJarAssetLocator;
@@ -53,7 +50,7 @@ import org.webjars.WebJarAssetLocator;
  * @version $Id$
  *
  */
-public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
+public class WebJarsMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
   public static final MessageCode MISSING_WEBJAR = new MessageCode(
@@ -76,7 +73,7 @@ public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
   }
   
   @Override
-  public void init(ModuleMetaModel metaModel) {
+  public void init(ApplicationMetaModel metaModel) {
     annotations = new HashMap<Name, AnnotationState>();
   }
 
@@ -86,24 +83,28 @@ public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
   }
   
   @Override
-  public void processAnnotationAdded(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState added) {
+  public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     Name pkg = key.getElement().getPackageName();
     annotations.put(pkg, added);
   }
 
   @Override
-  public void processAnnotationRemoved(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
+  public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     Name pkg = key.getElement().getPackageName();
     annotations.remove(pkg);
   }
 
   @Override
-  public void postActivate(ModuleMetaModel metaModel) {
+  public void postActivate(ApplicationMetaModel metaModel) {
     annotations = new HashMap<Name, AnnotationState>();
   }
   
   @Override
-  public void prePassivate(ModuleMetaModel metaModel) {
+  public void prePassivate(ApplicationMetaModel metaModel) {
+
+    //
+    AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
+
     // First clear annotation map
     HashMap<Name, AnnotationState> clone = annotations;
     annotations = null;
@@ -115,7 +116,6 @@ public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
       ProcessingContext env = metaModel.processingContext;
       List<AnnotationState> webJars = (List<AnnotationState>)annotation.get("value");
       if (webJars != null && webJars.size() > 0) {
-        Name assetPkg = pkg.append("assets");
         for(AnnotationState webJar : webJars) {
           log.info("Processing declared webjars " + webJar);
           String id = (String)webJar.get("value");
@@ -158,19 +158,8 @@ public class WebJarsMetaModelPlugin extends ModuleMetaModelPlugin {
             URL assetURL = WebJarAssetLocator.class.getClassLoader().getResource(assetPath);
             if (assetURL != null) {
               String dst = assetPath.substring(WebJarAssetLocator.WEBJARS_PATH_PREFIX.length() + folderPath.length() + 1);
-              try {
-                log.info("Webjars " + webJar + " writing to " + assetPkg + " asset " + assetPath);
-                FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, assetPkg, dst);
-                Writer writer = fo.openWriter();
-                try {
-                  writer.write(Tools.read(assetURL));
-                }
-                finally {
-                  Tools.safeClose(writer);
-                }
-              } catch (IOException e) {
-                log.info("Resource " + assetPath + " could not be written on disk at " + assetPkg, e);
-              }
+              log.info("Webjars " + webJar + " adding asset resource " + assetPath);
+              assetsMetaModel.add(dst, assetURL);
             } else {
               log.info("Could not resolve WebJars asset " + webJar + " with resource path " + assetURL);
             }
