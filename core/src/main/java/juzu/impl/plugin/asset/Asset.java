@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Julien Viet
@@ -42,7 +43,35 @@ public class Asset implements Serializable {
   /** . */
   public final String location;
 
+  public Asset(String type, Map<String, Serializable> asset) {
+    String id = (String)asset.get("id");
+    String value = (String)asset.get("value");
+    List<String> depends = (List<String>)asset.get("depends");
+    String location = (String)asset.get("location");
+
+    //
+    if (value == null) {
+      throw new NullPointerException();
+    }
+    if (location == null) {
+      location = "APPLICATION";
+    }
+
+    //
+    this.id = id;
+    this.type = type;
+    this.value = value;
+    this.depends = depends;
+    this.location = location;
+  }
+
   public Asset(String id, String type, String value, List<String> depends, String location) {
+    if (value == null) {
+      throw new NullPointerException();
+    }
+    if (location == null) {
+      location = "APPLICATION";
+    }
     this.id = id;
     this.type = type;
     this.value = value;

@@ -15,14 +15,23 @@
  */
 package juzu.impl.plugin.asset;
 
+import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.MethodInvocationResolver;
-import juzu.impl.compiler.ElementHandle;
-import juzu.impl.metamodel.AnnotationState;
+import juzu.impl.common.Name;
+import juzu.impl.common.Path;
+import juzu.impl.compiler.MessageCode;
+import juzu.impl.compiler.ProcessingContext;
+import juzu.impl.compiler.ProcessingException;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 
+import javax.tools.FileObject;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,13 +43,76 @@ import java.util.NoSuchElementException;
 public class AssetsMetaModel extends MetaModelObject implements MethodInvocationResolver {
 
   /** . */
+  public static final MessageCode UNRESOLVED_ASSET = new MessageCode("UNRESOLVED_ASSET", "The application asset %1s cannot be resolved");
+
+  /** . */
   public final static Key<AssetsMetaModel> KEY = Key.of(AssetsMetaModel.class);
 
   /** . */
   private final ArrayList<Asset> assets = new ArrayList<Asset>();
 
+  /** . */
+  private final HashMap<String, URL> resources = new HashMap<String, URL>();
+
   public void addAsset(Asset asset) {
+
+    //
+    if (asset.location == null || AssetLocation.APPLICATION.equals(AssetLocation.safeValueOf(asset.location))) {
+      URL url = resolve(asset.value);
+      if (url != null) {
+        add(asset.value, url);
+      }
+    }
+
+    //
     assets.add(asset);
+  }
+
+  public void removeAsset(Asset asset) {
+
+    //
+    if (asset.location == null || AssetLocation.APPLICATION.equals(AssetLocation.safeValueOf(asset.location))) {
+      URL url = resolve(asset.value);
+      if (url != null) {
+        remove(asset.value, url);
+      }
+    }
+
+    //
+    for (Iterator<Asset> i = assets.iterator();i.hasNext();) {
+      Asset candidate = i.next();
+      if (asset.value.equals(candidate.value) && asset.location.equals(candidate.location)) {
+        i.remove();
+      }
+    }
+  }
+
+  public void add(String path, URL resource) {
+    URL existing = resources.get(path);
+    if (existing != null) {
+      if (!existing.equals(resource)) {
+        throw new UnsupportedOperationException("Resource conflict for path " + path + " : " + resource + " != " + existing);
+      }
+    } else {
+      resources.put(path, resource);
+    }
+  }
+
+  public void remove(String path, URL resource) {
+    URL existing = resources.get(path);
+    if (existing != null) {
+      if (existing.equals(resource)) {
+        resources.remove(path);
+      }
+    }
+  }
+
+  public URL getResource(String path) {
+    return resources.get(path);
+  }
+
+  public Map<String, URL> getResources() {
+    return resources;
   }
 
   public Iterable<Asset> getAssets() {
@@ -96,5 +168,32 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
       }
     }
     return null;
+  }
+
+  private URL resolve(String value) throws ProcessingException {
+    ApplicationMetaModel application = (ApplicationMetaModel)metaModel;
+    ProcessingContext context = application.getProcessingContext();
+    Path path = Path.parse(value);
+    if (path.isRelative()) {
+      context.info("Found classpath asset " + value);
+      Name qn = application.getHandle().getPackageName().append("assets");
+      Path.Absolute absolute = qn.resolve(path);
+      FileObject src = context.resolveResourceFromSourcePath(application.getHandle(), absolute);
+      if (src != null) {
+        URI uri = src.toUri();
+        context.info("Found asset " + absolute + " on source path " + uri);
+        try {
+          return uri.toURL();
+        }
+        catch (MalformedURLException e) {
+          throw UNRESOLVED_ASSET.failure(uri).initCause(e);
+        }
+      } else {
+        context.info("Could not find asset " + absolute + " on source path");
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
 }
