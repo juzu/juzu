@@ -32,8 +32,8 @@ import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.plugin.asset.Asset;
 import juzu.impl.plugin.asset.AssetsMetaModel;
+import juzu.plugin.amd.Defines;
 import juzu.plugin.amd.Modules;
-import juzu.plugin.amd.Requires;
 
 /**
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
@@ -48,7 +48,7 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public Set<Class<? extends java.lang.annotation.Annotation>> init(ProcessingContext env) {
-    return Tools.set(Modules.class, Requires.class);
+    return Tools.set(Modules.class, Defines.class);
   }
 
   @Override
@@ -59,7 +59,7 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
       List<Map<String, Object>> value = (List<Map<String, Object>>)added.get("value");
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
       boolean module = key.getType().getIdentifier().equals("Modules");
-      assetsMetaModel.removeAssets(module ? "module" : "require");
+      assetsMetaModel.removeAssets(module ? "module" : "define");
       for (Map<String, Object> asset : value) {
         String assetId = (String)asset.get("id");
         String assetValue = (String)asset.get("path");
@@ -91,7 +91,7 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
           String adapter = (String)asset.get("adapter");
           amdAsset = new ModuleAsset(assetId, "module", assetValue, depends, assetLocation, adapter, aliases);
         } else {
-          amdAsset = new Asset(assetId, "require", assetValue, Collections.<String>emptyList(), assetLocation);
+          amdAsset = new Asset(assetId, "define", assetValue, Collections.<String>emptyList(), assetLocation);
         }
         assetsMetaModel.addAsset(amdAsset);
       }
@@ -103,7 +103,7 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
     if (metaModel.getHandle().equals(key.getElement())) {
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
       boolean module = key.getType().getIdentifier().equals("Modules");
-      assetsMetaModel.removeAssets(module ? "module" : "require");
+      assetsMetaModel.removeAssets(module ? "module" : "define");
     }
   }
 }

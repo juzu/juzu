@@ -37,11 +37,11 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  * @version $Id$
  * 
  */
-public class AMDRequireTestCase extends AbstractAMDTestCase {
+public class AMDDefineTestCase extends AbstractAMDTestCase {
   
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    WebArchive war = createServletDeployment(true, "plugin.amd.require");
+    WebArchive war = createServletDeployment(true, "plugin.amd.define");
     return war;
   }
 
@@ -65,15 +65,15 @@ public class AMDRequireTestCase extends AbstractAMDTestCase {
     
     assertList(Tools.list("/juzu/assets/juzu/impl/plugin/amd/require.js",
         "/juzu/assets/juzu/impl/plugin/amd/wrapper.js",
-        "/juzu/assets/plugin/amd/require/assets/bar.js",
-        "/juzu/assets/plugin/amd/require/assets/foo.js"), sources);
+        "/juzu/assets/plugin/amd/define/assets/bar.js",
+        "/juzu/assets/plugin/amd/define/assets/foo.js"), sources);
     
-    String foo = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/require/assets/foo.js")).trim();
-    URL fooURL = Thread.currentThread().getContextClassLoader().getResource("plugin/amd/require/assets/foo.js");
+    String foo = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/define/assets/foo.js")).trim();
+    URL fooURL = Thread.currentThread().getContextClassLoader().getResource("plugin/amd/define/assets/foo.js");
     assertEquals(Tools.read(fooURL), foo);
     
-    String bar = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/require/assets/bar.js")).trim();
-    URL barURL = Thread.currentThread().getContextClassLoader().getResource("plugin/amd/require/assets/bar.js");
+    String bar = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/define/assets/bar.js")).trim();
+    URL barURL = Thread.currentThread().getContextClassLoader().getResource("plugin/amd/define/assets/bar.js");
     assertEquals(Tools.read(barURL), bar);
   }
 }

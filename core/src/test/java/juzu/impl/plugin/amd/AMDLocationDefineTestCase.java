@@ -40,11 +40,11 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  * @version $Id$
  *
  */
-public class AMDLocationRequireTestCase extends AbstractAMDTestCase {
+public class AMDLocationDefineTestCase extends AbstractAMDTestCase {
   
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    WebArchive war = createServletDeployment(true, "plugin.amd.location.require");
+    WebArchive war = createServletDeployment(true, "plugin.amd.location.define");
     war.addAsWebResource(new StringAsset("define('Bar', ['Foo'], function(foo) { return { text : foo.text + ' World' };});"), "js/bar.js");
     return war;
   }
@@ -70,6 +70,6 @@ public class AMDLocationRequireTestCase extends AbstractAMDTestCase {
     assertList(Tools.list("/juzu/assets/juzu/impl/plugin/amd/require.js",
         "/juzu/assets/juzu/impl/plugin/amd/wrapper.js",
         "/juzu/js/bar.js",
-        "/juzu/assets/plugin/amd/location/require/assets/foo.js"), sources);
+        "/juzu/assets/plugin/amd/location/define/assets/foo.js"), sources);
   }
 }

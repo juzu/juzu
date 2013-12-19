@@ -51,7 +51,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
   private Module[] modules;
 
   /** . */
-  private Module[] requires;
+  private Module[] defines;
 
   /** . */
   private PluginContext context;
@@ -101,7 +101,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
 
     //
     this.modules = process("module", manager);
-    this.requires = process("require", manager);
+    this.defines = process("define", manager);
   }
 
   private Module[] process(String type, ModuleManager manager) throws Exception {
@@ -147,7 +147,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
       Result result = request.getResult();
       if (result instanceof Result.Status) {
         Result.Status status = (Result.Status)result;
-        if (status.decorated && (modules.length > 0 || requires.length > 0)) {
+        if (status.decorated && (modules.length > 0 || defines.length > 0)) {
           status = new Result.Status(status.code, true, new StreamableDecorator(status.streamable) {
             @Override
             protected void sendHeader(Stream consumer) {
@@ -156,8 +156,8 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
               for (Module module : modules) {
                 consumer.provide(new Chunk.Property<Module>(module, Module.TYPE));
               }
-              for (Module require : requires) {
-                consumer.provide(new Chunk.Property<Module>(require, Module.TYPE));
+              for (Module define : defines) {
+                consumer.provide(new Chunk.Property<Module>(define, Module.TYPE));
               }
             }
           });

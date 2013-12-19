@@ -15,29 +15,26 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package plugin.amd.require;
+package juzu.plugin.amd;
 
-import javax.inject.Inject;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import juzu.Path;
-import juzu.Response;
-import juzu.Route;
-import juzu.View;
-import juzu.template.Template;
+import juzu.asset.AssetLocation;
 
 /**
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
  * @version $Id$
  *
  */
-public class A {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({})
+public @interface Define {
 
-  @Inject
-  @Path("index.gtmpl")
-  Template index;
+  String id();
   
-  @View  @Route("/")
-  public Response.Content index() {
-    return index.ok();
-  }
+  String path();
+  
+  AssetLocation location() default AssetLocation.APPLICATION;
 }
