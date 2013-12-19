@@ -19,7 +19,6 @@ package juzu.impl.inject.spi.cdi;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.plugin.controller.AmbiguousResolutionException;
 import juzu.impl.common.Filter;
-import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.InjectionContext;
 
 import javax.enterprise.context.spi.CreationalContext;
@@ -45,9 +44,9 @@ public abstract class CDIContext extends InjectionContext<Bean<?>, CreationalCon
   final ArrayList<Bean> beans;
 
   /** . */
-  final Filter<Class<?>> filter;
+  final Filter<Class<?>, Boolean> filter;
 
-  public CDIContext(CDIInjector injector, Filter<Class<?>> filter) throws Exception {
+  public CDIContext(CDIInjector injector, Filter<Class<?>, Boolean> filter) throws Exception {
     this.beans = new ArrayList<Bean>();
     this.filter = filter;
 

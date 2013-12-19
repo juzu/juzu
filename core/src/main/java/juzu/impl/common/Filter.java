@@ -17,18 +17,19 @@
 package juzu.impl.common;
 
 /**
- * An element filter.
+ * A filter.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public interface Filter<E> {
+public interface Filter<S, D> {
 
   /**
-   * Return true if the element should be accepted, false otherwise
+   * Filters the element
    *
-   * @param elt the element
-   * @return the accepted status
+   *
+   * @param source the source
+   * @return the filtered element
    */
-  boolean accept(E elt);
+  D filter(S source);
 
 }

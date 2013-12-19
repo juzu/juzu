@@ -68,7 +68,7 @@ public class WeldInjector extends CDIInjector {
   }
 
   @Override
-  public InjectionContext<?, ?> create(Filter<Class<?>> filter) throws Exception {
+  public InjectionContext<?, ?> create(Filter<Class<?>, Boolean> filter) throws Exception {
     final Container container = new WeldContainer(classLoader, scopeController, scopes);
     for (ReadFileSystem<?> fs : fileSystems) {
       container.addFileSystem(fs);

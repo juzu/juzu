@@ -30,8 +30,8 @@ import java.lang.annotation.Annotation;
  */
 public abstract class Injector implements Provider<Injector> {
 
-  private static final Filter<Class<?>> ALL = new Filter<Class<?>>() {
-    public boolean accept(Class<?> elt) {
+  private static final Filter<Class<?>, Boolean> ALL = new Filter<Class<?>, Boolean>() {
+    public Boolean filter(Class<?> source) {
       return true;
     }
   };
@@ -106,7 +106,7 @@ public abstract class Injector implements Provider<Injector> {
     return create(ALL);
   }
 
-  public abstract InjectionContext<?, ?> create(Filter<Class<?>> filter) throws Exception;
+  public abstract InjectionContext<?, ?> create(Filter<Class<?>, Boolean> filter) throws Exception;
 
   /**
    * Clone this injector.

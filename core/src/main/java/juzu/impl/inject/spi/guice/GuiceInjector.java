@@ -99,7 +99,7 @@ public class GuiceInjector extends Injector {
   }
 
   @Override
-  public InjectionContext<?, ?> create(Filter<Class<?>> filter) throws Exception {
+  public InjectionContext<?, ?> create(Filter<Class<?>, Boolean> filter) throws Exception {
     return new GuiceContext(this);
   }
 

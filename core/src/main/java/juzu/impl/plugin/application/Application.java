@@ -165,15 +165,15 @@ public class Application {
     // any class beginning with juzu. is refused
     // any class prefixed with the application package is accepted
     // any other application class is refused (i.e a class having an ancestor package annotated with @Application)
-    Filter<Class<?>> filter = new Filter<Class<?>>() {
+    Filter<Class<?>, Boolean> filter = new Filter<Class<?>, Boolean>() {
       HashSet<String> blackList = new HashSet<String>();
-      public boolean accept(Class<?> elt) {
-        if (elt.getName().startsWith("juzu.")) {
+      public Boolean filter(Class<?> source) {
+        if (source.getName().startsWith("juzu.")) {
           return false;
-        } else if (elt.getPackage().getName().startsWith(descriptor.getPackageName())) {
+        } else if (source.getPackage().getName().startsWith(descriptor.getPackageName())) {
           return true;
         } else {
-          for (String currentPkg = elt.getPackage().getName();currentPkg != null;currentPkg = Tools.parentPackageOf(currentPkg)) {
+          for (String currentPkg = source.getPackage().getName();currentPkg != null;currentPkg = Tools.parentPackageOf(currentPkg)) {
             if (blackList.contains(currentPkg)) {
               return false;
             } else {

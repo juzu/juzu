@@ -148,7 +148,7 @@ public class SpringInjector extends Injector {
   }
 
   @Override
-  public InjectionContext<?, ?> create(Filter<Class<?>> filter) throws Exception {
+  public InjectionContext<?, ?> create(Filter<Class<?>, Boolean> filter) throws Exception {
 
     //
     DefaultListableBeanFactory factory;
