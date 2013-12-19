@@ -48,7 +48,7 @@ import juzu.request.Result;
 public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
-  private Module[] defines;
+  private Module[] modules;
 
   /** . */
   private Module[] requires;
@@ -100,7 +100,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
     assetManager.addAsset("juzu.amd.wrapper", "asset", AssetLocation.APPLICATION, "/juzu/impl/plugin/amd/wrapper.js", wrapperjsURL);
 
     //
-    this.defines = process("define", manager);
+    this.modules = process("module", manager);
     this.requires = process("require", manager);
   }
 
@@ -147,14 +147,14 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
       Result result = request.getResult();
       if (result instanceof Result.Status) {
         Result.Status status = (Result.Status)result;
-        if (status.decorated && (defines.length > 0 || requires.length > 0)) {
+        if (status.decorated && (modules.length > 0 || requires.length > 0)) {
           status = new Result.Status(status.code, true, new StreamableDecorator(status.streamable) {
             @Override
             protected void sendHeader(Stream consumer) {
               consumer.provide(new Chunk.Property<String>("juzu.amd", PropertyType.ASSET));
               consumer.provide(new Chunk.Property<String>("juzu.amd.wrapper", PropertyType.ASSET));
-              for (Module define : defines) {
-                consumer.provide(new Chunk.Property<Module>(define, Module.TYPE));
+              for (Module module : modules) {
+                consumer.provide(new Chunk.Property<Module>(module, Module.TYPE));
               }
               for (Module require : requires) {
                 consumer.provide(new Chunk.Property<Module>(require, Module.TYPE));

@@ -15,29 +15,27 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package plugin.amd.define;
+package juzu.plugin.amd;
 
-import javax.inject.Inject;
-
-import juzu.Path;
-import juzu.Response;
-import juzu.Route;
-import juzu.View;
-import juzu.template.Template;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
+ * Declares a set of JavaScript modules.
+ *
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
  * @version $Id$
- *
  */
-public class A {
-
-  @Inject
-  @Path("index.gtmpl")
-  Template index;
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PACKAGE)
+public @interface Modules {
   
-  @View  @Route("/")
-  public Response.Content index() {
-    return index.ok();
-  }
+  /**
+   * The application amd modules configuration
+   * 
+   * @return the declared amd modules
+   */
+  Module[] value() default {};
 }

@@ -32,7 +32,7 @@ import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.plugin.asset.Asset;
 import juzu.impl.plugin.asset.AssetsMetaModel;
-import juzu.plugin.amd.Defines;
+import juzu.plugin.amd.Modules;
 import juzu.plugin.amd.Requires;
 
 /**
@@ -48,7 +48,7 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public Set<Class<? extends java.lang.annotation.Annotation>> init(ProcessingContext env) {
-    return Tools.set(Defines.class, Requires.class);
+    return Tools.set(Modules.class, Requires.class);
   }
 
   @Override
@@ -58,8 +58,8 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
       String location = (String)added.get("location");
       List<Map<String, Object>> value = (List<Map<String, Object>>)added.get("value");
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
-      boolean define = key.getType().getIdentifier().equals("Defines");
-      assetsMetaModel.removeAssets(define ? "define" : "require");
+      boolean module = key.getType().getIdentifier().equals("Modules");
+      assetsMetaModel.removeAssets(module ? "module" : "require");
       for (Map<String, Object> asset : value) {
         String assetId = (String)asset.get("id");
         String assetValue = (String)asset.get("path");
@@ -68,7 +68,7 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
           assetLocation = location;
         }
         Asset amdAsset;
-        if (define) {
+        if (module) {
           List<AnnotationState> dependencies = (List<AnnotationState>)asset.get("dependencies");
           Map<String, String> aliases =  Collections.emptyMap();
           List<String> depends = Collections.emptyList();
@@ -89,7 +89,7 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
             }
           }
           String adapter = (String)asset.get("adapter");
-          amdAsset = new AMDAsset(assetId, "define", assetValue, depends, assetLocation, adapter, aliases);
+          amdAsset = new ModuleAsset(assetId, "module", assetValue, depends, assetLocation, adapter, aliases);
         } else {
           amdAsset = new Asset(assetId, "require", assetValue, Collections.<String>emptyList(), assetLocation);
         }
@@ -102,8 +102,8 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     if (metaModel.getHandle().equals(key.getElement())) {
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
-      boolean define = key.getType().getIdentifier().equals("Defines");
-      assetsMetaModel.removeAssets(define ? "define" : "require");
+      boolean module = key.getType().getIdentifier().equals("Modules");
+      assetsMetaModel.removeAssets(module ? "module" : "require");
     }
   }
 }

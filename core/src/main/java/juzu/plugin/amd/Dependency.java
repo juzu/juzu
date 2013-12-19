@@ -22,15 +22,26 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * A module dependency.
+ *
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
  * @version $Id$
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({})
 public @interface Dependency {
-  
+
+  /**
+   * The dependency id.
+   *
+   * @return the id
+   */
   String id();
-  
+
+  /**
+   * The optional dependency alias.
+   *
+   * @return the alias
+   */
   String alias() default "";
 }

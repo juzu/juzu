@@ -17,24 +17,46 @@
  */
 package juzu.plugin.amd;
 
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * Declares a JavaScript managed module.
+ *
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
  * @version $Id$
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PACKAGE)
-public @interface Defines {
-  
+@Target({})
+public @interface Module {
+
   /**
-   * The application amd modules configuration
-   * 
-   * @return the declared amd modules
+   * The module asset id.
+   *
+   * @return the asset id
    */
-  Define[] value() default {};
+  String id();
+
+  /**
+   * The module path.
+   *
+   * @return the path
+   */
+  String path();
+
+  /**
+   * An optional adapter.
+   *
+   * @return the module adapter
+   */
+  String adapter() default "";
+
+  /**
+   * A set of dependencies
+   *
+   * @return the dependencies
+   */
+  Dependency[] dependencies() default {};
+
 }

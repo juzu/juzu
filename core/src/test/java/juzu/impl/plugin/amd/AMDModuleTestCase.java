@@ -40,11 +40,11 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  * @version $Id$
  *
  */
-public class AMDDefineTestCase extends AbstractAMDTestCase {
+public class AMDModuleTestCase extends AbstractAMDTestCase {
   
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    WebArchive war = createServletDeployment(true, "plugin.amd.define");
+    WebArchive war = createServletDeployment(true, "plugin.amd.module");
     return war;
   }
   
@@ -67,13 +67,14 @@ public class AMDDefineTestCase extends AbstractAMDTestCase {
     
     assertList(Tools.list("/juzu/assets/juzu/impl/plugin/amd/require.js",
         "/juzu/assets/juzu/impl/plugin/amd/wrapper.js",
-        "/juzu/assets/plugin/amd/define/assets/bar.js",
-        "/juzu/assets/plugin/amd/define/assets/foo.js"), sources);
+        "/juzu/assets/plugin/amd/module/assets/bar.js",
+        "/juzu/assets/plugin/amd/module/assets/foo.js"), sources);
     
-    String foo = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/define/assets/foo.js")).trim();
+    String foo = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/module/assets/foo.js")).trim();
+    System.out.println(foo);
     assertTrue(foo.startsWith("define('Foo', [], function() {"));
     
-    String bar = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/define/assets/bar.js")).trim();
+    String bar = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/module/assets/bar.js")).trim();
     assertTrue(bar.startsWith("define('Bar', ['Foo'], function(foo) {"));
   }
 
@@ -82,7 +83,7 @@ public class AMDDefineTestCase extends AbstractAMDTestCase {
   public final void testCopyAsset() throws Exception {
     CompilerAssert<File, File> compiler = getCompiler();
     ReadWriteFileSystem<File> classOutput = compiler.getClassOutput();
-    File file = classOutput.getPath("plugin", "amd", "define", "assets", "foo.js");
+    File file = classOutput.getPath("plugin", "amd", "module", "assets", "foo.js");
     assertNotNull(file);
     assertTrue(file.exists());
     assertTrue(file.isFile());
