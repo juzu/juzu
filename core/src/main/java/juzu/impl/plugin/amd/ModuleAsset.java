@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,12 +16,12 @@ import java.util.Map;
 public class ModuleAsset extends Asset {
 
   /** . */
-  private final Map<String, String> aliases;
+  private final List<String> aliases;
 
   /** . */
   private final String adapter;
 
-  public ModuleAsset( Map<String, Serializable> asset, String adapter, Map<String, String> aliases) {
+  public ModuleAsset( Map<String, Serializable> asset, String adapter, List<String> aliases) {
     super("module", asset);
 
     //
@@ -84,24 +84,28 @@ public class ModuleAsset extends Asset {
   }
 
   private void joinDependencies(StringBuilder sb) {
-    for (Iterator<String> i = depends.iterator();i.hasNext();) {
-      String depend = i.next();
-      sb.append("'").append(depend).append("'");
-      if (i.hasNext())
-        sb.append(", ");
+    if (depends != null && aliases != null) {
+      int size = Math.min(depends.size(), aliases.size());
+      for (int i = 0;i < size;i++) {
+        if (i > 0) {
+          sb.append(", ");
+        }
+        String depend = depends.get(i);
+        sb.append("'").append(depend).append("'");
+      }
     }
   }
 
   private void joinParams(StringBuilder sb) {
-    for (Iterator<String> i = depends.iterator();i.hasNext();) {
-      String depend = i.next();
-      String alias = aliases.get(depend);
-      if (alias == null) {
-        alias = depend;
+    if (depends != null && aliases != null) {
+      int size = Math.min(depends.size(), aliases.size());
+      for (int i = 0;i < size;i++) {
+        if (i > 0) {
+          sb.append(", ");
+        }
+        String alias = aliases.get(i);
+        sb.append(alias);
       }
-      sb.append(alias);
-      if (i.hasNext())
-        sb.append(", ");
     }
   }
 }

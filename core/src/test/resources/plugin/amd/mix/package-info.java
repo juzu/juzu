@@ -4,7 +4,7 @@
 @Modules(value = {
     @Module(
         value = @Asset(id = "Bar", value = "bar.js", depends = {"Foo"}),
-        dependencies = {@Dependency(id = "Foo", alias = "foo")}
+        aliases = {"foo"}
     )
 })
 @juzu.Application

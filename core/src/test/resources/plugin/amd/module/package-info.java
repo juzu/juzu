@@ -2,7 +2,7 @@
     @Module(@Asset(id = "Foo", value = "foo.js")),
     @Module(
       value = @Asset(id = "Bar", value = "bar.js", depends = {"Foo"}),
-      dependencies = {@juzu.plugin.amd.Dependency(id = "Foo", alias = "foo")}
+      aliases = {"foo"}
     )
 })
 @juzu.Application

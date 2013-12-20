@@ -4,7 +4,7 @@
         adapter="(function() { @{include} return jQuery.noConflict(true);})();"),
     @Module(
       value = @Asset(id = "foo", value = "foo.js", depends = {"jquery"}),
-      dependencies = {@juzu.plugin.amd.Dependency(id = "jquery", alias = "$")}
+      aliases = {"$"}
     )
 })
 @juzu.Application

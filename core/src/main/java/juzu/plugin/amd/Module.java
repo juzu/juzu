@@ -48,10 +48,10 @@ public @interface Module {
   String adapter() default "";
 
   /**
-   * A set of dependencies
+   * An optional alias map for {@link juzu.plugin.asset.Asset#depends()} of the {@link #value()} member.
    *
-   * @return the dependencies
+   * @return the depends alias map
    */
-  Dependency[] dependencies() default {};
+  String[] aliases() default {};
 
 }

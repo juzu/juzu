@@ -63,25 +63,7 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
         AnnotationState asset = (AnnotationState)a.get("value");
         Asset amdAsset;
         if (module) {
-          List<AnnotationState> dependencies = (List<AnnotationState>)a.get("dependencies");
-          Map<String, String> aliases =  Collections.emptyMap();
-          List<String> depends = Collections.emptyList();
-          if (dependencies != null && dependencies.size() > 0) {
-            for (AnnotationState dependency : dependencies) {
-              String id = (String)dependency.get("id");
-              String alias = (String)dependency.get("alias");
-              if (depends.isEmpty()) {
-                depends = new ArrayList<String>(dependencies.size());
-              }
-              depends.add(id);
-              if (alias != null && alias.length() > 0) {
-                if (aliases.isEmpty()) {
-                  aliases = new HashMap<String, String>(dependencies.size());
-                }
-                aliases.put(id, alias);
-              }
-            }
-          }
+          List<String> aliases = (List<String>)a.get("aliases");
           String adapter = (String)a.get("adapter");
           amdAsset = new ModuleAsset(asset, adapter, aliases);
         } else {
