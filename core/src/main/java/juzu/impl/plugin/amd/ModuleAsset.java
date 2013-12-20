@@ -32,55 +32,59 @@ public class ModuleAsset extends Asset {
   @Override
   public InputStream filter(InputStream stream) throws IOException {
 
-    StringBuilder sb = new StringBuilder();
-    sb.append("\ndefine('").append(id).append("', [");
-    joinDependencies(sb);
+    if ((depends != null && aliases != null) || adapter != null) {
+      StringBuilder sb = new StringBuilder();
+      sb.append("\ndefine('").append(id).append("', [");
+      joinDependencies(sb);
 
-    sb.append("], function(");
-    joinParams(sb);
+      sb.append("], function(");
+      joinParams(sb);
 
-    sb.append(") {\nvar require = Wrapper.require, requirejs = Wrapper.require,define = Wrapper.define;");
-    sb.append("\nWrapper.define.names=[");
-    joinDependencies(sb);
-    sb.append("];");
-    sb.append("\nWrapper.define.deps=[");
-    joinParams(sb);
-    sb.append("];");
-    sb.append("\nreturn ");
+      sb.append(") {\nvar require = Wrapper.require, requirejs = Wrapper.require,define = Wrapper.define;");
+      sb.append("\nWrapper.define.names=[");
+      joinDependencies(sb);
+      sb.append("];");
+      sb.append("\nWrapper.define.deps=[");
+      joinParams(sb);
+      sb.append("];");
+      sb.append("\nreturn ");
 
-    int idx = -1;
-    if (adapter != null && !adapter.isEmpty()) {
-      idx = adapter.indexOf("@{include}");
-    }
-
-    // start of adapter
-    if (idx != -1) {
-      sb.append(adapter.substring(0, idx)).append("\n");
-    }
-
-    NormalizeJSReader reader = new NormalizeJSReader(new InputStreamReader(stream));
-    char[] buffer = new char[512];
-    while (true) {
-      int i = reader.read(buffer);
-      if (i == 0) {
-        continue;
+      int idx = -1;
+      if (adapter != null && !adapter.isEmpty()) {
+        idx = adapter.indexOf("@{include}");
       }
-      if (i == -1) {
-        break;
+
+      // start of adapter
+      if (idx != -1) {
+        sb.append(adapter.substring(0, idx)).append("\n");
       }
-      sb.append(buffer, 0, i);
+
+      NormalizeJSReader reader = new NormalizeJSReader(new InputStreamReader(stream));
+      char[] buffer = new char[512];
+      while (true) {
+        int i = reader.read(buffer);
+        if (i == 0) {
+          continue;
+        }
+        if (i == -1) {
+          break;
+        }
+        sb.append(buffer, 0, i);
+      }
+
+      // end of adapter
+      if (idx != -1) {
+        sb.append(adapter.substring(idx + "@{include}".length(), adapter.length()));
+      }
+
+      //
+      sb.append("\n});");
+
+      //
+      return new ByteArrayInputStream(sb.toString().getBytes());
+    } else {
+      return stream;
     }
-
-    // end of adapter
-    if (idx != -1) {
-      sb.append(adapter.substring(idx + "@{include}".length(), adapter.length()));
-    }
-
-    //
-    sb.append("\n});");
-
-    //
-    return new ByteArrayInputStream(sb.toString().getBytes());
   }
 
   private void joinDependencies(StringBuilder sb) {

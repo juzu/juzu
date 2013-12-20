@@ -71,6 +71,7 @@ public class AMDModuleTestCase extends AbstractAMDTestCase {
         "/juzu/assets/plugin/amd/module/assets/foo.js"), sources);
     
     String foo = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/module/assets/foo.js")).trim();
+    System.out.println(foo);
     assertTrue(foo.startsWith("define(\"Foo\", function() {"));
     
     String bar = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/module/assets/bar.js")).trim();

@@ -45,13 +45,10 @@ import juzu.request.Result;
  * @version $Id$
  * 
  */
-public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
+public class AmdPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
   private Module[] modules;
-
-  /** . */
-  private Module[] defines;
 
   /** . */
   private PluginContext context;
@@ -68,7 +65,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
   @Inject
   AssetPlugin assetPlugin;
 
-  public AMDPlugin() {
+  public AmdPlugin() {
     super("amd");
   }
 
@@ -79,18 +76,18 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
   @Override
   public PluginDescriptor init(PluginContext context) throws Exception {
     this.context = context;
-    return new AMDDescriptor();
+    return new AmdDescriptor();
   }
 
   @PostConstruct
   public void start() throws Exception {
-    URL requirejsURL = AMDPlugin.class.getClassLoader().getResource("juzu/impl/plugin/amd/require.js");
+    URL requirejsURL = AmdPlugin.class.getClassLoader().getResource("juzu/impl/plugin/amd/require.js");
     if (requirejsURL == null) {
       throw new Exception("Not found require.js");
     }
 
     //
-    URL wrapperjsURL = AMDPlugin.class.getClassLoader().getResource("juzu/impl/plugin/amd/wrapper.js");
+    URL wrapperjsURL = AmdPlugin.class.getClassLoader().getResource("juzu/impl/plugin/amd/wrapper.js");
     if (wrapperjsURL == null) {
       throw new Exception("Not found wrapper.js");
     }
@@ -101,7 +98,6 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
 
     //
     this.modules = process("module", manager);
-    this.defines = process("define", manager);
   }
 
   private Module[] process(String type, ModuleManager manager) throws Exception {
@@ -147,7 +143,7 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
       Result result = request.getResult();
       if (result instanceof Result.Status) {
         Result.Status status = (Result.Status)result;
-        if (status.decorated && (modules.length > 0 || defines.length > 0)) {
+        if (status.decorated && (modules.length > 0)) {
           status = new Result.Status(status.code, true, new StreamableDecorator(status.streamable) {
             @Override
             protected void sendHeader(Stream consumer) {
@@ -155,9 +151,6 @@ public class AMDPlugin extends ApplicationPlugin implements RequestFilter {
               consumer.provide(new Chunk.Property<String>("juzu.amd.wrapper", PropertyType.ASSET));
               for (Module module : modules) {
                 consumer.provide(new Chunk.Property<Module>(module, Module.TYPE));
-              }
-              for (Module define : defines) {
-                consumer.provide(new Chunk.Property<Module>(define, Module.TYPE));
               }
             }
           });

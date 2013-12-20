@@ -37,9 +37,9 @@ import juzu.plugin.amd.Modules;
  * @version $Id$
  * 
  */
-public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
+public class AmdMetaModelPlugin extends ApplicationMetaModelPlugin {
 
-  public AMDMetaModelPlugin() {
+  public AmdMetaModelPlugin() {
     super("amd");
   }
 
@@ -53,20 +53,13 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
     if (metaModel.getHandle().equals(key.getElement())) {
       List<Map<String, Object>> value = (List<Map<String, Object>>)added.get("value");
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
-      assetsMetaModel.removeAssets("define");
       assetsMetaModel.removeAssets("module");
       ArrayList<Asset> list = new ArrayList<Asset>();
       for (Map<String, Object> a : value) {
         AnnotationState asset = (AnnotationState)a.get("value");
         List<String> aliases = (List<String>)a.get("aliases");
         String adapter = (String)a.get("adapter");
-        Asset amdAsset;
-        if (adapter != null || aliases != null) {
-          amdAsset = new ModuleAsset(asset, adapter, aliases);
-        } else {
-          amdAsset = new Asset("define", asset);
-        }
-        list.add(amdAsset);
+        list.add(new ModuleAsset(asset, adapter, aliases));
       }
 
       //
@@ -80,8 +73,7 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     if (metaModel.getHandle().equals(key.getElement())) {
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
-      boolean module = key.getType().getIdentifier().equals("Modules");
-      assetsMetaModel.removeAssets(module ? "module" : "define");
+      assetsMetaModel.removeAssets("module");
     }
   }
 }

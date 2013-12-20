@@ -31,7 +31,7 @@ import juzu.impl.plugin.PluginDescriptor;
  * @version $Id$
  *
  */
-public class AMDDescriptor extends PluginDescriptor {
+class AmdDescriptor extends PluginDescriptor {
   
   @Override
   public Iterable<BeanDescriptor> getBeans() {
