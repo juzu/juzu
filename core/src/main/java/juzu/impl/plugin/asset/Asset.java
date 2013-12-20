@@ -15,6 +15,7 @@
  */
 package juzu.impl.plugin.asset;
 
+import juzu.asset.AssetLocation;
 import juzu.impl.common.JSON;
 
 import java.io.IOException;
@@ -42,20 +43,26 @@ public class Asset implements Serializable {
   public final List<String> depends;
 
   /** . */
-  public final String location;
+  public final AssetLocation location;
 
   public Asset(String type, Map<String, Serializable> asset) {
     String id = (String)asset.get("id");
     String value = (String)asset.get("value");
     List<String> depends = (List<String>)asset.get("depends");
-    String location = (String)asset.get("location");
+    AssetLocation location = AssetLocation.safeValueOf((String)asset.get("location"));
 
     //
+    if (type == null) {
+      throw new NullPointerException("No null type accepted");
+    }
+    if (id == null) {
+      throw new IllegalArgumentException("No null id accepted");
+    }
     if (value == null) {
-      throw new NullPointerException();
+      throw new IllegalArgumentException("No null value accepted");
     }
     if (location == null) {
-      location = "APPLICATION";
+      throw new IllegalArgumentException("No null location accepted");
     }
 
     //
@@ -66,13 +73,21 @@ public class Asset implements Serializable {
     this.location = location;
   }
 
-  public Asset(String id, String type, String value, List<String> depends, String location) {
+  public Asset(String id, String type, String value, List<String> depends, AssetLocation location) {
+    if (type == null) {
+      throw new NullPointerException("No null type accepted");
+    }
+    if (id == null) {
+      throw new NullPointerException("No null id accepted");
+    }
     if (value == null) {
-      throw new NullPointerException();
+      throw new NullPointerException("No null value accepted");
     }
     if (location == null) {
-      location = "APPLICATION";
+      throw new NullPointerException("No null location accepted");
     }
+
+    //
     this.id = id;
     this.type = type;
     this.value = value;
@@ -89,7 +104,7 @@ public class Asset implements Serializable {
       json.set("depends", depends);
     }
     if (location != null) {
-      json.set("location", location);
+      json.set("location", location.toString());
     }
     return json;
   }

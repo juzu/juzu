@@ -57,7 +57,7 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
   public void addAsset(Asset asset) {
 
     //
-    if (asset.location == null || AssetLocation.APPLICATION.equals(AssetLocation.safeValueOf(asset.location))) {
+    if (AssetLocation.APPLICATION == asset.location) {
       URL url = resolve(asset.value);
       if (url != null) {
         add(asset.value, url);
@@ -71,7 +71,7 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
   public void removeAsset(Asset asset) {
 
     //
-    if (asset.location == null || AssetLocation.APPLICATION.equals(AssetLocation.safeValueOf(asset.location))) {
+    if (AssetLocation.APPLICATION == asset.location) {
       URL url = resolve(asset.value);
       if (url != null) {
         remove(asset.value, url);

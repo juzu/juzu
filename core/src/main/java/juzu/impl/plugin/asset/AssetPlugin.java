@@ -188,15 +188,9 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
         resource = null;
       }
 
-      String id = script.getId();
-      if (id == null) {
-        int slash = value.lastIndexOf('/');
-        id = slash >= 0 ? value.substring(slash + 1) : value;
-      }
-
       //
-      assetManager.addAsset(id, script.getType(), script.getLocation(), value, resource, script.getDependencies());
-      assets.put(id, new Chunk.Property<String>(id, PropertyType.ASSET));
+      assetManager.addAsset(script.getId(), script.getType(), script.getLocation(), value, resource, script.getDependencies());
+      assets.put(script.getId(), new Chunk.Property<String>(script.getId(), PropertyType.ASSET));
     }
 
     //

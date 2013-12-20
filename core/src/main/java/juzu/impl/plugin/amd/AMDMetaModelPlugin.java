@@ -17,12 +17,15 @@
  */
 package juzu.impl.plugin.amd;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import juzu.asset.AssetLocation;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
@@ -51,12 +54,19 @@ public class AmdMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     if (metaModel.getHandle().equals(key.getElement())) {
-      List<Map<String, Object>> value = (List<Map<String, Object>>)added.get("value");
+      List<Map<String, Serializable>> value = (List<Map<String, Serializable>>)added.get("value");
+      //
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
       assetsMetaModel.removeAssets("module");
       ArrayList<Asset> list = new ArrayList<Asset>();
-      for (Map<String, Object> a : value) {
-        AnnotationState asset = (AnnotationState)a.get("value");
+      for (Map<String, Serializable> a : value) {
+        HashMap<String, Serializable> asset = new HashMap<String, Serializable>((AnnotationState)a.get("value"));
+        if (asset.get("location") == null) {
+          asset.put("location", AssetLocation.APPLICATION.name());
+        }
+        if (asset.get("id") == null) {
+          asset.put("id", asset.get("value"));
+        }
         List<String> aliases = (List<String>)a.get("aliases");
         String adapter = (String)a.get("adapter");
         list.add(new ModuleAsset(asset, adapter, aliases));

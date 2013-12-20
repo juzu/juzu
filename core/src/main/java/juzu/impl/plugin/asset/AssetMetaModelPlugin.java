@@ -16,6 +16,7 @@
 
 package juzu.impl.plugin.asset;
 
+import juzu.asset.AssetLocation;
 import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
@@ -82,12 +83,17 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   private Iterable<Asset> getAssets(AnnotationState annotation) {
     ArrayList<Asset> assets = new ArrayList<Asset>();
     String location = (String)annotation.get("location");
+    if (location == null) {
+      location = AssetLocation.APPLICATION.name();
+    }
     List<AnnotationState> value = (List<AnnotationState>)annotation.get("value");
     for (AnnotationState asset : value) {
-      Map<String, Serializable> state = asset;
-      if (state.get("location") == null && location != null) {
-        state = new HashMap<String, Serializable>(state);
+      Map<String, Serializable> state = new HashMap<String, Serializable>(asset);
+      if (state.get("location") == null) {
         state.put("location", location);
+      }
+      if (state.get("id") == null) {
+        state.put("id", state.get("value"));
       }
       assets.add(new Asset("asset", state));
     }
