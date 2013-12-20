@@ -54,17 +54,13 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
-
     if (metaModel.getHandle().equals(key.getElement())) {
       List<Map<String, Object>> value = (List<Map<String, Object>>)added.get("value");
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
       boolean module = key.getType().getIdentifier().equals("Modules");
       assetsMetaModel.removeAssets(module ? "module" : "define");
       for (Map<String, Object> a : value) {
-
         AnnotationState asset = (AnnotationState)a.get("value");
-
-
         Asset amdAsset;
         if (module) {
           List<AnnotationState> dependencies = (List<AnnotationState>)a.get("dependencies");

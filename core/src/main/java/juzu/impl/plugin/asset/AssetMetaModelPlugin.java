@@ -17,7 +17,6 @@
 package juzu.impl.plugin.asset;
 
 import juzu.impl.common.Name;
-import juzu.impl.common.Path;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
@@ -105,13 +104,12 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
         InputStream in = null;
         OutputStream out = null;
         try {
-          Path.Absolute absolute = qn.resolve(entry.getKey());
           URL src = entry.getValue();
           URLConnection conn = src.openConnection();
-          FileObject dst = context.getResource(StandardLocation.CLASS_OUTPUT, absolute);
+          FileObject dst = context.getResource(StandardLocation.CLASS_OUTPUT, qn, entry.getKey());
           if (dst == null || dst.getLastModified() < conn.getLastModified()) {
             in = conn.getInputStream();
-            dst = context.createResource(StandardLocation.CLASS_OUTPUT, absolute, context.get(metaModel.getHandle()));
+            dst = context.createResource(StandardLocation.CLASS_OUTPUT, qn, entry.getKey(), context.get(metaModel.getHandle()));
             context.info("Copying asset from source path " + src + " to class output " + dst.toUri());
             for (Asset asset : annotation.getAssets()) {
               if (asset.value.equals(entry.getKey())) {

@@ -1,10 +1,12 @@
 @Application
 @WebJars(@WebJar("jquery"))
 @Modules({
-  @Module(id = "jquery", path="jquery.js", adapter="(function() { @{include} return jQuery.noConflict(true);})();"),
   @Module(
-    id = "foo",
-    path="foo.js",
+    value = @Asset(id = "jquery", value = "jquery.js"),
+    adapter="(function() { @{include} return jQuery.noConflict(true);})();"
+  ),
+  @Module(
+    value = @Asset(id = "foo", value="foo.js", depends = "jquery"),
     dependencies = {@Dependency(id = "jquery", alias = "$")}
   )
 })
@@ -16,3 +18,4 @@ import juzu.plugin.amd.Modules;
 import juzu.plugin.amd.Dependency;
 import juzu.plugin.webjars.WebJar;
 import juzu.plugin.webjars.WebJars;
+import juzu.plugin.asset.Asset;
