@@ -1,6 +1,6 @@
-@Defines(value = {
-    @Define(@Asset(id = "Foo", value = "foo.js")),
-    @Define(@Asset(id = "Bar", value = "bar.js"))
+@Modules(value = {
+    @Module(@Asset(id = "Foo", value = "foo.js")),
+    @Module(@Asset(id = "Bar", value = "bar.js"))
 })
 @juzu.Application
 package plugin.amd.define;

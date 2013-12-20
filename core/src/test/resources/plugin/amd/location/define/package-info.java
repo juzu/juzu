@@ -1,7 +1,7 @@
-@Defines(
+@Modules(
   value = {
-    @Define(@Asset(id = "Foo", value = "foo.js")),
-    @Define(@Asset(id = "Bar", value = "js/bar.js", location = AssetLocation.SERVER))
+    @Module(@Asset(id = "Foo", value = "foo.js")),
+    @Module(@Asset(id = "Bar", value = "js/bar.js", location = AssetLocation.SERVER))
   })
 @juzu.Application
 package plugin.amd.location.define;

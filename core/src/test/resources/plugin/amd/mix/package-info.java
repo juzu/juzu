@@ -1,7 +1,5 @@
-@Defines(value = {
-    @Define(@Asset(id = "Foo", value = "foo.js"))
-})
 @Modules(value = {
+    @Module(@Asset(id = "Foo", value = "foo.js")),
     @Module(
         value = @Asset(id = "Bar", value = "bar.js", depends = {"Foo"}),
         aliases = {"foo"}
