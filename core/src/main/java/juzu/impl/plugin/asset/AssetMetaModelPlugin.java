@@ -113,7 +113,12 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
             in = conn.getInputStream();
             dst = context.createResource(StandardLocation.CLASS_OUTPUT, absolute, context.get(metaModel.getHandle()));
             context.info("Copying asset from source path " + src + " to class output " + dst.toUri());
-//            in = asset.filter(in);
+            for (Asset asset : annotation.getAssets()) {
+              if (asset.value.equals(entry.getKey())) {
+                in = asset.filter(in);
+                break;
+              }
+            }
             out = dst.openOutputStream();
             Tools.copy(in, out);
           } else {

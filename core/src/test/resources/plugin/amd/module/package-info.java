@@ -1,8 +1,7 @@
 @Modules({
-    @Module(id = "Foo", path="foo.js"),
+    @Module(@Asset(id = "Foo", value = "foo.js")),
     @Module(
-      id = "Bar",
-      path="bar.js",
+      value = @Asset(id = "Bar", value = "bar.js", depends = {"Foo"}),
       dependencies = {@juzu.plugin.amd.Dependency(id = "Foo", alias = "foo")}
     )
 })
@@ -11,3 +10,4 @@ package plugin.amd.module;
 
 import juzu.plugin.amd.Module;
 import juzu.plugin.amd.Modules;
+import juzu.plugin.asset.Asset;

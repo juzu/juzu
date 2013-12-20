@@ -6,8 +6,8 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,8 +21,8 @@ public class ModuleAsset extends Asset {
   /** . */
   private final String adapter;
 
-  public ModuleAsset(String id, String type, String value, List<String> depends, String location, String adapter, Map<String, String> aliases) {
-    super(id, type, value, depends, location);
+  public ModuleAsset( Map<String, Serializable> asset, String adapter, Map<String, String> aliases) {
+    super("module", asset);
 
     //
     this.adapter = adapter;

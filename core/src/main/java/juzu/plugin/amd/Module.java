@@ -17,6 +17,8 @@
  */
 package juzu.plugin.amd;
 
+import juzu.plugin.asset.Asset;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -32,18 +34,11 @@ import java.lang.annotation.Target;
 public @interface Module {
 
   /**
-   * The module asset id.
+   * The module asset.
    *
-   * @return the asset id
+   * @return the asset
    */
-  String id();
-
-  /**
-   * The module path.
-   *
-   * @return the path
-   */
-  String path();
+  Asset value();
 
   /**
    * An optional adapter.

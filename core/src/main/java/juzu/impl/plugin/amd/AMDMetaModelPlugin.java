@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.inject.internal.asm.$ClassAdapter;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.AnnotationKey;
@@ -55,21 +56,18 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
 
     if (metaModel.getHandle().equals(key.getElement())) {
-      String location = (String)added.get("location");
       List<Map<String, Object>> value = (List<Map<String, Object>>)added.get("value");
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
       boolean module = key.getType().getIdentifier().equals("Modules");
       assetsMetaModel.removeAssets(module ? "module" : "define");
-      for (Map<String, Object> asset : value) {
-        String assetId = (String)asset.get("id");
-        String assetValue = (String)asset.get("path");
-        String assetLocation = (String)asset.get("location");
-        if (assetLocation == null) {
-          assetLocation = location;
-        }
+      for (Map<String, Object> a : value) {
+
+        AnnotationState asset = (AnnotationState)a.get("value");
+
+
         Asset amdAsset;
         if (module) {
-          List<AnnotationState> dependencies = (List<AnnotationState>)asset.get("dependencies");
+          List<AnnotationState> dependencies = (List<AnnotationState>)a.get("dependencies");
           Map<String, String> aliases =  Collections.emptyMap();
           List<String> depends = Collections.emptyList();
           if (dependencies != null && dependencies.size() > 0) {
@@ -88,10 +86,10 @@ public class AMDMetaModelPlugin extends ApplicationMetaModelPlugin {
               }
             }
           }
-          String adapter = (String)asset.get("adapter");
-          amdAsset = new ModuleAsset(assetId, "module", assetValue, depends, assetLocation, adapter, aliases);
+          String adapter = (String)a.get("adapter");
+          amdAsset = new ModuleAsset(asset, adapter, aliases);
         } else {
-          amdAsset = new Asset(assetId, "define", assetValue, Collections.<String>emptyList(), assetLocation);
+          amdAsset = new Asset("define", asset);
         }
         assetsMetaModel.addAsset(amdAsset);
       }

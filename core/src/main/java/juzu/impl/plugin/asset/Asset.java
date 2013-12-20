@@ -20,6 +20,7 @@ import juzu.impl.common.JSON;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ public class Asset implements Serializable {
     this.id = id;
     this.type = type;
     this.value = value;
-    this.depends = depends;
+    this.depends = depends != null ? depends : Collections.<String>emptyList();
     this.location = location;
   }
 
