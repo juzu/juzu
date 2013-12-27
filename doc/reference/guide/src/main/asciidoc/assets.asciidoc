@@ -41,8 +41,8 @@ NOTE: an empty value asset is useful for declaring an asset defined by its depen
 Assets are identified by a unique id within the application, this value is however optional. When no id is declared
 , the asset value is used for creating an id from the asset file name:
 
-* The value +jquery-ui-1.7.2.custom.min.js+ produces the same +jquery-ui-1.7.2.custom.min.js+ value
-* The value +js/jquery-ui-1.7.2.custom.min.js+ produces the +jquery-ui-1.7.2.custom.min.js+  value
+* The value +jquery-ui-1.7.2.custom.min.js+ produces the same +jquery-ui-1.7.2.custom.min.js+ id
+* The value +js/jquery-ui-1.7.2.custom.min.js+ produces the +js/jquery-ui-1.7.2.custom.min.js+ id
 
 === Application assets
 
@@ -196,3 +196,29 @@ the _jquery-ui_ asset depends on the _jquery_ asset because the jquery script mu
 script.
 * resolve asset references: each asset reference must be resolved and produce a final web url that will produce the resource
  when it is resolved by the web browsers
+
+== Asset controller
+
+The asset controller is a special controller provided by the asset manager for creating application asset urls at runtime.
+It can be injected in any bean with the +url+ method that takes as an asset application path.
+
+[source,java]
+----
+
+@Inject
+juzu.plugin.asset.AssetController assetController;
+
+@View
+public Response.Content index() {
+   String jqueryURL = assetController.url("jquery.js");
+   ...
+}
+----
+
+The asset controller can also be used in templates as it is bound under the +Assets+ name:
+
+[source]
+----
+<script type="application/javascript" src="@{Assets.url(path='test.js')}"></script>
+----
+

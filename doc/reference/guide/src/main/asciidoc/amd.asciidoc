@@ -25,76 +25,95 @@ At runtime the dependency system defines a graph of function to execute, the pro
 the other modules. It can be seen as a simple dependency injection system able to load modules in an asynchronous and
 parallel fashion providing parallel loading, namespacing and dependency management.
 
-== Defining a module
+== Declaring a module
 
-The +@Defines+ and +@Define+ are used to declare the JavaScript which is either a canonical module as defined
- by the AMD specification or a simple self-executing function.
-
-When the javascript is self-executing function, this script is wrapped to provide the expected RequireJS format, let's
-study a quick example with a module:
+The +@Modules+ and +@Module+ are used to declare JavaScript modules as defined by the https://github.com/amdjs/amdjs-api/wiki/AMD[AMD specification]. The
++@Module+ interface wraps an +@Asset+ annotation to tell Juzu that this is a module asset:
 
 .Defining a simple module
 [source,java]
 ----
-@Defines(value={@Define(name="Foo", path="foo.js")})
+@Modules(@Module(@Asset(id="Foo", value="foo.js")))
 package my.application
 ----
 
-
-.The +foo.js+ self-executing function
-[source,java]
-----
-(function () {
-  //Do something
-})();
-----
-
-Equivalent to this declaration in the RequireJS format:
-
+.The +foo.js+ module
 [source,java]
 ----
 define("Foo", function() {
-  return //Something
+  return {
+    text: "Hello"
+  };
 });
 ----
 
-Modularity allows to define cross dependencies between modules, the +@Define+ annotation allows that:
+Modularity allows to define dependencies accross modules, the +@Asset+ annotation +depends+ member can be used
+for declaring those dependencies. It is not formally require in the client side to define such dependencies as they
+are already declared in the JavaScript module itself, Juzu needs to be aware of those dependencies in order to
+compute the specific _require.js+ configuration when serving a page.
 
 .Defining a module with dependencies
 [source,java]
 ----
-@Defines(
-  value = {
-    @Define(name="Foo", path="foo.js"),
-    @Define(name="Bar", path="bar.js", dependencies={@Dependency(name="Foo", alias="foo")}}
-)
+@Modules({
+  @Module(@Asset(id="Foo", value="foo.js")),
+  @Module(@Asset(id="Bar", value="bar.js", depends={"Foo"}))
+})
 ----
 
-.The +bar.js+ self-executing function
-[source,java]
-----
-(function(foo) {
-  //Do something
-})(foo);
-----
-
-Equivalent to this declaration in the RequireJS format:
-
+.The +bar.js+ module
 [source,java]
 ----
 define("Bar", ["Foo"], function(foo) {
-  return //Something
+  return {
+    text : foo.text + " World"
+  };
 });
 ----
 
-The Juzu AMD plugin allows to provide custom adapter for adapting the script to the expected format. With this flexibility
-it is possible to declare an adapter wrapping the adapted script. The jQuery library is a good example of how a custom
-adapter can be useful. Thanks to the adapter feature we can reuse the jQuery without any change:
+The module identifiers declared inside the JavaScript modules must match the identifiers declared in the +depends+
+and +id+ annotation declarations.
+
+== Dependency aliases
+
+Sometimes a dependency id declared by a JavaScript module does not fit the application and it needs to be changed to
+ another value.
+
+For example let's say that the _Foo_ dependency should be renamed _foo_ in the +bar.js+ module
+
+.The +bar.js+ module
+[source,java]
+----
+define("Bar", ["foo"], function(foo) {
+  return {
+    text : foo.text + " World"
+  };
+});
+----
+
+In this case dependency ids can be aliased by the +@Module+ annotation:
+
+[source,java]
+----
+@Modules({
+  @Module(@Asset(id="Foo", value="foo.js")),
+  @Module(@Asset(id="Bar", value="bar.js", depends={"Foo"}), aliases={"foo")})
+})
+----
+
+NOTE: The Juzu AMD definition provides dependency aliasing only for JavaScript located at +AssetLocation.APPLICATION+.
+
+== Module adapters
+
+The AMD plugin allows to provide custom adapter for adapting JavaScript files to the expected format. It allows
+to turn non JavaScript files into proper JavaScript modules. Thanks to the adapter feature we can reuse the
+jQuery without any change:
  
-.The jQuery uses the following construct for defining itself
+.The jQuery uses the following construct
 [source,java]
 ----
 (function(window, undefined) {
+  ...
 })(window);
 ----
 
@@ -103,10 +122,10 @@ value as expected by the dependency system. Thanks to the custom adapter we can 
 
 [source,java]
 ----
-@Define(
-  id = "jquery",
-  path="jquery-1.7.1.js",
-  adapter="(function() { @{include} return jQuery.noConflict(true);})();")
+@Module(
+  @Asset(id="jquery", value="jquery-1.7.1.js"),
+  adapter="(function() { @{include} return jQuery.noConflict(true);})();"
+)
 ----
 
 The adapter attribute can contains mixed content and the +@{include}+ will perform a mere inclusion (as a C language includes)
@@ -123,43 +142,4 @@ define("jquery", [], function() {
 });
 ----
 
-NOTE: The Juzu AMD definition adapts only the javascript located at +AssetLocation.APPLICATION+. The +@Require+ annotation
-must be used for other kind of locations.
-
-== Requiring a module
-
-The Juzu AMD +@Require+ annotation only register a JavaScript module for RequireJS Loader. It does not wrap or adapt
-content and does not manage module dependencies.
-
-Here is an example of using +@Requires+ and +@Require+ to register the +foo.js+ script and the +bar.js+ scripts
-that depends on +foo.js+.
-
-[source,java]
-----
-@Requires (
-  value = {
-    @Require(id = "Foo", path = "foo.js"),
-    @Require(id = "Bar", path = "bar.js")}
-)
-package my.application;
-----
-
-.The +foo.js+ module declaration
-[source,java]
-----
-define("Foo", function() {
-  return {
-    text: "Hello"
-  };
-});
-----
-
-.The +bar.js+ module declaration
-[source,java]
-----
-define("Bar", ["Foo"], function(foo) {
-  return {
-    text : foo.text + " World"
-  };
-});
-----
+NOTE: The Juzu AMD definition adapts only the JavaScript located at +AssetLocation.APPLICATION+.
