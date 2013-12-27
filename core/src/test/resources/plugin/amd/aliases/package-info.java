@@ -6,7 +6,7 @@
     )
 })
 @juzu.Application
-package plugin.amd.module;
+package plugin.amd.aliases;
 
 import juzu.plugin.amd.Module;
 import juzu.plugin.amd.Modules;

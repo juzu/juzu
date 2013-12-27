@@ -38,7 +38,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  *
  * Use mixin @Require and @Define
  */
-public class AMDMixTestCase extends AbstractAMDTestCase {
+public class AmdMixTestCase extends AbstractAmdTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {

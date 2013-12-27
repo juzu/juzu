@@ -17,10 +17,13 @@
  */
 package juzu.impl.plugin.amd;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 
 import juzu.impl.common.Tools;
+import juzu.impl.fs.spi.ReadWriteFileSystem;
+import juzu.test.CompilerAssert;
 import juzu.test.UserAgent;
 
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -37,11 +40,11 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
  * @version $Id$
  *
  */
-public class AMDAdapterTestCase extends AbstractAMDTestCase {
-
+public class AmdAliasesTestCase extends AbstractAmdTestCase {
+  
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    WebArchive war = createServletDeployment(true, "plugin.amd.adapter");
+    WebArchive war = createServletDeployment(true, "plugin.amd.aliases");
     return war;
   }
   
@@ -63,12 +66,27 @@ public class AMDAdapterTestCase extends AbstractAMDTestCase {
     }
     
     assertList(Tools.list("/juzu/assets/juzu/impl/plugin/amd/require.js",
-    		"/juzu/assets/juzu/impl/plugin/amd/wrapper.js",
-    		"/juzu/assets/plugin/amd/adapter/assets/foo.js",
-    		"/juzu/assets/plugin/amd/adapter/assets/jquery-1.7.1.js"), sources);
+        "/juzu/assets/juzu/impl/plugin/amd/wrapper.js",
+        "/juzu/assets/plugin/amd/aliases/assets/bar.js",
+        "/juzu/assets/plugin/amd/aliases/assets/foo.js"), sources);
     
-    String jquery = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/adapter/assets/jquery-1.7.1.js"));
-    boolean actual = jquery.endsWith("})( window );\n return jQuery.noConflict(true);})();\n});");
-    assertTrue(actual);
+    String foo = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/aliases/assets/foo.js")).trim();
+    System.out.println(foo);
+    assertTrue(foo.startsWith("define(\"Foo\", function() {"));
+    
+    String bar = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/aliases/assets/bar.js")).trim();
+    assertTrue(bar.startsWith("define('Bar', ['Foo'], function(foo) {"));
   }
+
+  @Test
+  @RunAsClient
+  public final void testCopyAsset() throws Exception {
+    CompilerAssert<File, File> compiler = getCompiler();
+    ReadWriteFileSystem<File> classOutput = compiler.getClassOutput();
+    File file = classOutput.getPath("plugin", "amd", "aliases", "assets", "foo.js");
+    assertNotNull(file);
+    assertTrue(file.exists());
+    assertTrue(file.isFile());
+  }
+
 }

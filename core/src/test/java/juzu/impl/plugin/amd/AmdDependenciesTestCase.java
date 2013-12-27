@@ -17,7 +17,6 @@
  */
 package juzu.impl.plugin.amd;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -26,9 +25,7 @@ import juzu.test.UserAgent;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
-import org.jboss.shrinkwrap.api.asset.StringAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.jboss.shrinkwrap.impl.base.exporter.zip.ZipExporterImpl;
 import org.junit.Test;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
@@ -38,14 +35,13 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 /**
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
  * @version $Id$
- *
+ * 
  */
-public class AMDLocationDefineTestCase extends AbstractAMDTestCase {
+public class AmdDependenciesTestCase extends AbstractAmdTestCase {
   
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    WebArchive war = createServletDeployment(true, "plugin.amd.location.define");
-    war.addAsWebResource(new StringAsset("define('Bar', ['Foo'], function(foo) { return { text : foo.text + ' World' };});"), "js/bar.js");
+    WebArchive war = createServletDeployment(true, "plugin.amd.dependencies");
     return war;
   }
 
@@ -69,7 +65,15 @@ public class AMDLocationDefineTestCase extends AbstractAMDTestCase {
     
     assertList(Tools.list("/juzu/assets/juzu/impl/plugin/amd/require.js",
         "/juzu/assets/juzu/impl/plugin/amd/wrapper.js",
-        "/juzu/js/bar.js",
-        "/juzu/assets/plugin/amd/location/define/assets/foo.js"), sources);
+        "/juzu/assets/plugin/amd/dependencies/assets/bar.js",
+        "/juzu/assets/plugin/amd/dependencies/assets/foo.js"), sources);
+    
+    String foo = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/dependencies/assets/foo.js")).trim();
+    URL fooURL = Thread.currentThread().getContextClassLoader().getResource("plugin/amd/dependencies/assets/foo.js");
+    assertEquals(Tools.read(fooURL), foo);
+    
+    String bar = Tools.read(new URL("http://localhost:" + getContainerPort() + "/juzu/assets/plugin/amd/dependencies/assets/bar.js")).trim();
+    URL barURL = Thread.currentThread().getContextClassLoader().getResource("plugin/amd/dependencies/assets/bar.js");
+    assertEquals(Tools.read(barURL), bar);
   }
 }

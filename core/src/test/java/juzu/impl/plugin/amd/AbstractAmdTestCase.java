@@ -26,7 +26,7 @@ import juzu.test.AbstractWebTestCase;
  * @version $Id$
  *
  */
-public abstract class AbstractAMDTestCase extends AbstractWebTestCase {
+public abstract class AbstractAmdTestCase extends AbstractWebTestCase {
 
   protected void assertList(List<?> expected, List<?> actual) {
     assertEquals(expected.size(), actual.size());

@@ -3,6 +3,6 @@
     @Module(@Asset(id = "Bar", value = "bar.js"))
 })
 @juzu.Application
-package plugin.amd.define;
+package plugin.amd.dependencies;
 import juzu.plugin.amd.*;
 import juzu.plugin.asset.Asset;
