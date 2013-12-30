@@ -78,10 +78,10 @@ public class Asset {
   }
 
   public boolean isStylesheet() {
-    return uri.endsWith(".css") || uri.endsWith(".less");
+    return type.equals("stylesheet");
   }
 
   public boolean isScript() {
-    return uri.endsWith(".js");
+    return type.equals("script");
   }
 }

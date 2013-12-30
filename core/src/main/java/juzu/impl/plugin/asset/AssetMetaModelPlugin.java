@@ -95,7 +95,18 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       if (state.get("id") == null) {
         state.put("id", state.get("value"));
       }
-      assets.add(new Asset("asset", state));
+      String v = (String)state.get("value");
+      String type;
+      if (v.endsWith(".js")) {
+        type = "script";
+      } else if (v.endsWith(".css")) {
+        type = "stylesheet";
+      } else if (v.endsWith(".less")) {
+        type = "stylesheet";
+      } else {
+        throw new UnsupportedOperationException("Handle me gracefully " + v);
+      }
+      assets.add(new Asset(type, state));
     }
     return assets;
   }

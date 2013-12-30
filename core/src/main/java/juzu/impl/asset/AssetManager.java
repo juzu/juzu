@@ -52,10 +52,6 @@ public class AssetManager {
     this.application = application;
   }
 
-  public boolean addAsset(String id, AssetLocation location, String value, URL url, String... dependencies) throws NullPointerException, IllegalArgumentException {
-    return addAsset(id, "asset", location, value, url, Tools.set(dependencies));
-  }
-
   public boolean addAsset(String id, String type, AssetLocation location, String value, URL url, String... dependencies) throws NullPointerException, IllegalArgumentException {
     return addAsset(id, type, location, value, url, Tools.set(dependencies));
   }

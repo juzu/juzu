@@ -45,7 +45,7 @@ public class AmdMetaModelPlugin extends ApplicationMetaModelPlugin {
   /** . */
   private static final Asset REQUIRE_JS = new Asset(
       "juzu.amd",
-      "asset",
+      "script",
       "/juzu/impl/plugin/amd/require.js",
       Collections.<String>emptyList(),
       AssetLocation.APPLICATION);

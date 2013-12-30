@@ -223,22 +223,20 @@ public abstract class WebStream implements AsyncStream {
           stream.provide(Chunk.create("\"/>\n"));
         }
       }
-
-      List<Asset> mods = Collections.emptyList();
+      List<Asset> modules = Collections.emptyList();
       for (Asset asset : resolvedAssets) {
         if (asset.getType().equals("module")) {
-          if (mods.isEmpty()) {
-            mods = new ArrayList<Asset>();
+          if (modules.isEmpty()) {
+            modules = new ArrayList<Asset>();
           }
-          mods.add(asset);
+          modules.add(asset);
         }
       }
-      if (!mods.isEmpty()) {
-        renderAMD(mods, stream);
+      if (!modules.isEmpty()) {
+        renderAMD(modules, stream);
       }
-
       for (Asset asset : resolvedAssets) {
-        if (asset.getType().equals("asset") && asset.isScript()) {
+        if (asset.isScript()) {
           String url = renderAssetURL(asset.getLocation(), asset.getURI());
           stream.provide(Chunk.create("<script type=\"text/javascript\" src=\""));
           stream.provide(Chunk.create(url));
