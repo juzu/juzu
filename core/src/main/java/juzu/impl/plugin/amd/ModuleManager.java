@@ -63,7 +63,7 @@ public class ModuleManager {
           break;
         case SERVER :
         case URL:
-          if (data.getType().equals("require")) {
+          if (data.getType().equals("module")) {
             assetManager.resources.put(data.getURI(), url);
           }
           break;
