@@ -20,16 +20,17 @@ import juzu.Response;
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.Asset;
 import juzu.impl.asset.AssetManager;
-import juzu.impl.plugin.amd.ModuleManager;
 import juzu.impl.common.Tools;
-import juzu.impl.plugin.amd.Module;
 import juzu.io.Chunk;
 import juzu.io.Stream;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /** @author Julien Viet */
@@ -55,17 +56,13 @@ public abstract class WebStream implements AsyncStream {
 
   /** . */
   private final AssetManager assetManager;
-  
-  /** .*/
-  private final ModuleManager moduleManager;
 
   /** The current document being assembled. */
   private final Page page;
 
-  public WebStream(HttpStream stream, AssetManager assetManager, ModuleManager moduleManager) {
+  public WebStream(HttpStream stream, AssetManager assetManager) {
     this.stream = stream;
     this.assetManager = assetManager;
-    this.moduleManager = moduleManager;
     this.page = new Page();
   }
 
@@ -83,8 +80,6 @@ public abstract class WebStream implements AsyncStream {
           page.metaHttpEquivs.add(((Map.Entry<String, String>)property.value));
         } else if (property.type == PropertyType.ASSET) {
           page.assets.add(((String)property.value));
-        } else if (property.type == Module.TYPE) {
-          page.modules.add(((Module)property.value));
         } else if (property.type == PropertyType.HEADER_TAG) {
           page.headerTags.add(((Element)property.value));
         } else {
@@ -177,15 +172,11 @@ public abstract class WebStream implements AsyncStream {
     /** . */
     private final LinkedList<Asset> resolvedAssets = new LinkedList<Asset>();
 
-    /** .*/
-    private final LinkedList<Module> modules = new LinkedList<Module>();
-
     void clear() {
       this.title = null;
       this.metaTags.clear();
       this.assets.clear();
       this.headerTags.clear();
-      this.modules.clear();
     }
 
     void sendHeader(HttpStream stream) {
@@ -232,11 +223,22 @@ public abstract class WebStream implements AsyncStream {
           stream.provide(Chunk.create("\"/>\n"));
         }
       }
-      if (!modules.isEmpty()) {
-        renderAMD(modules, stream);
-      }
+
+      List<Asset> mods = Collections.emptyList();
       for (Asset asset : resolvedAssets) {
-        if (asset.isScript()) {
+        if (asset.getType().equals("module")) {
+          if (mods.isEmpty()) {
+            mods = new ArrayList<Asset>();
+          }
+          mods.add(asset);
+        }
+      }
+      if (!mods.isEmpty()) {
+        renderAMD(mods, stream);
+      }
+
+      for (Asset asset : resolvedAssets) {
+        if (asset.getType().equals("asset") && asset.isScript()) {
           String url = renderAssetURL(asset.getLocation(), asset.getURI());
           stream.provide(Chunk.create("<script type=\"text/javascript\" src=\""));
           stream.provide(Chunk.create(url));
@@ -265,17 +267,17 @@ public abstract class WebStream implements AsyncStream {
               "</html>\n"));
     }
     
-    private void renderAMD(Iterable<Module> modules, Stream stream) {
+    private void renderAMD(Iterable<Asset> modules, Stream stream) {
       StringBuilder buffer = new StringBuilder();
       buffer.append("<script type=\"text/javascript\">");
       buffer.append(" var require={");
       buffer.append("\"paths\":{");
-      for (Iterator<Module> i = modules.iterator(); i.hasNext();) {
-        Module path = i.next();
-        buffer.append("\"").append(path.getId()).append("\":\"");
-        String uri = path.getUri();
+      for (Iterator<Asset> i = modules.iterator(); i.hasNext();) {
+        Asset module = i.next();
+        buffer.append("\"").append(module.getId()).append("\":\"");
+        String uri = module.getURI();
         uri = uri.substring(0, uri.lastIndexOf(".js"));
-        buffer.append(renderAssetURL(path.getLocation(), uri));
+        buffer.append(renderAssetURL(module.getLocation(), uri));
         buffer.append("\"");
         if (i.hasNext()) {
           buffer.append(",");

@@ -17,7 +17,6 @@
 package juzu.impl.bridge.spi.web;
 
 import juzu.impl.bridge.Bridge;
-import juzu.impl.plugin.amd.AmdPlugin;
 import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.impl.request.Method;
 import juzu.request.Phase;
@@ -50,10 +49,9 @@ public abstract class WebMimeBridge extends WebRequestBridge {
 
       //
       AssetPlugin assetPlugin = (AssetPlugin)handler.getBridge().getApplication().getPlugin("asset");
-      AmdPlugin amdPlugin = (AmdPlugin)handler.getBridge().getApplication().getPlugin("amd");
-      
+
       //
-      http.getRequestContext().send(assetPlugin, amdPlugin, status);
+      http.getRequestContext().send(assetPlugin, status);
 
       //
       return true;

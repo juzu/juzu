@@ -31,30 +31,38 @@ import juzu.asset.AssetLocation;
 public class Asset {
 
   /** . */
-  private final AssetLocation location;
+  private final String id;
 
   /** . */
   private final String type;
 
   /** . */
+  private final AssetLocation location;
+
+  /** . */
   private final String uri;
   
-  public Asset(AssetLocation location, String type, String uri) {
-    this.location = location;
+  public Asset(String id, String type, AssetLocation location, String uri) {
+    this.id = id;
     this.type = type;
+    this.location = location;
     this.uri = uri;
   }
 
   /**
-   * Returns an asset.
+   * Create an asset.
    *
-   *
+   * @param id the asset id
    * @param location the asset location
    * @param uri the asset uri
    * @return the asset
    */
-  public static Asset of(AssetLocation location, String type, String uri) {
-    return new Asset(location, type, uri);
+  public static Asset of(String id, String type, AssetLocation location, String uri) {
+    return new Asset(id, type, location, uri);
+  }
+
+  public String getId() {
+    return id;
   }
 
   public String getType() {

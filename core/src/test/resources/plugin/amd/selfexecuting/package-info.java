@@ -6,6 +6,8 @@
     )
 })
 @juzu.Application
+@WithAssets("Bar")
 package plugin.amd.selfexecuting;
 import juzu.plugin.amd.*;
 import juzu.plugin.asset.Asset;
+import juzu.plugin.asset.WithAssets;

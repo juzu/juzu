@@ -50,6 +50,7 @@ public class AmdDependenciesTestCase extends AbstractWebTestCase {
   @RunAsClient
   public void test() throws Exception {
     driver.get(applicationURL().toString());
+    System.out.println(driver.getPageSource());
     WebDriverWait wait = new WebDriverWait(driver, 5);
     wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("/html[@bar]")));
     WebElement elt = driver.findElement(By.tagName("html"));

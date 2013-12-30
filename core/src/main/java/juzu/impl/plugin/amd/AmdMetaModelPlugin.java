@@ -42,8 +42,19 @@ import juzu.plugin.amd.Modules;
  */
 public class AmdMetaModelPlugin extends ApplicationMetaModelPlugin {
 
+  /** . */
+  private static final Asset REQUIRE_JS = new Asset(
+      "juzu.amd",
+      "asset",
+      "/juzu/impl/plugin/amd/require.js",
+      Collections.<String>emptyList(),
+      AssetLocation.APPLICATION);
+
   public AmdMetaModelPlugin() {
     super("amd");
+
+    //
+
   }
 
   @Override
@@ -76,6 +87,9 @@ public class AmdMetaModelPlugin extends ApplicationMetaModelPlugin {
       for (Asset asset : list) {
         assetsMetaModel.addAsset(asset);
       }
+
+      //
+      assetsMetaModel.addAsset(REQUIRE_JS);
     }
   }
 
@@ -84,6 +98,7 @@ public class AmdMetaModelPlugin extends ApplicationMetaModelPlugin {
     if (metaModel.getHandle().equals(key.getElement())) {
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
       assetsMetaModel.removeAssets("module");
+      assetsMetaModel.removeAsset(REQUIRE_JS);
     }
   }
 }

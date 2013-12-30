@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,23 +18,38 @@ import java.util.Map;
 public class ModuleAsset extends Asset {
 
   /** . */
-  private final List<String> aliases;
+  private final String adapter;
 
   /** . */
-  private final String adapter;
+  private final LinkedHashMap<String, String> a;
 
   public ModuleAsset( Map<String, Serializable> asset, String adapter, List<String> aliases) {
     super("module", asset);
 
     //
+    LinkedHashMap<String, String> a;
+    if (depends != null && aliases != null) {
+      a = new LinkedHashMap<String, String>();
+      int size = Math.min(depends.size(), aliases.size());
+      for (int i = 0;i < size;i++) {
+        a.put(depends.get(i), aliases.get(i));
+      }
+    } else {
+      a = null;
+    }
+
+    //
+    depends.add("juzu.amd");
+
+    //
     this.adapter = adapter;
-    this.aliases = aliases;
+    this.a = a;
   }
 
   @Override
   public InputStream filter(InputStream stream) throws IOException {
 
-    if ((depends != null && aliases != null) || adapter != null) {
+    if (a != null || adapter != null) {
       StringBuilder sb = new StringBuilder();
 
       // The define call
@@ -96,27 +113,23 @@ public class ModuleAsset extends Asset {
   }
 
   private void joinDependencies(StringBuilder sb) {
-    if (depends != null && aliases != null) {
-      int size = Math.min(depends.size(), aliases.size());
-      for (int i = 0;i < size;i++) {
-        if (i > 0) {
+    if (a != null) {
+      for (Iterator<String> i = a.keySet().iterator();i.hasNext();) {
+        sb.append("'").append(i.next()).append("'");
+        if (i.hasNext()) {
           sb.append(", ");
         }
-        String depend = depends.get(i);
-        sb.append("'").append(depend).append("'");
       }
     }
   }
 
   private void joinParams(StringBuilder sb) {
-    if (depends != null && aliases != null) {
-      int size = Math.min(depends.size(), aliases.size());
-      for (int i = 0;i < size;i++) {
-        if (i > 0) {
+    if (a != null) {
+      for (Iterator<String> i = a.values().iterator();i.hasNext();) {
+        sb.append(i.next());
+        if (i.hasNext()) {
           sb.append(", ");
         }
-        String alias = aliases.get(i);
-        sb.append(alias);
       }
     }
   }

@@ -53,7 +53,7 @@ public class AssetNode {
     this.value = value;
     this.dependsOnMe = EMPTY_SET;
     this.iDependOn = iDependOn;
-    this.asset = Asset.of(location, type, value);
+    this.asset = Asset.of(id, type, location, value);
   }
 
   public String getId() {
