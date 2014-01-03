@@ -15,7 +15,10 @@
  */
 
 @Application()
-@Assets(value = { @Asset(id = "test.js", value = "prefix.test.js"), @Asset(id = "main.css", value = "prefix.main.css") })
+@Assets(value = {
+    @Asset(id = "test.js", value = "dot.rep/prefix.test.js"),
+    @Asset(id = "main.css", value = "dot.rep/prefix.main.css")
+})
 package plugin.asset.dot;
 
 import juzu.Application;

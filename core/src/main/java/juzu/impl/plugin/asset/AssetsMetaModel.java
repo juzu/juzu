@@ -20,7 +20,6 @@ import juzu.impl.asset.AssetServer;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.MethodInvocationResolver;
 import juzu.impl.common.Name;
-import juzu.impl.common.Path;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.compiler.ProcessingException;
@@ -29,6 +28,7 @@ import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 
 import javax.tools.FileObject;
+import javax.tools.StandardLocation;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -173,15 +173,29 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
   private URL resolve(String value) throws ProcessingException {
     ApplicationMetaModel application = (ApplicationMetaModel)metaModel;
     ProcessingContext context = application.getProcessingContext();
-    Path path = Path.parse(value);
-    if (path.isRelative()) {
+    boolean relative = value.length() == 0 || value.charAt(0) != '/';
+    if (relative) {
       context.info("Found classpath asset " + value);
       Name qn = application.getHandle().getPackageName().append("assets");
-      Path.Absolute absolute = qn.resolve(path);
-      FileObject src = context.resolveResourceFromSourcePath(application.getHandle(), absolute);
+      FileObject src;
+      try {
+        src = context.getResource(StandardLocation.SOURCE_PATH, qn, value);
+      }
+      catch (Exception e) {
+        if (e.getClass().getName().equals("com.sun.tools.javac.util.ClientCodeException") && e.getCause() instanceof NullPointerException) {
+          // com.sun.tools.javac.util.ClientCodeException: java.lang.NullPointerException
+          // Bug in java compiler for file not found
+          // at com.sun.tools.javac.util.ClientCodeException: java.lang.NullPointerException
+          // at com.sun.tools.javac.api.ClientCodeWrapper$WrappedJavaFileManager.getFileForInput(ClientCodeWrapper.java:307)
+          // at com.sun.tools.javac.processing.JavacFiler.getResource(JavacFiler.java:472)
+          src = null;
+        } else {
+          throw UNRESOLVED_ASSET.failure(value).initCause(e);
+        }
+      }
       if (src != null) {
         URI uri = src.toUri();
-        context.info("Found asset " + absolute + " on source path " + uri);
+        context.info("Found asset " + value + " on source path " + uri);
         try {
           return uri.toURL();
         }
@@ -189,7 +203,7 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
           throw UNRESOLVED_ASSET.failure(uri).initCause(e);
         }
       } else {
-        context.info("Could not find asset " + absolute + " on source path");
+        context.info("Could not find asset " + value + " on source path");
         return null;
       }
     } else {
