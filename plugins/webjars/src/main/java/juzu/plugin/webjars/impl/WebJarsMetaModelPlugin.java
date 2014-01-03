@@ -157,7 +157,7 @@ public class WebJarsMetaModelPlugin extends ApplicationMetaModelPlugin {
           for (String assetPath : assetsPaths) {
             URL assetURL = WebJarAssetLocator.class.getClassLoader().getResource(assetPath);
             if (assetURL != null) {
-              String dst = assetPath.substring(WebJarAssetLocator.WEBJARS_PATH_PREFIX.length() + folderPath.length() + 1);
+              String dst = assetPath.substring(WebJarAssetLocator.WEBJARS_PATH_PREFIX.length() + 1);
               log.info("Webjars " + webJar + " adding asset resource " + assetPath);
               assetsMetaModel.add(dst, assetURL);
             } else {

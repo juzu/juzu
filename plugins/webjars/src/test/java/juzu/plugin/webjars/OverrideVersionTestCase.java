@@ -35,7 +35,7 @@ public class OverrideVersionTestCase extends AbstractTestCase {
     CompilerAssert<File,File> compilerAssert = compiler("juzu.overrideversion");
     Compiler compiler = compilerAssert.assertCompile();
     File root = compilerAssert.getClassOutput().getRoot();
-    File resource = new File(root, "juzu/overrideversion/assets/ui-bootstrap.js");
+    File resource = new File(root, "juzu/overrideversion/assets/angular-ui-bootstrap/0.7.0/ui-bootstrap.js");
     assertTrue(resource.exists());
     assertTrue(resource.isFile());
   }

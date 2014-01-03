@@ -47,6 +47,6 @@ public class WebJarTestCase extends AbstractWebTestCase {
   public void test() throws Exception {
     driver.get(applicationURL().toString());
     WebElement script = driver.findElement(By.tagName("script"));
-    assertEquals("http://localhost:" + getContainerPort() + "/juzu/assets/juzu/webjar/assets/jquery.js", script.getAttribute("src"));
+    assertEquals("http://localhost:" + getContainerPort() + "/juzu/assets/juzu/webjar/assets/jquery/1.10.2/jquery.js", script.getAttribute("src"));
   }
 }

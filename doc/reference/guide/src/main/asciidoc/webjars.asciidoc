@@ -13,7 +13,7 @@ plugin or the _AMD_ plugin.
 [source,java]
 ----
 @Application
-@WebJars(@WebJar("foo"))
+@WebJars(@WebJar("jquery"))
 package myapp;
 
 import juzu.Application;
@@ -24,13 +24,14 @@ import juzu.plugin.webjars.WebJars;
 ----
 <dependency>
   <groupId>org.webjars</groupId>
-  <artifactId>foo</artifactId>
-  <version>1.0</version>
+  <artifactId>jquery</artifactId>
+  <version>1.10.2</version>
 </dependency>
 ----
 
-The plugin will copy the content of the _foo_ webjar to the application +assets+ directory, they will be available as
-any other asset. For this example _foo.js_ file will be located in the +myapp.assets+ package.
+The plugin will copy the content of the _jquery_ webjar content to the application +assets+ directory, they will be available as
+any other asset. For this example the _jquery/1.10.2/jquery.js_ and _jquery/1.10.2/jquery.min.js_ files will be
+in the +myapp.assets+ package.
 
 If we want this file to be served with the application we simply add the corresponding +@Assets+ annotation:
 
@@ -38,8 +39,8 @@ If we want this file to be served with the application we simply add the corresp
 [source,java]
 ----
 @Application
-@WebJars(@WebJar("foo"))
-@Assets(@Asset("foo.js"))
+@WebJars(@WebJar("jquery"))
+@Assets(@Asset("jquery/1.10.2/jquery.js"))
 package myapp;
 
 import juzu.Application;

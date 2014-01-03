@@ -2,7 +2,7 @@
 @WebJars(@WebJar("jquery"))
 @Modules({
   @Module(
-    value = @Asset(id = "jquery", value = "jquery.js"),
+    value = @Asset(id = "jquery", value = "jquery/1.10.2/jquery.js"),
     adapter="(function() { @{include} return jQuery.noConflict(true);})();"
   ),
   @Module(
