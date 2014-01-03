@@ -1,40 +1,53 @@
 .Juzu 0.8
-[cols="2,2,4,8",options="header"]
+[cols="2,2,4,8,2",options="header"]
 |===
 |Name
 |Type
 |Description
 |Use case
-
-|Controller Reuse
-|Improvement
-|An application can import an existing controller
-|Provide controller reusability
+|Status
 
 |Asset controller
 |Improvement
 |Expose a controller for the asset plugin as a controller
 |Make easy to generate URL assets in templates, for instance @{Asset.render(css = “toto.js”)}
+|100%
 
 |Asset pipeline
 |Improvement
 |Refactor to provide a compilation pipeline
 |Consolidate the existing asset treatment at compilation time to have a compilation pipeline where plugin can feed the pipeline, treatment occurs (such as minification), output is written in the application asset package
-
-|Asset caching
-|Feature
-|Declarative and programmtic asset caching
-|Web performances
+|100%
 
 |Require.js improvement
 |Improvement
 |Improve the integration
 |Simplify Require.js integration
+|100%
 
 |Webjars plugin improvement
 |Improvement
 |Improve the integration
 |Webjars plugin feeds the (future) asset pipeline at compilation time
+|100%
+
+|Metamodel mixin refactor
+|Improvement
+|Model some part of the meta model as mixin
+|Make router meta model a mixin attached to various part of meta model instead of being centralized
+|0%
+
+|Controller Reuse
+|Improvement
+|An application can import an existing controller
+|Provide controller reusability
+|0%
+
+|Asset caching
+|Feature
+|Declarative and programmtic asset caching
+|Web performances
+|0%
 |===
 
 .Juzu 1.0
