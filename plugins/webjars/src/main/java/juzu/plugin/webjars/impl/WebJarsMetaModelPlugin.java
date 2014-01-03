@@ -65,18 +65,10 @@ public class WebJarsMetaModelPlugin extends ApplicationMetaModelPlugin {
   /** . */
   static final Logger log = BaseProcessor.getLogger(WebJarsMetaModelPlugin.class);
   
-  /** . */
-  private HashMap<Name, AnnotationState> annotations;
-
   public WebJarsMetaModelPlugin() {
     super("webjars");
   }
   
-  @Override
-  public void init(ApplicationMetaModel metaModel) {
-    annotations = new HashMap<Name, AnnotationState>();
-  }
-
   @Override
   public Set<Class<? extends java.lang.annotation.Annotation>> init(ProcessingContext env) {
     return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(WebJars.class);
@@ -85,87 +77,88 @@ public class WebJarsMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     Name pkg = key.getElement().getPackageName();
-    annotations.put(pkg, added);
+    AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
+    for (Map.Entry<String, URL> entry : getAssets(metaModel, added).entrySet()) {
+      assetsMetaModel.add(entry.getKey(), entry.getValue());
+
+    }
   }
 
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     Name pkg = key.getElement().getPackageName();
-    annotations.remove(pkg);
-  }
-
-  @Override
-  public void postActivate(ApplicationMetaModel metaModel) {
-    annotations = new HashMap<Name, AnnotationState>();
-  }
-  
-  @Override
-  public void prePassivate(ApplicationMetaModel metaModel) {
-
-    //
     AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
+    for (Map.Entry<String, URL> entry : getAssets(metaModel, removed).entrySet()) {
+      assetsMetaModel.remove(entry.getKey(), entry.getValue());
 
-    // First clear annotation map
-    HashMap<Name, AnnotationState> clone = annotations;
-    annotations = null;
+    }
+  }
+
+  private Map<String, URL> getAssets(ApplicationMetaModel metaModel, AnnotationState annotation) {
 
     //
-    for (Map.Entry<Name, AnnotationState> entry : clone.entrySet()) {
-      AnnotationState annotation = entry.getValue();
-      Name pkg = entry.getKey();
-      ProcessingContext env = metaModel.processingContext;
-      List<AnnotationState> webJars = (List<AnnotationState>)annotation.get("value");
-      if (webJars != null && webJars.size() > 0) {
-        for(AnnotationState webJar : webJars) {
-          log.info("Processing declared webjars " + webJar);
-          String id = (String)webJar.get("value");
-          String version = (String)webJar.get("version");
+    Map<String, URL> ret = Collections.emptyMap();
 
-          //
-          if (version == null || version.length() == 0) {
-            String path = "META-INF/maven/org.webjars/" + id + "/pom.properties";
-            URL resource = WebJarAssetLocator.class.getClassLoader().getResource(path);
-            ElementHandle.Package pkgHandle = ElementHandle.Package.create(pkg);
-            PackageElement pkgElt = env.get(pkgHandle);
-            if (resource == null) {
-              throw MISSING_WEBJAR.failure(pkgElt, id);
-            } else {
-              Properties props = new Properties();
-              InputStream in = null;
-              try {
-                in = resource.openStream();
-                props.load(in);
-                version = props.getProperty("version");
-              }
-              catch (IOException e) {
-                throw INVALID_WEBJAR.failure(pkgElt, id, "Could not read " + path).initCause(e);
-              }
-              finally {
-                Tools.safeClose(in);
-              }
-              if (version == null) {
-                throw INVALID_WEBJAR.failure(pkgElt, id, "No version found in " + path);
-              }
+    //
+    Name pkg = metaModel.getHandle().getPackageName();
+    ProcessingContext env = metaModel.processingContext;
+    List<AnnotationState> webJars = (List<AnnotationState>)annotation.get("value");
+    if (webJars != null && webJars.size() > 0) {
+      for(AnnotationState webJar : webJars) {
+        log.info("Processing declared webjars " + webJar);
+        String id = (String)webJar.get("value");
+        String version = (String)webJar.get("version");
+
+        //
+        if (version == null || version.length() == 0) {
+          String path = "META-INF/maven/org.webjars/" + id + "/pom.properties";
+          URL resource = WebJarAssetLocator.class.getClassLoader().getResource(path);
+          ElementHandle.Package pkgHandle = ElementHandle.Package.create(pkg);
+          PackageElement pkgElt = env.get(pkgHandle);
+          if (resource == null) {
+            throw MISSING_WEBJAR.failure(pkgElt, id);
+          } else {
+            Properties props = new Properties();
+            InputStream in = null;
+            try {
+              in = resource.openStream();
+              props.load(in);
+              version = props.getProperty("version");
+            }
+            catch (IOException e) {
+              throw INVALID_WEBJAR.failure(pkgElt, id, "Could not read " + path).initCause(e);
+            }
+            finally {
+              Tools.safeClose(in);
+            }
+            if (version == null) {
+              throw INVALID_WEBJAR.failure(pkgElt, id, "No version found in " + path);
             }
           }
+        }
 
-          //
-          WebJarAssetLocator locator = new WebJarAssetLocator();
-          String folderPath = "/" + id + "/" + version;
-          Set<String> assetsPaths = locator.listAssets(folderPath);
-          log.info("Webjars " + webJar + " resolved assets " + assetsPaths + " from " + folderPath);
-          for (String assetPath : assetsPaths) {
-            URL assetURL = WebJarAssetLocator.class.getClassLoader().getResource(assetPath);
-            if (assetURL != null) {
-              String dst = assetPath.substring(WebJarAssetLocator.WEBJARS_PATH_PREFIX.length() + 1);
-              log.info("Webjars " + webJar + " adding asset resource " + assetPath);
-              assetsMetaModel.add(dst, assetURL);
-            } else {
-              log.info("Could not resolve WebJars asset " + webJar + " with resource path " + assetURL);
+        //
+        WebJarAssetLocator locator = new WebJarAssetLocator();
+        String folderPath = "/" + id + "/" + version;
+        Set<String> assetsPaths = locator.listAssets(folderPath);
+        log.info("Webjars " + webJar + " resolved assets " + assetsPaths + " from " + folderPath);
+        for (String assetPath : assetsPaths) {
+          URL assetURL = WebJarAssetLocator.class.getClassLoader().getResource(assetPath);
+          if (assetURL != null) {
+            String dst = assetPath.substring(WebJarAssetLocator.WEBJARS_PATH_PREFIX.length() + 1);
+            log.info("Webjars " + webJar + " adding asset resource " + assetPath);
+            if (ret.isEmpty()) {
+              ret = new HashMap<String, URL>();
             }
+            ret.put(dst, assetURL);
+          } else {
+            log.info("Could not resolve WebJars asset " + webJar + " with resource path " + assetURL);
           }
         }
       }
     }
+
+    //
+    return ret;
   }
 }
