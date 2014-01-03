@@ -49,33 +49,6 @@ import juzu.plugin.asset.Script;
 import juzu.plugin.webjars.WebJars;
 ----
 
-It can also be used as a JavaScript module with the _AMD_ plugin:
-
-.WebJars and AMD plugin in action
-[source,java]
-----
-@Application
-@WebJars(@WebJar("foo"))
-@Defines({
-  @Define(
-    name = "Foo", 
-    path="foo.js"
-  ),
-  @Define(
-    name = "Bar", 
-    path="bar.js",
-    dependencies = {@Dependency(name = "Foo")}
-  )
-})  
-package myapp;
-
-import juzu.Application;
-import juzu.plugin.amd.Define;
-import juzu.plugin.amd.Defines;
-import juzu.plugin.amd.Dependency;
-import juzu.plugin.webjars.WebJars;
-----
-
 You don't need to specify the WebJar version because the WebJars plugin will find it automatically (by examining the Maven
 metadata stored in the jar). However some jars have files that don't correspond to the WebJar version (usually patch
 releases), in that case you can specify the version to help the plugin find the files:
