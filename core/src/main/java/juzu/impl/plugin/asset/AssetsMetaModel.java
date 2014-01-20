@@ -57,10 +57,10 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
   public void addAsset(Asset asset) {
 
     //
-    if (AssetLocation.APPLICATION == asset.location) {
-      URL url = resolve(asset.value);
+    if (asset.isApplication()) {
+      URL url = resolveResource(asset.value);
       if (url != null) {
-        add(asset.value, url);
+        addResource(asset.value, url);
       }
     }
 
@@ -71,10 +71,10 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
   public void removeAsset(Asset asset) {
 
     //
-    if (AssetLocation.APPLICATION == asset.location) {
-      URL url = resolve(asset.value);
+    if (asset.isApplication()) {
+      URL url = resolveResource(asset.value);
       if (url != null) {
-        remove(asset.value, url);
+        removeResource(asset.value, url);
       }
     }
 
@@ -87,7 +87,13 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
     }
   }
 
-  public void add(String path, URL resource) {
+  /**
+   * Associate a resource with a physical path in the application.
+   *
+   * @param path the resource path
+   * @param resource the resource
+   */
+  public void addResource(String path, URL resource) {
     URL existing = resources.get(path);
     if (existing != null) {
       if (!existing.equals(resource)) {
@@ -98,12 +104,66 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
     }
   }
 
-  public void remove(String path, URL resource) {
+  /**
+   * Remove a resource association from the application.
+   *
+   * @param path the resource path
+   * @param resource the resource
+   */
+  public void removeResource(String path, URL resource) {
     URL existing = resources.get(path);
     if (existing != null) {
       if (existing.equals(resource)) {
         resources.remove(path);
       }
+    }
+  }
+
+  /**
+   * Resolve a relative resource for this application, this method does not modify the current application.
+   *
+   * @param path the resource value
+   * @return the related resource URL or null if it cannot be resolved
+   * @throws ProcessingException relate any processing issue
+   */
+  public URL resolveResource(String path) throws ProcessingException {
+    ApplicationMetaModel application = (ApplicationMetaModel)metaModel;
+    ProcessingContext context = application.getProcessingContext();
+    boolean relative = path.length() == 0 || path.charAt(0) != '/';
+    if (relative) {
+      context.info("Found classpath asset " + path);
+      Name qn = application.getHandle().getPackageName().append("assets");
+      FileObject src;
+      try {
+        src = context.getResource(StandardLocation.SOURCE_PATH, qn, path);
+      }
+      catch (Exception e) {
+        if (e.getClass().getName().equals("com.sun.tools.javac.util.ClientCodeException") && e.getCause() instanceof NullPointerException) {
+          // com.sun.tools.javac.util.ClientCodeException: java.lang.NullPointerException
+          // Bug in java compiler for file not found
+          // at com.sun.tools.javac.util.ClientCodeException: java.lang.NullPointerException
+          // at com.sun.tools.javac.api.ClientCodeWrapper$WrappedJavaFileManager.getFileForInput(ClientCodeWrapper.java:307)
+          // at com.sun.tools.javac.processing.JavacFiler.getResource(JavacFiler.java:472)
+          src = null;
+        } else {
+          throw UNRESOLVED_ASSET.failure(path).initCause(e);
+        }
+      }
+      if (src != null) {
+        URI uri = src.toUri();
+        context.info("Found asset " + path + " on source path " + uri);
+        try {
+          return uri.toURL();
+        }
+        catch (MalformedURLException e) {
+          throw UNRESOLVED_ASSET.failure(uri).initCause(e);
+        }
+      } else {
+        context.info("Could not find asset " + path + " on source path");
+        return null;
+      }
+    } else {
+      return null;
     }
   }
 
@@ -168,46 +228,5 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
       }
     }
     return null;
-  }
-
-  private URL resolve(String value) throws ProcessingException {
-    ApplicationMetaModel application = (ApplicationMetaModel)metaModel;
-    ProcessingContext context = application.getProcessingContext();
-    boolean relative = value.length() == 0 || value.charAt(0) != '/';
-    if (relative) {
-      context.info("Found classpath asset " + value);
-      Name qn = application.getHandle().getPackageName().append("assets");
-      FileObject src;
-      try {
-        src = context.getResource(StandardLocation.SOURCE_PATH, qn, value);
-      }
-      catch (Exception e) {
-        if (e.getClass().getName().equals("com.sun.tools.javac.util.ClientCodeException") && e.getCause() instanceof NullPointerException) {
-          // com.sun.tools.javac.util.ClientCodeException: java.lang.NullPointerException
-          // Bug in java compiler for file not found
-          // at com.sun.tools.javac.util.ClientCodeException: java.lang.NullPointerException
-          // at com.sun.tools.javac.api.ClientCodeWrapper$WrappedJavaFileManager.getFileForInput(ClientCodeWrapper.java:307)
-          // at com.sun.tools.javac.processing.JavacFiler.getResource(JavacFiler.java:472)
-          src = null;
-        } else {
-          throw UNRESOLVED_ASSET.failure(value).initCause(e);
-        }
-      }
-      if (src != null) {
-        URI uri = src.toUri();
-        context.info("Found asset " + value + " on source path " + uri);
-        try {
-          return uri.toURL();
-        }
-        catch (MalformedURLException e) {
-          throw UNRESOLVED_ASSET.failure(uri).initCause(e);
-        }
-      } else {
-        context.info("Could not find asset " + value + " on source path");
-        return null;
-      }
-    } else {
-      return null;
-    }
   }
 }

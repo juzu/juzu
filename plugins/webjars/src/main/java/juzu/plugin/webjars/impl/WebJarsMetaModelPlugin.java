@@ -79,7 +79,7 @@ public class WebJarsMetaModelPlugin extends ApplicationMetaModelPlugin {
     Name pkg = key.getElement().getPackageName();
     AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
     for (Map.Entry<String, URL> entry : getAssets(metaModel, added).entrySet()) {
-      assetsMetaModel.add(entry.getKey(), entry.getValue());
+      assetsMetaModel.addResource(entry.getKey(), entry.getValue());
 
     }
   }
@@ -89,7 +89,7 @@ public class WebJarsMetaModelPlugin extends ApplicationMetaModelPlugin {
     Name pkg = key.getElement().getPackageName();
     AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
     for (Map.Entry<String, URL> entry : getAssets(metaModel, removed).entrySet()) {
-      assetsMetaModel.remove(entry.getKey(), entry.getValue());
+      assetsMetaModel.removeResource(entry.getKey(), entry.getValue());
 
     }
   }

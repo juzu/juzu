@@ -96,6 +96,10 @@ public class Asset implements Serializable {
     this.location = location;
   }
 
+  public boolean isApplication() {
+    return location == AssetLocation.APPLICATION;
+  }
+
   public JSON getJSON() {
     JSON json = new JSON().set("value", value).set("type", type);
     if (id != null) {
