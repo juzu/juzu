@@ -15,7 +15,6 @@
  */
 package juzu.impl.plugin.asset;
 
-import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.MethodInvocationResolver;
@@ -51,8 +50,11 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
   /** . */
   private final ArrayList<Asset> assets = new ArrayList<Asset>();
 
-  /** . */
-  private final HashMap<String, URL> resources = new HashMap<String, URL>();
+  /**
+   * Links resource URLs to target: some resources may have the same target, it should
+   * be an issue that we detect in the resolving phase and produce an error.
+   */
+  private final HashMap<URL, String> resources = new HashMap<URL, String>();
 
   public void addAsset(Asset asset) {
 
@@ -94,13 +96,11 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
    * @param resource the resource
    */
   public void addResource(String path, URL resource) {
-    URL existing = resources.get(path);
+    String existing = resources.get(resource);
     if (existing != null) {
-      if (!existing.equals(resource)) {
-        throw new UnsupportedOperationException("Resource conflict for path " + path + " : " + resource + " != " + existing);
-      }
+      throw new UnsupportedOperationException("Cannot add resource " + resource + " : conflict " + path + " != " + existing);
     } else {
-      resources.put(path, resource);
+      resources.put(resource, path);
     }
   }
 
@@ -111,11 +111,12 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
    * @param resource the resource
    */
   public void removeResource(String path, URL resource) {
-    URL existing = resources.get(path);
-    if (existing != null) {
-      if (existing.equals(resource)) {
-        resources.remove(path);
-      }
+    String existing = resources.get(resource);
+    if (path.equals(existing)) {
+      resources.remove(resource);
+    } else {
+      throw new UnsupportedOperationException("Resource conflict for resource " + resource + " : path " + path +
+          " not matched by " + existing);
     }
   }
 
@@ -167,11 +168,7 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
     }
   }
 
-  public URL getResource(String path) {
-    return resources.get(path);
-  }
-
-  public Map<String, URL> getResources() {
+  public Map<URL, String> getResources() {
     return resources;
   }
 

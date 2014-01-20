@@ -117,19 +117,19 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
     Name qn = metaModel.getHandle().getPackageName().append("assets");
     if(!context.isCopyFromSourcesExternallyManaged()) {
       AssetsMetaModel annotation = metaModel.getChild(AssetsMetaModel.KEY);
-      for (Map.Entry<String, URL> entry : annotation.getResources().entrySet()) {
+      for (Map.Entry<URL, String> entry : annotation.getResources().entrySet()) {
         InputStream in = null;
         OutputStream out = null;
         try {
-          URL src = entry.getValue();
+          URL src = entry.getKey();
           URLConnection conn = src.openConnection();
-          FileObject dst = context.getResource(StandardLocation.CLASS_OUTPUT, qn, entry.getKey());
+          FileObject dst = context.getResource(StandardLocation.CLASS_OUTPUT, qn, entry.getValue());
           if (dst == null || dst.getLastModified() < conn.getLastModified()) {
             in = conn.getInputStream();
-            dst = context.createResource(StandardLocation.CLASS_OUTPUT, qn, entry.getKey(), context.get(metaModel.getHandle()));
+            dst = context.createResource(StandardLocation.CLASS_OUTPUT, qn, entry.getValue(), context.get(metaModel.getHandle()));
             context.info("Copying asset from source path " + src + " to class output " + dst.toUri());
             for (Asset asset : annotation.getAssets()) {
-              if (asset.value.equals(entry.getKey())) {
+              if (asset.value.equals(entry.getValue())) {
                 in = asset.filter(in);
                 break;
               }
