@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-@Less("bootstrap.less") package plugin.less4j.bootstrap;
+@Application
+@Less(@Asset("Bootstrap.less"))
+package plugin.less4j.bootstrap;
 
+import juzu.Application;
+import juzu.plugin.asset.Asset;
 import juzu.plugin.less4j.Less;

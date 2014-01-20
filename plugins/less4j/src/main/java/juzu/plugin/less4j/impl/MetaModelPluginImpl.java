@@ -16,32 +16,21 @@
 
 package juzu.plugin.less4j.impl;
 
-import com.github.sommeri.less4j.Less4jException;
-import com.github.sommeri.less4j.LessCompiler;
-import com.github.sommeri.less4j.LessSource;
-import com.github.sommeri.less4j.core.ThreadUnsafeLessCompiler;
-import juzu.impl.common.Name;
-import juzu.impl.compiler.Message;
-import juzu.impl.compiler.ProcessingException;
-import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
-import juzu.impl.plugin.module.metamodel.ModuleMetaModelPlugin;
+import juzu.asset.AssetLocation;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
+import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
+import juzu.impl.plugin.asset.Asset;
+import juzu.impl.plugin.asset.AssetsMetaModel;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.compiler.BaseProcessor;
-import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.common.Logger;
-import juzu.impl.common.Path;
-import juzu.impl.common.Tools;
 import juzu.plugin.less4j.Less;
 
-import javax.lang.model.element.AnnotationMirror;
-import javax.lang.model.element.PackageElement;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,7 +39,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MetaModelPluginImpl extends ModuleMetaModelPlugin {
+public class MetaModelPluginImpl extends ApplicationMetaModelPlugin {
 
   /** . */
   public static final MessageCode GENERAL_PROBLEM = new MessageCode(
@@ -68,16 +57,12 @@ public class MetaModelPluginImpl extends ModuleMetaModelPlugin {
   /** . */
   static final Logger log = BaseProcessor.getLogger(MetaModelPluginImpl.class);
 
-  /** . */
-  private HashMap<Name, AnnotationState> annotations;
-
   public MetaModelPluginImpl() {
     super("less");
   }
 
   @Override
-  public void init(ModuleMetaModel metaModel) {
-    annotations = new HashMap<Name, AnnotationState>();
+  public void init(ApplicationMetaModel metaModel) {
   }
 
   @Override
@@ -86,114 +71,75 @@ public class MetaModelPluginImpl extends ModuleMetaModelPlugin {
   }
 
   @Override
-  public void processAnnotationAdded(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState added) {
-    Name pkg = key.getElement().getPackageName();
-    log.info("Adding less annotation for package " + pkg);
-    annotations.put(pkg, added);
-  }
-
-  @Override
-  public void processAnnotationRemoved(ModuleMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
-    Name pkg = key.getElement().getPackageName();
-    log.info("Removing less annotation for package " + pkg);
-    annotations.remove(pkg);
-  }
-
-  @Override
-  public void postActivate(ModuleMetaModel metaModel) {
-    annotations = new HashMap<Name, AnnotationState>();
-  }
-
-  @Override
-  public void prePassivate(ModuleMetaModel metaModel) {
-    // First clear annotation map
-    HashMap<Name, AnnotationState> clone = annotations;
-    annotations = null;
-
-    //
-    for (Map.Entry<Name, AnnotationState> entry : clone.entrySet()) {
-      AnnotationState annotation = entry.getValue();
-      Name pkg = entry.getKey();
-      ProcessingContext env = metaModel.processingContext;
-      ElementHandle.Package pkgHandle = ElementHandle.Package.create(pkg);
-      PackageElement pkgElt = env.get(pkgHandle);
-      Boolean minify = (Boolean)annotation.get("minify");
-      List<String> resources = (List<String>)annotation.get("value");
-
-      // WARNING THIS IS NOT CORRECT BUT WORK FOR NOW
-      AnnotationMirror annotationMirror = Tools.getAnnotation(pkgElt, Less.class.getName());
-
-      //
-      log.info("Handling less annotation for package " + pkg + ": minify=" + minify + " resources=" + resources);
-
-      //
-      if (resources != null && resources.size() > 0) {
-
-        // For now we use the hardcoded assets package
-        Name assetPkg = pkg.append("assets");
-
-        //
-        for (String resource : resources) {
-          log.info("Processing declared resource " + resource);
-
-          //
-          Path path;
-          try {
-            path = Path.parse(resource);
-          }
-          catch (IllegalArgumentException e) {
-            throw MALFORMED_PATH.failure(pkgElt, annotationMirror, resource).initCause(e);
-          }
-
-          //
-          Path.Absolute to = assetPkg.resolve(path.as("css"));
-          log.info("Resource " + resource + " destination resolved to " + to);
-
-          //
-          CompilerLessSource file = new CompilerLessSource(env, pkgHandle, assetPkg.resolve(path));
-
-          //
-          LessCompiler compiler = new ThreadUnsafeLessCompiler();
-          LessCompiler.CompilationResult result;
-          try {
-            result = compiler.compile(file);
-          }
-          catch (Less4jException e) {
-            List<LessCompiler.Problem> errors = e.getErrors();
-            ArrayList<Message> messages = new ArrayList<Message>(errors.size());
-            for (LessCompiler.Problem error : errors) {
-              String text = error.getMessage() != null ? error.getMessage() : "There is an error in your .less file";
-              String errorName = error.getType().name();
-              LessSource source = error.getSource();
-              Message msg;
-              if (source != null) {
-                msg = new Message(COMPILATION_ERROR, errorName, source.getName(), error.getLine(), text);
-              } else {
-                msg = new Message(GENERAL_PROBLEM, errorName, text);
-              }
-              log.info(msg.toDisplayString());
-              messages.add(msg);
-            }
-            throw new ProcessingException(pkgElt, annotationMirror, messages);
-          }
-
-          //
-          try {
-            log.info("Resource " + resource + " compiled about to write on disk as " + to);
-            FileObject fo = env.createResource(StandardLocation.CLASS_OUTPUT, to);
-            Writer writer = fo.openWriter();
-            try {
-              writer.write(result.getCss());
-            }
-            finally {
-              Tools.safeClose(writer);
-            }
-          }
-          catch (IOException e) {
-            log.info("Resource " + to + " could not be written on disk", e);
-          }
-        }
+  public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
+    AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
+    List<LessAsset> assets = getAssets(assetsMetaModel, added);
+    for (LessAsset asset : assets) {
+      assetsMetaModel.addAsset(asset);
+      if (asset.resource != null) {
+        assetsMetaModel.addResource(asset.key.value, asset.resource);
       }
     }
+  }
+
+  @Override
+  public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
+    AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
+    List<LessAsset> assets = getAssets(assetsMetaModel, removed);
+    for (LessAsset asset : assets) {
+      assetsMetaModel.removeAsset(asset);
+      if (asset.resource != null) {
+        assetsMetaModel.removeResource(asset.key.value, asset.resource);
+      }
+    }
+  }
+
+  private List<LessAsset> getAssets(
+      AssetsMetaModel assetsMetaModel,
+      AnnotationState annotation) {
+
+    //
+    List<LessAsset> assets = Collections.emptyList();
+    List<AnnotationState> value = (List<AnnotationState>)annotation.get("value");
+    if (value != null) {
+      for (AnnotationState assetAnnotation : value) {
+
+        //
+        String assetValue = (String)assetAnnotation.get("value");
+
+        //
+        URL resource = assetsMetaModel.resolveResource(assetValue);
+
+        // Clone the annotation for modifying it
+        Map<String, Serializable> state = new HashMap<String, Serializable>(assetAnnotation);
+
+        //
+        if (state.get("id") == null) {
+          state.put("id", assetValue);
+        }
+        Serializable location = state.get("location");
+        if (location == null) {
+          state.put("location", AssetLocation.APPLICATION.name());
+        } else {
+          if (!location.equals(AssetLocation.APPLICATION.name())) {
+            throw new UnsupportedOperationException("handle me gracefully");
+          }
+        }
+
+        //
+        Asset parsed = new Asset("stylesheet", state);
+        LessAsset asset = new LessAsset(
+            parsed.id,
+            parsed.key.value,
+            parsed.depends,
+            resource
+        );
+        if (assets.isEmpty()) {
+          assets = new ArrayList<LessAsset>();
+        }
+        assets.add(asset);
+      }
+    }
+    return assets;
   }
 }

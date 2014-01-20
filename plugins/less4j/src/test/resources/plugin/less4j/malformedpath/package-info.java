@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-@Less(value = ".foo") package plugin.less4j.malformedpath;
+@Application
+@Less(@Asset("stylesheet.less"))
+package plugin.less4j.malformedpath;
 
+import juzu.Application;
+import juzu.plugin.asset.Asset;
 import juzu.plugin.less4j.Less;

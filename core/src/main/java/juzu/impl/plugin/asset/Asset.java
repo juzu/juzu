@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -38,13 +37,10 @@ public class Asset implements Serializable {
   public final String type;
 
   /** . */
-  public final String value;
-
-  /** . */
   public final List<String> depends;
 
   /** . */
-  public final AssetLocation location;
+  public final AssetKey key;
 
   public Asset(String type, Map<String, Serializable> asset) {
     String id = (String)asset.get("id");
@@ -69,9 +65,8 @@ public class Asset implements Serializable {
     //
     this.id = id;
     this.type = type;
-    this.value = value;
     this.depends = depends != null ? depends : new ArrayList<String>();
-    this.location = location;
+    this.key = new AssetKey(value, location);
   }
 
   public Asset(String id, String type, String value, List<String> depends, AssetLocation location) {
@@ -91,25 +86,22 @@ public class Asset implements Serializable {
     //
     this.id = id;
     this.type = type;
-    this.value = value;
     this.depends = depends;
-    this.location = location;
+    this.key = new AssetKey(value, location);
   }
 
   public boolean isApplication() {
-    return location == AssetLocation.APPLICATION;
+    return key.location == AssetLocation.APPLICATION;
   }
 
   public JSON getJSON() {
-    JSON json = new JSON().set("value", value).set("type", type);
-    if (id != null) {
-      json.set("id", id);
-    }
+    JSON json = new JSON().
+        set("id", id).
+        set("value", key.value).
+        set("location", key.location.toString()).
+        set("type", type);
     if (depends != null) {
       json.set("depends", depends);
-    }
-    if (location != null) {
-      json.set("location", location.toString());
     }
     return json;
   }

@@ -116,23 +116,42 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
     ProcessingContext context = metaModel.getProcessingContext();
     Name qn = metaModel.getHandle().getPackageName().append("assets");
     if(!context.isCopyFromSourcesExternallyManaged()) {
+
+      //
       AssetsMetaModel annotation = metaModel.getChild(AssetsMetaModel.KEY);
-      for (Map.Entry<URL, String> entry : annotation.getResources().entrySet()) {
+
+      //
+      HashMap<String, URL> bilta = new HashMap<String, URL>();
+      HashMap<String, Asset> bilto = new HashMap<String, Asset>();
+      for (Asset asset : annotation.getAssets()) {
+        if (asset.key.location == AssetLocation.APPLICATION) {
+          bilto.put(asset.key.value, asset);
+          URL resource = annotation.getResources().get(asset.key.value);
+          if (resource == null) {
+            resource = annotation.resolveResource(asset.key.value);
+          }
+          if (resource != null) {
+            bilta.put(asset.key.value, resource);
+          }
+        }
+      }
+      bilta.putAll(annotation.getResources());
+
+      // Process all resources
+      for (Map.Entry<String, URL> entry : bilta.entrySet()) {
         InputStream in = null;
         OutputStream out = null;
         try {
-          URL src = entry.getKey();
+          URL src = entry.getValue();
           URLConnection conn = src.openConnection();
-          FileObject dst = context.getResource(StandardLocation.CLASS_OUTPUT, qn, entry.getValue());
+          FileObject dst = context.getResource(StandardLocation.CLASS_OUTPUT, qn, entry.getKey());
           if (dst == null || dst.getLastModified() < conn.getLastModified()) {
             in = conn.getInputStream();
-            dst = context.createResource(StandardLocation.CLASS_OUTPUT, qn, entry.getValue(), context.get(metaModel.getHandle()));
+            dst = context.createResource(StandardLocation.CLASS_OUTPUT, qn, entry.getKey(), context.get(metaModel.getHandle()));
             context.info("Copying asset from source path " + src + " to class output " + dst.toUri());
-            for (Asset asset : annotation.getAssets()) {
-              if (asset.value.equals(entry.getValue())) {
-                in = asset.filter(in);
-                break;
-              }
+            Asset r = bilto.remove(entry.getKey());
+            if (r != null) {
+              in = r.filter(in);
             }
             out = dst.openOutputStream();
             Tools.copy(in, out);

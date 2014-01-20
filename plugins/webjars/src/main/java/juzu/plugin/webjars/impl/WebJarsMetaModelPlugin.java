@@ -152,7 +152,7 @@ public class WebJarsMetaModelPlugin extends ApplicationMetaModelPlugin {
             }
             ret.put(dst, assetURL);
           } else {
-            log.info("Could not resolve WebJars asset " + webJar + " with resource path " + assetURL);
+            log.info("Could not resolve WebJars asset " + webJar + " with resource path " + assetPath);
           }
         }
       }

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-@Less("folder/stylesheet.less") package plugin.less4j.ancestor;
+@Application
+@Less(@Asset("folder/stylesheet.less"))
+package plugin.less4j.ancestor;
 
+import juzu.Application;
+import juzu.plugin.asset.Asset;
 import juzu.plugin.less4j.Less;

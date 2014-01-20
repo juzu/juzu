@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-@Less("stylesheet.less") package plugin.less4j.cannotresolve;
+@Application
+@Less(@Asset("stylesheet.less"))
+package plugin.less4j.cannotresolve;
 
+import juzu.Application;
+import juzu.plugin.asset.Asset;
 import juzu.plugin.less4j.Less;

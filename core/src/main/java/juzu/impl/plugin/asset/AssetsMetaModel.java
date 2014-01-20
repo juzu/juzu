@@ -31,7 +31,6 @@ import javax.tools.StandardLocation;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,45 +47,20 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
   public final static Key<AssetsMetaModel> KEY = Key.of(AssetsMetaModel.class);
 
   /** . */
-  private final ArrayList<Asset> assets = new ArrayList<Asset>();
+  private final HashMap<AssetKey, Asset> assets = new HashMap<AssetKey, Asset>();
 
   /**
    * Links resource URLs to target: some resources may have the same target, it should
    * be an issue that we detect in the resolving phase and produce an error.
    */
-  private final HashMap<URL, String> resources = new HashMap<URL, String>();
+  private final HashMap<String, URL> resources = new HashMap<String, URL>();
 
   public void addAsset(Asset asset) {
-
-    //
-    if (asset.isApplication()) {
-      URL url = resolveResource(asset.value);
-      if (url != null) {
-        addResource(asset.value, url);
-      }
-    }
-
-    //
-    assets.add(asset);
+    assets.put(asset.key, asset);
   }
 
   public void removeAsset(Asset asset) {
-
-    //
-    if (asset.isApplication()) {
-      URL url = resolveResource(asset.value);
-      if (url != null) {
-        removeResource(asset.value, url);
-      }
-    }
-
-    //
-    for (Iterator<Asset> i = assets.iterator();i.hasNext();) {
-      Asset candidate = i.next();
-      if (asset.value.equals(candidate.value) && asset.location.equals(candidate.location)) {
-        i.remove();
-      }
-    }
+    assets.remove(asset.key);
   }
 
   /**
@@ -96,11 +70,11 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
    * @param resource the resource
    */
   public void addResource(String path, URL resource) {
-    String existing = resources.get(resource);
+    URL existing = resources.get(path);
     if (existing != null) {
-      throw new UnsupportedOperationException("Cannot add resource " + resource + " : conflict " + path + " != " + existing);
+      throw new UnsupportedOperationException("Cannot add resource " + path + " : added " + resource + " != existing " + existing);
     } else {
-      resources.put(resource, path);
+      resources.put(path, resource);
     }
   }
 
@@ -111,12 +85,12 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
    * @param resource the resource
    */
   public void removeResource(String path, URL resource) {
-    String existing = resources.get(resource);
-    if (path.equals(existing)) {
-      resources.remove(resource);
+    URL existing = resources.get(path);
+    if (resource.equals(existing)) {
+      resources.remove(path);
     } else {
-      throw new UnsupportedOperationException("Resource conflict for resource " + resource + " : path " + path +
-          " not matched by " + existing);
+      throw new UnsupportedOperationException("Resource conflict for resource " + path + " : removed " + resource +
+          " not matched by existing " + existing);
     }
   }
 
@@ -168,18 +142,18 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
     }
   }
 
-  public Map<URL, String> getResources() {
+  public Map<String, URL> getResources() {
     return resources;
   }
 
   public Iterable<Asset> getAssets() {
-    return assets;
+    return assets.values();
   }
 
   public Iterable<Asset> getAssets(final String type) {
     return new Iterable<Asset>() {
       public Iterator<Asset> iterator() {
-        final Iterator<Asset> i = assets.iterator();
+        final Iterator<Asset> i = assets.values().iterator();
         return new Iterator<Asset>() {
           Asset next = null;
           public boolean hasNext() {
@@ -209,7 +183,7 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
   }
 
   public void removeAssets(String type) {
-    for (Iterator<Asset> i = assets.iterator();i.hasNext();) {
+    for (Iterator<Asset> i = assets.values().iterator();i.hasNext();) {
       Asset asset = i.next();
       if (asset.type.equals(type)) {
         i.remove();

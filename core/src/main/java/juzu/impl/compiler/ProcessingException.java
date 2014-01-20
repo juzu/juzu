@@ -18,7 +18,7 @@ package juzu.impl.compiler;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,16 +38,20 @@ public class ProcessingException extends RuntimeException implements Iterable<Me
     this(null, code, arguments);
   }
 
-  public ProcessingException(Element element, MessageCode code, Object... arguments) {
-    this(element, null, code, arguments);
+  public ProcessingException(Element element, MessageCode messageCode, Object... arguments) {
+    this(element, null, messageCode, arguments);
+  }
+
+  public ProcessingException(List<Message> messages) {
+    this(null, null, messages);
+  }
+
+  public ProcessingException(Element element, List<Message> messages) {
+    this(element, null, messages);
   }
 
   public ProcessingException(Element element, AnnotationMirror annotation, MessageCode code, Object... arguments) {
-    this(element, annotation, new Message(code, arguments));
-  }
-
-  public ProcessingException(Element element, AnnotationMirror annotation, Message... messages) {
-    this(element, annotation, Arrays.asList(messages));
+    this(element, annotation, Collections.singletonList(new Message(code, arguments)));
   }
 
   public ProcessingException(Element element, AnnotationMirror annotation, List<Message> messages) {

@@ -16,6 +16,8 @@
 
 package juzu.plugin.less4j;
 
+import juzu.plugin.asset.Asset;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -36,6 +38,6 @@ public @interface Less {
    *
    * @return the stylesheet paths
    */
-  String[] value();
+  Asset[] value();
 
 }
