@@ -19,6 +19,7 @@ package juzu.impl.plugin.asset;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
+import juzu.impl.compiler.MessageCode;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.metamodel.AnnotationKey;
@@ -45,6 +46,9 @@ import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
+
+  /** . */
+  public static final MessageCode ASSET_NOT_FOUND = new MessageCode("ASSET_NOT_FOUND", "The asset %1$s cannot be resolved");
 
   public AssetMetaModelPlugin() {
     super("asset");
@@ -124,7 +128,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       HashMap<String, URL> bilta = new HashMap<String, URL>();
       HashMap<String, Asset> bilto = new HashMap<String, Asset>();
       for (Asset asset : annotation.getAssets()) {
-        if (asset.key.location == AssetLocation.APPLICATION) {
+        if (asset.key.location == AssetLocation.APPLICATION && !asset.key.value.startsWith("/")) {
           bilto.put(asset.key.value, asset);
           URL resource = annotation.getResources().get(asset.key.value);
           if (resource == null) {
@@ -132,6 +136,8 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
           }
           if (resource != null) {
             bilta.put(asset.key.value, resource);
+          } else {
+            throw ASSET_NOT_FOUND.failure(asset.key.value);
           }
         }
       }

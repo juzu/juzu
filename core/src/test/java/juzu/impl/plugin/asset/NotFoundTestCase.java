@@ -16,10 +16,16 @@
 
 package juzu.impl.plugin.asset;
 
+import juzu.impl.compiler.CompilationError;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.test.AbstractInjectTestCase;
+import juzu.test.CompilerAssert;
 import juzu.test.protocol.mock.MockApplication;
 import org.junit.Test;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class NotFoundTestCase extends AbstractInjectTestCase {
@@ -29,8 +35,26 @@ public class NotFoundTestCase extends AbstractInjectTestCase {
   }
 
   @Test
-  public void testSatisfied() throws Exception {
-    MockApplication<?> app  = application("plugin.asset.notfound");
+  public void testCompile() throws Exception {
+    CompilerAssert<?, ?> app  = compiler("plugin.asset.notfound.compile");
+    app.formalErrorReporting();
+    List<CompilationError> errors = app.failCompile();
+    assertEquals(1, errors.size());
+    CompilationError error = errors.get(0);
+    assertEquals(AssetMetaModelPlugin.ASSET_NOT_FOUND, error.getCode());
+  }
+
+  @Test
+  public void testRuntime() throws Exception {
+    MockApplication<?> app  = application("plugin.asset.notfound.runtime");
+    File root = (File)app.getSourcePath().getPath("plugin", "asset", "notfound", "runtime");
+    File js = new File(root, "assets/notfound.js");
+    assertTrue(js.getParentFile().mkdirs());
+    assertTrue(js.createNewFile());
+    app.assertCompile();
+    root = (File)app.getClasses().getPath("plugin", "asset", "notfound", "runtime");
+    js = new File(root, "assets/notfound.js");
+    assertTrue(js.delete());
     try {
       app.init();
       fail();

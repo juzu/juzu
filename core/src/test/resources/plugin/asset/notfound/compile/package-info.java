@@ -16,7 +16,7 @@
 
 @Application()
 @Assets(@Asset("notfound.js"))
-package plugin.asset.notfound;
+package plugin.asset.notfound.compile;
 
 import juzu.Application;
 import juzu.plugin.asset.Asset;

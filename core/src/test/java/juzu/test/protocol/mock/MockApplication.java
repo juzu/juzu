@@ -93,6 +93,10 @@ public class MockApplication<P> implements Closeable, ApplicationContext {
     return this;
   }
 
+  public ReadFileSystem<P> getSourcePath() {
+    return compiler.getSourcePath();
+  }
+
   public ReadFileSystem<P> getClasses() {
     return compiler.getClassOutput();
   }
