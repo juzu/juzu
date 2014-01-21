@@ -74,7 +74,7 @@ public abstract class AbstractTrie<K, T extends AbstractTrie<K, T>> implements I
   }
 
   public final Iterator<T> getEntries() {
-    return entries.values().iterator();
+    return entries != null ? entries.values().iterator() : Tools.<T>emptyIterator();
   }
 
   public final T get(K... keys) {

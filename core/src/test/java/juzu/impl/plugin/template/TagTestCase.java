@@ -79,8 +79,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     helper.addClassPath(simpleHelper.getClassOutput());
     helper.assertCompile();
     MockApplication<?> app = new MockApplication<File>(
-        helper.getClassOutput(),
-        helper.getClassLoader(),
+        helper,
         di,
         Name.parse("plugin.template.tag.decorateexternal"));
     app.init();
@@ -138,8 +137,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     helper.addClassPath(simpleHelper.getClassOutput());
     helper.assertCompile();
     MockApplication<?> app = new MockApplication<File>(
-        helper.getClassOutput(),
-        helper.getClassLoader(),
+        helper,
         di,
         Name.parse("plugin.template.tag.includeexternal"));
     app.init();

@@ -263,14 +263,9 @@ public abstract class AbstractTestCase extends Assert {
     if (application != null) {
       throw failure("An application is already deployed");
     }
-    CompilerAssert<File, File> helper = compiler(packageName);
-    helper.assertCompile();
+    CompilerAssert<File, File> compiler = compiler(packageName);
     try {
-      return application = new MockApplication<File>(
-          helper.getClassOutput(),
-          helper.getClassLoader(),
-          injectorProvider,
-          Name.parse(packageName));
+      return application = new MockApplication<File>(compiler, injectorProvider, Name.parse(packageName));
     }
     catch (Exception e) {
       throw AbstractTestCase.failure(e);

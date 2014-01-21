@@ -19,7 +19,6 @@ package juzu.test.protocol.mock;
 import juzu.impl.common.Completion;
 import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
-import juzu.impl.fs.spi.ReadWriteFileSystem;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.runtime.ApplicationRuntime;
@@ -30,6 +29,7 @@ import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.runtime.ModuleRuntime;
 import juzu.impl.resource.ResourceResolver;
 import juzu.request.ApplicationContext;
+import juzu.test.CompilerAssert;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -50,52 +50,66 @@ public class MockApplication<P> implements Closeable, ApplicationContext {
   private final HashMap<Locale, ResourceBundleImpl> bundles = new HashMap<Locale, ResourceBundleImpl>();
 
   /** . */
-  final ClassLoader classLoader;
+  private final CompilerAssert<P, P> compiler;
 
   /** . */
-  private final ApplicationRuntime<P, ?> lifeCycle;
+  private ApplicationRuntime<P, ?> lifeCycle;
 
   /** . */
-  private final ReadWriteFileSystem<P> classes;
+  private final InjectorProvider injector;
+
+  /** . */
+  private final Name name;
 
   public <L> MockApplication(
-      ReadWriteFileSystem<P> classes,
-      ClassLoader classLoader,
-      InjectorProvider implementation,
+      CompilerAssert<P, P> compiler,
+      InjectorProvider injector,
       Name name) throws Exception {
 
-    //
-    ModuleRuntime<P> module = new ModuleRuntime.Static<P>(Logger.SYSTEM, classLoader, classes);
 
     //
-    ApplicationRuntime<P, P> lifeCycle = new ApplicationRuntime<P, P>(
-        Logger.SYSTEM,
-        module,
-        implementation.get(),
-        name,
-        null,
-        new ResourceResolver() {
-          public URL resolve(String uri) {
-            return null;
-          }
-        });
+    this.lifeCycle = null;
+    this.compiler = compiler;
+    this.injector = injector;
+    this.name = name;
+  }
 
-    //
-    this.classes = classes;
-    this.classLoader = classLoader;
-    this.lifeCycle = lifeCycle;
+  public MockApplication<P> assertCompile() {
+    if (lifeCycle == null) {
+      compiler.assertCompile();
+      ModuleRuntime<P> module = new ModuleRuntime.Static<P>(Logger.SYSTEM, compiler.getClassLoader(), compiler.getClassOutput());
+      this.lifeCycle = new ApplicationRuntime<P, P>(
+          Logger.SYSTEM,
+          module,
+          injector.get(),
+          name,
+          null,
+          new ResourceResolver() {
+            public URL resolve(String uri) {
+              return null;
+            }
+          });
+    }
+    return this;
   }
 
   public ReadFileSystem<P> getClasses() {
-    return classes;
+    return compiler.getClassOutput();
   }
 
   public MockApplication<P> init() throws Exception {
-    Completion refresh = lifeCycle.refresh();
-    if (refresh.isFailed()) {
-      throw refresh.getCause();
+    if (lifeCycle == null) {
+      assertCompile();
+    }
+    if (lifeCycle != null) {
+      Completion refresh = lifeCycle.refresh();
+      if (refresh.isFailed()) {
+        throw refresh.getCause();
+      } else {
+        return this;
+      }
     } else {
-      return this;
+      throw new IllegalStateException("Could not compile application");
     }
   }
 
