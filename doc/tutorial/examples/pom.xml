@@ -45,7 +45,7 @@
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
-      <artifactId>juzu-plugins-less</artifactId>
+      <artifactId>juzu-plugins-less4j</artifactId>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>

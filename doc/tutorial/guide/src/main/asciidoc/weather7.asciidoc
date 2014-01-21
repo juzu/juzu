@@ -36,20 +36,27 @@ the compilation phase:
 * The less files are transformed into ready to use css files
 * It ensures a maximum of safety: the Less parser will report any error in the source
 
-Our first step is to create the +examples.tutorial.assets+ package, we copy the Bootstrap Less files into this package and
+Our first step is to create the +examples.tutorial.weather7.assets+ package, we copy the Bootstrap Less files into this package and
 annotate the +examples.tutorial+ package with the +@Less+ annotation to trigger the compilation of the stylesheet
  in the +assets+ package:
 
 [source,java]
 ----
-@Less(value = "bootstrap.less", minify = true)
-package examples.tutorial;
+@Application
+@Portlet
+@Servlet("/weather7/*")
+@Less(@Asset("bootstrap.less"))
+package examples.tutorial.weather7;
 
-import juzu.plugin.less.Less;
+import juzu.Application;
+import juzu.plugin.asset.Asset;
+import juzu.plugin.less4j.Less;
+import juzu.plugin.portlet.Portlet;
+import juzu.plugin.servlet.Servlet;
 ----
 
-This annotation triggers the compilation of the +bootstrap.less+ in the +assets+ package, the +minified+ parameter
-instruct Less to minify the resulting css.
+This annotation triggers the compilation of the +bootstrap.less+ in the +assets+ package, it also declares
+the resulting css file as an asset.
 
 === Serving Stylesheet
 
@@ -61,20 +68,23 @@ by an application. It works both for stylesheets and javascript, in this section
 [source,java]
 ----
 @Application
-@Assets(@Asset(
-  value = "/examples/tutorial/assets/bootstrap.css",
-  location = AssetLocation.CLASSPATH)
-)
+@Application
+@Portlet
+@Servlet("/weather7/*")
+@Less(@Asset("bootstrap.less"))
 @WithAssets
 package examples.tutorial.weather7;
+
+import juzu.Application;
+import juzu.plugin.asset.Asset;
+import juzu.plugin.asset.WithAssets;
+import juzu.plugin.less4j.Less;
+import juzu.plugin.portlet.Portlet;
+import juzu.plugin.servlet.Servlet;
 ----
 
-The usage is fairly straightforward with the +@Assets+ and +WithAssets+ annotations:
-
-* The +@Assets+ annotation declares the application assets
-* The +@WithAssets+ annotation declares the application to serve during a request
-
-We configure the +location+ parameter to be +CLASSPATH+ because the Less plugin created it there.
+The +@WithAssets+ annotation declares the application to serve during a request, by default all assets
+will be served, in our case we only have the single bootstrap stylesheet.
 
 === Bringing CSS to life
 

@@ -17,13 +17,13 @@
 @Application
 @Portlet
 @Servlet("/weather7/*")
-@Assets(@Asset("/examples/tutorial/assets/bootstrap.css"))
+@Less(@Asset("bootstrap.less"))
 @WithAssets
 package examples.tutorial.weather7;
 
 import juzu.Application;
 import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
 import juzu.plugin.asset.WithAssets;
+import juzu.plugin.less4j.Less;
 import juzu.plugin.portlet.Portlet;
 import juzu.plugin.servlet.Servlet;

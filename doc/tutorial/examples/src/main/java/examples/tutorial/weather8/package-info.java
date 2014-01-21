@@ -23,7 +23,7 @@
     @Asset(id = "transition", value = "bootstrap-transition.js", depends = "jquery"),
     @Asset(id = "collapse", value = "bootstrap-collapse.js", depends = {"jquery", "transition"}),
     @Asset(value = "weather.js", depends = {"jquery", "collapse"}),
-    @Asset("/examples/tutorial/assets/bootstrap.css")
+    @Asset("/examples/tutorial/weather7/assets/bootstrap.css")
   }
 )
 @WithAssets
