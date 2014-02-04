@@ -30,6 +30,7 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -128,9 +129,13 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
         URI uri = src.toUri();
         context.info("Found asset " + path + " on source path " + uri);
         try {
+          String scheme = uri.getScheme();
+          if (scheme == null) {
+            uri = new URI("file:" + uri);
+          }
           return uri.toURL();
         }
-        catch (IllegalArgumentException e) {
+        catch (URISyntaxException e) {
           throw UNRESOLVED_ASSET.failure(uri).initCause(e);
         }
         catch (MalformedURLException e) {
