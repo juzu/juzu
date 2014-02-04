@@ -130,6 +130,9 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
         try {
           return uri.toURL();
         }
+        catch (IllegalArgumentException e) {
+          throw UNRESOLVED_ASSET.failure(uri).initCause(e);
+        }
         catch (MalformedURLException e) {
           throw UNRESOLVED_ASSET.failure(uri).initCause(e);
         }
