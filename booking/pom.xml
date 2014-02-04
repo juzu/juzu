@@ -31,11 +31,11 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-parent</artifactId>
-    <version>0.8.0-beta6-SNAPSHOT</version>
+    <version>0.8.0-beta6</version>
   </parent>
 
   <artifactId>juzu-booking</artifactId>
-  <version>0.8.0-beta6-SNAPSHOT</version>
+  <version>0.8.0-beta6</version>
 
   <name>Juzu Booking</name>
   <description>The infamous booking application</description>
