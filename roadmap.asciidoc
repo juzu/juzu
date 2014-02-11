@@ -37,10 +37,16 @@
 |Make router meta model a mixin attached to various part of meta model instead of being centralized
 |0%
 
-|Controller Reuse
+|Asset filtering
 |Improvement
-|An application can import an existing controller
-|Provide controller reusability
+|Allow to filter assets
+|Minify assets
+|0%
+
+|Asset grouping
+|Improvement
+|Group assets together
+|Allow to group assets together for performance reason
 |0%
 
 |Asset caching
