@@ -18,6 +18,7 @@ package juzu.impl.plugin.asset;
 
 import juzu.PropertyType;
 import juzu.asset.AssetLocation;
+import juzu.impl.asset.AssetDeployment;
 import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.PluginDescriptor;
@@ -161,6 +162,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
 
   private LinkedHashMap<String, Chunk.Property<String>> process(List<AssetMetaData> data) throws Exception {
     LinkedHashMap<String, Chunk.Property<String>> assets = new LinkedHashMap<String, Chunk.Property<String>>();
+    AssetDeployment deployment = assetManager.createDeployment();
     for (AssetMetaData script : data) {
 
       //
@@ -189,9 +191,12 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
       }
 
       //
-      assetManager.addAsset(script.getId(), script.getType(), script.getLocation(), value, resource, script.getDependencies());
+      deployment.addAsset(script.getId(), script.getType(), script.getLocation(), value, resource, script.getDependencies());
       assets.put(script.getId(), new Chunk.Property<String>(script.getId(), PropertyType.ASSET));
     }
+
+    // Should be true
+    deployment.deploy();
 
     //
     return assets;

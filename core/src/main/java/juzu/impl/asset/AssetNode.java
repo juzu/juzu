@@ -18,14 +18,15 @@ package juzu.impl.asset;
 
 import juzu.asset.AssetLocation;
 
-import java.util.Collections;
+import java.net.URL;
 import java.util.Set;
 
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+/**
+ * An immutable asset descriptor.
+ *
+ * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ */
 public class AssetNode {
-
-  /** . */
-  private static final Set<String> EMPTY_SET = Collections.emptySet();
 
   /** . */
   final String id;
@@ -40,20 +41,20 @@ public class AssetNode {
   final Asset asset;
 
   /** . */
-  Set<String> dependsOnMe;
+  final URL resource;
 
   /** . */
   Set<String> iDependOn;
 
-  public AssetNode(String id, String type, AssetLocation location, String value, Set<String> iDependOn) {
+  public AssetNode(String id, String type, AssetLocation location, String value, URL resource, Set<String> iDependOn) {
 
     //
     this.id = id;
     this.location = location;
     this.value = value;
-    this.dependsOnMe = EMPTY_SET;
-    this.iDependOn = iDependOn;
     this.asset = Asset.of(id, type, location, value);
+    this.resource = resource;
+    this.iDependOn = iDependOn;
   }
 
   public String getId() {

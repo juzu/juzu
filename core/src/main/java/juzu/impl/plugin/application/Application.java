@@ -41,7 +41,7 @@ import java.util.ServiceLoader;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 @Singleton
-public class Application {
+public class Application implements ResourceResolver {
 
   /** . */
   private final ApplicationDescriptor descriptor;
@@ -235,6 +235,10 @@ public class Application {
 
   public Object resolveBean(String name) throws InvocationTargetException {
     return resolveBean(injectionContext, name);
+  }
+
+  public URL resolve(String uri) {
+    return classLoader.getResource(uri.substring(1));
   }
 
   private <B, I> Object resolveBean(InjectionContext<B, I> manager, String name) throws InvocationTargetException {

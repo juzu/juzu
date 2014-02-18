@@ -19,6 +19,7 @@ package juzu.impl.asset;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.Application;
+import juzu.impl.resource.ResourceResolver;
 
 import javax.inject.Inject;
 import java.net.URL;
@@ -35,84 +36,76 @@ import java.util.Set;
 public class AssetManager {
 
   /** . */
-  protected final LinkedHashMap<String, AssetNode> assets = new LinkedHashMap<String, AssetNode>();
+  private HashMap<String, AssetNode> assets = new HashMap<String, AssetNode>();
 
-  /** . */
-  public final HashMap<String, URL> resources = new HashMap<String, URL>();
+  /** Graph saying which assets depends on which asset. */
+  private AssetGraph graph = new AssetGraph();
 
   /** . */
   protected final String prefix;
 
   /** . */
-  protected final Application application;
+  protected final ResourceResolver applicationResolver;
 
   @Inject
   public AssetManager(Application application) {
     this.prefix = "/" + application.getDescriptor().getPackageName().replace('.', '/') + "/assets/";
-    this.application = application;
+    this.applicationResolver = application;
   }
 
-  public boolean addAsset(String id, String type, AssetLocation location, String value, URL url, String... dependencies) throws NullPointerException, IllegalArgumentException {
-    return addAsset(id, type, location, value, url, Tools.set(dependencies));
+  AssetManager(String prefix, ResourceResolver applicationResolver) {
+    this.prefix = prefix;
+    this.applicationResolver = applicationResolver;
   }
 
-  /**
-   * <p>Attempt to add an asset to the manager, the manager will return the asset id
-   * if the asset was registered or null if it was not.</p>
-   *
-   * <p>When no asset id is specified, an asset id will be generated from the asset value by taking
-   * the longest trailing substring that contains no <code>/</code> char.</p>
-   *
-   * @param id the asset id
-   * @param type the asset type
-   * @param location the asset location
-   * @param value the asset value
-   * @param resource the asset resource
-   * @param dependencies the asset dependencies
-   * @return true if the asset was registered
-   * @throws NullPointerException     if the metaData argument is nul
-   * @throws IllegalArgumentException if the metaData does not have an id set
-   */
-  public boolean addAsset(String id, String type, AssetLocation location, String value, URL resource, Set<String> dependencies) throws NullPointerException, IllegalArgumentException {
+  public AssetDeployment createDeployment() {
+    return new AssetDeployment(this);
+  }
 
-    //
-    if (!assets.keySet().contains(id)) {
-      AssetNode asset = new AssetNode(id, type, location, value, dependencies);
+  boolean deploy(AssetDeployment deployment) {
+
+    // Clone the state
+    AssetGraph graphClone = new AssetGraph(graph);
+    HashMap<String, AssetNode> assetsClone = new HashMap<String, AssetNode>(assets);
+    for (AssetNode asset : deployment.assets) {
+      // Check it was not previously deployed
+      if (!assetsClone.keySet().contains(asset.id)) {
+        for (AssetNode deployed : assetsClone.values()) {
+          if (deployed.iDependOn.contains(asset.id)) {
+            if (!graphClone.register(asset.id, deployed.id)) {
+              return false;
+            }
+          }
+          if (asset.iDependOn.contains(deployed.id)) {
+            if (!graphClone.register(deployed.id, asset.id)) {
+              return false;
+            }
+          }
+        }
+        assetsClone.put(asset.id, asset);
+      } else {
+        // log it ?
+        return false;
+      }
+    }
+
+    // Everything went fine we updated the manager
+    assets = assetsClone;
+    graph = graphClone;
+    return true;
+  }
+
+  void undeploy(AssetDeployment deployment) {
+    for (AssetNode asset : deployment.assets) {
       for (AssetNode deployed : assets.values()) {
-        if (deployed.iDependOn.contains(id)) {
-          asset.dependsOnMe = Tools.addToHashSet(asset.dependsOnMe, deployed.id);
+        if (deployed.iDependOn.contains(asset.id)) {
+          graph.unregister(asset.id, deployed.id);
         }
         if (asset.iDependOn.contains(deployed.id)) {
-          deployed.dependsOnMe = Tools.addToHashSet(deployed.dependsOnMe, id);
+          graph.unregister(deployed.id, asset.id);
         }
       }
-      assets.put(id, asset);
-
-      //
-      if (resource != null) {
-        this.resources.put(value, resource);
-      }
-
-      //
-      return true;
-    } else {
-      // log it ?
-      return false;
-    }
-  }
-
-  /**
-   * Resolve an asset as a resource URL or return null if it cannot be found.
-   *
-   * @param asset the asset
-   * @return the resource
-   */
-  public URL resolveURL(Asset asset) {
-    switch (asset.getLocation()) {
-      case APPLICATION:
-        return resources.get(asset.getURI());
-      default:
-        return null;
+      assets.remove(asset.id);
     }
   }
 
@@ -125,11 +118,14 @@ public class AssetManager {
   public URL resolveURL(AssetLocation location, String path) {
     switch (location) {
       case APPLICATION:
-        URL url = resources.get(path);
-        if (url == null && path.startsWith(prefix)) {
-          url = application.getClassLoader().getResource(path.substring(1));
+        for (AssetNode asset : assets.values()) {
+          if (asset.value.equals(path) && asset.resource != null) {
+            return asset.resource;
+          }
         }
-        return url;
+        if (path.startsWith(prefix)) {
+          return applicationResolver.resolve(path);
+        }
       default:
         return null;
     }
@@ -186,7 +182,7 @@ public class AssetManager {
       throw new NullPointerException("No null asset ids accepted");
     }
 
-    // Compute the closure
+    // Compute the closure of the assets we need
     LinkedHashMap<String, HashSet<String>> sub = new LinkedHashMap<String, HashSet<String>>();
     for (LinkedList<String> queue = Tools.addAll(new LinkedList<String>(), ids);!queue.isEmpty();) {
       String id = queue.removeFirst();
@@ -214,10 +210,13 @@ public class AssetManager {
           i.remove();
           AssetNode asset = this.assets.get(entry.getKey());
           resolved.add(asset.asset);
-          for (String dependency : asset.dependsOnMe) {
-            HashSet<String> foo = sub.get(dependency);
-            if (foo != null) {
-              foo.remove(entry.getKey());
+          Set<String> dependencies = graph.get(asset.id);
+          if (dependencies != null) {
+            for (String dependency : dependencies) {
+              HashSet<String> foo = sub.get(dependency);
+              if (foo != null) {
+                foo.remove(entry.getKey());
+              }
             }
           }
           found = true;

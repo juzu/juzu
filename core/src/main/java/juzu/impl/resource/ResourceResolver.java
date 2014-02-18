@@ -22,6 +22,20 @@ import java.net.URL;
 public interface ResourceResolver {
 
   /**
+   * A resolver that always returns null.
+   */
+  ResourceResolver NULL_RESOLVER = new ResourceResolver() {
+
+    /**
+     * @param uri the resource uri
+     * @return always null
+     */
+    public URL resolve(String uri) {
+      return null;
+    }
+  };
+
+  /**
    * Resolve the uri as a resource, it returns null when resolution cannot be performed.
    *
    * @param uri the uri
