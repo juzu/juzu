@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.net.URLConnection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,7 +48,9 @@ public class ModuleAsset extends Asset {
   }
 
   @Override
-  public InputStream filter(InputStream stream) throws IOException {
+  public InputStream open(URLConnection resource) throws IOException {
+
+    InputStream stream = resource.getInputStream();
 
     if (a != null || adapter != null) {
       StringBuilder sb = new StringBuilder();

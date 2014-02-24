@@ -126,18 +126,21 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
 
       //
       HashMap<String, URL> bilta = new HashMap<String, URL>();
-      HashMap<String, Asset> bilto = new HashMap<String, Asset>();
+      HashMap<URL, Asset> bilto = new HashMap<URL, Asset>();
       for (Asset asset : annotation.getAssets()) {
-        if (asset.key.location == AssetLocation.APPLICATION && !asset.key.value.startsWith("/")) {
-          bilto.put(asset.key.value, asset);
-          URL resource = annotation.getResources().get(asset.key.value);
-          if (resource == null) {
-            resource = annotation.resolveResource(asset.key.value);
-          }
-          if (resource != null) {
-            bilta.put(asset.key.value, resource);
-          } else {
-            throw ASSET_NOT_FOUND.failure(asset.key.value);
+        if (asset.isApplication()) {
+          String source = asset.getSource();
+          if (!source.startsWith("/")) {
+            URL resource = annotation.getResources().get(source);
+            if (resource == null) {
+              resource = annotation.resolveResource(source);
+            }
+            if (resource != null) {
+              bilto.put(resource, asset);
+              bilta.put(asset.key.value, resource);
+            } else {
+              throw ASSET_NOT_FOUND.failure(source);
+            }
           }
         }
       }
@@ -152,12 +155,13 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
           URLConnection conn = src.openConnection();
           FileObject dst = context.getResource(StandardLocation.CLASS_OUTPUT, qn, entry.getKey());
           if (dst == null || dst.getLastModified() < conn.getLastModified()) {
-            in = conn.getInputStream();
             dst = context.createResource(StandardLocation.CLASS_OUTPUT, qn, entry.getKey(), context.get(metaModel.getHandle()));
             context.info("Copying asset from source path " + src + " to class output " + dst.toUri());
-            Asset r = bilto.remove(entry.getKey());
+            Asset r = bilto.remove(entry.getValue());
             if (r != null) {
-              in = r.filter(in);
+              in = r.open(conn);
+            } else {
+              in = conn.getInputStream();
             }
             out = dst.openOutputStream();
             Tools.copy(in, out);

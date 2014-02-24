@@ -20,6 +20,7 @@ import com.github.sommeri.less4j.LessCompiler;
 import com.github.sommeri.less4j.LessSource;
 import com.github.sommeri.less4j.core.ThreadUnsafeLessCompiler;
 import juzu.asset.AssetLocation;
+import juzu.impl.common.Tools;
 import juzu.impl.compiler.Message;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.plugin.asset.Asset;
@@ -27,7 +28,7 @@ import juzu.impl.plugin.asset.Asset;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +37,7 @@ import java.util.List;
  */
 public class LessAsset extends Asset {
 
-  private static String foo(String lessValue) {
+  private static String cssValue(String lessValue) {
     int pos = lessValue.lastIndexOf('.');
     if (pos == -1) {
       return lessValue + ".css";
@@ -46,24 +47,28 @@ public class LessAsset extends Asset {
   }
 
   /** . */
-  public final URL resource;
+  private final String lessValue;
 
   public LessAsset(
       String id,
       String lessValue,
-      List<String> depends,
-      URL resource) {
-    super(id, "stylesheet", foo(lessValue), depends, AssetLocation.APPLICATION);
+      List<String> depends) {
+    super(id, "stylesheet", cssValue(lessValue), depends, AssetLocation.APPLICATION);
 
     //
-    this.resource = resource;
+    this.lessValue = lessValue;
   }
 
   @Override
-  public InputStream filter(InputStream stream) throws IOException {
+  public String getSource() {
+    return lessValue;
+  }
+
+  @Override
+  public InputStream open(URLConnection resource) throws IOException {
     LessCompiler compiler = new ThreadUnsafeLessCompiler();
     try {
-      LessCompiler.CompilationResult result = compiler.compile(resource);
+      LessCompiler.CompilationResult result = compiler.compile(resource.getURL());
       return new ByteArrayInputStream(result.getCss().getBytes());
     }
     catch (Less4jException e) {

@@ -76,9 +76,6 @@ public class MetaModelPluginImpl extends ApplicationMetaModelPlugin {
     List<LessAsset> assets = getAssets(assetsMetaModel, added);
     for (LessAsset asset : assets) {
       assetsMetaModel.addAsset(asset);
-      if (asset.resource != null) {
-        assetsMetaModel.addResource(asset.key.value, asset.resource);
-      }
     }
   }
 
@@ -88,9 +85,6 @@ public class MetaModelPluginImpl extends ApplicationMetaModelPlugin {
     List<LessAsset> assets = getAssets(assetsMetaModel, removed);
     for (LessAsset asset : assets) {
       assetsMetaModel.removeAsset(asset);
-      if (asset.resource != null) {
-        assetsMetaModel.removeResource(asset.key.value, asset.resource);
-      }
     }
   }
 
@@ -106,9 +100,6 @@ public class MetaModelPluginImpl extends ApplicationMetaModelPlugin {
 
         //
         String assetValue = (String)assetAnnotation.get("value");
-
-        //
-        URL resource = assetsMetaModel.resolveResource(assetValue);
 
         // Clone the annotation for modifying it
         Map<String, Serializable> state = new HashMap<String, Serializable>(assetAnnotation);
@@ -131,8 +122,7 @@ public class MetaModelPluginImpl extends ApplicationMetaModelPlugin {
         LessAsset asset = new LessAsset(
             parsed.id,
             parsed.key.value,
-            parsed.depends,
-            resource
+            parsed.depends
         );
         if (assets.isEmpty()) {
           assets = new ArrayList<LessAsset>();

@@ -21,6 +21,7 @@ import juzu.impl.common.JSON;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,16 +31,16 @@ import java.util.Map;
  */
 public class Asset implements Serializable {
 
-  /** . */
+  /** Asset identifiers for dependencies. */
   public final String id;
 
-  /** The asset type. */
+  /** Asset type. */
   public final String type;
 
-  /** . */
+  /** Asset dependencies. */
   public final List<String> depends;
 
-  /** . */
+  /** Coordinate of the asset. */
   public final AssetKey key;
 
   public Asset(String type, Map<String, Serializable> asset) {
@@ -94,6 +95,20 @@ public class Asset implements Serializable {
     return key.location == AssetLocation.APPLICATION;
   }
 
+  /**
+   * Returns the asset source for application assets, by default it returns the {@link AssetKey#value} field of
+   * {@link #key}. It can be subclassed to provide a custom source.
+   *
+   * @return the asset source for application assets
+   */
+  public String getSource() {
+    if (isApplication()) {
+      return key.value;
+    } else {
+      return null;
+    }
+  }
+
   public JSON getJSON() {
     JSON json = new JSON().
         set("id", id).
@@ -107,11 +122,12 @@ public class Asset implements Serializable {
   }
 
   /**
-   * Provide an opportunity to process the asset stream.
-   * @param stream the stream to filter
-   * @return the filtered stream
+   * Provide an opportunity to process the asset resource.
+   *
+   * @param resource the resource to open
+   * @return the effective resource stream
    */
-  public InputStream filter(InputStream stream) throws IOException {
-    return stream;
+  public InputStream open(URLConnection resource) throws IOException {
+    return resource.getInputStream();
   }
 }

@@ -23,14 +23,21 @@
       <artifactId>juzu-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.mozilla</groupId>
-      <artifactId>rhino</artifactId>
-      <version>1.7R3</version>
-    </dependency>
-    <dependency>
       <groupId>com.github.sommeri</groupId>
       <artifactId>less4j</artifactId>
-      <version>1.2.0</version>
+      <version>1.4.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-plugins-webjars</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>bootstrap</artifactId>
+      <version>3.1.1</version>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>

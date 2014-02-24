@@ -105,4 +105,13 @@ public class LessPluginTestCase extends AbstractInjectTestCase {
     assertNotNull(f);
     assertTrue(f.exists());
   }
+
+  @Test
+  public void testWebJars() throws Exception {
+    CompilerAssert<File, File> ca = compiler("plugin.less4j.webjars");
+    ca.assertCompile();
+    File f = ca.getClassOutput().getPath("plugin", "less4j", "webjars", "assets", "bootstrap", "3.1.1", "less", "bootstrap.css");
+    assertNotNull(f);
+    assertTrue(f.exists());
+  }
 }
