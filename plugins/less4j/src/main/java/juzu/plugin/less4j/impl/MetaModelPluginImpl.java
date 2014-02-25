@@ -17,6 +17,7 @@
 package juzu.plugin.less4j.impl;
 
 import juzu.asset.AssetLocation;
+import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.plugin.asset.Asset;
@@ -30,7 +31,6 @@ import juzu.impl.common.Logger;
 import juzu.plugin.less4j.Less;
 
 import java.io.Serializable;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -73,7 +73,7 @@ public class MetaModelPluginImpl extends ApplicationMetaModelPlugin {
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
-    List<LessAsset> assets = getAssets(assetsMetaModel, added);
+    List<LessAsset> assets = getAssets(metaModel, added);
     for (LessAsset asset : assets) {
       assetsMetaModel.addAsset(asset);
     }
@@ -82,14 +82,14 @@ public class MetaModelPluginImpl extends ApplicationMetaModelPlugin {
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
-    List<LessAsset> assets = getAssets(assetsMetaModel, removed);
+    List<LessAsset> assets = getAssets(metaModel, removed);
     for (LessAsset asset : assets) {
       assetsMetaModel.removeAsset(asset);
     }
   }
 
   private List<LessAsset> getAssets(
-      AssetsMetaModel assetsMetaModel,
+      ApplicationMetaModel metaModel,
       AnnotationState annotation) {
 
     //
@@ -105,6 +105,7 @@ public class MetaModelPluginImpl extends ApplicationMetaModelPlugin {
         Map<String, Serializable> state = new HashMap<String, Serializable>(assetAnnotation);
 
         //
+        state.put("value", Tools.interpolate((String)state.get("value"), metaModel.getProcessingContext().getOptions()));
         if (state.get("id") == null) {
           state.put("id", assetValue);
         }

@@ -17,9 +17,10 @@
 @Application(defaultController = org.sample.booking.controllers.Application.class)
 @Bindings({@Binding(Flash.class), @Binding(Login.class)})
 @Servlet("/")
+@WebJars(@WebJar("jquery"))
 @Assets(
     {
-        @Asset(id = "jquery", value = "javascripts/jquery-1.7.1.min.js"),
+        @Asset(id = "jquery", value = "jquery/${jquery.version}/jquery.min.js"),
         @Asset(value = "javascripts/jquery-ui-1.7.2.custom.min.js", depends = "jquery"),
         @Asset(value = "javascripts/booking.js", depends = "juzu.ajax"),
         @Asset("stylesheets/main.css"),
@@ -36,4 +37,6 @@ import juzu.plugin.asset.WithAssets;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
 import juzu.plugin.servlet.Servlet;
+import juzu.plugin.webjars.WebJar;
+import juzu.plugin.webjars.WebJars;
 import org.sample.booking.controllers.Login;

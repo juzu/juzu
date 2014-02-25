@@ -61,14 +61,14 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   @Override
   public void init(ApplicationMetaModel metaModel) {
-    metaModel.addChild(AssetsMetaModel.KEY, new AssetsMetaModel());
+    metaModel.addChild(AssetsMetaModel.KEY, new AssetsMetaModel(metaModel.getHandle()));
   }
 
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     if (metaModel.getHandle().equals(key.getElement())) {
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
-      for (Asset asset : getAssets(added)) {
+      for (Asset asset : getAssets(metaModel, added)) {
         assetsMetaModel.addAsset(asset);
       }
     }
@@ -78,13 +78,13 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     if (metaModel.getHandle().equals(key.getElement())) {
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
-      for (Asset asset : getAssets(removed)) {
+      for (Asset asset : getAssets(metaModel, removed)) {
         assetsMetaModel.removeAsset(asset);
       }
     }
   }
 
-  private Iterable<Asset> getAssets(AnnotationState annotation) {
+  private Iterable<Asset> getAssets(ApplicationMetaModel metaModel, AnnotationState annotation) {
     ArrayList<Asset> assets = new ArrayList<Asset>();
     String location = (String)annotation.get("location");
     if (location == null) {
@@ -96,6 +96,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       if (state.get("location") == null) {
         state.put("location", location);
       }
+      state.put("value", Tools.interpolate((String)state.get("value"), metaModel.getProcessingContext().getOptions()));
       if (state.get("id") == null) {
         state.put("id", state.get("value"));
       }

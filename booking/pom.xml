@@ -40,6 +40,10 @@
   <name>Juzu Booking</name>
   <description>The infamous booking application</description>
 
+  <properties>
+    <jquery.version>1.7.2</jquery.version>
+  </properties>
+
   <dependencies>
 
     <dependency>
@@ -49,6 +53,17 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-plugins-webjars</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>jquery</artifactId>
+      <version>${jquery.version}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -123,6 +138,19 @@
 
     <pluginManagement>
       <plugins>
+        <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>default-compile</id>
+              <configuration>
+                <compilerArgs>
+                  <arg>-Ajquery.version=${jquery.version}</arg>
+                </compilerArgs>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>

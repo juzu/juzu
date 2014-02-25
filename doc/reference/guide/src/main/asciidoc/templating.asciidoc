@@ -322,3 +322,4 @@ index.with().color(new Weather("blue")).ok(); // <2>
 ----
 <1> Detyped version
 <2> Type safe version
+

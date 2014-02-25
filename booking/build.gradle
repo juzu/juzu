@@ -2,9 +2,14 @@ apply plugin: 'war'
 repositories {
   mavenLocal()
 }
+compileJava.options.compilerArgs = [ "-Ajquery.version=1.7.2" ]
+compileJava.sourceCompatibility = "1.7"
+compileJava.targetCompatibility = "1.7"
 dependencies {
   compile group: 'org.juzu', name: 'juzu-core', version: '0.+'
   compile group: 'org.juzu', name: 'juzu-plugins-servlet', version: '0.+'
+  compile group: 'org.juzu', name: 'juzu-plugins-webjars', version: '0.+'
+  compile group: 'org.webjars', name: 'jquery', version: '1.7.2'
   compile group: 'javax.inject', name: 'javax.inject', version: '1'
   providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'
   runtime group: 'org.springframework', name: 'spring-web', version: '3.2.4.RELEASE'

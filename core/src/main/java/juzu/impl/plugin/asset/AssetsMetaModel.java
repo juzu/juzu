@@ -19,6 +19,8 @@ import juzu.impl.asset.AssetServer;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.MethodInvocationResolver;
 import juzu.impl.common.Name;
+import juzu.impl.common.Path;
+import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.compiler.ProcessingException;
@@ -55,6 +57,13 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
    * be an issue that we detect in the resolving phase and produce an error.
    */
   private final HashMap<String, URL> resources = new HashMap<String, URL>();
+
+  /** . */
+  private final ElementHandle.Package pkg;
+
+  public AssetsMetaModel(ElementHandle.Package pkg) {
+    this.pkg = pkg;
+  }
 
   public void addAsset(Asset asset) {
     assets.put(asset.key, asset);
@@ -107,11 +116,11 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
     ProcessingContext context = application.getProcessingContext();
     boolean relative = path.length() == 0 || path.charAt(0) != '/';
     if (relative) {
-      context.info("Found classpath asset " + path);
+      context.info("Resolving classpath asset " + path);
       Name qn = application.getHandle().getPackageName().append("assets");
       FileObject src;
       try {
-        src = context.getResource(StandardLocation.SOURCE_PATH, qn, path);
+        src = context.resolveResourceFromSourcePath(pkg, qn, path);
       }
       catch (Exception e) {
         if (e.getClass().getName().equals("com.sun.tools.javac.util.ClientCodeException") && e.getCause() instanceof NullPointerException) {

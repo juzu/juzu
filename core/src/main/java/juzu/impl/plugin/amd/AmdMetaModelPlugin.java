@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import juzu.asset.AssetLocation;
+import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
@@ -75,6 +76,7 @@ public class AmdMetaModelPlugin extends ApplicationMetaModelPlugin {
         if (asset.get("location") == null) {
           asset.put("location", AssetLocation.APPLICATION.name());
         }
+        asset.put("value", Tools.interpolate((String)asset.get("value"), metaModel.getProcessingContext().getOptions()));
         if (asset.get("id") == null) {
           asset.put("id", asset.get("value"));
         }

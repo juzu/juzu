@@ -310,50 +310,67 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
     return resolveResourceFromSourcePath(context, FileKey.newName(path));
   }
 
+  public FileObject resolveResourceFromSourcePath(ElementHandle.Package context, FileKey key) throws NullPointerException, IllegalArgumentException {
+    return resolveResourceFromSourcePath(context, Name.parse(key.packageFQN), key.name);
+  }
+
   /**
    * Resolve a resource from the provided context and key.
    *
    * @param context the context of the application that will help to resolve the path source code
-   * @param key the key of the resource to resolve
+   * @param pkg the base package for the resolution
+   * @param relativeName the relative name
    * @return the resolved resource or null if it cannot be determined
    * @throws NullPointerException if any argument is null
    * @throws IllegalArgumentException if the context package is not valid
    */
-  public FileObject resolveResourceFromSourcePath(ElementHandle.Package context, FileKey key) throws NullPointerException, IllegalArgumentException {
+  public FileObject resolveResourceFromSourcePath(
+      ElementHandle.Package context,
+      Name pkg,
+      CharSequence relativeName) throws NullPointerException, IllegalArgumentException {
     if (context == null) {
       throw new NullPointerException("No null package accepted");
     }
-    if (key == null) {
-      throw new NullPointerException("No null path accepted");
+    if (pkg == null) {
+      throw new NullPointerException("No null pkg accepted");
     }
+    if (relativeName == null) {
+      throw new NullPointerException("No null relativeName accepted");
+    }
+    String coordinates = "pkg=" + pkg + " relativeName=" + relativeName;
     ReadFileSystem<File> sourcePath = getSourcePath(context);
     if (sourcePath != null) {
-      log.info("Attempt to resolve " + key + " from source path");
+      log.info("Attempt to resolve " + coordinates + " from source path");
       try {
-        File f = sourcePath.getPath(key.names);
+        File f = sourcePath.getPath(pkg);
         if (f != null) {
-          log.info("Resolved " + key + " to " + f.getAbsolutePath());
-          return new JavaFileObjectImpl<File>(StandardLocation.SOURCE_PATH, key, sourcePath, f);
+          f = new File(f, relativeName.toString());
+          if (f.exists() && f.isFile()) {
+            log.info("Resolved " + coordinates + " to " + f.getAbsolutePath());
+            return new JavaFileObjectImpl<File>(StandardLocation.SOURCE_PATH, null, sourcePath, f);
+          } else {
+            log.info("Resolving " + coordinates + " from source path does not exists " + f.getAbsolutePath());
+          }
         }
         else {
-          log.info("Resolving " + key + " from source path gave no result");
+          log.info("Resolving " + coordinates + " from source path gave no result");
         }
       }
       catch (IOException e) {
-        log.info("Could not resolve " + key + " from source path", e);
+        log.info("Could not resolve " + coordinates + " from source path", e);
       }
     }
     else {
       for (StandardLocation location : RESOURCE_LOCATIONS) {
         try {
-          log.info("Attempt to resolve " + key + " from " + location.getName());
-          FileObject resource = getResource(location, key);
+          log.info("Attempt to resolve " + coordinates + " from " + location.getName());
+          FileObject resource = getResource(location, pkg, relativeName);
           if (resource != null && resource.getLastModified() > 0) {
             return resource;
           }
         }
         catch (Exception e) {
-          log.info("Could not resolve resource " + key + " from " + location.getName(), e);
+          log.info("Could not resolve resource " + coordinates + " from " + location.getName(), e);
         }
       }
     }
@@ -657,6 +674,7 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
 
   public FileObject getResource(JavaFileManager.Location location, Name pkg, CharSequence relativeName) throws IOException {
     Key key = new Key(location, pkg, relativeName.toString());
+    String coordinates = "location=" + location + " pkg=" + pkg + " relativeName=" + relativeName;
     FileObject resource = resources != null ? resources.get(key) : null;
     if (resource == null) {
       try {
@@ -666,17 +684,25 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
         // Likely to happen in ECJ
       }
       if (resource != null) {
+        debug("Resolved resolved resource " + coordinates + " from filer");
         if (resource.getLastModified() > 0) {
           if (resources == null) {
             resources = new HashMap<Key, FileObject>();
           }
+          debug("Caching locally resolved resource " + coordinates + " from filer");
           resources.put(key, resource);
         } else {
           resource = null;
         }
+      } else {
+        debug("Could not resolved resource " + coordinates + " from filer");
       }
     }
     return resource;
+  }
+
+  public Map<String, String> getOptions() {
+    return env.getOptions();
   }
 
   // Logger implementation
