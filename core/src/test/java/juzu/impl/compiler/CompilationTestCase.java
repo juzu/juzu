@@ -585,35 +585,35 @@ public class CompilationTestCase extends AbstractTestCase {
     //
     AnnotationState m1 = processor.get(ElementHandle.Method.create("compiler.annotationstate.multivalued.A", "m1"), StringArray.class);
     assertTrue(m1.isUndeclared("value"));
-    List<?> value = assertInstanceOf(List.class, m1.safeGet("value"));
+    List<?> value = assertInstanceOf(List.class, m1.resolve("value"));
     assertNull(m1.get("value"));
     assertEquals(Collections.emptyList(), value);
 
     //
     AnnotationState m2 = processor.get(ElementHandle.Method.create("compiler.annotationstate.multivalued.A", "m2"), StringArray.class);
     assertTrue(m2.isDeclared("value"));
-    value = assertInstanceOf(List.class, m2.safeGet("value"));
+    value = assertInstanceOf(List.class, m2.resolve("value"));
     assertSame(value, m2.get("value"));
     assertEquals(Collections.emptyList(), value);
 
     //
     AnnotationState m3 = processor.get(ElementHandle.Method.create("compiler.annotationstate.multivalued.A", "m3"), StringArray.class);
     assertTrue(m3.isDeclared("value"));
-    value = assertInstanceOf(List.class, m3.safeGet("value"));
+    value = assertInstanceOf(List.class, m3.resolve("value"));
     assertSame(value, m3.get("value"));
     assertEquals(Arrays.asList("warning_value"), value);
 
     //
     AnnotationState m4 = processor.get(ElementHandle.Method.create("compiler.annotationstate.multivalued.A", "m4"), StringArray.class);
     assertTrue(m4.isDeclared("value"));
-    value = assertInstanceOf(List.class, m4.safeGet("value"));
+    value = assertInstanceOf(List.class, m4.resolve("value"));
     assertSame(value, m4.get("value"));
     assertEquals(Arrays.asList("warning_value"), value);
 
     //
     AnnotationState m5 = processor.get(ElementHandle.Method.create("compiler.annotationstate.multivalued.A", "m5"), StringArray.class);
     assertTrue(m5.isDeclared("value"));
-    value = assertInstanceOf(List.class, m5.safeGet("value"));
+    value = assertInstanceOf(List.class, m5.resolve("value"));
     assertSame(value, m5.get("value"));
     assertEquals(Arrays.asList("warning_value_1", "warning_value_2"), value);
   }

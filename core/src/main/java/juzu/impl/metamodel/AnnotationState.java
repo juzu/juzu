@@ -37,7 +37,7 @@ import java.util.Map;
 /**
  * Captures the precise state of an annotation in a serializable object. The content of the map are the value declared
  * by the annotation, however the state keeps also track of the default values and those can be queried using the
- * {@link #safeGet(String)} method.
+ * {@link #resolve(String)} method.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
@@ -52,7 +52,7 @@ public class AnnotationState extends HashMap<String, Serializable> {
    * @param key the member key
    * @return the serializable value
    */
-  public Serializable safeGet(String key) {
+  public Serializable resolve(String key) {
     Serializable value = get(key);
     if (value == null && undeclared != null) {
       value = undeclared.get(key);
@@ -61,20 +61,20 @@ public class AnnotationState extends HashMap<String, Serializable> {
   }
 
   /**
-   * Return true if the member is present and not declared.
+   * Return true if the member is present.
    *
    * @param key the member key
-   * @return true if the
+   * @return true if the annotation declared the specified member
    */
   public boolean isDeclared(String key) {
     return containsKey(key);
   }
 
   /**
-   * Return true if the member is present and not declared.
+   * Return true if the member is not declared.
    *
    * @param key the member key
-   * @return true if the
+   * @return true if the annotation does not declare the specified member
    */
   public boolean isUndeclared(String key) {
     return undeclared == null || undeclared.containsKey(key);
