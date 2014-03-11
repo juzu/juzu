@@ -55,7 +55,7 @@ public class AssetServer {
         Iterable<AssetManager> resolvers = runtime.resolveBeans(AssetManager.class);
         for (AssetManager resolver : resolvers) {
           // For now we only have resource of URL type ...
-          URL content = resolver.resolveURL(AssetLocation.APPLICATION, path);
+          URL content = resolver.resolveApplicationAssetResource(path);
           InputStream in;
           if (content != null) {
             in = content.openStream();

@@ -16,7 +16,6 @@
 
 package juzu.impl.asset;
 
-import juzu.asset.AssetLocation;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.resource.ResourceResolver;
@@ -110,24 +109,21 @@ public class AssetManager {
   }
 
   /**
-   * Resolve an asset as a resource URL or return null if it cannot be found.
+   * Resolve an application asset as a resource URL or return null if it cannot be found.
    *
-   * @param path the path
+   * @param path the path the path within the application
    * @return the resource
    */
-  public URL resolveURL(AssetLocation location, String path) {
-    switch (location) {
-      case APPLICATION:
-        for (AssetNode asset : assets.values()) {
-          if (asset.value.equals(path) && asset.resource != null) {
-            return asset.resource;
-          }
-        }
-        if (path.startsWith(prefix)) {
-          return applicationResolver.resolve(path);
-        }
-      default:
-        return null;
+  public URL resolveApplicationAssetResource(String path) {
+    for (AssetNode asset : assets.values()) {
+      if (asset.value.equals(path) && asset.resource != null) {
+        return asset.resource;
+      }
+    }
+    if (path.startsWith(prefix)) {
+      return applicationResolver.resolve(path);
+    } else {
+      return null;
     }
   }
 
