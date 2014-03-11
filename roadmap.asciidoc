@@ -69,16 +69,6 @@
 |Provide bean validation with JSR 303
 |Validate form beans and request parameters
 
-|Vert.x bridge
-|Improvement
-|Finish and document
-|Make it easily usable and deploy it in Vert.x module registry
-
-|Hdiv plugin
-|Feature
-|Web security
-|Any serious web application needs XSS security and such.
-
 |JSON integration
 |Feature
 |Integrate with JSON parsing
