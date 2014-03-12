@@ -23,10 +23,13 @@ import juzu.impl.request.Request;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
+import java.util.Enumeration;
 import java.util.HashSet;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -49,29 +52,37 @@ public class AssetServer {
     runtimes.remove(assetManager);
   }
 
-  public boolean doGet(String path, ServletContext ctx, HttpServletResponse resp) throws ServletException, IOException {
+  public boolean doGet(String path, ServletContext ctx, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     if (path != null && path.length() > 0) {
       for (Application runtime : runtimes) {
         Iterable<AssetManager> resolvers = runtime.resolveBeans(AssetManager.class);
         for (AssetManager resolver : resolvers) {
           // For now we only have resource of URL type ...
           URL content = resolver.resolveApplicationAssetResource(path);
-          InputStream in;
-          if (content != null) {
-            in = content.openStream();
-          } else {
+          if (content == null) {
             // It could be a server resource like an image
-            in = ctx.getResourceAsStream(path);
+            content = ctx.getResource(path);
           }
-          
-          if (in != null) {
-            int pos = path.lastIndexOf('/');
-            String name = pos == -1 ? path : path.substring(pos + 1);
-            String contentType = ctx.getMimeType(name);
-            if (contentType != null) {
-              resp.setContentType(contentType);
+          if (content != null) {
+            InputStream in;
+            long lastModified;
+            URLConnection conn = content.openConnection();
+            lastModified = conn.getLastModified();
+            String etag = Tools.etag(path, lastModified);
+            Enumeration<String> matches = req.getHeaders("If-None-Match");
+            if (matches.hasMoreElements() && matches.nextElement().equals(etag)) {
+              resp.setStatus(304);
+            } else {
+              in = conn.getInputStream();
+              int pos = path.lastIndexOf('/');
+              String name = pos == -1 ? path : path.substring(pos + 1);
+              resp.setHeader("ETag", etag);
+              String contentType = ctx.getMimeType(name);
+              if (contentType != null) {
+                resp.setContentType(contentType);
+              }
+              Tools.copy(in, resp.getOutputStream());
             }
-            Tools.copy(in, resp.getOutputStream());
             return true;
           }
         }

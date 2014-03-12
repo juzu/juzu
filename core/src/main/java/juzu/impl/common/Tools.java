@@ -283,6 +283,18 @@ public class Tools {
     return headers;
   }
 
+  public static String etag(String id, long lastModified) {
+    byte[] tmp = id.getBytes(Tools.UTF_8);
+    int len = tmp.length;
+    tmp = Arrays.copyOf(tmp, len + 8);
+    for (int i = 0;i < 8;i++) {
+      tmp[len + i] = (byte)(lastModified & 0xFF);
+      lastModified >>= 8;
+    }
+    long hash = Tools.md5(tmp);
+    return Long.toHexString(hash);
+  }
+
   public static String read(URL url) throws IOException {
     return read(url.openStream());
   }
