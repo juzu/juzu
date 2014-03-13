@@ -164,6 +164,24 @@ The +withAssets+ method does exactly the same job than the +WithAssets+ annotati
 
 NOTE: The +@WithAssets+ annotation and the +withAssets+ method are cumulative.{{/note}}
 
+=== Asset caching
+
+Proper asset caching is important for delivering good front end performance. To implement this, Juzu relies
+on _Cache-Control_ and _ETag_ http response headers.
+
+When an asset is served, the asset server will set an _ETag_ header hashed from the asset name and
+the asset last modification date. By default, the server will also set the _Cache-Control_ header to the
+_max-age=3600_ value. This value can be modified with the the +@Assets+ annotation:
+
+.Configuring the max-age cache header for assets
+[source,java]
+----
+@Assets(maxAge = 1000)
+package my.application;
+----
+
+In _dev_ mode, asset caching is disabled and the served _Cache-Control_ header is set to _no-cache, no-store, must-revalidate_.
+
 == Asset server
 
 For serving classpath assets, Juzu requires the configuration of the asset server as a servlet declaration:
