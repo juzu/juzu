@@ -33,8 +33,12 @@ public class AssetDescriptor extends PluginDescriptor {
   /** . */
   private final List<AssetMetaData> assets;
 
-  AssetDescriptor(List<AssetMetaData> assets) {
+  /** . */
+  final Integer maxAge;
+
+  AssetDescriptor(List<AssetMetaData> assets, Integer maxAge) {
     this.assets = assets;
+    this.maxAge = maxAge;
   }
 
   public List<AssetMetaData> getAssets() {

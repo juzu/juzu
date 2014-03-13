@@ -68,6 +68,8 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     if (metaModel.getHandle().equals(key.getElement())) {
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
+      Integer maxAge = (Integer)added.get("maxAge");
+      assetsMetaModel.setMaxAge(maxAge);
       for (Asset asset : getAssets(metaModel, added)) {
         assetsMetaModel.addAsset(asset);
       }
@@ -78,6 +80,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     if (metaModel.getHandle().equals(key.getElement())) {
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
+      assetsMetaModel.setMaxAge(null);
       for (Asset asset : getAssets(metaModel, removed)) {
         assetsMetaModel.removeAsset(asset);
       }
@@ -193,6 +196,11 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       }
       json.set("assets", list);
       json.set("package", "assets");
+      Integer maxAge = assetsMetaModel.getMaxAge();
+      if (maxAge == null) {
+        maxAge = 3600;
+      }
+      json.set("max-age", maxAge);
       return json;
     } else {
       return null;

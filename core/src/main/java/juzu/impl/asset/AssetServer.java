@@ -77,6 +77,10 @@ public class AssetServer {
               int pos = path.lastIndexOf('/');
               String name = pos == -1 ? path : path.substring(pos + 1);
               resp.setHeader("ETag", etag);
+              Integer maxAge = resolver.maxAge;
+              if (maxAge != null && maxAge > 0) {
+                resp.setHeader("Cache-Control", "max-age=" + maxAge);
+              }
               String contentType = ctx.getMimeType(name);
               if (contentType != null) {
                 resp.setContentType(contentType);

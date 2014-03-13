@@ -71,6 +71,10 @@ public final class JSON implements Serializable {
     return (List<?>)entries.get(name);
   }
 
+  public Integer getInteger(String name) {
+    return (Integer)entries.get(name);
+  }
+
   public <E> List<? extends E> getList(String name, Class<E> elementType) {
     List<?> entry = (List<?>)entries.get(name);
     int len = entry != null ? entry.size() : 0;

@@ -47,4 +47,11 @@ public @interface Assets {
    */
   AssetLocation location() default AssetLocation.APPLICATION;
 
+  /**
+   * Defines <code>max-age</code> cache control headers for assets, the default value is 1 hour.
+   *
+   * @return the max age
+   */
+  int maxAge() default 3600;
+
 }

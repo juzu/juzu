@@ -50,6 +50,9 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
   public final static Key<AssetsMetaModel> KEY = Key.of(AssetsMetaModel.class);
 
   /** . */
+  private Integer maxAge;
+
+  /** . */
   private final HashMap<AssetKey, Asset> assets = new HashMap<AssetKey, Asset>();
 
   /**
@@ -63,6 +66,14 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
 
   public AssetsMetaModel(ElementHandle.Package pkg) {
     this.pkg = pkg;
+  }
+
+  public Integer getMaxAge() {
+    return maxAge;
+  }
+
+  public void setMaxAge(Integer maxAge) {
+    this.maxAge = maxAge;
   }
 
   public void addAsset(Asset asset) {

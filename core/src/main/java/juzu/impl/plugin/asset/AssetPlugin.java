@@ -88,17 +88,18 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     JSON config = context.getConfig();
     String assetsPath;
     List<AssetMetaData> assets;
+    Integer maxAge;
     if (config != null) {
       String packageName = config.getString("package");
-
-
       assets = load(packageName, config.getList("assets", JSON.class));
       assetsPath = "/" + Name.parse(application.getPackageName()).append(packageName).toString().replace('.', '/') + "/";
+      maxAge = config.getInteger("max-age");
     } else {
       assets = Collections.emptyList();
       assetsPath = null;
+      maxAge = null;
     }
-    this.descriptor = new AssetDescriptor(assets);
+    this.descriptor = new AssetDescriptor(assets, maxAge);
     this.context = context;
     this.assetsPath = assetsPath;
     return descriptor;
@@ -146,6 +147,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
 
   @PostConstruct
   public void start() throws Exception {
+    assetManager.setMaxAge(descriptor.maxAge);
     this.assets = process(descriptor.getAssets());
   }
 

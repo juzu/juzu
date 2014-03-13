@@ -46,15 +46,27 @@ public class AssetManager {
   /** . */
   protected final ResourceResolver applicationResolver;
 
+  /** . */
+  protected Integer maxAge;
+
   @Inject
   public AssetManager(Application application) {
     this.prefix = "/" + application.getDescriptor().getPackageName().replace('.', '/') + "/assets/";
     this.applicationResolver = application;
+    this.maxAge = null;
   }
 
   AssetManager(String prefix, ResourceResolver applicationResolver) {
     this.prefix = prefix;
     this.applicationResolver = applicationResolver;
+  }
+
+  public Integer getMaxAge() {
+    return maxAge;
+  }
+
+  public void setMaxAge(Integer maxAge) {
+    this.maxAge = maxAge;
   }
 
   public AssetDeployment createDeployment() {
