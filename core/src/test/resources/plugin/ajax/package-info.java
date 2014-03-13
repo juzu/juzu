@@ -15,9 +15,9 @@
  */
 
 @Application
-@Assets(value = @Asset(id = "jquery", value = "jquery.js", location = AssetLocation.SERVER)) package plugin.ajax;
+@Scripts(value = @Script(id = "jquery", value = "jquery.js", location = AssetLocation.SERVER)) package plugin.ajax;
 
 import juzu.Application;
 import juzu.asset.AssetLocation;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Scripts;

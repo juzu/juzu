@@ -15,9 +15,9 @@
  */
 
 @Application(defaultController = A.class)
-@Assets(value = @Asset(id = "test.js", value = "test.js"))
+@Scripts(@Script(id = "test.js", value = "test.js"))
 package plugin.asset.scope.annotatedmethod.override;
 
 import juzu.Application;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Scripts;

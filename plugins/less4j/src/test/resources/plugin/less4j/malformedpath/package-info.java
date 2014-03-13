@@ -15,9 +15,9 @@
  */
 
 @Application
-@Less(@Asset("stylesheet.less"))
+@Less(@Stylesheet("stylesheet.less"))
 package plugin.less4j.malformedpath;
 
 import juzu.Application;
-import juzu.plugin.asset.Asset;
+import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.less4j.Less;

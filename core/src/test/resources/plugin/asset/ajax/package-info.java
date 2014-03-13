@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-@Assets(value = @Asset(id = "jquery", location = AssetLocation.SERVER, value = "jquery.js"))
+@Scripts(value = @Script(id = "jquery", location = AssetLocation.SERVER, value = "jquery.js"))
 @Application package plugin.asset.ajax;
 
 import juzu.Application;
 import juzu.asset.AssetLocation;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Scripts;

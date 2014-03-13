@@ -16,11 +16,11 @@
 
 @Application
 @WebJars(@WebJar("bootstrap"))
-@Less(@Asset("bootstrap/3.1.1/less/bootstrap.less"))
+@Less(@Stylesheet("bootstrap/3.1.1/less/bootstrap.less"))
 package plugin.less4j.webjars;
 
 import juzu.Application;
-import juzu.plugin.asset.Asset;
+import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.less4j.Less;
 import juzu.plugin.webjars.WebJars;
 import juzu.plugin.webjars.WebJar;

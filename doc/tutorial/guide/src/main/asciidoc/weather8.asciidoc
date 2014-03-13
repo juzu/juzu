@@ -18,29 +18,27 @@ The application will use several Javascript libraries:
 
 === Adding scripts
 
-The Asset plugin was introduced in the previous section to handle the serving of the Bootstrap stylesheets. The +@Asset+
+The Asset plugin was introduced in the previous section to handle the serving of the Bootstrap stylesheets. The +@Script+
 annotation can be used also for embedding scripts, but it provides more control about the script, in particular
 a dependency mechanism to control the order of scripts that we will use: indeed jQuery plugins have to be loaded after the
 jQuery library is loaded.
 
-We extend the +@Asset+ annotation to add our scripts:
+We extend the +@Scripts+ and +@Stylesheets+ annotation to add our scripts:
 
 [source,java]
 ----
 @Application
-@Assets(
-  {
-    @Asset(id = "jquery", value = "jquery-1.7.1.min.js"),
-    @Asset(id = "transition", value = "bootstrap-transition.js", depends = "jquery"),
-    @Asset(id = "collapse", value = "bootstrap-collapse.js", depends = {"jquery", "transition"}),
-    @Asset(value = "weather.js", depends = {"jquery", "collapse"}),
-    @Asset("/examples/tutorial/weather7/assets/bootstrap.css")
-  }
-)
+@Scripts({
+    @Script(id = "jquery", value = "jquery-1.7.1.min.js"),
+    @Script(id = "transition", value = "bootstrap-transition.js", depends = "jquery"),
+    @Script(id = "collapse", value = "bootstrap-collapse.js", depends = {"jquery", "transition"}),
+    @Script(value = "weather.js", depends = {"jquery", "collapse"})
+  })
+@Stylesheets(@Stylesheet("/examples/tutorial/weather7/assets/bootstrap.css"))
 @WithAssets
 package examples.tutorial.weather8;
 ----
-The declaration is straightforward, any +@Asset+ annotation may configure
+The declaration is straightforward, any +@Script+ or +@Stylesheet+ annotation may configure
 
 * an optional +id+ used for creating dependencies between script assets
 * a mandatory +value+ for the script name

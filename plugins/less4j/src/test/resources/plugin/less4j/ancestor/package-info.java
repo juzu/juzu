@@ -15,9 +15,9 @@
  */
 
 @Application
-@Less(@Asset("folder/stylesheet.less"))
+@Less(@Stylesheet("folder/stylesheet.less"))
 package plugin.less4j.ancestor;
 
 import juzu.Application;
-import juzu.plugin.asset.Asset;
+import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.less4j.Less;

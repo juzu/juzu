@@ -18,21 +18,27 @@
 @Bindings({@Binding(Flash.class), @Binding(Login.class)})
 @Servlet("/")
 @WebJars(@WebJar("jquery"))
-@Assets(
+@Stylesheets(
     {
-        @Asset(id = "jquery", value = "jquery/${jquery.version}/jquery.min.js"),
-        @Asset(value = "javascripts/jquery-ui-1.7.2.custom.min.js", depends = "jquery"),
-        @Asset(value = "javascripts/booking.js", depends = "juzu.ajax"),
-        @Asset("stylesheets/main.css"),
-        @Asset("ui-lightness/jquery-ui-1.7.2.custom.css")
+        @Stylesheet("stylesheets/main.css"),
+        @Stylesheet("ui-lightness/jquery-ui-1.7.2.custom.css")
+    }
+)
+@Scripts(
+    {
+        @Script(id = "jquery", value = "jquery/${jquery.version}/jquery.min.js"),
+        @Script(value = "javascripts/jquery-ui-1.7.2.custom.min.js", depends = "jquery"),
+        @Script(value = "javascripts/booking.js", depends = "juzu.ajax")
     }
 )
 @WithAssets
 package org.sample.booking;
 
 import juzu.Application;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Scripts;
+import juzu.plugin.asset.Stylesheet;
+import juzu.plugin.asset.Stylesheets;
 import juzu.plugin.asset.WithAssets;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;

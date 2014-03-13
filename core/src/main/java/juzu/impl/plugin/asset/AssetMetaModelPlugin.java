@@ -26,7 +26,8 @@ import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.common.JSON;
 import juzu.impl.compiler.ProcessingContext;
-import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Scripts;
+import juzu.plugin.asset.Stylesheets;
 
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
@@ -34,11 +35,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -50,13 +53,23 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   /** . */
   public static final MessageCode ASSET_NOT_FOUND = new MessageCode("ASSET_NOT_FOUND", "The asset %1$s cannot be resolved");
 
+  /** . */
+  private static final Set<Class<? extends java.lang.annotation.Annotation>> ANNOTATIONS;
+
+  static {
+    HashSet<Class<? extends Annotation>> tmp = new HashSet<Class<? extends Annotation>>();
+    tmp.add(Scripts.class);
+    tmp.add(Stylesheets.class);
+    ANNOTATIONS = Collections.unmodifiableSet(tmp);
+  }
+
   public AssetMetaModelPlugin() {
     super("asset");
   }
 
   @Override
   public Set<Class<? extends java.lang.annotation.Annotation>> init(ProcessingContext env) {
-    return Collections.<Class<? extends java.lang.annotation.Annotation>>singleton(Assets.class);
+    return ANNOTATIONS;
   }
 
   @Override

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package juzu.plugin.less4j;
+package juzu.plugin.asset;
 
-import juzu.plugin.asset.Stylesheet;
+import juzu.asset.AssetLocation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,20 +24,34 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation trigger declares a less stylesheet. It triggers the compilation of a less stylesheet when it is
- * processed. by the compiler.
+ * A container for script declarations.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)
-public @interface Less {
+public @interface Scripts {
 
   /**
-   * The path of the less stylesheet to compile, relative to the <code>assets</code> application package.
+   * The contained scripts.
    *
-   * @return the stylesheet paths
+   * @return a list of assets
    */
-  Stylesheet[] value();
+  Script[] value() default {};
+
+  /**
+   * The default script asset location used by the contained scripts when no location
+   * is explicitly defined.
+   *
+   * @return the default script asset location
+   */
+  AssetLocation location() default AssetLocation.APPLICATION;
+
+  /**
+   * Defines <code>max-age</code> cache control headers for script assets, the default value is 1 hour.
+   *
+   * @return the max age
+   */
+  int maxAge() default 3600;
 
 }

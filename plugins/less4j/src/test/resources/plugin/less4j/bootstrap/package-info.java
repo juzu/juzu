@@ -15,9 +15,9 @@
  */
 
 @Application
-@Less(@Asset("bootstrap.less"))
+@Less(@Stylesheet("bootstrap.less"))
 package plugin.less4j.bootstrap;
 
 import juzu.Application;
-import juzu.plugin.asset.Asset;
+import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.less4j.Less;

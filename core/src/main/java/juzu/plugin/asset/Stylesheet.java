@@ -14,30 +14,41 @@
  * limitations under the License.
  */
 
-package juzu.plugin.less4j;
+package juzu.plugin.asset;
 
-import juzu.plugin.asset.Stylesheet;
+import juzu.asset.AssetLocation;
 
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * This annotation trigger declares a less stylesheet. It triggers the compilation of a less stylesheet when it is
- * processed. by the compiler.
+ * A stylesheet asset declaration.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-@Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.PACKAGE)
-public @interface Less {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({})
+public @interface Stylesheet {
 
   /**
-   * The path of the less stylesheet to compile, relative to the <code>assets</code> application package.
-   *
-   * @return the stylesheet paths
+   * @return the asset id, used for referencing this stylesheet, the value is optional.
    */
-  Stylesheet[] value();
+  String id() default "";
+
+  /**
+   * @return the value for resolving the asset
+   */
+  String value();
+
+  /**
+   * @return the stylesheet dependencies, i.e the stylesheet that are needed by this stylesheet.
+   */
+  String[] depends() default {};
+
+  /**
+   * @return the asset location
+   */
+  AssetLocation location() default AssetLocation.APPLICATION;
 
 }

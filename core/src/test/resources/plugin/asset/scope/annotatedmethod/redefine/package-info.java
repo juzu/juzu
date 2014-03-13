@@ -15,12 +15,12 @@
  */
 
 @Application(defaultController = A.class)
-@Assets({
-    @Asset(id = "test1.js", value = "test1.js"),
-    @Asset(id = "test2.js", value = "test2.js")
+@Scripts({
+    @Script(id = "test1.js", value = "test1.js"),
+    @Script(id = "test2.js", value = "test2.js")
 })
 package plugin.asset.scope.annotatedmethod.redefine;
 
 import juzu.Application;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Scripts;

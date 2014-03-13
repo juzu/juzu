@@ -15,12 +15,12 @@
  */
 
 @Application()
-@Assets(value = {
-    @Asset(id = "test.js", value = "dot.rep/prefix.test.js"),
-    @Asset(id = "main.css", value = "dot.rep/prefix.main.css")
+@Scripts(value = {
+    @Script(id = "test.js", value = "dot.rep/prefix.test.js"),
+    @Script(id = "main.css", value = "dot.rep/prefix.main.css")
 })
 package plugin.asset.dot;
 
 import juzu.Application;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Scripts;

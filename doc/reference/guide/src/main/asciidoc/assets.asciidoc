@@ -1,27 +1,31 @@
 Web assets are resources used over the web such as stylesheet and script files. Using an asset is done in two steps:
 
-* declare the asset
-* serve the asset
+* declare an asset
+* serve this asset
 
 == Asset plugin
 
-The asset plugin provides declarative asset configuration. The +@Assets+ annotation declares a list of assets used by
-the an application.
+The asset plugin provides declarative asset configuration. The +@Scripts+ and + @Stylesheets+ annotations declares a list
+of script and stylesheet assets used by an application.
 
-.jQuery UI declarative asset configuration
+.jQuery UI declarative script configuration
 [source,java]
 ----
-@Assets({
-  @Asset(id = "jquery", value = "javascripts/jquery-1.7.1.min.js"), // <1>
-  @Asset(value = { "javascripts/jquery-ui-1.7.2.custom.min.js", ui-lightness/jquery-ui-1.7.2.custom.css }, // <2>
-         depends = "jquery") // <3>
-  }}
+@Scripts({
+  @Script(id = "jquery", value = "javascripts/jquery-1.7.1.min.js"), // <1>
+  @Script(
+    id = "jquery-ui", value = "javascripts/jquery-ui-1.7.2.custom.min.js", // <2>
+    depends = {"jquery", "jquery-ui.css"}) // <3>
+})
+@Stylesheets(
+  @Stylesheet(id = "jquery-ui.css", value = "ui-lightness/jquery-ui-1.7.2.custom.css") // <4>
 )
 package my.application;
 ----
-<1> declares the _jQuery_ asset
-<2> declares the _jQuery-UI_ asset composed of the JavaScript source and its associated stylesheet
-<3> depends on +jquery+ assets
+<1> declares the _jquery_ asset
+<2> declares the _jquery-ui_ asset composed of the JavaScript source and its associated stylesheet
+<3> depends on _jquery_ and _jquery-ui.css_ assets
+<4> declares the _jquery-ui.css_ asset
 
 == Configuring assets
 
@@ -31,10 +35,8 @@ Assets can configured for the application with:
 * a _location_ and _value_ for resolving the asset physical resources which can be empty, a single file or several files
 * a list of _dependencies_ referencing other assets that are needed by the asset
 
-For example, the _jQuery-UI_ plugin could be identified by _jquery-ui_ with the dependency onto the _jquery_ js asset and
+For example, the _jQuery-UI_ plugin could be identified by _jquery-ui_ with the dependency onto the _jQuery_ script and
 the _jQuery-UI_ stylesheet. Its physical location would be the +asset+ package with the +jquery-ui-1.4.2.min.js+ name.
-
-NOTE: an empty value asset is useful for declaring an asset defined by its dependencies
 
 === The asset identifier
 
@@ -53,7 +55,7 @@ an application packaged under +my.application+ will have its relative assets loc
 .Declarative relative application asset configuration
 [source,java]
 ----
-@Assets(@Asset("myscript.js"))
+@Scripts(@Script("myscript.js"))
 package my.application;
 ----
 
@@ -67,7 +69,7 @@ the war file containing the application.
 .Declarative relative server asset configuration
 [source,java]
 ----
-@Assets(@Asset(value = "myscript.js", location = AssetLocation.SERVER))
+@Scripts(@Script(value = "myscript.js", location = AssetLocation.SERVER))
 package my.application;
 ----
 
@@ -78,7 +80,7 @@ External assets declares an opaque URL for Juzu.
 .External classpath asset configuration
 [source,java]
 ----
-@Assets(@Asset(
+@Scripts(@Script(
   value = "https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js",
   location = AssetLocation.URL))
 package my.application;

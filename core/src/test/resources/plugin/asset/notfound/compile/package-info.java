@@ -15,9 +15,9 @@
  */
 
 @Application()
-@Assets(@Asset("notfound.js"))
+@Scripts(@Script("notfound.js"))
 package plugin.asset.notfound.compile;
 
 import juzu.Application;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Scripts;

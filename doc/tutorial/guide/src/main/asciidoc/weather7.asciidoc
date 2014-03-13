@@ -45,7 +45,7 @@ annotate the +examples.tutorial+ package with the +@Less+ annotation to trigger 
 @Application
 @Portlet
 @Servlet("/weather7/*")
-@Less(@Asset("bootstrap.less"))
+@Less(@Stylesheet("bootstrap.less"))
 package examples.tutorial.weather7;
 
 import juzu.Application;
@@ -71,7 +71,7 @@ by an application. It works both for stylesheets and javascript, in this section
 @Application
 @Portlet
 @Servlet("/weather7/*")
-@Less(@Asset("bootstrap.less"))
+@Less(@Stylesheet("bootstrap.less"))
 @WithAssets
 package examples.tutorial.weather7;
 

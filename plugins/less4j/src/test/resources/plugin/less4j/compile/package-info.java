@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-@Less(@Asset("stylesheet.less"))
+@Less(@Stylesheet("stylesheet.less"))
 @Application
 package plugin.less4j.compile;
 
 import juzu.plugin.less4j.Less;
-import juzu.plugin.asset.Asset;
+import juzu.plugin.asset.Stylesheet;
 import juzu.Application;

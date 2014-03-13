@@ -15,9 +15,9 @@
  */
 
 @Application
-@Assets(value = @Asset(value = "test.js"))
+@Scripts(value = @Script(value = "test.js"))
 package plugin.asset.etag;
 
 import juzu.Application;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Scripts;

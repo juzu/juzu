@@ -15,15 +15,19 @@
  */
 
 @Application()
-@Assets(
-  value = {
-      @Asset(id = "jquery.js", value = "jquery.js"),
-      @Asset(id = "main.css", value = "main.css") },
+@Scripts(
+  value = { @Script(id = "jquery.js", value = "jquery.js") },
   location = AssetLocation.SERVER
+)
+@Stylesheets(
+    value = { @Stylesheet(id = "main.css", value = "main.css") },
+    location = AssetLocation.SERVER
 )
 package plugin.asset.inheritance;
 
 import juzu.Application;
 import juzu.asset.AssetLocation;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Scripts;
+import juzu.plugin.asset.Stylesheet;
+import juzu.plugin.asset.Stylesheets;

@@ -17,7 +17,7 @@
  */
 package juzu.plugin.amd;
 
-import juzu.plugin.asset.Asset;
+import juzu.asset.AssetLocation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,11 +34,24 @@ import java.lang.annotation.Target;
 public @interface Module {
 
   /**
-   * The module asset.
-   *
-   * @return the asset
+   * @return the asset id, used for referencing this asset, the value is optional.
    */
-  Asset value();
+  String id() default "";
+
+  /**
+   * @return the value for resolving the asset
+   */
+  String value();
+
+  /**
+   * @return the asset dependencies, i.e the asset that are needed by this asset.
+   */
+  String[] depends() default {};
+
+  /**
+   * @return the asset location
+   */
+  AssetLocation location() default AssetLocation.APPLICATION;
 
   /**
    * An optional adapter.
@@ -48,7 +61,7 @@ public @interface Module {
   String adapter() default "";
 
   /**
-   * An optional alias map for {@link juzu.plugin.asset.Asset#depends()} of the {@link #value()} member.
+   * An optional alias map for {@link #depends()} of the {@link #value()} member.
    *
    * @return the depends alias map
    */

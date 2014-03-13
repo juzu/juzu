@@ -28,14 +28,14 @@ The _stylesheet.less_ file will be located in the +myapp.assets+ package. The +a
 annotated package should contain the stylesheet, this is done on purpose to coincide exactly with the
 +assets+ package used by the Asset plugin. During the compilation phase the _stylesheet.less_ will be compiled
 to the _stylesheet.css_. If we want this file to be served with the application we simply add the corresponding
-+@Assets+ annotation:
++@Stylesheets+ annotation:
 
 .LESS and Asset plugins in action
 [source,java]
 ----
 @Less("stylesheet.less")
-@Assets({
-  @Asset(value = "stylesheet.css", location = AssetLocation.CLASSPATH)
+@Stylesheets({
+  @Stylesheet(value = "stylesheet.css", location = AssetLocation.CLASSPATH)
 })
 @Application
 package myapp;

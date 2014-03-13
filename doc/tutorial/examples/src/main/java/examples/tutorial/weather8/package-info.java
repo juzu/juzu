@@ -17,21 +17,21 @@
 @Application
 @Portlet
 @Servlet("/weather8/*")
-@Assets(
-  {
-    @Asset(id = "jquery", value = "jquery-1.7.1.min.js"),
-    @Asset(id = "transition", value = "bootstrap-transition.js", depends = "jquery"),
-    @Asset(id = "collapse", value = "bootstrap-collapse.js", depends = {"jquery", "transition"}),
-    @Asset(value = "weather.js", depends = {"jquery", "collapse"}),
-    @Asset("/examples/tutorial/weather7/assets/bootstrap.css")
-  }
-)
+@Scripts({
+    @Script(id = "jquery", value = "jquery-1.7.1.min.js"),
+    @Script(id = "transition", value = "bootstrap-transition.js", depends = "jquery"),
+    @Script(id = "collapse", value = "bootstrap-collapse.js", depends = {"jquery", "transition"}),
+    @Script(value = "weather.js", depends = {"jquery", "collapse"})
+  })
+@Stylesheets(@Stylesheet("/examples/tutorial/weather7/assets/bootstrap.css"))
 @WithAssets
 package examples.tutorial.weather8;
 
 import juzu.Application;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Scripts;
+import juzu.plugin.asset.Stylesheet;
+import juzu.plugin.asset.Stylesheets;
 import juzu.plugin.asset.WithAssets;
 import juzu.plugin.portlet.Portlet;
 import juzu.plugin.servlet.Servlet;

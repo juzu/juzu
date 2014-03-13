@@ -15,14 +15,19 @@
  */
 
 @Application()
-@Assets(
-    value = { @Asset(id = "test.js", value = "/plugin/asset/location/applicationabsolute/test.js"),
-    @Asset(id = "main.css", value = "/plugin/asset/location/applicationabsolute/main.css") },
+@Scripts(
+    value = { @Script(id = "test.js", value = "/plugin/asset/location/applicationabsolute/test.js") },
+    location = AssetLocation.APPLICATION
+)
+@Stylesheets(
+    value = { @Stylesheet(id = "main.css", value = "/plugin/asset/location/applicationabsolute/main.css") },
     location = AssetLocation.APPLICATION
 )
 package plugin.asset.location.applicationabsolute;
 
 import juzu.Application;
 import juzu.asset.AssetLocation;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Scripts;
+import juzu.plugin.asset.Stylesheet;
+import juzu.plugin.asset.Stylesheets;

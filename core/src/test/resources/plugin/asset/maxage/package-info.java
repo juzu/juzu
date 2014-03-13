@@ -15,9 +15,9 @@
  */
 
 @Application()
-@Assets(value = @Asset(id = "test.js", value = "test.js"), maxAge = 1000)
+@Scripts(value = @Script(id = "test.js", value = "test.js"), maxAge = 1000)
 package plugin.asset.maxage;
 
 import juzu.Application;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Script;
+import juzu.plugin.asset.Scripts;

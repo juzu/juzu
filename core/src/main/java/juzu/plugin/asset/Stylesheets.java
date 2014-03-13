@@ -24,31 +24,31 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * A container for asset declarations.
+ * A container for stylesheets declarations.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PACKAGE)
-public @interface Assets {
+public @interface Stylesheets {
 
   /**
-   * The contained assets.
+   * The contained stylesheets.
    *
    * @return a list of assets
    */
-  Asset[] value() default {};
+  Stylesheet[] value() default {};
 
   /**
-   * The default asset location used by the contained assets when no location
+   * The default stylesheet asset location used by the contained stylesheets when no location
    * is explicitly defined.
    *
-   * @return the default asset location
+   * @return the default stylesheet asset location
    */
   AssetLocation location() default AssetLocation.APPLICATION;
 
   /**
-   * Defines <code>max-age</code> cache control headers for assets, the default value is 1 hour.
+   * Defines <code>max-age</code> cache control headers for stylesheet assets, the default value is 1 hour.
    *
    * @return the max age
    */

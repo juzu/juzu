@@ -33,18 +33,18 @@ The plugin will copy the content of the _jquery_ webjar content to the applicati
 any other asset. For this example the _jquery/1.10.2/jquery.js_ and _jquery/1.10.2/jquery.min.js_ files will be
 in the +myapp.assets+ package.
 
-If we want this file to be served with the application we simply add the corresponding +@Assets+ annotation:
+If we want this file to be served with the application we simply add the corresponding +@Scripts+ annotation:
 
 .WebJars and Asset plugin in action
 [source,java]
 ----
 @Application
 @WebJars(@WebJar("jquery"))
-@Assets(@Asset("jquery/1.10.2/jquery.js"))
+@Scripts(@Script("jquery/1.10.2/jquery.js"))
 package myapp;
 
 import juzu.Application;
-import juzu.plugin.asset.Assets;
+import juzu.plugin.asset.Scripts;
 import juzu.plugin.asset.Script;
 import juzu.plugin.webjars.WebJars;
 ----
@@ -99,9 +99,9 @@ package myapp;
 === Asset versions
 
 The assets used by the application have different version and this is even more true with WebJars as the artifacts
-are resolved from a repository. The +@Asset+ annotation is interpolated at compilation time with annotation
- processor options. Therefore it is possible to replace +@Assets(@Asset("jquery/1.10.2/jquery.js"))+
- by +@Assets(@Asset("jquery/${jquery.version}/jquery.js"))+ and provide the +jquery.version=1.10.2+ option
+are resolved from a repository. The +@Script+ annotation is interpolated at compilation time with annotation
+ processor options. Therefore it is possible to replace +@Scripts(@Script("jquery/1.10.2/jquery.js"))+
+ by +@Scripts(@Script("jquery/${jquery.version}/jquery.js"))+ and provide the +jquery.version=1.10.2+ option
  to the compiler:
 
 [source,xml]

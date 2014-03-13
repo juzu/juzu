@@ -27,13 +27,12 @@ parallel fashion providing parallel loading, namespacing and dependency manageme
 
 == Declaring a module
 
-The +@Modules+ and +@Module+ are used to declare JavaScript modules as defined by the https://github.com/amdjs/amdjs-api/wiki/AMD[AMD specification]. The
-+@Module+ interface wraps an +@Asset+ annotation to tell Juzu that this is a module asset:
+The +@Modules+ and +@Module+ are used to declare JavaScript modules as defined by the https://github.com/amdjs/amdjs-api/wiki/AMD[AMD specification]:
 
 .Defining a simple module
 [source,java]
 ----
-@Modules(@Module(@Asset(id="Foo", value="foo.js")))
+@Modules(@Module(id="Foo", value="foo.js"))
 @WithAssets("Foo")
 package my.application
 ----
@@ -48,7 +47,7 @@ define("Foo", function() {
 });
 ----
 
-Modularity allows to define dependencies accross modules, the +@Asset+ annotation +depends+ member can be used
+Modularity allows to define dependencies accross modules, the +@Module+ annotation +depends+ member can be used
 for declaring those dependencies. It is not formally require in the client side to define such dependencies as they
 are already declared in the JavaScript module itself, Juzu needs to be aware of those dependencies in order to
 compute the specific _require.js+ configuration when serving a page.
@@ -57,8 +56,8 @@ compute the specific _require.js+ configuration when serving a page.
 [source,java]
 ----
 @Modules({
-  @Module(@Asset(id="Foo", value="foo.js")),
-  @Module(@Asset(id="Bar", value="bar.js", depends={"Foo"}))
+  @Module(id="Foo", value="foo.js"),
+  @Module(@id="Bar", value="bar.js", depends={"Foo"})
 })
 @WithAssets("Bar")
 ----
@@ -98,8 +97,8 @@ In this case dependency ids can be aliased by the +@Module+ annotation:
 [source,java]
 ----
 @Modules({
-  @Module(@Asset(id="Foo", value="foo.js")),
-  @Module(@Asset(id="Bar", value="bar.js", depends={"Foo"}), aliases={"foo")})
+  @Module(id="Foo", value="foo.js"),
+  @Module(id="Bar", value="bar.js", depends={"Foo"}, aliases={"foo")})
 })
 @WithAssets("Bar")
 ----
@@ -126,7 +125,8 @@ value as expected by the dependency system. Thanks to the custom adapter we can 
 [source,java]
 ----
 @Module(
-  @Asset(id="jquery", value="jquery-1.7.1.js"),
+  id="jquery",
+  value="jquery-1.7.1.js",
   adapter="(function() { @{include} return jQuery.noConflict(true);})();"
 )
 ----

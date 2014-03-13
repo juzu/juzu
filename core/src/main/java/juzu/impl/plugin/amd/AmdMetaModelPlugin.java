@@ -72,7 +72,7 @@ public class AmdMetaModelPlugin extends ApplicationMetaModelPlugin {
       assetsMetaModel.removeAssets("module");
       ArrayList<Asset> list = new ArrayList<Asset>();
       for (Map<String, Serializable> a : value) {
-        HashMap<String, Serializable> asset = new HashMap<String, Serializable>((AnnotationState)a.get("value"));
+        HashMap<String, Serializable> asset = new HashMap<String, Serializable>(a);
         if (asset.get("location") == null) {
           asset.put("location", AssetLocation.APPLICATION.name());
         }

@@ -23,16 +23,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An asset declaration.
+ * A script asset declaration.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({})
-public @interface Asset {
+public @interface Script {
 
   /**
-   * @return the asset id, used for referencing this asset, the value is optional.
+   * @return the asset id, used for referencing this script, the value is optional.
    */
   String id() default "";
 
@@ -42,7 +42,7 @@ public @interface Asset {
   String value();
 
   /**
-   * @return the asset dependencies, i.e the asset that are needed by this asset.
+   * @return the script dependencies, i.e the script that are needed by this asset.
    */
   String[] depends() default {};
 
