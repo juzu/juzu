@@ -31,6 +31,12 @@
 |Webjars plugin feeds the (future) asset pipeline at compilation time
 |100%
 
+|Asset caching
+|Feature
+|Declarative and programmtic asset caching
+|Web performances
+|100%
+
 |Metamodel mixin refactor
 |Improvement
 |Model some part of the meta model as mixin
@@ -47,12 +53,6 @@
 |Improvement
 |Group assets together
 |Allow to group assets together for performance reason
-|0%
-
-|Asset caching
-|Feature
-|Declarative and programmtic asset caching
-|Web performances
 |0%
 |===
 
