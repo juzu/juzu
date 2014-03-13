@@ -30,13 +30,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Enumeration;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AssetServer {
 
-  /** . */
-  HashSet<Application> runtimes = new HashSet<Application>();
+  /** Application -> Dynamic. */
+  HashMap<Application, Boolean> runtimes = new HashMap<Application, Boolean>();
 
   /** . */
   private static final ThreadLocal<AssetServer> current = new ThreadLocal<AssetServer>();
@@ -44,8 +45,8 @@ public class AssetServer {
   public AssetServer() {
   }
 
-  public void register(Application assetManager) {
-    runtimes.add(assetManager);
+  public void register(Application assetManager, boolean dynamic) {
+    runtimes.put(assetManager, dynamic);
   }
 
   public void unregister(Application assetManager) {
@@ -54,8 +55,8 @@ public class AssetServer {
 
   public boolean doGet(String path, ServletContext ctx, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
     if (path != null && path.length() > 0) {
-      for (Application runtime : runtimes) {
-        Iterable<AssetManager> resolvers = runtime.resolveBeans(AssetManager.class);
+      for (Map.Entry<Application, Boolean> runtime : runtimes.entrySet()) {
+        Iterable<AssetManager> resolvers = runtime.getKey().resolveBeans(AssetManager.class);
         for (AssetManager resolver : resolvers) {
           // For now we only have resource of URL type ...
           URL content = resolver.resolveApplicationAssetResource(path);
@@ -77,9 +78,14 @@ public class AssetServer {
               int pos = path.lastIndexOf('/');
               String name = pos == -1 ? path : path.substring(pos + 1);
               resp.setHeader("ETag", etag);
-              Integer maxAge = resolver.maxAge;
-              if (maxAge != null && maxAge > 0) {
-                resp.setHeader("Cache-Control", "max-age=" + maxAge);
+              boolean dynamic = runtime.getValue();
+              if (dynamic) {
+                resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+              } else {
+                Integer maxAge = resolver.maxAge;
+                if (maxAge != null && maxAge > 0) {
+                  resp.setHeader("Cache-Control", "max-age=" + maxAge);
+                }
               }
               String contentType = ctx.getMimeType(name);
               if (contentType != null) {

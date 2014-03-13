@@ -69,6 +69,13 @@ public abstract class ModuleRuntime<C> {
    */
   public abstract ReadFileSystem<C> getClasses();
 
+  /**
+   * Returns the module dynamicity.
+   *
+   * @return the module dynamicity
+   */
+  public abstract boolean isDynamic();
+
   public static class Dynamic<S> extends ModuleRuntime<String[]> {
 
     /** . */
@@ -187,6 +194,11 @@ public abstract class ModuleRuntime<C> {
     public ReadFileSystem<String[]> getClasses() {
       return classes;
     }
+
+    @Override
+    public boolean isDynamic() {
+      return true;
+    }
   }
 
   public static class Static<P> extends ModuleRuntime<P> {
@@ -218,6 +230,11 @@ public abstract class ModuleRuntime<C> {
     @Override
     public ReadFileSystem<P> getClasses() {
       return classes;
+    }
+
+    @Override
+    public boolean isDynamic() {
+      return false;
     }
   }
 }

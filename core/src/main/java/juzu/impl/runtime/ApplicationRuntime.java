@@ -158,7 +158,8 @@ public class ApplicationRuntime<P, R> implements Closeable {
 
     //
     if (assetServer != null) {
-      assetServer.register(application);
+
+      assetServer.register(application, moduleLifeCycle.isDynamic());
     }
 
     //
