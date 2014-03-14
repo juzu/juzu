@@ -15,12 +15,12 @@
  */
 
 @Application()
-@Scripts(value = {
-    @Script(id = "test.js", value = "dot.rep/prefix.test.js"),
-    @Script(id = "main.css", value = "dot.rep/prefix.main.css")
-})
+@Scripts(@Script(id = "test.js", value = "dot.rep/prefix.test.js"))
+@Stylesheets(@Stylesheet(id = "main.css", value = "dot.rep/prefix.main.css"))
 package plugin.asset.dot;
 
 import juzu.Application;
 import juzu.plugin.asset.Script;
 import juzu.plugin.asset.Scripts;
+import juzu.plugin.asset.Stylesheet;
+import juzu.plugin.asset.Stylesheets;

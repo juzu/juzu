@@ -82,7 +82,14 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
     if (metaModel.getHandle().equals(key.getElement())) {
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
       Integer maxAge = (Integer)added.get("maxAge");
-      for (Asset asset : getAssets(metaModel, added, maxAge)) {
+      String type;
+      String identifier = key.getType().getIdentifier();
+      if (identifier.equals(Scripts.class.getSimpleName())) {
+        type = "script";
+      } else {
+        type = "stylesheet";
+      }
+      for (Asset asset : getAssets(metaModel, type, added, maxAge)) {
         assetsMetaModel.addAsset(asset);
       }
     }
@@ -92,13 +99,13 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     if (metaModel.getHandle().equals(key.getElement())) {
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
-      for (Asset asset : getAssets(metaModel, removed, null)) {
+      for (Asset asset : getAssets(metaModel, null, removed, null)) {
         assetsMetaModel.removeAsset(asset);
       }
     }
   }
 
-  private Iterable<Asset> getAssets(ApplicationMetaModel metaModel, AnnotationState annotation, Integer maxAge) {
+  private Iterable<Asset> getAssets(ApplicationMetaModel metaModel, String type, AnnotationState annotation, Integer maxAge) {
     ArrayList<Asset> assets = new ArrayList<Asset>();
     String location = (String)annotation.get("location");
     if (location == null) {
@@ -116,17 +123,6 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       state.put("value", Tools.interpolate((String)state.get("value"), metaModel.getProcessingContext().getOptions()));
       if (state.get("id") == null) {
         state.put("id", state.get("value"));
-      }
-      String v = (String)state.get("value");
-      String type;
-      if (v.endsWith(".js")) {
-        type = "script";
-      } else if (v.endsWith(".css")) {
-        type = "stylesheet";
-      } else if (v.endsWith(".less")) {
-        type = "stylesheet";
-      } else {
-        throw new UnsupportedOperationException("Handle me gracefully " + v);
       }
       assets.add(new Asset(type, state));
     }
