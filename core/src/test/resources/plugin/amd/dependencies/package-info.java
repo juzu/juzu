@@ -3,7 +3,7 @@
     @Module(id = "Bar", value = "bar.js", depends = {"Foo"})
 })
 @juzu.Application
-@WithAssets("Bar")
+@Assets("Bar")
 package plugin.amd.dependencies;
 import juzu.plugin.amd.*;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;

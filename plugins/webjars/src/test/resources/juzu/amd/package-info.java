@@ -13,7 +13,7 @@
     aliases = {"$"}
   )
 })
-@WithAssets("foo")
+@Assets("foo")
 package juzu.amd;
 
 import juzu.Application;
@@ -21,4 +21,4 @@ import juzu.plugin.amd.Module;
 import juzu.plugin.amd.Modules;
 import juzu.plugin.webjars.WebJar;
 import juzu.plugin.webjars.WebJars;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;

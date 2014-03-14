@@ -17,10 +17,10 @@ package plugin.asset.scope.annotatedclass.classmethodsubinstance;
 
 import juzu.Response;
 import juzu.View;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;
 
 /** @author Julien Viet */
-@WithAssets("test.js")
+@Assets("test.js")
 public class Super {
   @View
   public Response.Status index() {

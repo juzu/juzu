@@ -16,10 +16,10 @@
 
 @Application()
 @Scripts(@Script(id = "test.js", value = "test.js"))
-@WithAssets("test.js")
+@Assets("test.js")
 package plugin.asset.scope.annotatedparentpkg;
 
 import juzu.Application;
 import juzu.plugin.asset.Script;
 import juzu.plugin.asset.Scripts;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;

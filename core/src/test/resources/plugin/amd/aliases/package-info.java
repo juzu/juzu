@@ -3,9 +3,9 @@
     @Module(id = "Bar", value = "bar.js", depends = {"Foo"}, aliases = {"foo"})
 })
 @juzu.Application
-@WithAssets("Bar")
+@Assets("Bar")
 package plugin.amd.aliases;
 
 import juzu.plugin.amd.Module;
 import juzu.plugin.amd.Modules;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;

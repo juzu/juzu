@@ -29,7 +29,7 @@ import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.common.JSON;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;
 import juzu.request.Result;
 import juzu.io.Chunk;
 import juzu.io.Stream;
@@ -205,7 +205,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
   }
 
   private Collection<Chunk.Property<String>> foo(AnnotatedElement elt, List<Chunk.Property<String>> bar) {
-    WithAssets decl = elt.getAnnotation(WithAssets.class);
+    Assets decl = elt.getAnnotation(Assets.class);
     if (decl != null) {
       String[] value = decl.value();
       for (String s : value) {

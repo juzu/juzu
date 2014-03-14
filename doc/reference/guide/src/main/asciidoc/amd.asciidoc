@@ -33,7 +33,7 @@ The +@Modules+ and +@Module+ are used to declare JavaScript modules as defined b
 [source,java]
 ----
 @Modules(@Module(id="Foo", value="foo.js"))
-@WithAssets("Foo")
+@Assets("Foo")
 package my.application
 ----
 
@@ -59,7 +59,7 @@ compute the specific _require.js+ configuration when serving a page.
   @Module(id="Foo", value="foo.js"),
   @Module(@id="Bar", value="bar.js", depends={"Foo"})
 })
-@WithAssets("Bar")
+@Assets("Bar")
 ----
 
 .The +bar.js+ module
@@ -100,7 +100,7 @@ In this case dependency ids can be aliased by the +@Module+ annotation:
   @Module(id="Foo", value="foo.js"),
   @Module(id="Bar", value="bar.js", depends={"Foo"}, aliases={"foo")})
 })
-@WithAssets("Bar")
+@Assets("Bar")
 ----
 
 NOTE: The Juzu AMD definition provides dependency aliasing only for JavaScript located at +AssetLocation.APPLICATION+.

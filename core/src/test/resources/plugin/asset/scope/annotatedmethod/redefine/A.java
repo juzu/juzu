@@ -18,14 +18,14 @@ package plugin.asset.scope.annotatedmethod.redefine;
 
 import juzu.Response;
 import juzu.View;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A extends Super {
 
   @Override
   @View
-  @WithAssets("test2.js")
+  @Assets("test2.js")
   public Response.Status index() {
     return Response.ok("content");
   }

@@ -19,10 +19,10 @@
     @Script(value = "foo.js", depends = "bar.js"),
     @Script("bar.js")
 })
-@WithAssets({"foo.js"})
+@Assets({"foo.js"})
 package plugin.asset.transitivity;
 
 import juzu.Application;
 import juzu.plugin.asset.Script;
 import juzu.plugin.asset.Scripts;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;

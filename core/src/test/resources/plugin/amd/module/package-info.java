@@ -1,6 +1,6 @@
 @Modules(@Module(id = "Foo", value = "foo.js"))
 @juzu.Application
-@WithAssets("Foo")
+@Assets("Foo")
 package plugin.amd.module;
 import juzu.plugin.amd.*;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;

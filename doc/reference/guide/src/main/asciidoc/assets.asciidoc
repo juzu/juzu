@@ -103,17 +103,17 @@ resolve relatively to the web archive context address.
 * +AssetLocation.APPLICATION+: the asset is served by Juzu _asset server_ (a servlet configured in the web application) and the resource is located
  on the classpath.
 
-Asset serving can either be done declaratively with the +@WithAssets+ annotation or with methods of the +juzu.Response.Content+
+Asset serving can either be done declaratively with the +@Assets+ annotation or with methods of the +juzu.Response.Content+
 class.
 
 === Declarative asset serving
 
-The +WithAssets+ annotation tells Juzu to add an asset to a content response, it takes asset ids as arguments:
+The +Assets+ annotation tells Juzu to add an asset to a content response, it takes asset ids as arguments:
 
 .Serve jQuery and Twitter Bootstrap with the application index page
 [source,java]
 ----
-@WithAssets("jquery", "bootstrap")
+@Assets("jquery", "bootstrap")
 @View
 public Response.Content index() {
   ...
@@ -123,7 +123,7 @@ public Response.Content index() {
 The annotation can be declared on _controller methods_, _classes_ or _packages_. such declarations are
  _cascaded_ to the nested controllers:
 
-.+@WithAssets+ annotations are cascaded with a few rules
+.+@Assets+ annotations are cascaded with a few rules
 [cols="2*",options="header"]
 |===
 |Declared on
@@ -139,12 +139,23 @@ The annotation can be declared on _controller methods_, _classes_ or _packages_.
 |Controller classes declared in the current and sub package and sub
 |===
 
-Those rules apply where the +@WithAssets+ annotation occurs, in particular it is also valid for overriden methods.
-The overriding method will not use the annotations of its current class or packages unless the method redeclares an +@WithAssets+
+Those rules apply where the +@Assets+ annotation occurs, in particular it is also valid for overriden methods.
+The overriding method will not use the annotations of its current class or packages unless the method redeclares an +@Assets+
  annotation (possibly empty).
 
 Annotating the application package with +#WithAsset+ will serve all assets declared in the application for all controllers.
 If you need finer grained serving, remove it and use it on controller directly.
+
+The +@Assets+ annotation can use the wildcard value +*+ to serve all assets declared in the application:
+
+.Serving all application assets
+[source,java]
+----
+...
+@Application
+@Assets("*")
+package my.application;
+----
 
 === Dynamic asset serving
 
@@ -164,7 +175,7 @@ public Response.Content index() {
 
 The +withAssets+ method does exactly the same job than the +WithAssets+ annotation.
 
-NOTE: The +@WithAssets+ annotation and the +withAssets+ method are cumulative.{{/note}}
+NOTE: The +@Assets+ annotation and the +withAssets+ method are cumulative.
 
 === Asset caching
 

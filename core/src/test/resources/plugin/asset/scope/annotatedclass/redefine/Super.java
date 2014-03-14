@@ -18,10 +18,10 @@ package plugin.asset.scope.annotatedclass.redefine;
 
 import juzu.Response;
 import juzu.View;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@WithAssets("test1.js")
+@Assets("test1.js")
 public class Super {
 
   @View

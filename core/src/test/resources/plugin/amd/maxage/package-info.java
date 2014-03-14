@@ -2,4 +2,3 @@
 @juzu.Application
 package plugin.amd.maxage;
 import juzu.plugin.amd.*;
-import juzu.plugin.asset.WithAssets;

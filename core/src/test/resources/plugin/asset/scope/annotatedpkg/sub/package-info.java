@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-@WithAssets("test.js")
+@Assets("test.js")
 package plugin.asset.scope.annotatedpkg.sub;
 
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;

@@ -12,9 +12,9 @@
     )
 })
 @juzu.Application
-@WithAssets("foo")
+@Assets("foo")
 package plugin.amd.adapter;
 
 import juzu.plugin.amd.Module;
 import juzu.plugin.amd.Modules;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;

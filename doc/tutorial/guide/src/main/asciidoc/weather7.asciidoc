@@ -72,19 +72,18 @@ by an application. It works both for stylesheets and javascript, in this section
 @Portlet
 @Servlet("/weather7/*")
 @Less(@Stylesheet("bootstrap.less"))
-@WithAssets
+@Assets("*")
 package examples.tutorial.weather7;
 
 import juzu.Application;
-import juzu.plugin.asset.Asset;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;
 import juzu.plugin.less4j.Less;
 import juzu.plugin.portlet.Portlet;
 import juzu.plugin.servlet.Servlet;
 ----
 
-The +@WithAssets+ annotation declares the application to serve during a request, by default all assets
-will be served, in our case we only have the single bootstrap stylesheet.
+The +@Assets+ annotation declares the application to serve during a request, by default we server all assets
+with the value +*+, in our case we only have the single bootstrap stylesheet.
 
 === Bringing CSS to life
 

@@ -20,11 +20,11 @@
         @Script(id = "absolute", value = "/asset/absolute/script.js"),
         @Script(id = "url", value = "http://localhost:8080/foo.js", location = AssetLocation.URL)
     })
-@WithAssets
+@Assets("*")
 package asset;
 
 import juzu.Application;
 import juzu.asset.AssetLocation;
 import juzu.plugin.asset.Script;
 import juzu.plugin.asset.Scripts;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;

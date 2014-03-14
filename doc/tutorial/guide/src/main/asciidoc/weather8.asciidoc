@@ -35,7 +35,7 @@ We extend the +@Scripts+ and +@Stylesheets+ annotation to add our scripts:
     @Script(value = "weather.js", depends = {"jquery", "collapse"})
   })
 @Stylesheets(@Stylesheet("/examples/tutorial/weather7/assets/bootstrap.css"))
-@WithAssets
+@Assets("*")
 package examples.tutorial.weather8;
 ----
 The declaration is straightforward, any +@Script+ or +@Stylesheet+ annotation may configure

@@ -18,10 +18,10 @@ package plugin.asset.scope.annotatedclass.classmethod;
 
 import juzu.Response;
 import juzu.View;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-@WithAssets("test.js")
+@Assets("test.js")
 public class A {
   @View
   public Response.Status index() {

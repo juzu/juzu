@@ -31,7 +31,7 @@
         @Script(value = "javascripts/booking.js", depends = "juzu.ajax")
     }
 )
-@WithAssets
+@Assets("*")
 package org.sample.booking;
 
 import juzu.Application;
@@ -39,7 +39,7 @@ import juzu.plugin.asset.Script;
 import juzu.plugin.asset.Scripts;
 import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.asset.Stylesheets;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
 import juzu.plugin.servlet.Servlet;

@@ -22,19 +22,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Declares assets to use.
+ * Declares the assets to serve.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PACKAGE,ElementType.TYPE,ElementType.METHOD})
-public @interface WithAssets {
+public @interface Assets {
 
   /**
-   * The asset ids to match, the default value is <code>*</code>.
+   * The asset ids to match, the <code>*</code> value will match all assets.
    *
    * @return the asset ids to match
    */
-  String[] value() default {"*"};
+  String[] value();
 
 }

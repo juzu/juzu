@@ -24,7 +24,7 @@
     @Script(value = "weather.js", depends = {"jquery", "collapse"})
   })
 @Stylesheets(@Stylesheet("/examples/tutorial/weather7/assets/bootstrap.css"))
-@WithAssets
+@Assets("*")
 package examples.tutorial.weather8;
 
 import juzu.Application;
@@ -32,6 +32,6 @@ import juzu.plugin.asset.Script;
 import juzu.plugin.asset.Scripts;
 import juzu.plugin.asset.Stylesheet;
 import juzu.plugin.asset.Stylesheets;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;
 import juzu.plugin.portlet.Portlet;
 import juzu.plugin.servlet.Servlet;

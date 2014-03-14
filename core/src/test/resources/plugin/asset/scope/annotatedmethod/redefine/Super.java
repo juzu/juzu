@@ -18,13 +18,13 @@ package plugin.asset.scope.annotatedmethod.redefine;
 
 import juzu.Response;
 import juzu.View;
-import juzu.plugin.asset.WithAssets;
+import juzu.plugin.asset.Assets;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Super {
 
   @View
-  @WithAssets("test1.js")
+  @Assets("test1.js")
   public Response.Status index() {
     throw new UnsupportedOperationException("should not be called");
   }
