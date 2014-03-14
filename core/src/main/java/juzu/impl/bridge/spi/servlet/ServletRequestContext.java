@@ -254,7 +254,6 @@ public class ServletRequestContext extends WebRequestContext {
         appendable.append(req.getContextPath()).append("/assets");
         if (location == AssetLocation.APPLICATION && !uri.startsWith("/")) {
           appendable.append(prefix);
-          appendable.append(uri);
         }
         appendable.append(uri);
         break;

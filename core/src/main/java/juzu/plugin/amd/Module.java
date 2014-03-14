@@ -67,4 +67,10 @@ public @interface Module {
    */
   String[] aliases() default {};
 
+  /**
+   * Defines <code>max-age</code> cache control headers for this module asset.
+   *
+   * @return the max age
+   */
+  int maxAge() default -1;
 }

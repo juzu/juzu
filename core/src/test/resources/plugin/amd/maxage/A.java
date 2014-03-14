@@ -15,34 +15,28 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package juzu.plugin.amd;
+package plugin.amd.maxage;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.inject.Inject;
+
+import juzu.Path;
+import juzu.Response;
+import juzu.Route;
+import juzu.View;
+import juzu.plugin.asset.AssetController;
 
 /**
- * Declares a set of JavaScript modules.
- *
  * @author <a href="mailto:haithanh0809@gmail.com">Nguyen Thanh Hai</a>
  * @version $Id$
+ *
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.PACKAGE)
-public @interface Modules {
-  
-  /**
-   * The application amd modules configuration
-   * 
-   * @return the declared amd modules
-   */
-  Module[] value() default {};
+public class A {
 
-  /**
-   * Defines <code>max-age</code> cache control headers for module assets.
-   *
-   * @return the max age
-   */
-  int maxAge() default -1;
+  @Inject
+  AssetController assetController;
+  
+  @View @Route("/")
+  public Response.Content index() {
+    return Response.ok("<span id=\"Foo\">" + assetController.url("foo.js") + "</span>");
+  }
 }

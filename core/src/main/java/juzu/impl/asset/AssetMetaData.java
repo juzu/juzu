@@ -44,11 +44,15 @@ public class AssetMetaData {
   /** The asset dependencies. */
   final Set<String> dependencies;
 
-  public AssetMetaData(String id, String type, AssetLocation location, String value, String... dependencies) {
+  /** . */
+  final Integer maxAge;
+
+  public AssetMetaData(String id, String type, AssetLocation location, String value, Integer maxAge, String... dependencies) {
     this.id = id;
     this.type = type;
     this.value = value;
     this.location = location;
+    this.maxAge = maxAge;
     this.dependencies = Collections.unmodifiableSet(Tools.set(dependencies));
   }
 
@@ -62,6 +66,10 @@ public class AssetMetaData {
 
   public AssetLocation getLocation() {
     return location;
+  }
+
+  public Integer getMaxAge() {
+    return maxAge;
   }
 
   public String getValue() {

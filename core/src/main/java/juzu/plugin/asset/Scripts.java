@@ -48,10 +48,10 @@ public @interface Scripts {
   AssetLocation location() default AssetLocation.APPLICATION;
 
   /**
-   * Defines <code>max-age</code> cache control headers for script assets, the default value is 1 hour.
+   * Defines <code>max-age</code> cache control headers for script assets.
    *
    * @return the max age
    */
-  int maxAge() default 3600;
+  int maxAge() default -1;
 
 }

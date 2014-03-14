@@ -21,6 +21,7 @@ package juzu.bridge.vertx;
 
 import juzu.Response;
 import juzu.impl.asset.AssetManager;
+import juzu.impl.asset.AssetResource;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
 import juzu.impl.bridge.BridgeContext;
@@ -29,6 +30,7 @@ import juzu.impl.bridge.module.ModuleContextImpl;
 import juzu.impl.common.Completion;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Name;
+import juzu.impl.common.Timestamped;
 import juzu.impl.common.Tools;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.fs.spi.ReadFileSystem;
@@ -321,8 +323,9 @@ public class Application {
         Iterable<AssetManager> resolvers = bridge.getApplication().resolveBeans(AssetManager.class);
         for (Iterator<AssetManager> i = resolvers.iterator();i.hasNext() && !served;) {
           AssetManager resolver = i.next();
-          URL assetURL = resolver.resolveApplicationAssetResource(ctx.req.path);
-          if (assetURL != null) {
+          AssetResource asset = resolver.resolveApplicationAssetResource(ctx.req.path);
+          if (asset != null) {
+            URL assetURL = asset.url;
             served = true;
             if ("file".equals(assetURL.getProtocol())) {
               try {

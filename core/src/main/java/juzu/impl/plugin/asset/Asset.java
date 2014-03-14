@@ -43,11 +43,15 @@ public class Asset implements Serializable {
   /** Coordinate of the asset. */
   public final AssetKey key;
 
+  /** The asset max age. */
+  public final Integer maxAge;
+
   public Asset(String type, Map<String, Serializable> asset) {
     String id = (String)asset.get("id");
     String value = (String)asset.get("value");
     List<String> depends = (List<String>)asset.get("depends");
     AssetLocation location = AssetLocation.safeValueOf((String)asset.get("location"));
+    Integer maxAge = (Integer)asset.get("maxAge");
 
     //
     if (type == null) {
@@ -68,9 +72,10 @@ public class Asset implements Serializable {
     this.type = type;
     this.depends = depends != null ? depends : new ArrayList<String>();
     this.key = new AssetKey(value, location);
+    this.maxAge = maxAge;
   }
 
-  public Asset(String id, String type, String value, List<String> depends, AssetLocation location) {
+  public Asset(String id, String type, String value, List<String> depends, AssetLocation location, Integer maxAge) {
     if (type == null) {
       throw new NullPointerException("No null type accepted");
     }
@@ -89,6 +94,7 @@ public class Asset implements Serializable {
     this.type = type;
     this.depends = depends;
     this.key = new AssetKey(value, location);
+    this.maxAge = maxAge;
   }
 
   public boolean isApplication() {
@@ -115,6 +121,9 @@ public class Asset implements Serializable {
         set("value", key.value).
         set("location", key.location.toString()).
         set("type", type);
+    if (maxAge != null) {
+      json.set("max-age", maxAge);
+    }
     if (depends != null) {
       json.set("depends", depends);
     }

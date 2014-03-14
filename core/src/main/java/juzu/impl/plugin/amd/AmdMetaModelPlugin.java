@@ -49,13 +49,11 @@ public class AmdMetaModelPlugin extends ApplicationMetaModelPlugin {
       "script",
       "/juzu/impl/plugin/amd/require.js",
       Collections.<String>emptyList(),
-      AssetLocation.APPLICATION);
+      AssetLocation.APPLICATION,
+      null);
 
   public AmdMetaModelPlugin() {
     super("amd");
-
-    //
-
   }
 
   @Override
@@ -67,6 +65,8 @@ public class AmdMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     if (metaModel.getHandle().equals(key.getElement())) {
       List<Map<String, Serializable>> value = (List<Map<String, Serializable>>)added.get("value");
+      Integer maxAge = (Integer)added.get("maxAge");
+
       //
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
       assetsMetaModel.removeAssets("module");
@@ -75,6 +75,9 @@ public class AmdMetaModelPlugin extends ApplicationMetaModelPlugin {
         HashMap<String, Serializable> asset = new HashMap<String, Serializable>(a);
         if (asset.get("location") == null) {
           asset.put("location", AssetLocation.APPLICATION.name());
+        }
+        if (asset.get("maxAge") == null && maxAge != null) {
+          asset.put("maxAge", maxAge);
         }
         asset.put("value", Tools.interpolate((String)asset.get("value"), metaModel.getProcessingContext().getOptions()));
         if (asset.get("id") == null) {

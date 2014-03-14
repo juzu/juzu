@@ -173,12 +173,21 @@ on _Cache-Control_ and _ETag_ http response headers.
 
 When an asset is served, the asset server will set an _ETag_ header hashed from the asset name and
 the asset last modification date. By default, the server will also set the _Cache-Control_ header to the
-_max-age=3600_ value. This value can be modified with the the +@Assets+ annotation:
+_max-age=3600_ value. This value can be modified globally:
 
-.Configuring the max-age cache header for assets
+.Configuring the max-age cache header for all scripts
 [source,java]
 ----
-@Assets(maxAge = 1000)
+@Scripts(@Script(value = "javascripts/jquery-1.7.1.min.js"), maxAge = 1000),
+package my.application;
+----
+
+It can also be modified for a specific asset:
+
+.Configuring the max-age cache header for a specific script
+[source,java]
+----
+@Scripts(@Script(value = "javascripts/jquery-1.7.1.min.js", maxAge = 1000)),
 package my.application;
 ----
 

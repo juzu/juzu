@@ -18,6 +18,7 @@ package juzu.bridge.portlet;
 
 import juzu.Consumes;
 import juzu.PropertyType;
+import juzu.impl.asset.AssetResource;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
@@ -370,7 +371,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
       AssetPlugin assetPlugin = (AssetPlugin)bridge.getApplication().getPlugin("asset");
       String contentType;
       InputStream in;
-      URL url = assetPlugin.getAssetManager().resolveApplicationAssetResource(path);
+      AssetResource url = assetPlugin.getAssetManager().resolveApplicationAssetResource(path);
       if (url != null) {
         if (path.endsWith(".css")) {
           contentType = "text/css";
@@ -379,7 +380,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
         } else {
           contentType = null;
         }
-        in = url.openStream();
+        in = url.url.openStream();
       } else {
         contentType = null;
         in = null;

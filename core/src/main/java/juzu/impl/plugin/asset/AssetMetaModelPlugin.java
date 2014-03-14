@@ -82,8 +82,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
     if (metaModel.getHandle().equals(key.getElement())) {
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
       Integer maxAge = (Integer)added.get("maxAge");
-      assetsMetaModel.setMaxAge(maxAge);
-      for (Asset asset : getAssets(metaModel, added)) {
+      for (Asset asset : getAssets(metaModel, added, maxAge)) {
         assetsMetaModel.addAsset(asset);
       }
     }
@@ -93,14 +92,13 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     if (metaModel.getHandle().equals(key.getElement())) {
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
-      assetsMetaModel.setMaxAge(null);
-      for (Asset asset : getAssets(metaModel, removed)) {
+      for (Asset asset : getAssets(metaModel, removed, null)) {
         assetsMetaModel.removeAsset(asset);
       }
     }
   }
 
-  private Iterable<Asset> getAssets(ApplicationMetaModel metaModel, AnnotationState annotation) {
+  private Iterable<Asset> getAssets(ApplicationMetaModel metaModel, AnnotationState annotation, Integer maxAge) {
     ArrayList<Asset> assets = new ArrayList<Asset>();
     String location = (String)annotation.get("location");
     if (location == null) {
@@ -111,6 +109,9 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       Map<String, Serializable> state = new HashMap<String, Serializable>(asset);
       if (state.get("location") == null) {
         state.put("location", location);
+      }
+      if (maxAge != null && state.get("maxAge") == null) {
+        state.put("maxAge", maxAge);
       }
       state.put("value", Tools.interpolate((String)state.get("value"), metaModel.getProcessingContext().getOptions()));
       if (state.get("id") == null) {
@@ -209,11 +210,6 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       }
       json.set("assets", list);
       json.set("package", "assets");
-      Integer maxAge = assetsMetaModel.getMaxAge();
-      if (maxAge == null) {
-        maxAge = 3600;
-      }
-      json.set("max-age", maxAge);
       return json;
     } else {
       return null;

@@ -17,6 +17,7 @@
 package juzu.impl.asset;
 
 import juzu.asset.AssetLocation;
+import juzu.impl.common.Timestamped;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.common.Tools;
 import juzu.impl.request.Request;
@@ -59,15 +60,18 @@ public class AssetServer {
         Iterable<AssetManager> resolvers = runtime.getKey().resolveBeans(AssetManager.class);
         for (AssetManager resolver : resolvers) {
           // For now we only have resource of URL type ...
-          URL content = resolver.resolveApplicationAssetResource(path);
+          AssetResource content = resolver.resolveApplicationAssetResource(path);
           if (content == null) {
             // It could be a server resource like an image
-            content = ctx.getResource(path);
+            URL resource = ctx.getResource(path);
+            if (resource != null) {
+              content = new AssetResource(resource, null);
+            }
           }
           if (content != null) {
             InputStream in;
             long lastModified;
-            URLConnection conn = content.openConnection();
+            URLConnection conn = content.url.openConnection();
             lastModified = conn.getLastModified();
             String etag = Tools.etag(path, lastModified);
             Enumeration<String> matches = req.getHeaders("If-None-Match");
@@ -82,8 +86,8 @@ public class AssetServer {
               if (dynamic) {
                 resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
               } else {
-                Integer maxAge = resolver.maxAge;
-                if (maxAge != null && maxAge > 0) {
+                int maxAge = content.maxAge != null ? content.maxAge : 3600;
+                if (maxAge > 0) {
                   resp.setHeader("Cache-Control", "max-age=" + maxAge);
                 }
               }

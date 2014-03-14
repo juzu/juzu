@@ -46,27 +46,15 @@ public class AssetManager {
   /** . */
   protected final ResourceResolver applicationResolver;
 
-  /** . */
-  protected Integer maxAge;
-
   @Inject
   public AssetManager(Application application) {
     this.prefix = "/" + application.getDescriptor().getPackageName().replace('.', '/') + "/assets/";
     this.applicationResolver = application;
-    this.maxAge = null;
   }
 
   AssetManager(String prefix, ResourceResolver applicationResolver) {
     this.prefix = prefix;
     this.applicationResolver = applicationResolver;
-  }
-
-  public Integer getMaxAge() {
-    return maxAge;
-  }
-
-  public void setMaxAge(Integer maxAge) {
-    this.maxAge = maxAge;
   }
 
   public AssetDeployment createDeployment() {
@@ -126,14 +114,16 @@ public class AssetManager {
    * @param path the path the path within the application
    * @return the resource
    */
-  public URL resolveApplicationAssetResource(String path) {
+  public AssetResource resolveApplicationAssetResource(String path) {
     for (AssetNode asset : assets.values()) {
       if (asset.value.equals(path) && asset.resource != null) {
-        return asset.resource;
+        Integer maxAge = asset.asset.getMaxAge();
+        return new AssetResource(asset.resource, maxAge);
       }
     }
     if (path.startsWith(prefix)) {
-      return applicationResolver.resolve(path);
+      URL resolved = applicationResolver.resolve(path);
+      return new AssetResource(resolved, null);
     } else {
       return null;
     }

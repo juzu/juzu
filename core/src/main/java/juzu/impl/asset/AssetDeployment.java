@@ -16,12 +16,10 @@
 package juzu.impl.asset;
 
 import juzu.asset.AssetLocation;
-import juzu.impl.common.Resource;
 import juzu.impl.common.Tools;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Set;
 
 /**
@@ -42,8 +40,8 @@ public class AssetDeployment {
     this.manager = manager;
   }
 
-  public AssetDeployment addAsset(String id, String type, AssetLocation location, String value, URL url, String... dependencies) throws NullPointerException, IllegalArgumentException {
-    return addAsset(id, type, location, value, url, Tools.set(dependencies));
+  public AssetDeployment addAsset(String id, String type, AssetLocation location, String value, Integer maxAge, URL url, String... dependencies) throws NullPointerException, IllegalArgumentException {
+    return addAsset(id, type, location, value, maxAge, url, Tools.set(dependencies));
   }
 
   /**
@@ -57,6 +55,7 @@ public class AssetDeployment {
    * @param type the asset type
    * @param location the asset location
    * @param value the asset value
+   * @param maxAge the asset max age
    * @param resource the asset resource
    * @param dependencies the asset dependencies
    * @throws NullPointerException     if the metaData argument is nul
@@ -67,9 +66,10 @@ public class AssetDeployment {
       String type,
       AssetLocation location,
       String value,
+      Integer maxAge,
       URL resource,
       Set<String> dependencies) throws NullPointerException, IllegalArgumentException {
-    assets.add(new AssetNode(id, type, location, value, resource, dependencies));
+    assets.add(new AssetNode(id, type, location, value, maxAge, resource, dependencies));
     return this;
   }
 

@@ -41,13 +41,9 @@ public class Asset {
 
   /** . */
   private final String uri;
-  
-  public Asset(String id, String type, AssetLocation location, String uri) {
-    this.id = id;
-    this.type = type;
-    this.location = location;
-    this.uri = uri;
-  }
+
+  /** . */
+  private final Integer maxAge;
 
   /**
    * Create an asset.
@@ -55,10 +51,14 @@ public class Asset {
    * @param id the asset id
    * @param location the asset location
    * @param uri the asset uri
-   * @return the asset
+   * @param maxAge the asset max age
    */
-  public static Asset of(String id, String type, AssetLocation location, String uri) {
-    return new Asset(id, type, location, uri);
+  public Asset(String id, String type, AssetLocation location, String uri, Integer maxAge) {
+    this.id = id;
+    this.type = type;
+    this.location = location;
+    this.uri = uri;
+    this.maxAge = maxAge;
   }
 
   public String getId() {
@@ -75,6 +75,10 @@ public class Asset {
 
   public String getURI() {
     return uri;
+  }
+
+  public Integer getMaxAge() {
+    return maxAge;
   }
 
   public boolean isStylesheet() {

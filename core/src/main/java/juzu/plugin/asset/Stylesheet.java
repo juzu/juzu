@@ -51,4 +51,10 @@ public @interface Stylesheet {
    */
   AssetLocation location() default AssetLocation.APPLICATION;
 
+  /**
+   * Defines <code>max-age</code> cache control headers for this stylesheet asset.
+   *
+   * @return the max age
+   */
+  int maxAge() default -1;
 }

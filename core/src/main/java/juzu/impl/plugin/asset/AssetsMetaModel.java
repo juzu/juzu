@@ -19,7 +19,6 @@ import juzu.impl.asset.AssetServer;
 import juzu.impl.common.MethodInvocation;
 import juzu.impl.common.MethodInvocationResolver;
 import juzu.impl.common.Name;
-import juzu.impl.common.Path;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.compiler.ProcessingContext;
@@ -29,7 +28,6 @@ import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 
 import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -50,9 +48,6 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
   public final static Key<AssetsMetaModel> KEY = Key.of(AssetsMetaModel.class);
 
   /** . */
-  private Integer maxAge;
-
-  /** . */
   private final HashMap<AssetKey, Asset> assets = new HashMap<AssetKey, Asset>();
 
   /**
@@ -66,14 +61,6 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
 
   public AssetsMetaModel(ElementHandle.Package pkg) {
     this.pkg = pkg;
-  }
-
-  public Integer getMaxAge() {
-    return maxAge;
-  }
-
-  public void setMaxAge(Integer maxAge) {
-    this.maxAge = maxAge;
   }
 
   public void addAsset(Asset asset) {

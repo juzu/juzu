@@ -123,7 +123,8 @@ public class MetaModelPluginImpl extends ApplicationMetaModelPlugin {
         LessAsset asset = new LessAsset(
             parsed.id,
             parsed.key.value,
-            parsed.depends
+            parsed.depends,
+            parsed.maxAge
         );
         if (assets.isEmpty()) {
           assets = new ArrayList<LessAsset>();
