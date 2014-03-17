@@ -129,7 +129,9 @@ public class Helper {
         }
       }
       catch (URISyntaxException e) {
-        throw new AssertionError("Could not create portlet deployment for class " + baseClass.getName(), e);
+        AssertionError ae = new AssertionError("Could not create portlet deployment for class " + baseClass.getName());
+        ae.initCause(e);
+        throw ae;
       }
     }
   }

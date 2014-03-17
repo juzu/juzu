@@ -386,4 +386,10 @@ public abstract class AbstractTestCase extends Assert {
       }
     }
   }
+
+  public static void assertEndsWith(String suffix, String test) {
+    if (!test.endsWith(suffix)) {
+      throw failure("Was expecting " + test + " to end with " + suffix);
+    }
+  }
 }

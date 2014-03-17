@@ -47,8 +47,8 @@
     <juzu.test.compiler>javac</juzu.test.compiler>
 
     <!-- maven-compiler-plugin -->
-    <maven.compiler.target>1.5</maven.compiler.target>
-    <maven.compiler.source>1.5</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
+    <maven.compiler.source>1.6</maven.compiler.source>
 
     <!--  maven-javadoc-plugin -->
     <detectOfflineLinks>false</detectOfflineLinks>
@@ -871,7 +871,7 @@
   <modules>
     <module>core</module>
     <module>depchain</module>
-    <module>vertx</module>
+    <!--<module>vertx</module>-->
     <module>templating</module>
     <module>plugins</module>
     <module>archetype</module>

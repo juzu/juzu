@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 public class Message {
 
   /** . */
-  static final Pattern PATTERN = Pattern.compile("\\[" + "([^\\]]+)" + "\\]\\(" + "(.*)" + "\\)", Pattern.DOTALL);
+  static final Pattern PATTERN = Pattern.compile("\\[" + "([^\\]]+)" + "\\]\\(" + "(.*)" + "\\)$", Pattern.DOTALL);
 
   /** . */
   static final Pattern SPLIT_PATTERN = Pattern.compile("(?<!\\\\),");
@@ -36,7 +36,7 @@ public class Message {
   public static Message parse(String s) {
     List<String> arguments = Collections.emptyList();
     Matcher matcher = PATTERN.matcher(s);
-    if (matcher.matches()) {
+    if (matcher.find()) {
       String codeKey = matcher.group(1);
       MessageCode code = MessageCode.decode(codeKey);
       if (matcher.group(2).length() > 0) {

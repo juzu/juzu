@@ -39,6 +39,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -126,7 +127,10 @@ public class TagTestCase extends AbstractInjectTestCase {
     assertEquals(1, errors.size());
     CompilationError error = errors.get(0);
     assertEquals(TemplateMetaModel.TEMPLATE_CYCLE, error.getCode());
-    assertEquals("[TEMPLATE_CYCLE](Path[/plugin/template/tag/includecircular/templates/index.gtmpl],/plugin/template/tag/includecircular/templates/index.gtmpl->/plugin/template/tag/includecircular/templates/foo.gtmpl)", error.getMessage());
+    assertEquals(Arrays.asList(
+        "Path[/plugin/template/tag/includecircular/templates/index.gtmpl]",
+        "/plugin/template/tag/includecircular/templates/index.gtmpl->/plugin/template/tag/includecircular/templates/foo.gtmpl"),
+        error.getArguments());
   }
 
   @Test
@@ -225,7 +229,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     CompilationError error = errors.get(0);
     assertTrue(error.getSource().endsWith("template/tag/notfound/A.java"));
     assertEquals(TemplateMetaModel.UNKNOWN_TAG, error.getCode());
-    assertEquals("[UNKNOWN_TAG](notfound)", error.getMessage());
+    assertEquals(Arrays.asList("notfound"), error.getArguments());
   }
 
   @Test
