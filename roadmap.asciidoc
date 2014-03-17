@@ -69,15 +69,30 @@
 |Provide bean validation with JSR 303
 |Validate form beans and request parameters
 
-|JSON integration
+|Request parameter simple type
 |Feature
-|Integrate with JSON parsing
-|JSON datatype should be supported natively either as a JSON object or with a bean mapper
+|Improve request parameter mapping and allow to use simple types like boolean, int, custom, etc...
+|Provide more advanced parameter mapping
+
+|Pluggable request payload
+|Feature
+|Only application/x-www-form-urlencoded and multipart/form-data are supported
+|Extend this support and allow JSON payload mapped onto objects
+
+|Pluggable response payload
+|Feature
+|Response does not provide a mechanism for easily marshalling objects to JSON
+|Allow a controller to marshall an object into JSON
 
 |Simple authorization plugin
 |Feature
 |Authorization
 |Provide a simple implemententation of JAX-RS annotations for servlet/portlet container
+
+|@Application escapeXML
+|Improvement
+|This feature only concerns portlets and is confusing in @Application
+|Move this feature to the @Portlet plugin
 
 |Asset Shiro plugin
 |Feature
