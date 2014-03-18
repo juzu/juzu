@@ -71,6 +71,9 @@ import java.util.logging.Level;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ProcessingContext extends Logger implements Filer, Elements, Types {
 
+  /** The base classloader for service loading, this static allow to change it for unit tests. */
+  public static ClassLoader baseCL = ProcessingContext.class.getClassLoader();
+
   /** . */
   private static final MessageCode UNEXPECTED_ERROR = new MessageCode("UNEXPECTED_ERROR", "Unexpected error: %1$s");
 
@@ -111,8 +114,8 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
       tool = ProcessingTool.JAVAC;
     }
 
-    // Use this classloader by default
-    ClassLoader serviceCL = ProcessingContext.class.getClassLoader();
+    //
+    ClassLoader serviceCL = baseCL;
 
     //
     DiskFileSystem sourcePath = null;

@@ -18,6 +18,7 @@ package juzu.impl.plugin.template;
 
 import juzu.impl.common.Name;
 import juzu.impl.compiler.CompilationError;
+import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.template.metamodel.TemplateMetaModel;
 import juzu.impl.tags.DecorateTag;
@@ -38,7 +39,10 @@ import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -275,5 +279,36 @@ public class TagTestCase extends AbstractInjectTestCase {
     MockViewBridge render = client.render();
     String out = render.assertStringResult();
     assertEquals("pass", out);
+  }
+
+  @Test
+  public void testSimpleTagReuse() throws Exception {
+    CompilerAssert<File, File> simpleHelper = compiler("plugin.template.tag.simple.render");
+    simpleHelper.assertCompile();
+    File classes = simpleHelper.getClassOutput().getRoot();
+    File services = new File(classes, "META-INF/services");
+    assertTrue(services.mkdirs());
+    File tagHandler = new File(services, "juzu.template.TagHandler");
+    FileWriter writer = new FileWriter(tagHandler);
+    writer.append("plugin.template.tag.simple.render.tags.foo").close();
+    // Swap this classLoader for the test so we can load the tag at compile time
+    ProcessingContext.baseCL = new URLClassLoader(new URL[]{classes.toURI().toURL()}, ProcessingContext.baseCL);
+    try {
+      CompilerAssert<File, File> helper  = compiler("plugin.template.tag.simple.reuse");
+      helper.addClassPath(simpleHelper.getClassOutput());
+      helper.assertCompile();
+      MockApplication<?> app = new MockApplication<File>(
+          helper,
+          di,
+          Name.parse("plugin.template.tag.simple.reuse"));
+      app.init();
+      MockClient client = app.client();
+      MockViewBridge render = client.render();
+      String out = render.assertStringResult();
+      assertEquals("foothe_tagbar", out);
+    }
+    finally {
+      ProcessingContext.baseCL = ProcessingContext.baseCL.getParent();
+    }
   }
 }

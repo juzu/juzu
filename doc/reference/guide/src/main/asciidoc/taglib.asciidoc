@@ -87,6 +87,29 @@ public Content.Response index() {
 
 Since Juzu 0.7.0, custom tags can be implemented, either as Java class or as templates, we will study both ways in this section.
 
+=== Java tags
+
+Tags can also be implemented with Java code, let's look at the actual implementation of the _title_ tag:
+
+.The title tag implementation
+[source,java]
+----
+include::{sourcesdir}/juzu/impl/tags/TitleTag.java[tags=class]
+----
+
+* The class extends the +juzu.template.TagHandler+ abstract class
+* The constructor must provide the tag name to the +TagHandler+ super constructor
+* The tag is rendered with the +render+ method
+
+Finally the tag must be declared as a http://docs.oracle.com/javase/6/docs/technotes/guides/jar/jar.html#Service%20Provider[Java Service Provider API] which is achieved by having the following content in the
+_META-INF/services/juzu.template.TagHandler_ file:
+
+.The tag declaration
+[source,java]
+----
+juzu.impl.tags.TitleTag # the tag service provider
+----
+
 [[simpletags]]
 === Simple tags
 
@@ -143,25 +166,15 @@ by the +decorate+ tag).
 
 The body can be evaluated as much as you want, allowing to create loop tags.
 
-=== Java tags
+==== Turning a simple tag into a reusable tag
 
-Tags can also be implemented with Java code, let's look at the actual implementation of the _title_ tag:
+A simple tag is usually an applicative tag, it is also nonetheless a Java tag and it can be reused outside of the
+application that defined it. A simple tag can be reused by merely declaring it in a _META-INF/services/juzu.template.TagHandler_
+file. The corresponding Java class to declare is created by concatenating the application package, the +tags+ name and
+  the tag name. With the previous example it gives us:
 
-.The title tag implementation
+.The mytag declaration
 [source,java]
 ----
-include::{sourcesdir}/juzu/impl/tags/TitleTag.java[tags=class]
-----
-
-* The class extends the +juzu.template.TagHandler+ abstract class
-* The constructor must provide the tag name to the +TagHandler+ super constructor
-* The tag is rendered with the +render+ method
-
-Finally the tag must be declared as a http://docs.oracle.com/javase/6/docs/technotes/guides/jar/jar.html#Service%20Provider[Java Service Provider API] which is achieved by having the following content in the
-_META-INF/services/juzu.template.TagHandler_ file:
-
-.The tag declaration
-[source,java]
-----
-juzu.impl.tags.TitleTag # the tag service provider
+my.application.tags.mytag
 ----
