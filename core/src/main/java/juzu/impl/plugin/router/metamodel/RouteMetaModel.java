@@ -20,123 +20,33 @@ import juzu.impl.common.JSON;
 import juzu.impl.plugin.router.ParamDescriptor;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouteMetaModel implements Serializable {
 
   /** . */
-  HashMap<String, String> targets;
-
-  /** . */
-  ArrayList<RouteMetaModel> children;
-
-  /** . */
   final String path;
 
   /** . */
-  final Integer priority;
+  final String handle;
+
+  /** . */
+  final int priority;
 
   /** . */
   HashMap<String, ParamDescriptor> parameters;
 
-  public RouteMetaModel(String path, Integer priority) {
+  public RouteMetaModel(String path, String handle, int priority, HashMap<String, ParamDescriptor> parameters) {
     this.path = path;
+    this.handle = handle;
     this.priority = priority;
+    this.parameters = parameters;
   }
 
   public String getPath() {
     return path;
-  }
-
-  /**
-   * Sets a target if the target is not null otherwise remove it.
-   *
-   * @param key the key
-   * @param target the target
-   * @return this object
-   * @throws NullPointerException if the key is null
-   * @throws IllegalArgumentException if the key is already present
-   */
-  RouteMetaModel setTarget(String key, String target) throws NullPointerException, IllegalArgumentException {
-    if (key == null) {
-      throw new NullPointerException("No null key accepted");
-    }
-    if (target == null) {
-      if (targets != null) {
-        targets.remove(key);
-      }
-    } else {
-      if (targets == null) {
-        targets = new HashMap<String, String>();
-      }
-      if (targets.containsKey(key)) {
-        throw new IllegalArgumentException("Cannot have two identical targets " + key);
-      } else {
-        targets.put(key, target);
-      }
-    }
-    return this;
-  }
-
-  /**
-   * Returns a keyed target.
-   *
-   * @param key the key
-   * @return the target or null
-   * @throws NullPointerException if the key is null
-   */
-  String getTarget(String key) throws NullPointerException {
-    if (key == null) {
-      throw new NullPointerException("No null key accepted");
-    }
-    if (targets != null) {
-      return targets.get(key);
-    } else {
-      return null;
-    }
-  }
-
-  RouteMetaModel addChild(int priority, String path, HashMap<String, ParamDescriptor> parameters) {
-    if (children == null) {
-      children = new ArrayList<RouteMetaModel>();
-    }
-    RouteMetaModel found = null;
-    for (RouteMetaModel child : children) {
-      if (child.path.equals(path) && child.priority == priority) {
-        found = child;
-        break;
-      }
-    }
-    if (found == null) {
-      children.add(found = new RouteMetaModel(path, priority));
-    }
-    if (parameters != null && parameters.size() > 0) {
-      if (found.parameters == null) {
-        found.parameters = new LinkedHashMap<String, ParamDescriptor>();
-      }
-      found.parameters.putAll(parameters);
-    }
-    return found;
-  }
-
-  public List<RouteMetaModel> getChildren() {
-    return children;
-  }
-
-  public Map<String, String> getTargets() {
-    return targets;
-  }
-
-  public Map<String, ParamDescriptor> getParameters() {
-    return parameters;
   }
 
   public JSON toJSON() {
@@ -145,14 +55,8 @@ public class RouteMetaModel implements Serializable {
     JSON json = new JSON();
 
     //
-    if (path != null) {
-      json.set("path", path);
-    }
-
-    //
-    if (targets != null && targets.size() > 0) {
-      json.set("targets", targets);
-    }
+    json.set("path", path);
+    json.set("handle", handle);
 
     //
     if (parameters != null && parameters.size() > 0) {
@@ -160,27 +64,12 @@ public class RouteMetaModel implements Serializable {
       for (Map.Entry<String, ParamDescriptor> parameter : parameters.entrySet()) {
         ParamDescriptor value = parameter.getValue();
         b.set(parameter.getKey(), new JSON().
-          set("pattern", value.getPattern()).
-          set("preserve-path", value.getPreservePath()).
-          set("capture-group", value.getCaptureGroup())
+            set("pattern", value.getPattern()).
+            set("preserve-path", value.getPreservePath()).
+            set("capture-group", value.getCaptureGroup())
         );
       }
       json.set("parameters", b);
-    }
-
-    //
-    if (children != null && children.size() > 0) {
-      RouteMetaModel[] routes = children.toArray(new RouteMetaModel[children.size()]);
-      Arrays.sort(routes, new Comparator<RouteMetaModel>() {
-        public int compare(RouteMetaModel o1, RouteMetaModel o2) {
-          return o1.priority.compareTo(o2.priority);
-        }
-      });
-      List<JSON> a = new LinkedList<JSON>();
-      for (RouteMetaModel route : routes) {
-        a.add(route.toJSON());
-      }
-      json.set("routes", a);
     }
 
     //

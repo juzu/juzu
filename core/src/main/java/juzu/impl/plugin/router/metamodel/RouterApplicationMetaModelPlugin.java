@@ -35,8 +35,11 @@ import juzu.impl.plugin.router.ParamDescriptor;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -63,9 +66,6 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     if (key.getElement() instanceof ElementHandle.Method) {
       getRoutes(metaModel, true).annotations.put(key.getElement(), added);
-    } else if (key.getElement().equals(metaModel.getHandle())) {
-      getRoutes(metaModel, true).packageRoute = (String)added.get("value");
-      getRoutes(metaModel, true).packagePriority = (Integer)added.get("priority");
     }
   }
 
@@ -73,9 +73,6 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     if (key.getElement() instanceof ElementHandle.Method) {
       getRoutes(metaModel, true).annotations.remove(key.getElement());
-    } else if (key.getElement().equals(metaModel.getHandle())) {
-      getRoutes(metaModel, true).packageRoute = null;
-      getRoutes(metaModel, true).packagePriority = null;
     }
   }
 
@@ -83,11 +80,9 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
   public void postProcessEvents(ApplicationMetaModel metaModel) {
     RouterMetaModel router = getRoutes(metaModel, false);
     if (router != null) {
+      router.routes.clear();
       ControllersMetaModel controllers = metaModel.getChild(ControllersMetaModel.KEY);
       if (controllers != null) {
-        RouteMetaModel root = new RouteMetaModel(
-            router.packageRoute != null ? router.packageRoute : null,
-            router.packagePriority != null ? router.packagePriority : 0);
         for (ControllerMetaModel controller : controllers) {
           for (MethodMetaModel method : controller) {
             AnnotationState annotation = router.annotations.get(method.getHandle());
@@ -113,17 +108,14 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
                   }
                 }
               }
-              RouteMetaModel route = root.addChild(priority != null ? priority : 0, path, parameters);
-              String key = method.getPhase().name();
-              if (route.getTarget(key) != null) {
-                throw RouterMetaModel.ROUTER_DUPLICATE_ROUTE.failure(metaModel.processingContext.get(method.getHandle()), path);
-              } else {
-                route.setTarget(key, method.getHandle().getMethodHandle().toString());
-              }
+              //
+              // parameters
+              String handle = method.getHandle().getMethodHandle().toString();
+              RouteMetaModel route = new RouteMetaModel(path, handle, priority != null ? priority : 0, parameters);
+              router.routes.add(route);
             }
           }
         }
-        router.root = root;
       }
     }
   }
@@ -131,6 +123,16 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
   @Override
   public JSON getDescriptor(ApplicationMetaModel application) {
     RouterMetaModel router = getRoutes(application, false);
-    return router != null && router.root != null ? router.root.toJSON() : null;
+    if (router != null) {
+      ArrayList<RouteMetaModel> list = new ArrayList<RouteMetaModel>(router.routes);
+      Collections.sort(list, new Comparator<RouteMetaModel>() {
+        @Override
+        public int compare(RouteMetaModel o1, RouteMetaModel o2) {
+          return ((Integer)o1.priority).compareTo(o2.priority);
+        }
+      });
+      return new JSON().map("routes", list);
+    }
+    return null;
   }
 }

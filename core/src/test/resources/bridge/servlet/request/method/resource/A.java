@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
-@Application package plugin.router.declaration;
+package bridge.servlet.request.method.resource;
 
-import juzu.Application;
+import juzu.Resource;
+import juzu.Response;
+import juzu.Route;
+import juzu.request.HttpContext;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+  @Resource
+  @Route("/")
+  public Response.Content foo(HttpContext context) {
+    return Response.ok("ok[" + context.getMethod() + "]");
+  }
+}

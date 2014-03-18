@@ -44,8 +44,8 @@ public abstract class AbstractRequestPathParamAliasing extends AbstractWebTestCa
     String href = trigger.getAttribute("href");
     URL url = new URL(href);
     Assert.assertNotNull(url.getPath());
-    Assert.assertTrue(url.getPath().endsWith("/foo/abc_value"));
+    Assert.assertTrue(url.getPath().endsWith("/foo/abcvalue"));
     trigger.click();
-    Assert.assertEquals("abc_value", value);
+    Assert.assertEquals("abcvalue", value);
   }
 }

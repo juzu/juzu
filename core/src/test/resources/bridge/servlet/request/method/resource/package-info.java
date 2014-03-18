@@ -14,32 +14,6 @@
  * limitations under the License.
  */
 
-package plugin.router.declaration;
+@Application package bridge.servlet.request.method.resource;
 
-import juzu.Action;
-import juzu.Resource;
-import juzu.Response;
-import juzu.Route;
-import juzu.View;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-
-  @View
-  @Route("/view")
-  public Response view() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Action
-  @Route("/action")
-  public Response action() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Resource
-  @Route("/resource")
-  public Response resource() {
-    throw new UnsupportedOperationException();
-  }
-}
+import juzu.Application;

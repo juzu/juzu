@@ -22,7 +22,9 @@ import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class RouterMetaModel extends MetaModelObject {
@@ -37,23 +39,6 @@ public class RouterMetaModel extends MetaModelObject {
   final HashMap<ElementHandle<?>, AnnotationState> annotations = new HashMap<ElementHandle<?>, AnnotationState>();
 
   /** . */
-  RouteMetaModel root;
+  final List<RouteMetaModel> routes = new ArrayList<RouteMetaModel>();
 
-  /** . */
-  String packageRoute;
-
-  /** . */
-  Integer packagePriority;
-
-  public RouteMetaModel getRoot() {
-    return root;
-  }
-
-  public String getPackageRoute() {
-    return packageRoute;
-  }
-
-  public Integer getPackagePriority() {
-    return packagePriority;
-  }
 }

@@ -154,32 +154,6 @@ public void show(@Param(pattern="[0-9]+") String id) {
 }
 ----
 
-==== Route overloading
-
-The same route can bound to different phases, the dispatch behavior depends on the http method:
-
-* in a _GET_ method the phases priority are _view_, _action_, _resource_
-* in a _POST_ method the phases priority are _action_, _view_, _resource_
-
-.Route parameter matching
-[source,java]
-----
-@View @Route("/show")
-public void showWithView() {
-  ...
-}
-
-@Action @Route("/show")
-public void showWithAction() {
-  ...
-}
-----
-
-With those rules:
-
-* A _GET_ request on the _/show_ path will invoke the +showWithAction()+ method
-* A _POST_ request on the _/show_ path will invoke the +showWithView()+ method
-
 ==== Route priorities
 
 When several routes match the same request, the router will use the first route found. The +priority+
@@ -303,6 +277,30 @@ controllers have several use cases:
 
 * Implement ajax resource serving
 * Produce an application resource, such as an image, a script, etc...
+
+Resource controllers are by default bound to all HTTP methods. The +@Resource+ annotation can be used to restrict
+the http methods a resource controller can handle:
+
+[source,java]
+----
+@Route("/users/{uid}");
+@Resource(method = { Method.GET })
+public Response get(String uid) {
+   ...
+}
+
+@Route("/users/{uid}");
+@Resource(method = { Method.PUT })
+public Response put(String uid) {
+   ...
+}
+
+@Route("/users/{uid}");
+@Resource(method = { Method.DELETE })
+public Response delete(String uid) {
+   ...
+}
+----
 
 === Event controllers
 

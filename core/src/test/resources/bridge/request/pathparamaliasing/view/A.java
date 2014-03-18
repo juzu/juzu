@@ -40,7 +40,7 @@ public class A implements RequestLifeCycle {
 
   @View
   public Response.Content index() {
-    return Response.ok("<a id='trigger' href='" + A_.foo("abc_value") + "'>click</div>");
+    return Response.ok("<a id='trigger' href='" + A_.foo("abcvalue") + "'>click</div>");
   }
 
   @View

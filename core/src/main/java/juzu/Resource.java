@@ -46,4 +46,20 @@ public @interface Resource {
    * @return the controller method id
    */
   String id() default "";
+
+  /**
+   * The methods this resource is matching, by default all are matched.
+   *
+   * @return the http verbs
+   */
+  Method[] method() default {
+      Method.GET,
+      Method.HEAD,
+      Method.POST,
+      Method.PUT,
+      Method.DELETE,
+      Method.TRACE,
+      Method.OPTIONS,
+      Method.CONNECT
+  };
 }

@@ -103,6 +103,7 @@ is over, the server redirects the browser (with an HTTP temporary redirection) t
 
 === Resource phase
 
-Resource phases are trivially mapped on _GET_ request pretty much like a view phase. The main difference is that
+Resource phases are trivially mapped on any HTTP request pretty much like a view phase. The main difference is that
 the resource phase is responsible for managing the entire response instead of just a fragment of the response.
+Resource phases can handle any HTTP method.
 

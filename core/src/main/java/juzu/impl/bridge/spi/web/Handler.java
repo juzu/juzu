@@ -16,11 +16,14 @@
 
 package juzu.impl.bridge.spi.web;
 
+import juzu.Resource;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MethodHandle;
+import juzu.impl.common.Tools;
 import juzu.impl.common.UriBuilder;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.router.RouteDescriptor;
+import juzu.impl.plugin.router.RouterDescriptor;
 import juzu.impl.plugin.router.RouterPlugin;
 import juzu.impl.request.Method;
 import juzu.request.RequestParameter;
@@ -34,7 +37,9 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Handler implements Closeable {
@@ -58,40 +63,27 @@ public class Handler implements Closeable {
   final HashMap<MethodHandle, Route> forwardRoutes;
 
   /** . */
-  final HashMap<Route, Map<Phase, MethodHandle>> backwardRoutes;
+  final HashMap<Route, RouteDescriptor> backwardRoutes;
 
   public Handler(Bridge bridge) throws Exception {
     this.bridge = bridge;
 
     //
     HashMap<MethodHandle, Route> forwardRoutes = new HashMap<MethodHandle, Route>();
-    HashMap<Route, Map<Phase, MethodHandle>> backwardRoutes = new HashMap<Route, Map<Phase, MethodHandle>>();
+    HashMap<Route, RouteDescriptor> backwardRoutes = new HashMap<Route, RouteDescriptor>();
 
     //
-    Route root;
+    Route root = new Router();
     RouterPlugin router = bridge.getApplication().resolveBean(RouterPlugin.class);
     if (router != null) {
-      RouteDescriptor route = router.getDescriptor();
-      if (route != null) {
-        Map<RouteDescriptor, Route> ret = route.create();
-        root = ret.values().iterator().next();
+      RouterDescriptor desc = router.getDescriptor();
+      if (desc != null) {
+        Map<RouteDescriptor, Route> ret = desc.popupate(root);
         for (Map.Entry<RouteDescriptor, Route> entry : ret.entrySet()) {
-          for (Map.Entry<String, String> entry2 : entry.getKey().getTargets().entrySet()) {
-            MethodHandle handle = MethodHandle.parse(entry2.getValue());
-            Phase phase = Phase.valueOf(entry2.getKey());
-            forwardRoutes.put(handle, entry.getValue());
-            Map<Phase, MethodHandle> map =  backwardRoutes.get(entry.getValue());
-            if (map == null) {
-              backwardRoutes.put(entry.getValue(), map = new HashMap<Phase, MethodHandle>());
-            }
-            map.put(phase, handle);
-          }
+          forwardRoutes.put(entry.getKey().handle, entry.getValue());
+          backwardRoutes.put(entry.getValue(), entry.getKey());
         }
-      } else {
-        root = new Router();
       }
-    } else {
-      root = new Router();
     }
 
     //
@@ -100,7 +92,7 @@ public class Handler implements Closeable {
     this.root = root;
   }
 
-  public Map<Phase, MethodHandle> getMethods(Route route) {
+  public RouteDescriptor getMethods(Route route) {
     return backwardRoutes.get(route);
   }
 
@@ -122,39 +114,49 @@ public class Handler implements Closeable {
     String requestPath = bridge.getRequestContext().getRequestPath();
 
     // Determine first a possible match from the root route from the request path
-    RouteMatch requestMatch = null;
-    if (requestPath.startsWith(bridge.getRequestContext().getPath())) {
-      requestMatch = root.route(requestPath.substring(bridge.getRequestContext().getPath().length()), Collections.<String, String[]>emptyMap());
-    }
-
-    // Determine a method + parameters if we have a match
     Method requestMethod = null;
+    RouteMatch requestMatch = null;
     Map<String, RequestParameter> requestParameters = Collections.emptyMap();
-    if (requestMatch != null) {
-      Map<Phase, MethodHandle> m = getMethods(requestMatch.getRoute());
-      if (m != null) {
-        Phase[] phases;
-        if (juzu.Method.GET == bridge.getHttpContext().getMethod()) {
-          phases = GET_PHASES;
-        } else if (juzu.Method.POST == bridge.getHttpContext().getMethod()) {
-          phases = POST_PHASES;
-        } else {
-          phases = OTHER_PHASES;
-        }
-        for (Phase phase : phases) {
-          MethodHandle handle = m.get(phase);
-          if (handle != null) {
-            requestMethod =  this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(handle);
-            if (requestMatch.getMatched().size() > 0 || bridge.getRequestContext().getParameters().size() > 0) {
+    if (requestPath.startsWith(bridge.getRequestContext().getPath())) {
+
+
+
+      Phase[] phases;
+      if (juzu.Method.GET == bridge.getHttpContext().getMethod()) {
+        phases = GET_PHASES;
+      } else if (juzu.Method.POST == bridge.getHttpContext().getMethod()) {
+        phases = POST_PHASES;
+      } else {
+        phases = OTHER_PHASES;
+      }
+      Iterator<RouteMatch> matches = root.matcher(requestPath.substring(bridge.getRequestContext().getPath().length()), Collections.<String, String[]>emptyMap());
+      // Determine a method + parameters for the matches
+      while (matches.hasNext()) {
+        RouteMatch toto = matches.next();
+        RouteDescriptor m = getMethods(toto.getRoute());
+        if (m != null) {
+          Method abc = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(m.handle);
+          Set<juzu.Method> methods;
+          if (abc.getPhase() == Phase.VIEW || abc.getPhase() == Phase.ACTION) {
+            methods = Tools.set(juzu.Method.GET, juzu.Method.POST);
+          } else if (abc.getPhase() == Phase.RESOURCE) {
+            methods = Tools.set(abc.getMethod().getAnnotation(Resource.class).method());
+          } else {
+            continue;
+          }
+          if (methods.contains(bridge.getHttpContext().getMethod())) {
+            if (toto.getMatched().size() > 0 || bridge.getRequestContext().getParameters().size() > 0) {
               requestParameters = new HashMap<String, RequestParameter>();
               for (RequestParameter requestParameter : bridge.getRequestContext().getParameters().values()) {
                 requestParameters.put(requestParameter.getName(), requestParameter);
               }
-              for (Map.Entry<PathParam, String> entry : requestMatch.getMatched().entrySet()) {
+              for (Map.Entry<PathParam, String> entry : toto.getMatched().entrySet()) {
                 RequestParameter requestParameter = RequestParameter.create(entry.getKey().getName(), entry.getValue());
                 requestParameters.put(requestParameter.getName(), requestParameter);
               }
             }
+            requestMethod =  abc;
+            requestMatch = toto;
             break;
           }
         }

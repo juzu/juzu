@@ -19,13 +19,31 @@ package bridge.servlet.route.resource.method;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
+import juzu.Method;
 import juzu.request.HttpContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
-  @Resource
+
+  @Resource(method = Method.GET)
   @Route("/")
-  public Response.Content foo(HttpContext context) {
-    return Response.ok("ok[" + context.getMethod() + "]");
+  public Response.Content doGet() {
+    return handle("GET");
+  }
+
+  @Resource(method = Method.POST)
+  @Route("/")
+  public Response.Content doPost() {
+    return handle("POST");
+  }
+
+  @Resource(method = Method.PUT)
+  @Route("/")
+  public Response.Content doPut() {
+    return handle("PUT");
+  }
+
+  private Response.Content handle(String method) {
+    return Response.ok("ok[" + method + "]");
   }
 }
