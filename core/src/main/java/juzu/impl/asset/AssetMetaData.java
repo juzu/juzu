@@ -41,16 +41,20 @@ public class AssetMetaData {
   /** The asset value. */
   final String value;
 
+  /** The asset minified value. */
+  final String minified;
+
   /** The asset dependencies. */
   final Set<String> dependencies;
 
   /** . */
   final Integer maxAge;
 
-  public AssetMetaData(String id, String type, AssetLocation location, String value, Integer maxAge, String... dependencies) {
+  public AssetMetaData(String id, String type, AssetLocation location, String value, String minified, Integer maxAge, String... dependencies) {
     this.id = id;
     this.type = type;
     this.value = value;
+    this.minified = minified;
     this.location = location;
     this.maxAge = maxAge;
     this.dependencies = Collections.unmodifiableSet(Tools.set(dependencies));
@@ -74,6 +78,10 @@ public class AssetMetaData {
 
   public String getValue() {
     return value;
+  }
+
+  public String getMinified() {
+    return minified;
   }
 
   public Set<String> getDependencies() {

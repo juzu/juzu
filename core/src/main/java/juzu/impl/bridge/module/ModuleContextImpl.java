@@ -44,33 +44,16 @@ public class ModuleContextImpl implements ModuleContext {
   /** . */
   final ModuleRuntime<?> runtime;
 
-  /** . */
-  final RunMode runMode;
-
   public ModuleContextImpl(Logger log, BridgeContext bridgeContext, ResourceResolver resolver) {
 
     //
-    String runModeValue = bridgeContext.getInitParameter("juzu.run_mode");
-    RunMode runMode;
-    if (runModeValue != null) {
-      runModeValue = Tools.interpolate(runModeValue, System.getProperties());
-      runMode = RunMode.parse(runModeValue);
-      if (runMode == null) {
-        log.info("Unparseable run mode " + runModeValue + " will use prod instead");
-        runMode = RunMode.PROD;
-      }
-    } else {
-      runMode = RunMode.PROD;
-    }
-
-    //
     ModuleRuntime<?> lifeCycle;
-    if (runMode.isDynamic()) {
+    if (bridgeContext.getRunMode().isDynamic()) {
       ReadFileSystem<?> sourcePath = bridgeContext.getSourcePath();
       log.info("Initializing live module at " + sourcePath.getDescription());
       lifeCycle = new ModuleRuntime.Dynamic(log, Thread.currentThread().getContextClassLoader(), sourcePath);
     } else {
-      log.info("Initializing module in " + runMode.name().toLowerCase() + " mode");
+      log.info("Initializing module in " + bridgeContext.getRunMode().name().toLowerCase() + " mode");
       ReadFileSystem<?> classPath = bridgeContext.getClassPath();
       lifeCycle = new ModuleRuntime.Static(log, Thread.currentThread().getContextClassLoader(), classPath);
     }
@@ -79,7 +62,6 @@ public class ModuleContextImpl implements ModuleContext {
     this.bridgeContext = bridgeContext;
     this.resolver = resolver;
     this.runtime = lifeCycle;
-    this.runMode = runMode;
   }
 
   public JSON getConfig() throws Exception {
@@ -94,7 +76,7 @@ public class ModuleContextImpl implements ModuleContext {
   }
 
   public RunMode getRunMode() {
-    return runMode;
+    return bridgeContext.getRunMode();
   }
 
   public ClassLoader getClassLoader() {

@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +44,9 @@ public class Asset implements Serializable {
   /** Coordinate of the asset. */
   public final AssetKey key;
 
+  /** The minified version of the asset. */
+  public final String minified;
+
   /** The asset max age. */
   public final Integer maxAge;
 
@@ -52,6 +56,7 @@ public class Asset implements Serializable {
     List<String> depends = (List<String>)asset.get("depends");
     AssetLocation location = AssetLocation.safeValueOf((String)asset.get("location"));
     Integer maxAge = (Integer)asset.get("maxAge");
+    String minified = (String)asset.get("minified");
 
     //
     if (type == null) {
@@ -73,9 +78,10 @@ public class Asset implements Serializable {
     this.depends = depends != null ? depends : new ArrayList<String>();
     this.key = new AssetKey(value, location);
     this.maxAge = maxAge;
+    this.minified = minified;
   }
 
-  public Asset(String id, String type, String value, List<String> depends, AssetLocation location, Integer maxAge) {
+  public Asset(String id, String type, String value, String minified, List<String> depends, AssetLocation location, Integer maxAge) {
     if (type == null) {
       throw new NullPointerException("No null type accepted");
     }
@@ -95,6 +101,7 @@ public class Asset implements Serializable {
     this.depends = depends;
     this.key = new AssetKey(value, location);
     this.maxAge = maxAge;
+    this.minified = minified;
   }
 
   public boolean isApplication() {
@@ -102,23 +109,40 @@ public class Asset implements Serializable {
   }
 
   /**
-   * Returns the asset source for application assets, by default it returns the {@link AssetKey#value} field of
+   * Returns the asset source, by default it returns the {@link AssetKey#value} field of
    * {@link #key}. It can be subclassed to provide a custom source.
    *
-   * @return the asset source for application assets
+   * @return the asset source
    */
   public String getSource() {
-    if (isApplication()) {
-      return key.value;
-    } else {
-      return null;
+    return key.value;
+  }
+
+  /**
+   * Returns the minified asset source, by default it returns the {@link #minified} field. It can
+   * be subclassed to provide a custom source.
+   *
+   * @return the asset minified source
+   */
+  public String getMinifiedSource() {
+    return minified;
+  }
+
+  public Map<String, String> getSources() {
+    HashMap<String, String> sources = new HashMap<String, String>();
+    sources.put(getSource(), key.value);
+    String minifiedSource = getMinifiedSource();
+    if (minifiedSource != null) {
+      sources.put(minifiedSource, minified);
     }
+    return sources;
   }
 
   public JSON getJSON() {
     JSON json = new JSON().
         set("id", id).
         set("value", key.value).
+        set("minified", minified).
         set("location", key.location.toString()).
         set("type", type);
     if (maxAge != null) {

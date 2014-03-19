@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-@Application
-@Scripts(@Script("test.js"))
-package plugin.asset.serving;
+package plugin.asset.minified;
 
-import juzu.Application;
-import juzu.plugin.asset.Script;
-import juzu.plugin.asset.Scripts;
+import juzu.Response;
+import juzu.View;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+  @View
+  public Response.Status index() {
+    return Response.ok("content").withAssets("test.js");
+  }
+}

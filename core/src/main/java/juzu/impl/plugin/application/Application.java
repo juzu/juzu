@@ -74,6 +74,9 @@ public class Application implements ResourceResolver {
 
     final ResourceResolver applicationResolver = new ResourceResolver() {
       public URL resolve(String uri) {
+        if (uri == null) {
+          throw new NullPointerException("No null URI accepted");
+        }
         if (uri.startsWith("/")) {
           return classLoader.getResource(uri.substring(1));
         } else {

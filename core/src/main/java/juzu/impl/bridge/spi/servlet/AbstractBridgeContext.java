@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 
 /** @author Julien Viet */
-public abstract class AbstractBridgeContext implements BridgeContext {
+public abstract class AbstractBridgeContext extends BridgeContext {
 
   /** . */
   public static final String SOURCE_PATH = "juzu.src_path";

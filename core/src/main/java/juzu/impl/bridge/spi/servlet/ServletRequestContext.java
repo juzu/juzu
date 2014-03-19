@@ -23,6 +23,7 @@ import juzu.impl.common.JUL;
 import juzu.impl.common.Lexers;
 import juzu.impl.common.Logger;
 import juzu.impl.common.Name;
+import juzu.impl.common.RunMode;
 import juzu.impl.common.Spliterator;
 import juzu.impl.common.Tools;
 import juzu.impl.io.BinaryOutputStream;
@@ -70,12 +71,16 @@ public class ServletRequestContext extends WebRequestContext {
   /** . */
   private final String prefix;
 
+  /** . */
+  private final RunMode runMode;
+
   public ServletRequestContext(
       Name application,
       Charset defaultEncoding,
       HttpServletRequest req,
       HttpServletResponse resp,
-      String path) {
+      String path,
+      RunMode runMode) {
 
     //
     Map<String, RequestParameter> requestParameters = Collections.emptyMap();
@@ -136,7 +141,13 @@ public class ServletRequestContext extends WebRequestContext {
     this.path = path;
     this.resp = resp;
     this.prefix = prefix.toString();
+    this.runMode = runMode;
 
+  }
+
+  @Override
+  public RunMode getRunMode() {
+    return runMode;
   }
 
   public Map<String, RequestParameter> getParameters() {

@@ -21,6 +21,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -43,6 +44,10 @@ public abstract class AbstractAssetTestCase extends AbstractWebTestCase {
     return 3600;
   }
 
+  protected String getExpectedContent() {
+    return "a = 0;";
+  }
+
   @Test
   public void testSatisfied() throws Exception {
     URL url = applicationURL();
@@ -63,6 +68,7 @@ public abstract class AbstractAssetTestCase extends AbstractWebTestCase {
         Header[] headers = response.getHeaders("Cache-Control");
         assertEquals(1, headers.length);
         assertEquals("max-age=" + getExpectedMaxAge(), headers[0].getValue());
+        assertEquals(getExpectedContent(), EntityUtils.toString(response.getEntity()));
       }
     } else {
       assertEquals(Collections.emptyList(), scripts);

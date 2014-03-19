@@ -16,28 +16,50 @@
 package juzu.impl.bridge;
 
 import juzu.impl.common.Logger;
+import juzu.impl.common.RunMode;
+import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.resource.ResourceResolver;
 
 /** @author Julien Viet */
-public interface BridgeContext {
+public abstract class BridgeContext {
 
-  Logger getLogger(String name);
+  /** . */
+  private RunMode runMode;
 
-  ReadFileSystem<?> getClassPath();
+  public RunMode getRunMode() {
+    if (runMode == null) {
+      String runModeValue = getInitParameter("juzu.run_mode");
+      if (runModeValue != null) {
+        runModeValue = Tools.interpolate(runModeValue, System.getProperties());
+        runMode = RunMode.parse(runModeValue);
+        if (runMode == null) {
+          // log.info("Unparseable run mode " + runModeValue + " will use prod instead");
+          runMode = RunMode.PROD;
+        }
+      } else {
+        runMode = RunMode.PROD;
+      }
+    }
+    return runMode;
+  }
 
-  ReadFileSystem<?> getSourcePath();
+  public abstract Logger getLogger(String name);
 
-  ReadFileSystem<?> getResourcePath();
+  public abstract ReadFileSystem<?> getClassPath();
 
-  ClassLoader getClassLoader();
+  public abstract ReadFileSystem<?> getSourcePath();
 
-  String getInitParameter(String name);
+  public abstract ReadFileSystem<?> getResourcePath();
 
-  ResourceResolver getResolver();
+  public abstract ClassLoader getClassLoader();
 
-  Object getAttribute(String key);
+  public abstract String getInitParameter(String name);
 
-  void setAttribute(String key, Object value);
+  public abstract ResourceResolver getResolver();
+
+  public abstract Object getAttribute(String key);
+
+  public abstract void setAttribute(String key, Object value);
 
 }

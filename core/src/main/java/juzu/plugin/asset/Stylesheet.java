@@ -37,9 +37,14 @@ public @interface Stylesheet {
   String id() default "";
 
   /**
-   * @return the value for resolving the asset
+   * @return the value for resolving the stylesheet
    */
   String value();
+
+  /**
+   * @return the minified version of the stylesheet
+   */
+  String minified() default "";
 
   /**
    * @return the stylesheet dependencies, i.e the stylesheet that are needed by this stylesheet.

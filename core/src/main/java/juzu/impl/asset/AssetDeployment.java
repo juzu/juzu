@@ -40,8 +40,16 @@ public class AssetDeployment {
     this.manager = manager;
   }
 
-  public AssetDeployment addAsset(String id, String type, AssetLocation location, String value, Integer maxAge, URL url, String... dependencies) throws NullPointerException, IllegalArgumentException {
-    return addAsset(id, type, location, value, maxAge, url, Tools.set(dependencies));
+  public AssetDeployment addAsset(
+      String id,
+      String type,
+      AssetLocation location,
+      String value,
+      String minifiedValue,
+      Integer maxAge,
+      URL url,
+      String... dependencies) throws NullPointerException, IllegalArgumentException {
+    return addAsset(id, type, location, value, minifiedValue, maxAge, url, Tools.set(dependencies));
   }
 
   /**
@@ -66,10 +74,11 @@ public class AssetDeployment {
       String type,
       AssetLocation location,
       String value,
+      String minifiedValue,
       Integer maxAge,
       URL resource,
       Set<String> dependencies) throws NullPointerException, IllegalArgumentException {
-    assets.add(new AssetNode(id, type, location, value, maxAge, resource, dependencies));
+    assets.add(new AssetNode(id, type, location, value, minifiedValue, maxAge, resource, dependencies));
     return this;
   }
 

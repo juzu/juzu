@@ -14,10 +14,26 @@
  * limitations under the License.
  */
 
-@Application
-@Scripts(@Script("test.js"))
-package plugin.asset.serving;
+package juzu.impl.plugin.asset;
 
-import juzu.Application;
-import juzu.plugin.asset.Script;
-import juzu.plugin.asset.Scripts;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class Minified1TestCase extends AbstractAssetTestCase {
+
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createServletDeployment(true, "plugin.asset.minified");
+  }
+
+  @Override
+  protected String getExpectedAsset() {
+    return "minified.js";
+  }
+
+  @Override
+  protected String getExpectedContent() {
+    return "a=0;";
+  }
+}

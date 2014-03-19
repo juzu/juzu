@@ -37,9 +37,14 @@ public @interface Script {
   String id() default "";
 
   /**
-   * @return the value for resolving the asset
+   * @return the value for resolving the script
    */
   String value();
+
+  /**
+   * @return the minified version of the script
+   */
+  String minified() default "";
 
   /**
    * @return the script dependencies, i.e the script that are needed by this asset.

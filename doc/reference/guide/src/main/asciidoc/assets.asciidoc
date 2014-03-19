@@ -86,6 +86,21 @@ External assets declares an opaque URL for Juzu.
 package my.application;
 ----
 
+=== Minified assets
+
+For performance reasons, assets can be minified: an optimized and trimmed down version of the script or stylesheet
+is served instead of the original file, because it has a smaller size. Juzu allows to provide a minified version
+of an asset that will be used in _prod+ run mode.
+
+.Providing a minified version of jQuery
+[source,java]
+----
+@Scripts(@Script(
+  value = "jquery.js",
+  minified = "jquery.min.js"))
+package my.application;
+----
+
 == Asset serving
 
 During a request, asset identifiers are added to the response. At the end of the request, Juzu translates the assets into

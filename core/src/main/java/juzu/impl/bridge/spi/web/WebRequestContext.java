@@ -17,6 +17,7 @@ package juzu.impl.bridge.spi.web;
 
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetManager;
+import juzu.impl.common.RunMode;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.io.SafeStream;
 import juzu.impl.plugin.asset.AssetPlugin;
@@ -55,7 +56,7 @@ public abstract class WebRequestContext {
       }
       
       //
-      stream = new WebStream((HttpStream)stream, assetManager) {
+      stream = new WebStream((HttpStream)stream, assetManager, getRunMode().getMinifyAssets()) {
         @Override
         public String renderAssetURL(AssetLocation location, String uri) {
           try {
@@ -78,6 +79,8 @@ public abstract class WebRequestContext {
       stream.end();
     }
   }
+
+  public abstract RunMode getRunMode();
 
   public abstract Map<String, RequestParameter> getParameters();
 

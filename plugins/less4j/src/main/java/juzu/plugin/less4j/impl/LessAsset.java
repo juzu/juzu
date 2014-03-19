@@ -20,7 +20,6 @@ import com.github.sommeri.less4j.LessCompiler;
 import com.github.sommeri.less4j.LessSource;
 import com.github.sommeri.less4j.core.ThreadUnsafeLessCompiler;
 import juzu.asset.AssetLocation;
-import juzu.impl.common.Tools;
 import juzu.impl.compiler.Message;
 import juzu.impl.compiler.ProcessingException;
 import juzu.impl.plugin.asset.Asset;
@@ -54,7 +53,7 @@ public class LessAsset extends Asset {
       String lessValue,
       List<String> depends,
       Integer maxAge) {
-    super(id, "stylesheet", cssValue(lessValue), depends, AssetLocation.APPLICATION, maxAge);
+    super(id, "stylesheet", cssValue(lessValue), null, depends, AssetLocation.APPLICATION, maxAge);
 
     //
     this.lessValue = lessValue;

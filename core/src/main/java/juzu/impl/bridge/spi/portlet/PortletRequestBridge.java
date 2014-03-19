@@ -496,7 +496,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   String getAssetURL(Asset asset) {
     StringBuilder sb = new StringBuilder();
     try {
-      renderAssetURL(asset.getLocation(), asset.getURI(), sb);
+      renderAssetURL(asset.getLocation(), asset.resolveURI(bridge.getRunMode().getMinifyAssets()), sb);
     }
     catch (IOException e) {
       // Should not happen

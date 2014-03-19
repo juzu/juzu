@@ -38,6 +38,9 @@ public class AssetNode {
   final String value;
 
   /** . */
+  final String minified;
+
+  /** . */
   final Asset asset;
 
   /** . */
@@ -46,13 +49,14 @@ public class AssetNode {
   /** . */
   Set<String> iDependOn;
 
-  public AssetNode(String id, String type, AssetLocation location, String value, Integer maxAge, URL resource, Set<String> iDependOn) {
+  public AssetNode(String id, String type, AssetLocation location, String value, String minified, Integer maxAge, URL resource, Set<String> iDependOn) {
 
     //
     this.id = id;
     this.location = location;
     this.value = value;
-    this.asset = new Asset(id, type, location, value, maxAge);
+    this.minified = minified;
+    this.asset = new Asset(id, type, location, value, minified, maxAge);
     this.resource = resource;
     this.iDependOn = iDependOn;
   }
@@ -67,6 +71,10 @@ public class AssetNode {
 
   public String getValue() {
     return value;
+  }
+
+  public String getMinified() {
+    return minified;
   }
 
   public Asset getAsset() {

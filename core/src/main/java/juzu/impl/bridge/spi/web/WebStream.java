@@ -60,10 +60,14 @@ public abstract class WebStream implements AsyncStream {
   /** The current document being assembled. */
   private final Page page;
 
-  public WebStream(HttpStream stream, AssetManager assetManager) {
+  /** . */
+  private final boolean minifyAssets;
+
+  public WebStream(HttpStream stream, AssetManager assetManager, boolean minifyAssets) {
     this.stream = stream;
     this.assetManager = assetManager;
     this.page = new Page();
+    this.minifyAssets = minifyAssets;
   }
 
   public void provide(Chunk chunk) {
@@ -212,10 +216,10 @@ public abstract class WebStream implements AsyncStream {
       }
       for (Asset asset : resolvedAssets) {
         if (asset.isStylesheet()) {
-          String path = asset.getURI();
-          int pos = path.lastIndexOf('.');
-          String ext = pos == -1 ? "css" : path.substring(pos + 1);
-          String url = renderAssetURL(asset.getLocation(), asset.getURI());
+          String uri = asset.resolveURI(minifyAssets);
+          int pos = uri.lastIndexOf('.');
+          String ext = pos == -1 ? "css" : uri.substring(pos + 1);
+          String url = renderAssetURL(asset.getLocation(), uri);
           stream.provide(Chunk.create("<link rel=\"stylesheet\" type=\"text/"));
           stream.provide(Chunk.create(ext));
           stream.provide(Chunk.create("\" href=\""));
@@ -237,7 +241,8 @@ public abstract class WebStream implements AsyncStream {
       }
       for (Asset asset : resolvedAssets) {
         if (asset.isScript()) {
-          String url = renderAssetURL(asset.getLocation(), asset.getURI());
+          String uri = asset.resolveURI(minifyAssets);
+          String url = renderAssetURL(asset.getLocation(), uri);
           stream.provide(Chunk.create("<script type=\"text/javascript\" src=\""));
           stream.provide(Chunk.create(url));
           stream.provide(Chunk.create("\"></script>\n"));
@@ -273,7 +278,7 @@ public abstract class WebStream implements AsyncStream {
       for (Iterator<Asset> i = modules.iterator(); i.hasNext();) {
         Asset module = i.next();
         buffer.append("\"").append(module.getId()).append("\":\"");
-        String uri = module.getURI();
+        String uri = module.resolveURI(minifyAssets);
         uri = uri.substring(0, uri.lastIndexOf(".js"));
         buffer.append(renderAssetURL(module.getLocation(), uri));
         buffer.append("\"");

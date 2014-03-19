@@ -122,10 +122,12 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
 
         //
         String value = script.getString("value");
-        if (location == AssetLocation.APPLICATION) {
-          if (!value.startsWith("/")) {
-            value = "/" + application.getPackageName().replace('.', '/') + "/" + packageName.replace('.', '/') + "/" + value;
-          }
+        if (location == AssetLocation.APPLICATION && !value.startsWith("/")) {
+          value = "/" + application.getPackageName().replace('.', '/') + "/" + packageName.replace('.', '/') + "/" + value;
+        }
+        String minified = script.getString("minified");
+        if (location == AssetLocation.APPLICATION && minified != null && !minified.startsWith("/")) {
+          minified = "/" + application.getPackageName().replace('.', '/') + "/" + packageName.replace('.', '/') + "/" + minified;
         }
 
         //
@@ -137,6 +139,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
           type,
           location,
           value,
+          minified,
           maxAge,
           script.getArray("depends", String.class)
         );
@@ -167,33 +170,41 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     AssetDeployment deployment = assetManager.createDeployment();
     for (AssetMetaData script : data) {
 
-      //
-      URL resource;
-      String value = script.getValue();
-
-      // Validate assets
-      AssetLocation location = script.getLocation();
-      if (location == AssetLocation.APPLICATION) {
-        URL url = resolve(AssetLocation.APPLICATION, value);
-        if (url == null) {
-          throw new Exception("Could not resolve application  " + value);
-        } else {
-          resource = url;
-        }
-      } else if (location == AssetLocation.SERVER) {
-        if (!value.startsWith("/")) {
-          URL url = resolve(AssetLocation.SERVER, "/" + value);
-          if (url == null) {
-            throw new Exception("Could not resolve server asset " + value);
+      // Validate and resolve asset resources
+      String[] a = new String[] { script.getValue(), script.getMinified() };
+      URL[] resources = new URL[2];
+      for (int i = 0;i < a.length; i++) {
+        URL resource;
+        String value = a[i];
+        if (value != null) {
+          AssetLocation location = script.getLocation();
+          if (location == AssetLocation.APPLICATION) {
+            URL url = resolve(AssetLocation.APPLICATION, value);
+            if (url == null) {
+              throw new Exception("Could not resolve application  " + value);
+            } else {
+              resource = url;
+            }
+          } else if (location == AssetLocation.SERVER) {
+            if (!value.startsWith("/")) {
+              URL url = resolve(AssetLocation.SERVER, "/" + value);
+              if (url == null) {
+                throw new Exception("Could not resolve server asset " + value);
+              }
+            }
+            resource = null;
+          } else {
+            resource = null;
           }
+        } else {
+          resource = null;
         }
-        resource = null;
-      } else {
-        resource = null;
+        resources[i] = resource;
       }
 
+
       //
-      deployment.addAsset(script.getId(), script.getType(), script.getLocation(), value, script.getMaxAge(), resource, script.getDependencies());
+      deployment.addAsset(script.getId(), script.getType(), script.getLocation(), a[0], a[1], script.getMaxAge(), resources[0], script.getDependencies());
       assets.put(script.getId(), new Chunk.Property<String>(script.getId(), PropertyType.ASSET));
     }
 

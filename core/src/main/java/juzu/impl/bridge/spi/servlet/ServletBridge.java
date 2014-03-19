@@ -60,7 +60,10 @@ public class ServletBridge extends HttpServlet {
   private String path;
 
   /** . */
-  private BridgeConfig config;
+  private BridgeConfig bridgeConfig;
+
+  /** . */
+  private BridgeContext bridgeContext;
 
   /** . */
   private Bridge bridge;
@@ -156,11 +159,47 @@ public class ServletBridge extends HttpServlet {
     }
 
     //
-    this.config = config;
+    BridgeContext bridgeContext = new AbstractBridgeContext() {
+      final ResourceResolver resolver = new ResourceResolver() {
+        public URL resolve(String uri) {
+          try {
+            return getServletContext().getResource(uri);
+          }
+          catch (MalformedURLException e) {
+            return null;
+          }
+        }
+      };
+      public ReadFileSystem<?> getResourcePath() {
+        return WarFileSystem.create(getServletContext(), "/WEB-INF/");
+      }
+      public ReadFileSystem<?> getClassPath() {
+        return WarFileSystem.create(getServletContext(), "/WEB-INF/classes/");
+      }
+      public ClassLoader getClassLoader() {
+        return getServletContext().getClassLoader();
+      }
+      public String getInitParameter(String name) {
+        return getServletContext().getInitParameter(name);
+      }
+      public ResourceResolver getResolver() {
+        return resolver;
+      }
+      public Object getAttribute(String key) {
+        return getServletContext().getAttribute(key);
+      }
+      public void setAttribute(String key, Object value) {
+        getServletContext().setAttribute(key, value);
+      }
+    };
+
+    //
+    this.bridgeConfig = config;
     this.handler = null;
     this.path = path;
     this.bundleName = servletConfig.getInitParameter(BUNDLE_NAME);
     this.servletLogger = servletLogger;
+    this.bridgeContext = bridgeContext;
   }
 
   static ServletException wrap(Throwable e) {
@@ -181,48 +220,6 @@ public class ServletBridge extends HttpServlet {
   private void refresh() throws Exception {
     if (bridge == null) {
 
-      // Get asset server
-      AssetServer server = (AssetServer)getServletContext().getAttribute("asset.server");
-      if (server == null) {
-        server = new AssetServer();
-        getServletContext().setAttribute("asset.server", server);
-      }
-
-      //
-      BridgeContext bridgeContext = new AbstractBridgeContext() {
-        final ResourceResolver resolver = new ResourceResolver() {
-          public URL resolve(String uri) {
-            try {
-              return getServletContext().getResource(uri);
-            }
-            catch (MalformedURLException e) {
-              return null;
-            }
-          }
-        };
-        public ReadFileSystem<?> getResourcePath() {
-          return WarFileSystem.create(getServletContext(), "/WEB-INF/");
-        }
-        public ReadFileSystem<?> getClassPath() {
-          return WarFileSystem.create(getServletContext(), "/WEB-INF/classes/");
-        }
-        public ClassLoader getClassLoader() {
-          return getServletContext().getClassLoader();
-        }
-        public String getInitParameter(String name) {
-          return getServletContext().getInitParameter(name);
-        }
-        public ResourceResolver getResolver() {
-          return resolver;
-        }
-        public Object getAttribute(String key) {
-          return getServletContext().getAttribute(key);
-        }
-        public void setAttribute(String key, Object value) {
-          getServletContext().setAttribute(key, value);
-        }
-      };
-
       //
       ResourceResolver resolver = new ResourceResolver() {
         public URL resolve(String uri) {
@@ -236,7 +233,7 @@ public class ServletBridge extends HttpServlet {
       };
 
       //
-      Injector injector = config.injectorProvider.get();
+      Injector injector = bridgeConfig.injectorProvider.get();
       if (injector instanceof SpringInjector) {
         SpringInjector springInjector = (SpringInjector)injector;
         Object parent = getServletContext().getAttribute("org.springframework.web.context.WebApplicationContext.ROOT");
@@ -251,11 +248,18 @@ public class ServletBridge extends HttpServlet {
         getServletContext().setAttribute("juzu.module", module = new ModuleContextImpl(servletLogger, bridgeContext, resolver));
       }
 
+      // Get asset server
+      AssetServer server = (AssetServer)getServletContext().getAttribute("asset.server");
+      if (server == null) {
+        server = new AssetServer();
+        getServletContext().setAttribute("asset.server", server);
+      }
+
       //
       if (injector.isProvided()) {
-        bridge = new ProvidedBridge(bridgeContext, this.config, server, resolver, injector);
+        bridge = new ProvidedBridge(bridgeContext, this.bridgeConfig, server, resolver, injector);
       } else {
-        bridge = new ApplicationBridge(module, bridgeContext, this.config, server, resolver, injector);
+        bridge = new ApplicationBridge(module, bridgeContext, this.bridgeConfig, server, resolver, injector);
       }
     }
 
@@ -282,7 +286,13 @@ public class ServletBridge extends HttpServlet {
   protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
     //
-    ServletRequestContext ctx = new ServletRequestContext(config.name, config.requestEncoding, req, resp, path);
+    ServletRequestContext ctx = new ServletRequestContext(
+        bridgeConfig.name,
+        bridgeConfig.requestEncoding,
+        req,
+        resp,
+        path,
+        bridgeContext.getRunMode());
 
     //
     ServletWebBridge bridge = new ServletWebBridge(this, ctx);

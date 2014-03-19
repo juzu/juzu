@@ -27,17 +27,17 @@ public enum RunMode {
   /**
    * Production.
    */
-  PROD(false, false),
+  PROD(false, false, true),
 
   /**
    * Development.
    */
-  DEV(false, true),
+  DEV(false, true, false),
 
   /**
    * Live mode.
    */
-  LIVE(true, true);
+  LIVE(true, true, false);
 
   /** The run mode property. */
   public static PropertyType<RunMode> PROPERTY = new PropertyType<RunMode>(){};
@@ -78,13 +78,17 @@ public enum RunMode {
    */
   final boolean prettyFail;
 
+  /** True if assets should be minified when possible. */
+  final boolean minifyAssets;
+
   /** . */
   final String value;
 
-  private RunMode(boolean dynamic, boolean prettyFail) {
+  private RunMode(boolean dynamic, boolean prettyFail, boolean minifyAssets) {
     this.dynamic = dynamic;
     this.prettyFail = prettyFail;
     this.value = name().toLowerCase();
+    this.minifyAssets = minifyAssets;
   }
 
   public String getValue() {
@@ -101,5 +105,9 @@ public enum RunMode {
 
   public boolean getPrettyFail() {
     return prettyFail;
+  }
+
+  public boolean getMinifyAssets() {
+    return minifyAssets;
   }
 }

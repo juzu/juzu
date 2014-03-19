@@ -48,7 +48,7 @@ public class AmdMetaModelPlugin extends ApplicationMetaModelPlugin {
       "juzu.amd",
       "script",
       "/juzu/impl/plugin/amd/require.js",
-      Collections.<String>emptyList(),
+      null, Collections.<String>emptyList(),
       AssetLocation.APPLICATION,
       null);
 

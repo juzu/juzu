@@ -15,8 +15,8 @@
  */
 
 @Application
-@Scripts(@Script("test.js"))
-package plugin.asset.serving;
+@Scripts(@Script(value = "test.js", minified = "minified.js"))
+package plugin.asset.minified;
 
 import juzu.Application;
 import juzu.plugin.asset.Script;

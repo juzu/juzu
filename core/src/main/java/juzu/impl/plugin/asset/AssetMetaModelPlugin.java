@@ -143,17 +143,19 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       HashMap<URL, Asset> bilto = new HashMap<URL, Asset>();
       for (Asset asset : annotation.getAssets()) {
         if (asset.isApplication()) {
-          String source = asset.getSource();
-          if (!source.startsWith("/")) {
-            URL resource = annotation.getResources().get(source);
-            if (resource == null) {
-              resource = annotation.resolveResource(source);
-            }
-            if (resource != null) {
-              bilto.put(resource, asset);
-              bilta.put(asset.key.value, resource);
-            } else {
-              throw ASSET_NOT_FOUND.failure(source);
+          for (Map.Entry<String, String> entry : asset.getSources().entrySet()) {
+            String source = entry.getKey();
+            if (!source.startsWith("/")) {
+              URL resource = annotation.getResources().get(source);
+              if (resource == null) {
+                resource = annotation.resolveResource(source);
+              }
+              if (resource != null) {
+                bilto.put(resource, asset);
+                bilta.put(entry.getValue(), resource);
+              } else {
+                throw ASSET_NOT_FOUND.failure(source);
+              }
             }
           }
         }
