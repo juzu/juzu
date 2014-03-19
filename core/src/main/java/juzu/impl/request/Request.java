@@ -22,6 +22,7 @@ import juzu.asset.AssetLocation;
 import juzu.impl.bridge.Parameters;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.bridge.spi.ScopedContext;
+import juzu.impl.common.RunMode;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.Scoped;
@@ -106,6 +107,10 @@ public class Request implements ScopingContext {
     this.arguments = arguments;
     this.controllerPlugin = controllerPlugin;
     this.method = method;
+  }
+
+  public RunMode getRunMode() {
+    return bridge.getRunMode();
   }
 
   public Application getApplication() {

@@ -30,6 +30,6 @@ public class A {
 
   @View
   public Response.Body index() {
-    return Response.ok().body(controller.url("test.js"));
+    return Response.ok().body(controller.byPath("test.js"));
   }
 }

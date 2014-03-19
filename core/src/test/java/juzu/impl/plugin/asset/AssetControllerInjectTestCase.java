@@ -21,9 +21,12 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.drone.api.annotation.Drone;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 
 import java.net.URL;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class AssetControllerInjectTestCase extends AbstractWebTestCase {
@@ -40,5 +43,9 @@ public class AssetControllerInjectTestCase extends AbstractWebTestCase {
   public void resolveAsset() throws Exception {
     URL url = applicationURL();
     driver.get(url.toString());
+    List<WebElement> scripts = driver.findElements(By.tagName("script"));
+    assertEquals(2, scripts.size());
+    assertEndsWith("/juzu/assets/plugin/asset/controller/template/assets/test.js", scripts.get(0).getAttribute("src"));
+    assertEndsWith("/juzu/assets/plugin/asset/controller/template/assets/foo.js", scripts.get(1).getAttribute("src"));
   }
 }

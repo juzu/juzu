@@ -15,6 +15,9 @@
  */
 
 @Application()
+@Scripts(@Script(id = "foo", value = "foo.js"))
 package plugin.asset.controller.template;
 
 import juzu.Application;
+import juzu.plugin.asset.Scripts;
+import juzu.plugin.asset.Script;

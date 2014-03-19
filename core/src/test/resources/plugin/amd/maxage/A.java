@@ -19,7 +19,6 @@ package plugin.amd.maxage;
 
 import javax.inject.Inject;
 
-import juzu.Path;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
@@ -37,6 +36,6 @@ public class A {
   
   @View @Route("/")
   public Response.Content index() {
-    return Response.ok("<span id=\"Foo\">" + assetController.url("foo.js") + "</span>");
+    return Response.ok("<span id=\"Foo\">" + assetController.byPath("foo.js") + "</span>");
   }
 }

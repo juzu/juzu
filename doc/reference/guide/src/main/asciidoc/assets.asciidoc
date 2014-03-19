@@ -255,7 +255,15 @@ script.
 == Asset controller
 
 The asset controller is a special controller provided by the asset manager for creating application asset urls at runtime.
-It can be injected in any bean with the +url+ method that takes as an asset application path.
+
+It can be injected in any bean and provides two methods:
+
+* the +byPath+ method transforms the path of an asset into a URL served by the asset server
+** the asset are served from the +assets+ package
+** the asset controller can provide URL for any kind of asset, such as an image
+* the +byId+ method transforms the id of an asset into a URL served by the asset server
+** the asset can have any location (application, server or external)
+** the minified asset can be used when running in _prod_ mode
 
 [source,java]
 ----
@@ -265,7 +273,8 @@ juzu.plugin.asset.AssetController assetController;
 
 @View
 public Response.Content index() {
-   String jqueryURL = assetController.url("jquery.js");
+   String jqueryURL1 = assetController.byPath("jquery.js");
+   String jqueryURL2 = assetController.byId("jquery");
    ...
 }
 ----
@@ -274,6 +283,6 @@ The asset controller can also be used in templates as it is bound under the +Ass
 
 [source]
 ----
-<script type="application/javascript" src="@{Assets.url(path='test.js')}"></script>
+<script type="application/javascript" src="@{Assets.url(path='jquery.js')}"></script>
+<script type="application/javascript" src="@{Assets.url(id='jquery')}"></script>
 ----
-

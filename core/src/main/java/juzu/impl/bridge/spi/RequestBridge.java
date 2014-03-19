@@ -20,6 +20,7 @@ import juzu.PropertyType;
 import juzu.Scope;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.Logger;
+import juzu.impl.common.RunMode;
 import juzu.impl.request.ControlParameter;
 import juzu.request.ClientContext;
 import juzu.request.Result;
@@ -42,6 +43,14 @@ import java.util.concurrent.RejectedExecutionException;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface RequestBridge extends Closeable {
 
+  /**
+   * @return the current run mode
+   */
+  RunMode getRunMode();
+
+  /**
+   * @return the current phase
+   */
   Phase getPhase();
 
   /**
@@ -53,22 +62,16 @@ public interface RequestBridge extends Closeable {
   Logger getLogger(String name);
 
   /**
-   * Returns the request target.
-   *
-   * @return the request target
+   * @return the request method target
    */
   MethodHandle getTarget();
 
   /**
-   * Returns the request arguments.
-   *
    * @return the request arguments.
    */
   Map<ControlParameter, Object> getArguments();
 
   /**
-   * Returns the request parameters.
-   *
    * @return the request parameters
    */
   Map<String, RequestParameter> getRequestParameters();

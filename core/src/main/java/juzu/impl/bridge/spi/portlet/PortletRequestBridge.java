@@ -193,6 +193,11 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     this.applicationContext = new PortletApplicationContext(config);
   }
 
+  @Override
+  public RunMode getRunMode() {
+    return bridge.getRunMode();
+  }
+
   public final Logger getLogger(String name) {
     return JUL.getLogger(name);
   }

@@ -210,7 +210,12 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
     if ("Assets".equals(typeName) && methodName.equals("url")) {
       String path = parameterMap.get("path");
       if (path != null) {
-        return new MethodInvocation(AssetServer.class.getName(), "renderAssetURL", Collections.singletonList(path));
+        return new MethodInvocation(AssetServer.class.getName(), "renderAssetURLByPath", Collections.singletonList(path));
+      } else {
+        String id = parameterMap.get("id");
+        if (id != null) {
+          return new MethodInvocation(AssetServer.class.getName(), "renderAssetURLById", Collections.singletonList(id));
+        }
       }
     }
     return null;

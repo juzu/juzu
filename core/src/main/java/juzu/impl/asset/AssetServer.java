@@ -105,25 +105,49 @@ public class AssetServer {
     return false;
   }
 
-  public static String renderAssetURL(String path) throws NullPointerException {
-    return renderAssetURL(AssetLocation.APPLICATION, path);
+  public static String renderAssetURLById(String id) throws NullPointerException {
+    Request request = Request.getCurrent();
+    if (request != null) {
+      AssetManager assetManager = request.getApplication().resolveBean(AssetManager.class);
+      if (assetManager != null) {
+        Asset asset = assetManager.getAsset(id);
+        if (asset != null) {
+          String uri = asset.resolveURI(request.getRunMode().getMinifyAssets());
+          return renderAssetURL(request, asset.getLocation(), uri);
+        }
+      }
+    }
+    return null;
   }
 
-  public static String renderAssetURL(AssetLocation location, String uri) throws NullPointerException {
-    Request current = Request.getCurrent();
-    if (current != null) {
-      StringBuilder buffer = new StringBuilder();
-      switch (location) {
-        case APPLICATION:
-          current.renderAssetURL(location, uri, buffer);
-          break;
-        default:
-          current.renderAssetURL(location, uri, buffer);
-          break;
-      }
-      return buffer.toString();
+  public static String renderAssetURLByPath(String path) throws NullPointerException {
+    Request request = Request.getCurrent();
+    if (request != null) {
+      return renderAssetURL(request, AssetLocation.APPLICATION, path);
     } else {
       return null;
     }
+  }
+
+  public static String renderAssetURLByPath(AssetLocation location, String path) throws NullPointerException {
+    Request request = Request.getCurrent();
+    if (request != null) {
+      return renderAssetURL(request, location, path);
+    } else {
+      return null;
+    }
+  }
+
+  private static String renderAssetURL(Request request, AssetLocation location, String uri) throws NullPointerException {
+    StringBuilder buffer = new StringBuilder();
+    switch (location) {
+      case APPLICATION:
+        request.renderAssetURL(location, uri, buffer);
+        break;
+      default:
+        request.renderAssetURL(location, uri, buffer);
+        break;
+    }
+    return buffer.toString();
   }
 }

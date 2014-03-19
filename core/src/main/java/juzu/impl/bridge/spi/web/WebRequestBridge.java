@@ -108,6 +108,10 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
 
   //
 
+  public RunMode getRunMode() {
+    return bridge.getRunMode();
+  }
+
   public Phase getPhase() {
     return phase;
   }

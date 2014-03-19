@@ -22,10 +22,12 @@ import juzu.Scope;
 import juzu.asset.AssetLocation;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.common.JUL;
+import juzu.impl.common.RunMode;
 import juzu.impl.common.Tools;
 import juzu.impl.io.BinaryOutputStream;
 import juzu.impl.io.BinaryStream;
 import juzu.impl.request.ControlParameter;
+import juzu.request.ClientContext;
 import juzu.request.Result;
 import juzu.io.Chunk;
 import juzu.io.Stream;
@@ -145,6 +147,16 @@ public abstract class MockRequestBridge implements RequestBridge {
     this.arguments = arguments;
     this.requestParameters = requestParameters;
     this.phase = phase;
+  }
+
+  @Override
+  public RunMode getRunMode() {
+    return RunMode.PROD;
+  }
+
+  @Override
+  public ClientContext getClientContext() {
+    return null;
   }
 
   public Phase getPhase() {

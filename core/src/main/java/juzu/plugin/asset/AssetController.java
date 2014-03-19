@@ -16,10 +16,7 @@
 package juzu.plugin.asset;
 
 import juzu.asset.AssetLocation;
-import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
-
-import javax.inject.Inject;
 
 /**
  * The asset controller.
@@ -28,12 +25,15 @@ import javax.inject.Inject;
  */
 public class AssetController {
 
-  /** . */
-  private final AssetManager manager;
-
-  @Inject
-  public AssetController(AssetManager manager) {
-    this.manager = manager;
+  /**
+   * Generate an asset URL from the specified id.
+   *
+   * @param id the asset id
+   * @return null if the asset id does not exists
+   * @throws NullPointerException if the asset id is null
+   */
+  public String byId(String id) throws NullPointerException {
+    return AssetServer.renderAssetURLById(id);
   }
 
   /**
@@ -45,8 +45,8 @@ public class AssetController {
    * @return the asset url
    * @throws NullPointerException when the path argument is null
    */
-  public String url(String path) throws NullPointerException {
-    return AssetServer.renderAssetURL(AssetLocation.APPLICATION, path);
+  public String byPath(String path) throws NullPointerException {
+    return AssetServer.renderAssetURLByPath(AssetLocation.APPLICATION, path);
   }
 
   /**
@@ -59,7 +59,7 @@ public class AssetController {
    * @return the asset url
    * @throws NullPointerException when the path argument is null
    */
-  public String url(AssetLocation location, String uri) throws NullPointerException {
-    return AssetServer.renderAssetURL(location, uri);
+  public String byPath(AssetLocation location, String uri) throws NullPointerException {
+    return AssetServer.renderAssetURLByPath(location, uri);
   }
 }
