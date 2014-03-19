@@ -217,7 +217,7 @@ It can also be modified for a specific asset:
 package my.application;
 ----
 
-In _dev_ mode, asset caching is disabled and the served _Cache-Control_ header is set to _no-cache, no-store, must-revalidate_.
+In _dev_ or _live_ mode, asset caching is disabled and the served _Cache-Control_ header is set to _no-cache, no-store, must-revalidate_.
 
 == Asset server
 

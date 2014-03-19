@@ -83,7 +83,7 @@ public class ProvidedBridge extends Bridge {
       }
 
       //
-      server.register(application, getRunMode().isDynamic());
+      server.register(application, getRunMode().getCacheAssets());
     }
 
     //

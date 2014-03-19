@@ -32,4 +32,9 @@ public class Minified2TestCase extends AbstractAssetTestCase {
   protected String getExpectedAsset() {
     return "test.js";
   }
+
+  @Override
+  protected String getExpectedCacheControl() {
+    return "no-cache, no-store, must-revalidate";
+  }
 }

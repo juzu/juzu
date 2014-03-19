@@ -18,6 +18,7 @@ package juzu.test.protocol.mock;
 
 import juzu.impl.common.Completion;
 import juzu.impl.common.Name;
+import juzu.impl.common.RunMode;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.Application;
@@ -80,6 +81,7 @@ public class MockApplication<P> implements Closeable, ApplicationContext {
       ModuleRuntime<P> module = new ModuleRuntime.Static<P>(Logger.SYSTEM, compiler.getClassLoader(), compiler.getClassOutput());
       this.lifeCycle = new ApplicationRuntime<P, P>(
           Logger.SYSTEM,
+          RunMode.PROD,
           module,
           injector.get(),
           name,

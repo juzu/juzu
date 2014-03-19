@@ -77,6 +77,7 @@ public class ApplicationBridge extends Bridge {
       while (application.get() == null) {
         application.compareAndSet(null, new ApplicationRuntime(
             log,
+            module.getRunMode(),
             module.runtime,
             injector,
             config.name,

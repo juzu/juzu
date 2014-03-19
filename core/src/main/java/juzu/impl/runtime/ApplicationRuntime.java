@@ -20,6 +20,7 @@ import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.common.Completion;
 import juzu.impl.common.Name;
+import juzu.impl.common.RunMode;
 import juzu.impl.common.Tools;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.BeanLifeCycle;
@@ -74,8 +75,12 @@ public class ApplicationRuntime<P, R> implements Closeable {
   /** The last used class loader : used for checking refresh. */
   private ClassLoader classLoader;
 
+  /** . */
+  private final RunMode runMode;
+
   public ApplicationRuntime(
       Logger log,
+      RunMode runMode,
       ModuleRuntime<?> moduleLifeCycle,
       Injector injectorProvider,
       Name name,
@@ -89,6 +94,7 @@ public class ApplicationRuntime<P, R> implements Closeable {
     this.name = name;
     this.assetServer = assetServer;
     this.resourceResolver = resourceResolver;
+    this.runMode = runMode;
   }
 
   public Name getName() {
@@ -159,7 +165,7 @@ public class ApplicationRuntime<P, R> implements Closeable {
     //
     if (assetServer != null) {
 
-      assetServer.register(application, moduleLifeCycle.isDynamic());
+      assetServer.register(application, runMode.getCacheAssets());
     }
 
     //

@@ -44,6 +44,10 @@ public abstract class AbstractAssetTestCase extends AbstractWebTestCase {
     return 3600;
   }
 
+  protected String getExpectedCacheControl() {
+    return "max-age=" + getExpectedMaxAge();
+  }
+
   protected String getExpectedContent() {
     return "a = 0;";
   }
@@ -67,7 +71,7 @@ public abstract class AbstractAssetTestCase extends AbstractWebTestCase {
         assertNotNull(response.getEntity());
         Header[] headers = response.getHeaders("Cache-Control");
         assertEquals(1, headers.length);
-        assertEquals("max-age=" + getExpectedMaxAge(), headers[0].getValue());
+        assertEquals(getExpectedCacheControl(), headers[0].getValue());
         assertEquals(getExpectedContent(), EntityUtils.toString(response.getEntity()));
       }
     } else {

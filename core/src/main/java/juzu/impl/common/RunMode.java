@@ -27,17 +27,17 @@ public enum RunMode {
   /**
    * Production.
    */
-  PROD(false, false, true),
+  PROD(false, false, true, true),
 
   /**
    * Development.
    */
-  DEV(false, true, false),
+  DEV(false, true, false, false),
 
   /**
    * Live mode.
    */
-  LIVE(true, true, false);
+  LIVE(true, true, false, false);
 
   /** The run mode property. */
   public static PropertyType<RunMode> PROPERTY = new PropertyType<RunMode>(){};
@@ -81,13 +81,17 @@ public enum RunMode {
   /** True if assets should be minified when possible. */
   final boolean minifyAssets;
 
+  /** Whether or not asset should be cached. */
+  final boolean cacheAssets;
+
   /** . */
   final String value;
 
-  private RunMode(boolean dynamic, boolean prettyFail, boolean minifyAssets) {
+  private RunMode(boolean dynamic, boolean prettyFail, boolean cacheAssets, boolean minifyAssets) {
     this.dynamic = dynamic;
     this.prettyFail = prettyFail;
     this.value = name().toLowerCase();
+    this.cacheAssets = cacheAssets;
     this.minifyAssets = minifyAssets;
   }
 
@@ -105,6 +109,10 @@ public enum RunMode {
 
   public boolean getPrettyFail() {
     return prettyFail;
+  }
+
+  public boolean getCacheAssets() {
+    return cacheAssets;
   }
 
   public boolean getMinifyAssets() {

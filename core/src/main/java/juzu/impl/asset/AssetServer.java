@@ -46,8 +46,8 @@ public class AssetServer {
   public AssetServer() {
   }
 
-  public void register(Application assetManager, boolean dynamic) {
-    runtimes.put(assetManager, dynamic);
+  public void register(Application assetManager, boolean cacheAssets) {
+    runtimes.put(assetManager, cacheAssets);
   }
 
   public void unregister(Application assetManager) {
@@ -82,14 +82,14 @@ public class AssetServer {
               int pos = path.lastIndexOf('/');
               String name = pos == -1 ? path : path.substring(pos + 1);
               resp.setHeader("ETag", etag);
-              boolean dynamic = runtime.getValue();
-              if (dynamic) {
-                resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-              } else {
+              boolean cacheAssets = runtime.getValue();
+              if (cacheAssets) {
                 int maxAge = content.maxAge != null ? content.maxAge : 3600;
                 if (maxAge > 0) {
                   resp.setHeader("Cache-Control", "max-age=" + maxAge);
                 }
+              } else {
+                resp.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
               }
               String contentType = ctx.getMimeType(name);
               if (contentType != null) {
