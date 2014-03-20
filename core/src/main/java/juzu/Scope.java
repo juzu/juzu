@@ -52,13 +52,6 @@ public enum Scope {
     public boolean isBuiltIn() {
       return false;
     }
-  },
-
-  IDENTITY(IdentityScoped.class) {
-    @Override
-    public boolean isBuiltIn() {
-      return false;
-    }
   };
 
   /** . */

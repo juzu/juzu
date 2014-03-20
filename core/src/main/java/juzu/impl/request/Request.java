@@ -204,12 +204,7 @@ public class Request implements ScopingContext {
   }
 
   public boolean isActive(Scope scope) {
-    switch (scope) {
-      case IDENTITY:
-        return false;
-      default:
-        return true;
-    }
+    return true;
   }
 
   /** . */
