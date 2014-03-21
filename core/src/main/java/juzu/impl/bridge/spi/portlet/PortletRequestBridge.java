@@ -471,24 +471,13 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
         appendable.append(uri);
         break;
       case APPLICATION:
-        if (bridge.getRunMode().isStatic()) {
-          appendable.append(req.getContextPath()).append("/assets");
-          if (!uri.startsWith("/")) {
-            appendable.append('/');
-            appendable.append(bridge.getApplication().getDescriptor().getPackageName().replace('.', '/'));
-            appendable.append("/assets/");
-          }
-          appendable.append(uri);
+        appendable.append(req.getContextPath()).append("/assets");
+        if (!uri.startsWith("/")) {
+          appendable.append('/');
+          appendable.append(bridge.getApplication().getDescriptor().getPackageName().replace('.', '/'));
+          appendable.append("/assets/");
         }
-        else {
-          if (resp instanceof MimeResponse) {
-            ResourceURL r = ((MimeResponse)resp).createResourceURL();
-            r.setParameter("juzu.request", "assets");
-            r.setResourceID(uri);
-          } else {
-            throw new UnsupportedOperationException("todo");
-          }
-        }
+        appendable.append(uri);
         break;
       case URL:
         appendable.append(uri);

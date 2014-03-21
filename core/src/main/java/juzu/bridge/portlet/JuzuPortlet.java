@@ -18,7 +18,6 @@ package juzu.bridge.portlet;
 
 import juzu.Consumes;
 import juzu.PropertyType;
-import juzu.impl.asset.AssetResource;
 import juzu.impl.asset.AssetServer;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.bridge.BridgeConfig;
@@ -40,7 +39,6 @@ import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.Injector;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.spring.SpringInjector;
-import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.request.Method;
@@ -65,7 +63,6 @@ import javax.portlet.ResourceServingPortlet;
 import javax.portlet.UnavailableException;
 import javax.portlet.WindowState;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
@@ -117,7 +114,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
           } else if (BridgeConfig.INJECT.equals(key)) {
             // Cascade:
             // 1/ portlet init param
-            // 2/ serlvet context init param
+            // 2/ servket context init param
             String inject = config.getInitParameter((String)key);
             if (inject == null) {
               inject = context.getInitParameter((String)key);
@@ -363,45 +360,13 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
     }
 
     //
-    boolean assetRequest = "assets".equals(req.getParameter("juzu.request"));
-
-    //
-    if (assetRequest && !bridge.getRunMode().isStatic()) {
-      String path = req.getResourceID();
-      AssetPlugin assetPlugin = (AssetPlugin)bridge.getApplication().getPlugin("asset");
-      String contentType;
-      InputStream in;
-      AssetResource url = assetPlugin.getAssetManager().resolveApplicationAssetResource(path);
-      if (url != null) {
-        if (path.endsWith(".css")) {
-          contentType = "text/css";
-        } else if (path.endsWith(".js")) {
-          contentType = "text/javascript";
-        } else {
-          contentType = null;
-        }
-        in = url.url.openStream();
-      } else {
-        contentType = null;
-        in = null;
-      }
-      if (in != null) {
-        if (contentType != null) {
-          resp.setContentType(contentType);
-        }
-        Tools.copy(in, resp.getPortletOutputStream());
-      } else {
-        resp.addProperty(ResourceResponse.HTTP_STATUS_CODE, "404");
-      }
-    } else {
-      try {
-        PortletResourceBridge requestBridge = new PortletResourceBridge(bridge, req, resp, config);
-        requestBridge.invoke();
-        requestBridge.send();
-      }
-      catch (Throwable throwable) {
-        rethrow(throwable);
-      }
+    try {
+      PortletResourceBridge requestBridge = new PortletResourceBridge(bridge, req, resp, config);
+      requestBridge.invoke();
+      requestBridge.send();
+    }
+    catch (Throwable throwable) {
+      rethrow(throwable);
     }
   }
 
