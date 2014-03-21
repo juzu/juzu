@@ -79,7 +79,6 @@ public class AmdMetaModelPlugin extends ApplicationMetaModelPlugin {
         if (asset.get("maxAge") == null && maxAge != null) {
           asset.put("maxAge", maxAge);
         }
-        asset.put("value", Tools.interpolate((String)asset.get("value"), metaModel.getProcessingContext().getOptions()));
         if (asset.get("id") == null) {
           asset.put("id", asset.get("value"));
         }

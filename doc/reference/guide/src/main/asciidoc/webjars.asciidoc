@@ -96,47 +96,6 @@ In this special case, we need to tell the version to the plugin:
 package myapp;
 ----
 
-=== Asset versions
-
-The assets used by the application have different version and this is even more true with WebJars as the artifacts
-are resolved from a repository. The +@Script+ annotation is interpolated at compilation time with annotation
- processor options. Therefore it is possible to replace +@Scripts(@Script("jquery/1.10.2/jquery.js"))+
- by +@Scripts(@Script("jquery/${jquery.version}/jquery.js"))+ and provide the +jquery.version=1.10.2+ option
- to the compiler:
-
-[source,xml]
-----
-<pluginManagement>
-  <plugins>
-    <plugin>
-      <artifactId>maven-compiler-plugin</artifactId>
-      <executions>
-        <execution>
-          <id>default-compile</id>
-          <configuration>
-            <compilerArgs>
-              <arg>-Ajquery.version=1.10.2</arg>
-            </compilerArgs>
-          </configuration>
-        </execution>
-      </executions>
-    </plugin>
-  </plugins>
-</pluginManagement>
-----
-
-The configuration of this option is custom to the Java compiler used:
-
-[source]
-----
-> javac -help
-Usage: javac <options> <source files>
-where possible options include:
-  ...
-  -Akey[=value]              Options to pass to annotation processors
-  ...
-----
-
 === Building
 
 Add the WebJars plugin jar to your compilation classpath.

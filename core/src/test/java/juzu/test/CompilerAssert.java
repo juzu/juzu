@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.WeakHashMap;
 
 /**
@@ -131,11 +130,6 @@ public class CompilerAssert<I, O> {
         return processor;
       }
     };
-    return this;
-  }
-
-  public CompilerAssert<I, O> option(String name, String value) {
-    strategy.config.withProcessorOption(name, value);
     return this;
   }
 

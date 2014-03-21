@@ -17,7 +17,6 @@
 package juzu.plugin.less4j.impl;
 
 import juzu.asset.AssetLocation;
-import juzu.impl.common.Tools;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.plugin.asset.Asset;
@@ -73,7 +72,7 @@ public class MetaModelPluginImpl extends ApplicationMetaModelPlugin {
   @Override
   public void processAnnotationAdded(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState added) {
     AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
-    List<LessAsset> assets = getAssets(metaModel, added);
+    List<LessAsset> assets = getAssets(assetsMetaModel, added);
     for (LessAsset asset : assets) {
       assetsMetaModel.addAsset(asset);
     }
@@ -82,14 +81,14 @@ public class MetaModelPluginImpl extends ApplicationMetaModelPlugin {
   @Override
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
-    List<LessAsset> assets = getAssets(metaModel, removed);
+    List<LessAsset> assets = getAssets(assetsMetaModel, removed);
     for (LessAsset asset : assets) {
       assetsMetaModel.removeAsset(asset);
     }
   }
 
   private List<LessAsset> getAssets(
-      ApplicationMetaModel metaModel,
+      AssetsMetaModel assetsMetaModel,
       AnnotationState annotation) {
 
     //
@@ -105,7 +104,6 @@ public class MetaModelPluginImpl extends ApplicationMetaModelPlugin {
         Map<String, Serializable> state = new HashMap<String, Serializable>(assetAnnotation);
 
         //
-        state.put("value", Tools.interpolate((String)state.get("value"), metaModel.getProcessingContext().getOptions()));
         if (state.get("id") == null) {
           state.put("id", assetValue);
         }

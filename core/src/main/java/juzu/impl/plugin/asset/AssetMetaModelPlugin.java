@@ -120,7 +120,6 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       if (maxAge != null && state.get("maxAge") == null) {
         state.put("maxAge", maxAge);
       }
-      state.put("value", Tools.interpolate((String)state.get("value"), metaModel.getProcessingContext().getOptions()));
       if (state.get("id") == null) {
         state.put("id", state.get("value"));
       }
