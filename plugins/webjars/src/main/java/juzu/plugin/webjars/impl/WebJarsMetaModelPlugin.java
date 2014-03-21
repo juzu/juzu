@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.lang.model.element.PackageElement;
 
@@ -51,6 +53,9 @@ import org.webjars.WebJarAssetLocator;
  *
  */
 public class WebJarsMetaModelPlugin extends ApplicationMetaModelPlugin {
+
+  /** . */
+  static final Pattern VERSION_STRIPPER = Pattern.compile("^([^/]+)/[^/]+/(.*)$");
 
   /** . */
   public static final MessageCode MISSING_WEBJAR = new MessageCode(
@@ -138,6 +143,9 @@ public class WebJarsMetaModelPlugin extends ApplicationMetaModelPlugin {
         }
 
         //
+        Boolean strip = (Boolean)webJar.get("stripVersion");
+
+        //
         WebJarAssetLocator locator = new WebJarAssetLocator();
         String folderPath = "/" + id + "/" + version;
         Set<String> assetsPaths = locator.listAssets(folderPath);
@@ -146,11 +154,21 @@ public class WebJarsMetaModelPlugin extends ApplicationMetaModelPlugin {
           URL assetURL = WebJarAssetLocator.class.getClassLoader().getResource(assetPath);
           if (assetURL != null) {
             String dst = assetPath.substring(WebJarAssetLocator.WEBJARS_PATH_PREFIX.length() + 1);
-            log.info("Webjars " + webJar + " adding asset resource " + assetPath);
+            if (Boolean.TRUE.equals(strip)) {
+              Matcher matcher = VERSION_STRIPPER.matcher(dst);
+              if (matcher.matches()) {
+                String stripped = matcher.group(1) + "/" + matcher.group(2);
+                log.info("Rewriting asset value " + dst + " as " + stripped);
+                dst = stripped;
+              } else {
+                throw INVALID_WEBJAR.failure("Asset version cannot be determined: " + dst);
+              }
+            }
             if (ret.isEmpty()) {
               ret = new HashMap<String, URL>();
             }
             ret.put(dst, assetURL);
+            log.info("Webjars " + webJar + " adding asset resource " + assetPath + " as " + dst);
           } else {
             log.info("Could not resolve WebJars asset " + webJar + " with resource path " + assetPath);
           }
