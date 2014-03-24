@@ -35,7 +35,6 @@ import juzu.request.Phase;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -43,9 +42,6 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
 
   /** . */
   private ControllersDescriptor descriptor;
-
-  /** . */
-  public ArrayList<RequestFilter> filters;
 
   /** . */
   @Inject
