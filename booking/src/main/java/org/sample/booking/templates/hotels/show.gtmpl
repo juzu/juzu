@@ -27,5 +27,5 @@
 </p>
 
 <p class="buttons">
-    <a href="@{processConfirmBooking(id = hotel.id)}">Book Hotel</a> <a href="@{index()}">Back to search</a>
+    <a href="@{book(id = hotel.id)}">Book Hotel</a> <a href="@{index()}">Back to search</a>
 </p>

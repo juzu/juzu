@@ -117,11 +117,20 @@ public class BookingTestCase extends AbstractBookingTestCase {
     bookLink.click();
     WebElement bookForm = driver.findElement(By.tagName("form"));
     assertNotNull(bookForm);
-    bookForm.findElement(By.className("buttons")).findElement(By.name("confirm")).click();
+    bookForm.findElement(By.className("buttons")).findElement(By.name("proceed")).click();
   }
 
   @Test
   @InSequence(4)
+  @RunAsClient
+  public void showHotel() throws Exception {
+    WebElement bookForm = driver.findElement(By.tagName("form"));
+    assertNotNull(bookForm);
+    bookForm.findElement(By.className("buttons")).findElement(By.name("confirm")).click();
+  }
+
+  @Test
+  @InSequence(5)
   @RunAsClient
   public void checkBooking() throws Exception {
     WebElement success = driver.findElement(By.className("fSuccess"));

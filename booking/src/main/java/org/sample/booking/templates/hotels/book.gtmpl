@@ -80,7 +80,7 @@
         </select>
     </p>
     <p class="buttons">
-        <input type="submit" value="Proceed"> <a href="@{show(id = hotel.id)}">Cancel</a>
+        <input type="submit" value="Proceed" name="proceed"> <a href="@{show(id = hotel.id)}">Cancel</a>
     </p>
 </form>
 
