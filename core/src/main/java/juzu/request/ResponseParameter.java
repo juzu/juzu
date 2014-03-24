@@ -18,11 +18,10 @@ package juzu.request;
 
 import juzu.io.Encoding;
 
-import java.util.AbstractList;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResponseParameter extends AbstractList<String> {
+public abstract class ResponseParameter extends Parameter {
 
   public static ResponseParameter create(String name, String value) {
     return create(Encoding.RFC3986, name, value);
@@ -45,16 +44,6 @@ public class ResponseParameter extends AbstractList<String> {
 
   /** . */
   final String name;
-
-  @Override
-  public String get(int index) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public int size() {
-    throw new UnsupportedOperationException();
-  }
 
   private ResponseParameter(Encoding encoding, String name) {
     this.encoding = encoding;

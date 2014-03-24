@@ -18,7 +18,6 @@ package juzu.request;
 
 import juzu.impl.common.Tools;
 
-import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -29,7 +28,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public final class RequestParameter extends AbstractList<String> {
+public final class RequestParameter extends Parameter {
 
   /**
    * Create new parameter.
