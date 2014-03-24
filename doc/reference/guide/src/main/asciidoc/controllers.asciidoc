@@ -328,6 +328,9 @@ public Response delete(String uid) {
 }
 ----
 
+NOTE: resource controller HTTP method routing only works for HTTP bridges. In case of the portlet bridge routing
+is done with the controller method and therefore the HTTP method does not play a role.
+
 === Event controllers
 
 _not yet implemented_
