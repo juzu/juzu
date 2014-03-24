@@ -35,6 +35,7 @@ import juzu.request.Phase;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -114,68 +115,75 @@ public class Handler implements Closeable {
     String requestPath = bridge.getRequestContext().getRequestPath();
 
     // Determine first a possible match from the root route from the request path
-    Method requestMethod = null;
+    Method requestTarget = null;
     RouteMatch requestMatch = null;
     Map<String, RequestParameter> requestParameters = Collections.emptyMap();
     if (requestPath.startsWith(bridge.getRequestContext().getPath())) {
 
-
-
-      Phase[] phases;
-      if (juzu.Method.GET == bridge.getHttpContext().getMethod()) {
-        phases = GET_PHASES;
-      } else if (juzu.Method.POST == bridge.getHttpContext().getMethod()) {
-        phases = POST_PHASES;
-      } else {
-        phases = OTHER_PHASES;
-      }
+      //
+      juzu.Method requestMethod = bridge.getHttpContext().getMethod();
       Iterator<RouteMatch> matches = root.matcher(requestPath.substring(bridge.getRequestContext().getPath().length()), Collections.<String, String[]>emptyMap());
-      // Determine a method + parameters for the matches
+
+      // Determine a method
       while (matches.hasNext()) {
-        RouteMatch toto = matches.next();
-        RouteDescriptor m = getMethods(toto.getRoute());
-        if (m != null) {
-          Method abc = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(m.handle);
-          Set<juzu.Method> methods;
-          if (abc.getPhase() == Phase.VIEW || abc.getPhase() == Phase.ACTION) {
-            methods = Tools.set(juzu.Method.GET, juzu.Method.POST);
-          } else if (abc.getPhase() == Phase.RESOURCE) {
-            methods = Tools.set(abc.getMethod().getAnnotation(Resource.class).method());
-          } else {
-            continue;
-          }
-          if (methods.contains(bridge.getHttpContext().getMethod())) {
-            if (toto.getMatched().size() > 0 || bridge.getRequestContext().getParameters().size() > 0) {
-              requestParameters = new HashMap<String, RequestParameter>();
-              for (RequestParameter requestParameter : bridge.getRequestContext().getParameters().values()) {
-                requestParameters.put(requestParameter.getName(), requestParameter);
-              }
-              for (Map.Entry<PathParam, String> entry : toto.getMatched().entrySet()) {
-                RequestParameter requestParameter = RequestParameter.create(entry.getKey().getName(), entry.getValue());
-                requestParameters.put(requestParameter.getName(), requestParameter);
-              }
+        RouteMatch match = matches.next();
+        RouteDescriptor routeDesc = getMethods(match.getRoute());
+        if (routeDesc != null) {
+          Method target = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(routeDesc.handle);
+          if (target.getPhase() == Phase.VIEW) {
+            if (requestMethod == juzu.Method.POST) {
+              requestTarget =  target;
+              requestMatch = match;
+            } else if (requestMethod == juzu.Method.GET) {
+              requestTarget =  target;
+              requestMatch = match;
+              break;
             }
-            requestMethod =  abc;
-            requestMatch = toto;
-            break;
+          } else if (target.getPhase() == Phase.ACTION) {
+            if (requestMethod == juzu.Method.GET) {
+              requestTarget =  target;
+              requestMatch = match;
+            } else if (requestMethod == juzu.Method.POST) {
+              requestTarget =  target;
+              requestMatch = match;
+              break;
+            }
+          } else if (target.getPhase() == Phase.RESOURCE) {
+            if (Arrays.asList(target.getMethod().getAnnotation(Resource.class).method()).contains(requestMethod)) {
+              requestTarget =  target;
+              requestMatch = match;
+              break;
+            }
           }
+        }
+      }
+
+      // Determine parameters for the match
+      if (requestMatch != null && (requestMatch.getMatched().size() > 0 || bridge.getRequestContext().getParameters().size() > 0)) {
+        requestParameters = new HashMap<String, RequestParameter>();
+        for (RequestParameter requestParameter : bridge.getRequestContext().getParameters().values()) {
+          requestParameters.put(requestParameter.getName(), requestParameter);
+        }
+        for (Map.Entry<PathParam, String> entry : requestMatch.getMatched().entrySet()) {
+          RequestParameter requestParameter = RequestParameter.create(entry.getKey().getName(), entry.getValue());
+          requestParameters.put(requestParameter.getName(), requestParameter);
         }
       }
     }
 
     // No method means we either send a server resource
     // or we look for the handler method
-    if (requestMethod == null) {
+    if (requestTarget == null) {
       // If we have an handler we locate the index method
-      requestMethod = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
+      requestTarget = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
     }
 
     // No method -> not found
-    if (requestMethod == null) {
+    if (requestTarget == null) {
       bridge.getRequestContext().setStatus(404);
     } else {
       if (requestMatch == null) {
-        Route requestRoute = getRoute(requestMethod.getHandle());
+        Route requestRoute = getRoute(requestTarget.getHandle());
         if (requestRoute != null) {
           requestMatch = requestRoute.matches(Collections.<String, String>emptyMap());
           if (requestMatch != null) {
@@ -194,12 +202,12 @@ public class Handler implements Closeable {
 
       //
       WebRequestBridge requestBridge;
-      if (requestMethod.getPhase() == Phase.ACTION) {
-        requestBridge = new WebActionBridge(this.bridge, this, bridge, requestMethod, requestParameters);
-      } else if (requestMethod.getPhase() == Phase.VIEW) {
-        requestBridge = new WebViewBridge(this.bridge, this, bridge, requestMethod, requestParameters);
-      } else if (requestMethod.getPhase() == Phase.RESOURCE) {
-        requestBridge = new WebResourceBridge(this.bridge, this, bridge, requestMethod, requestParameters);
+      if (requestTarget.getPhase() == Phase.ACTION) {
+        requestBridge = new WebActionBridge(this.bridge, this, bridge, requestTarget, requestParameters);
+      } else if (requestTarget.getPhase() == Phase.VIEW) {
+        requestBridge = new WebViewBridge(this.bridge, this, bridge, requestTarget, requestParameters);
+      } else if (requestTarget.getPhase() == Phase.RESOURCE) {
+        requestBridge = new WebResourceBridge(this.bridge, this, bridge, requestTarget, requestParameters);
       } else {
         throw new Exception("Cannot decode phase");
       }
