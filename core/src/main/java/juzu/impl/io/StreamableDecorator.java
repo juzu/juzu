@@ -13,7 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package juzu.io;
+package juzu.impl.io;
+
+import juzu.io.Chunk;
+import juzu.io.Stream;
+import juzu.io.Streamable;
 
 /** @author Julien Viet */
 public class StreamableDecorator implements Streamable {

@@ -33,7 +33,7 @@ import juzu.plugin.asset.Assets;
 import juzu.request.Result;
 import juzu.io.Chunk;
 import juzu.io.Stream;
-import juzu.io.StreamableDecorator;
+import juzu.impl.io.StreamableDecorator;
 import juzu.request.Phase;
 
 import javax.annotation.PostConstruct;
