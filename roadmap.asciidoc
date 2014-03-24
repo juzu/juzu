@@ -1,61 +1,3 @@
-.Juzu 0.8
-[cols="2,2,4,8,2",options="header"]
-|===
-|Name
-|Type
-|Description
-|Use case
-|Status
-
-|Asset controller
-|Improvement
-|Expose a controller for the asset plugin as a controller
-|Make easy to generate URL assets in templates, for instance @{Asset.render(css = “toto.js”)}
-|100%
-
-|Asset pipeline
-|Improvement
-|Refactor to provide a compilation pipeline
-|Consolidate the existing asset treatment at compilation time to have a compilation pipeline where plugin can feed the pipeline, treatment occurs (such as minification), output is written in the application asset package
-|100%
-
-|Require.js improvement
-|Improvement
-|Improve the integration
-|Simplify Require.js integration
-|100%
-
-|Webjars plugin improvement
-|Improvement
-|Improve the integration
-|Webjars plugin feeds the (future) asset pipeline at compilation time
-|100%
-
-|Asset caching
-|Feature
-|Declarative and programmtic asset caching
-|Web performances
-|100%
-
-|Metamodel mixin refactor
-|Improvement
-|Model some part of the meta model as mixin
-|Make router meta model a mixin attached to various part of meta model instead of being centralized
-|0%
-
-|Asset filtering
-|Improvement
-|Allow to filter assets
-|Minify assets
-|0%
-
-|Asset grouping
-|Improvement
-|Group assets together
-|Allow to group assets together for performance reason
-|0%
-|===
-
 .Juzu 1.0
 [cols="2,2,4,8",options="header"]
 |===
@@ -99,8 +41,71 @@
 |Authentication and Authorization
 |The plugin already exists but it has not yet been integrated in Juzu codebase : https://github.com/haint/juzu/tree/shiro-plugin/plugins/shiro
 
-|Thymeleaf templating
+|Asset grouping
+|Improvement
+|Group assets together
+|Allow to group assets together for performance reason
+
+|Asset filtering
+|Improvement
+|Allow to filter assets
+|Minify assets
+|===
+
+.Juzu 0.8
+[cols="2,2,4,8,2",options="header"]
+|===
+|Name
+|Type
+|Description
+|Use case
+|Status
+
+|Asset controller
+|Improvement
+|Expose a controller for the asset plugin as a controller
+|Make easy to generate URL assets in templates, for instance @{Asset.render(css = “toto.js”)}
+|100%
+
+|Asset pipeline
+|Improvement
+|Refactor to provide a compilation pipeline
+|Consolidate the existing asset treatment at compilation time to have a compilation pipeline where plugin can feed the pipeline, treatment occurs (such as minification), output is written in the application asset package
+|100%
+
+|Require.js improvement
+|Improvement
+|Improve the integration
+|Simplify Require.js integration
+|100%
+
+|Webjars plugin improvement
+|Improvement
+|Improve the integration
+|Webjars plugin feeds the (future) asset pipeline at compilation time
+|100%
+
+|Simple tag reuse
+|Improvement
+|Allow to reuse simple tags
+|Simple tags are useful for writing user facing tags and it makes sense to reuse them
+|100%
+
+|HTTP method routing
+|Improvement
+|HTTP method routing for resource serving
+|HTTP resources can now be routed according to the HTTP method for the HTTP bridge
+|100%
+
+|Minified asset
 |Feature
-|Thymeleaf based templates
-|Use Thymeleaf templates in an application
+|Specify a minified asset version
+|For performance reason a minified version of an asset can be used in production mode
+|100%
+
+|Asset caching
+|Feature
+|Declarative and programmtic asset caching
+|Web performances
+|100%
 |===
