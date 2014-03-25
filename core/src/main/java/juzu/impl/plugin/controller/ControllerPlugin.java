@@ -26,7 +26,6 @@ import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
-import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
@@ -136,11 +135,5 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
 
   public void invoke(Request request) {
     request.invoke();
-  }
-
-  private <T> void tryInject(Request request, ContextualParameter parameter, Class<T> type, T instance) {
-    if (instance != null && type.isAssignableFrom(parameter.getType())) {
-      request.setArgument(parameter, instance);
-    }
   }
 }
