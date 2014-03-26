@@ -259,10 +259,22 @@
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-webjars</artifactId>
         <version>1.0.0-beta1-SNAPSHOT</version>
-      </dependency>
+			</dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-webjars</artifactId>
+        <classifier>sources</classifier>
+        <version>1.0.0-beta1-SNAPSHOT</version>
+      </dependency>
+
+			<dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-shiro</artifactId>
+        <version>1.0.0-beta1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-shiro</artifactId>
         <classifier>sources</classifier>
         <version>1.0.0-beta1-SNAPSHOT</version>
       </dependency>

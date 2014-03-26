@@ -101,6 +101,7 @@
 		<module>webjars</module>
 		<module>jackson</module>
 		<module>validation</module>
+		<module>shiro</module>
   </modules>
 
 </project>

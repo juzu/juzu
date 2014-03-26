@@ -77,6 +77,10 @@ include::less.asciidoc[]
 
 include::webjars.asciidoc[]
 
+= Shiro plugin
+
+include::shiro.asciidoc[]
+
 [[servlet]]
 = Servlet
 
