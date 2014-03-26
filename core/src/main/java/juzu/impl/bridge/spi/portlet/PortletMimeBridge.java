@@ -22,6 +22,7 @@ import juzu.impl.bridge.Bridge;
 import juzu.impl.common.Formatting;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.asset.AssetPlugin;
+import juzu.impl.request.ContextualParameter;
 import juzu.request.Phase;
 import juzu.request.Result;
 import juzu.io.Chunk;
@@ -39,8 +40,10 @@ import javax.portlet.ResourceResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends MimeResponse> extends PortletRequestBridge<Rq, Rs> {
@@ -50,6 +53,11 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
   }
 
   public abstract Stream createStream(String mimeType, Charset charset) throws IOException;
+
+  @Override
+  public Map<ContextualParameter, Object> getContextualArguments(Set<ContextualParameter> parameters) {
+    return Collections.emptyMap();
+  }
 
   @Override
   public void send() throws IOException, PortletException {

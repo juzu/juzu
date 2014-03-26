@@ -272,52 +272,7 @@ public final class Method<P extends Phase> {
     }
   }
 
-  public Map<ControlParameter, Object> getArguments(Map<String, RequestParameter> parameterMap) {
-    Map<ControlParameter, Object> arguments = new HashMap<ControlParameter, Object>();
-    for (ControlParameter controlParam : this.parameterMap.values()) {
-      if (controlParam instanceof PhaseParameter) {
-        PhaseParameter phaseParameter = (PhaseParameter)controlParam;
-        Class<?> type = phaseParameter.getType();
-        Object[] values;
-        if (type.isAnnotationPresent(Mapped.class)) {
-          // build bean parameter
-          Object o = null;
-          try {
-            o = createMappedBean(type, phaseParameter.getMappedName(), parameterMap);
-          }
-          catch (Exception e) {
-          }
-          values = new Object[]{o};
-        }
-        else {
-          RequestParameter requestParam = parameterMap.get(phaseParameter.getMappedName());
-          values = requestParam != null ? requestParam.toArray() : null;
-        }
-        if (values != null) {
-          Object arg;
-          switch (phaseParameter.getCardinality()) {
-            case SINGLE:
-              arg = (values.length > 0) ? values[0] : null;
-              break;
-            case ARRAY:
-              arg = values.clone();
-              break;
-            case LIST:
-              ArrayList<Object> list = new ArrayList<Object>(values.length);
-              Collections.addAll(list, values);
-              arg = list;
-              break;
-            default:
-              throw new UnsupportedOperationException("Handle me gracefully");
-          }
-          arguments.put(controlParam, arg);
-        }
-      }
-    }
-    return arguments;
-  }
-
-  private <T> T createMappedBean(Class<T> clazz, String beanName, Map<String, RequestParameter> parameters) throws IllegalAccessException, InstantiationException {
+  <T> T createMappedBean(Class<T> clazz, String beanName, Map<String, RequestParameter> parameters) throws IllegalAccessException, InstantiationException {
     // Extract parameters
     Map<String, String[]> beanParams = new HashMap<String, String[]>();
     String prefix = requiresPrefix ? beanName + "." : "";

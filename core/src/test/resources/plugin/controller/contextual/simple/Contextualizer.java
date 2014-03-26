@@ -28,7 +28,7 @@ public class Contextualizer implements RequestFilter {
   public void invoke(Request request) {
     Method m = request.getMethod();
     ContextualParameter in = (ContextualParameter)m.getParameter("in");
-    request.setArgument(in, new ByteArrayInputStream("__foo__".getBytes()));
+    request.getContextualArguments().put(in, new ByteArrayInputStream("__foo__".getBytes()));
     request.invoke();
   }
 }

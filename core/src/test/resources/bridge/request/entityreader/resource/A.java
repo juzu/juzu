@@ -14,19 +14,29 @@
  * limitations under the License.
  */
 
-package juzu.test.protocol.mock;
+package bridge.request.entityreader.resource;
 
-import juzu.impl.common.MethodHandle;
-import juzu.impl.runtime.ApplicationRuntime;
-import juzu.request.ClientContext;
-import juzu.request.Phase;
-
-import java.util.Map;
+import juzu.Response;
+import juzu.Route;
+import juzu.View;
+import juzu.Resource;
+import juzu.impl.bridge.request.AbstractRequestEntityReader;
+import juzu.impl.bridge.request.Foo;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MockResourceBridge extends MockMimeBridge {
+public class A {
 
-  public MockResourceBridge(ApplicationRuntime<?, ?> application, MockClient client, MethodHandle target, Map<String, String[]> parameters) {
-    super(application, client, Phase.RESOURCE, target, parameters);
+  @View
+  public Response.Content index() {
+    return Response.ok("<span id=\"post\">" + A_.post() + "</a>");
+  }
+
+  @Resource
+  @Route("/post")
+  public Response.Content post(Foo foo) {
+    if (foo != null) {
+      AbstractRequestEntityReader.data = foo.data;
+    }
+    return Response.ok("DONE");
   }
 }

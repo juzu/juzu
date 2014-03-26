@@ -27,8 +27,8 @@ import juzu.impl.common.JUL;
 import juzu.impl.common.Logger;
 import juzu.impl.common.RunMode;
 import juzu.impl.inject.spi.InjectorProvider;
-import juzu.impl.request.ControlParameter;
 import juzu.io.UndeclaredIOException;
+import juzu.request.ClientContext;
 import juzu.request.Result;
 import juzu.request.RequestParameter;
 import juzu.request.ResponseParameter;
@@ -60,11 +60,11 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
-import javax.portlet.ResourceURL;
 import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -86,9 +86,6 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
   /** . */
   protected final Method<?> target;
-
-  /** . */
-  protected final HashMap<ControlParameter, Object> arguments;
 
   /** . */
   protected  final Map<String ,RequestParameter> requestParameters;
@@ -146,15 +143,11 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
       target = resolver.resolve(phase, parameters.keySet());
     }
 
-    // Get argument map
-    HashMap<ControlParameter, Object> arguments = new HashMap<ControlParameter, Object>(target.getArguments(requestParameters));
-
     //
     this.bridge = bridge;
     this.req = req;
     this.resp = resp;
     this.target = target;
-    this.arguments = arguments;
     this.httpContext = new PortletHttpContext(req);
     this.securityContext = new PortletSecurityContext(req);
     this.windowContext = new PortletWindowContext(this);
@@ -175,22 +168,28 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
       RequestParameter.create(parameter).appendTo(requestParameters);
     }
 
-    // Get argument map
-    HashMap<ControlParameter, Object> arguments = new HashMap<ControlParameter, Object>(target.getArguments(requestParameters));
-
     //
     this.phase = phase;
     this.bridge = bridge;
     this.req = req;
     this.resp = resp;
     this.target = target;
-    this.arguments = arguments;
     this.requestParameters = requestParameters;
     this.httpContext = new PortletHttpContext(req);
     this.securityContext = new PortletSecurityContext(req);
     this.windowContext = new PortletWindowContext(this);
     this.userContext = new PortletUserContext(req);
     this.applicationContext = new PortletApplicationContext(config);
+  }
+
+  @Override
+  public Charset getDefaultRequestEncoding() {
+    return bridge.getConfig().requestEncoding;
+  }
+
+  @Override
+  public ClientContext getClientContext() {
+    return null;
   }
 
   @Override
@@ -206,12 +205,8 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     return phase;
   }
 
-  public Map<String, RequestParameter> getRequestParameters() {
+  public Map<String, RequestParameter> getRequestArguments() {
     return requestParameters;
-  }
-
-  public Map<ControlParameter, Object> getArguments() {
-    return arguments;
   }
 
   public <T> T getProperty(PropertyType<T> propertyType) {

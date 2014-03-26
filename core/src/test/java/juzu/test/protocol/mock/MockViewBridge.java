@@ -34,7 +34,4 @@ public class MockViewBridge extends MockMimeBridge {
     return title;
   }
 
-  public ClientContext getClientContext() {
-    return null;
-  }
 }

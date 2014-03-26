@@ -16,6 +16,7 @@
 
 package juzu.impl.request;
 
+import juzu.Mapped;
 import juzu.Response;
 import juzu.Scope;
 import juzu.asset.AssetLocation;
@@ -47,7 +48,8 @@ import juzu.request.UserContext;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -81,10 +83,10 @@ public class Request implements ScopingContext {
   private final ControllerPlugin controllerPlugin;
 
   /** . */
-  private final Map<String, RequestParameter> parameters;
+  private final Map<String, RequestParameter> parameterArguments;
 
   /** . */
-  private final Map<ControlParameter, Object> arguments;
+  private final Map<ContextualParameter, Object> contextualArguments;
 
   /** . */
   private final Method<?> method;
@@ -95,16 +97,14 @@ public class Request implements ScopingContext {
   public Request(
     ControllerPlugin controllerPlugin,
     Method method,
-    Map<String, RequestParameter> parameters,
+    Map<String, RequestParameter> parameterArguments,
+    Map<ContextualParameter, Object> contextualArguments,
     RequestBridge bridge) {
-
-    // Make a copy of the original arguments provided by the bridge
-    Map<ControlParameter, Object> arguments = new HashMap<ControlParameter, Object>(bridge.getArguments());
 
     //
     this.bridge = bridge;
-    this.parameters = parameters;
-    this.arguments = arguments;
+    this.parameterArguments = parameterArguments;
+    this.contextualArguments = contextualArguments;
     this.controllerPlugin = controllerPlugin;
     this.method = method;
   }
@@ -169,21 +169,12 @@ public class Request implements ScopingContext {
     }
   }
 
-  public Map<String, RequestParameter> getParameters() {
-    return parameters;
+  public Map<String, RequestParameter> getParameterArguments() {
+    return parameterArguments;
   }
 
-  public Map<ControlParameter, Object> getArguments() {
-    return arguments;
-  }
-
-  public void setArguments(Map<ControlParameter, Object> arguments) {
-    this.arguments.clear();
-    this.arguments.putAll(arguments);
-  }
-
-  public void setArgument(ControlParameter parameter, Object value) {
-    this.arguments.put(parameter, value);
+  public Map<ContextualParameter, Object> getContextualArguments() {
+    return contextualArguments;
   }
 
   public final Scoped getContextualValue(Scope scope, Object key) {
@@ -321,9 +312,9 @@ public class Request implements ScopingContext {
     return lifeCycle;
   }
 
-  private <T> void tryInject(Request request, ContextualParameter parameter, Class<T> type, T instance) {
+  private <T> void tryInject(ContextualParameter parameter, Class<T> type, T instance) {
     if (instance != null && type.isAssignableFrom(parameter.getType())) {
-      request.setArgument(parameter, instance);
+      contextualArguments.put(parameter, instance);
     }
   }
 
@@ -332,35 +323,71 @@ public class Request implements ScopingContext {
     // Create context
     RequestContext context = new RequestContext(this, method);
 
-    //
-    for (ControlParameter parameter : method.getParameters()) {
-      if (parameter instanceof ContextualParameter) {
-        ContextualParameter contextualParameter = (ContextualParameter)parameter;
-        tryInject(request, contextualParameter, RequestContext.class, context);
-        tryInject(request, contextualParameter, HttpContext.class, request.getHttpContext());
-        tryInject(request, contextualParameter, SecurityContext.class, request.getSecurityContext());
-        tryInject(request, contextualParameter, ApplicationContext.class, request.getApplicationContext());
-        tryInject(request, contextualParameter, UserContext.class, request.getUserContext());
-        if (bridge.getPhase() == Phase.RESOURCE || bridge.getPhase() == Phase.ACTION) {
-          tryInject(request, contextualParameter, ClientContext.class, request.getClientContext());
-        }
-      }
-    }
-
-    // Get arguments
+    // Build arguments
     Object[] args = new Object[method.getParameters().size()];
     for (int i = 0;i < args.length;i++) {
       ControlParameter parameter = method.getParameters().get(i);
-      args[i] = arguments.get(parameter);
+      Object value;
+      if (parameter instanceof PhaseParameter) {
+        PhaseParameter phaseParam = (PhaseParameter)parameter;
+        Class<?> type = phaseParam.getType();
+        if (type.isAnnotationPresent(Mapped.class)) {
+          // build bean parameter
+          try {
+            value = method.createMappedBean(type, phaseParam.getMappedName(), parameterArguments);
+          }
+          catch (Exception e) {
+            value = null;
+          }
+        } else {
+          RequestParameter requestParam = parameterArguments.get(phaseParam.getMappedName());
+          if (requestParam != null) {
+            Object[] values = requestParam.toArray();
+            switch (phaseParam.getCardinality()) {
+              case SINGLE:
+                value = (values.length > 0) ? values[0] : null;
+                break;
+              case ARRAY:
+                value = values.clone();
+                break;
+              case LIST:
+                ArrayList<Object> list = new ArrayList<Object>(values.length);
+                Collections.addAll(list, values);
+                value = list;
+                break;
+              default:
+                throw new UnsupportedOperationException("Handle me gracefully");
+            }
+          } else {
+            value = null;
+          }
+        }
+      } else {
+        ContextualParameter contextualParameter = (ContextualParameter)parameter;
+        value = contextualArguments.get(contextualParameter);
+        if (value == null) {
+          Class<?> contextualType = contextualParameter.getType();
+          if (RequestContext.class.isAssignableFrom(contextualType)) {
+            value = context;
+          } else if (HttpContext.class.isAssignableFrom(contextualType)) {
+            value = request.getHttpContext();
+          } else if (SecurityContext.class.isAssignableFrom(contextualType)) {
+            value = request.getSecurityContext();
+          } else if (ApplicationContext.class.isAssignableFrom(contextualType)) {
+            value = request.getApplicationContext();
+          } else if (UserContext.class.isAssignableFrom(contextualType)) {
+            value = request.getUserContext();
+          } else if (ClientContext.class.isAssignableFrom(contextualType) && (bridge.getPhase() == Phase.RESOURCE || bridge.getPhase() == Phase.ACTION)) {
+            value = request.getClientContext();
+          }
+        }
+      }
+      args[i] = value;
     }
 
     //
     Class<?> type = context.getMethod().getType();
-
-    //
     controllerLifeCycle = manager.get(type);
-
-    //
     if (controllerLifeCycle != null) {
 
       // Get controller

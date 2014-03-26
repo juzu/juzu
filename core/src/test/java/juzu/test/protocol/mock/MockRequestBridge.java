@@ -26,7 +26,7 @@ import juzu.impl.common.RunMode;
 import juzu.impl.common.Tools;
 import juzu.impl.io.BinaryOutputStream;
 import juzu.impl.io.BinaryStream;
-import juzu.impl.request.ControlParameter;
+import juzu.impl.request.ContextualParameter;
 import juzu.request.ClientContext;
 import juzu.request.Result;
 import juzu.io.Chunk;
@@ -58,6 +58,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.RejectedExecutionException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -91,9 +92,6 @@ public abstract class MockRequestBridge implements RequestBridge {
   private final List<Scoped> attributesHistory;
 
   /** . */
-  private final Map<ControlParameter, Object> arguments;
-
-  /** . */
   protected Map<String, RequestParameter> requestParameters;
 
   /** . */
@@ -123,10 +121,6 @@ public abstract class MockRequestBridge implements RequestBridge {
     }
 
     //
-    Method<?> descriptor = application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
-    Map<ControlParameter, Object> arguments = descriptor.getArguments(requestParameters);
-
-    //
     ServletScopedContext attributes = new ServletScopedContext(Logger.SYSTEM) {
       @Override
       public void close() {
@@ -144,9 +138,13 @@ public abstract class MockRequestBridge implements RequestBridge {
     this.securityContext = new MockSecurityContext();
     this.windowContext = new MockWindowContext();
     this.attributesHistory = new ArrayList<Scoped>();
-    this.arguments = arguments;
     this.requestParameters = requestParameters;
     this.phase = phase;
+  }
+
+  @Override
+  public Charset getDefaultRequestEncoding() {
+    return Tools.ISO_8859_1;
   }
 
   @Override
@@ -167,12 +165,12 @@ public abstract class MockRequestBridge implements RequestBridge {
     return JUL.getLogger(name);
   }
 
-  public Map<String, RequestParameter> getRequestParameters() {
+  public Map<String, RequestParameter> getRequestArguments() {
     return requestParameters;
   }
 
-  public Map<ControlParameter, Object> getArguments() {
-    return arguments;
+  public Map<ContextualParameter, Object> getContextualArguments(Set<ContextualParameter> parameters) {
+    return Collections.emptyMap();
   }
 
   public List<Scoped> getAttributesHistory() {

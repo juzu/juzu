@@ -20,7 +20,6 @@ import juzu.Event;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.Introspector;
 import juzu.impl.request.ContextualParameter;
-import juzu.impl.request.ControlParameter;
 import juzu.impl.request.Method;
 import juzu.request.ClientContext;
 import juzu.request.Phase;
@@ -28,7 +27,9 @@ import juzu.request.Phase;
 import javax.portlet.EventRequest;
 import javax.portlet.EventResponse;
 import javax.portlet.PortletConfig;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PortletEventBridge extends PortletInteractionBridge<EventRequest, EventResponse> {
@@ -41,20 +42,24 @@ public class PortletEventBridge extends PortletInteractionBridge<EventRequest, E
       Method<?> target,
       Map<String, String[]> parameters) {
     super(bridge, Phase.EVENT, req, resp, config, target, parameters);
+  }
 
-    // Set event as part of contextual arguments
-    for (ControlParameter parameter : target.getParameters()) {
-      if (parameter instanceof ContextualParameter) {
-        ContextualParameter contextualParameter = (ContextualParameter)parameter;
-        if (Event.class.isAssignableFrom(contextualParameter.getType())) {
-          Class payloadType = Introspector.resolveToClass(contextualParameter.getGenericType(), Event.class, 0);
-          if (payloadType.isInstance(req.getEvent().getValue())) {
-            Event event = new Event(req.getEvent().getName(), req.getEvent().getValue());
-            arguments.put(parameter, event);
+  @Override
+  public Map<ContextualParameter, Object> getContextualArguments(Set<ContextualParameter> parameters) {
+    Map<ContextualParameter, Object> args = super.getContextualArguments(parameters);
+    for (ContextualParameter parameter : parameters) {
+      ContextualParameter contextualParameter = (ContextualParameter)parameter;
+      if (Event.class.isAssignableFrom(contextualParameter.getType())) {
+        Class payloadType = Introspector.resolveToClass(contextualParameter.getGenericType(), Event.class, 0);
+        if (payloadType.isInstance(req.getEvent().getValue())) {
+          if (args.isEmpty()) {
+            args = new HashMap<ContextualParameter, Object>();
           }
+          args.put(parameter, new Event(req.getEvent().getName(), req.getEvent().getValue()));
         }
       }
     }
+    return args;
   }
 
   public ClientContext getClientContext() {

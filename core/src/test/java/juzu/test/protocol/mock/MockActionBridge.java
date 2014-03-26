@@ -37,10 +37,6 @@ public class MockActionBridge extends MockRequestBridge {
     super(application, client, Phase.ACTION, target, parameters);
   }
 
-  public ClientContext getClientContext() {
-    throw new UnsupportedOperationException();
-  }
-
   public String assertUpdate() {
     if (result instanceof Result.View) {
       Result.View view = (Result.View)result;

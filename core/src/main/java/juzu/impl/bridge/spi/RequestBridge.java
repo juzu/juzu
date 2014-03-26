@@ -21,6 +21,7 @@ import juzu.Scope;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.Logger;
 import juzu.impl.common.RunMode;
+import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.ControlParameter;
 import juzu.request.ClientContext;
 import juzu.request.Result;
@@ -37,11 +38,20 @@ import juzu.request.WindowContext;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.RejectedExecutionException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface RequestBridge extends Closeable {
+
+  /**
+   * Returns the default request encoding when no one is specified.
+   *
+   * @return the defualt encoding
+   */
+  Charset getDefaultRequestEncoding();
 
   /**
    * @return the current run mode
@@ -66,15 +76,12 @@ public interface RequestBridge extends Closeable {
    */
   MethodHandle getTarget();
 
-  /**
-   * @return the request arguments.
-   */
-  Map<ControlParameter, Object> getArguments();
+  Map<ContextualParameter, Object> getContextualArguments(Set<ContextualParameter> parameters);
 
   /**
    * @return the request parameters
    */
-  Map<String, RequestParameter> getRequestParameters();
+  Map<String, RequestParameter> getRequestArguments();
 
   <T> T getProperty(PropertyType<T> propertyType);
 

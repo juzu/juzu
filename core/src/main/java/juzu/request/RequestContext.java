@@ -50,7 +50,7 @@ public class RequestContext {
   }
 
   public Map<String, RequestParameter> getParameters() {
-    return request.getParameters();
+    return request.getParameterArguments();
   }
 
   public ClientContext getClientContext() {

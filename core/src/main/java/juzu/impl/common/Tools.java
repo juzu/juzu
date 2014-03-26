@@ -62,6 +62,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -155,6 +156,49 @@ public class Tools {
     } else {
       return pkgName.substring(0, index);
     }
+  }
+
+  public static <T> Iterable<T> loadService(Class<T> service, ClassLoader loader) {
+    final Iterable<T> i = ServiceLoader.load(service, loader);
+    return new Iterable<T>() {
+      @Override
+      public Iterator<T> iterator() {
+        return new Iterator<T>() {
+
+          Iterator<T> a = i.iterator();
+          T next;
+
+          @Override
+          public boolean hasNext() {
+            while (a != null && a.hasNext()) {
+              try {
+                next = a.next();
+              }
+              catch (Exception e) {
+                // Ignore
+              }
+            }
+            return next != null;
+          }
+
+          @Override
+          public T next() {
+            if (!hasNext()) {
+              throw new NoSuchElementException();
+            } else {
+              T tmp = next;
+              next = null;
+              return tmp;
+            }
+          }
+
+          @Override
+          public void remove() {
+            throw new UnsupportedOperationException();
+          }
+        };
+      }
+    };
   }
 
   public static Class<?> getPackageClass(ClassLoader loader, String pkgName) {

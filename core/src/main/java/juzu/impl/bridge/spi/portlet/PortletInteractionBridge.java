@@ -19,7 +19,6 @@ package juzu.impl.bridge.spi.portlet;
 import juzu.EventQueue;
 import juzu.bridge.portlet.JuzuPortlet;
 import juzu.impl.bridge.Bridge;
-import juzu.impl.request.ControlParameter;
 import juzu.request.Result;
 import juzu.request.ResponseParameter;
 import juzu.impl.plugin.controller.ControllerPlugin;
@@ -36,38 +35,35 @@ import javax.portlet.StateAwareResponse;
 import javax.portlet.WindowState;
 import javax.portlet.WindowStateException;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs extends StateAwareResponse> extends PortletRequestBridge<Rq, Rs> {
 
   protected PortletInteractionBridge(Bridge bridge, Phase phase, Rq req, Rs resp, PortletConfig config) {
     super(bridge, phase, req, resp, config);
-
-    //
-    init();
   }
 
   protected PortletInteractionBridge(Bridge bridge, Phase phase, Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters) {
     super(bridge, phase, req, resp, config, target, parameters);
-
-    //
-    init();
   }
 
-  /**
-   * Set event producer as a contextual argument.
-   */
-  private void init() {
-    for (ControlParameter parameter : target.getParameters()) {
-      if (parameter instanceof ContextualParameter) {
-        final ContextualParameter contextualParameter = (ContextualParameter)parameter;
-        if (EventQueue.class.isAssignableFrom(contextualParameter.getType())) {
-          final PortletEventProducer producer = new PortletEventProducer();
-          arguments.put(contextualParameter, producer);
+  @Override
+  public Map<ContextualParameter, Object> getContextualArguments(Set<ContextualParameter> parameters) {
+    Map<ContextualParameter, Object> args = Collections.emptyMap();
+    for (ContextualParameter parameter : parameters) {
+      if (EventQueue.class.isAssignableFrom(parameter.getType())) {
+        PortletEventProducer producer = new PortletEventProducer();
+        if (args.isEmpty()) {
+          args = new HashMap<ContextualParameter, Object>();
         }
+        args.put(parameter, producer);
       }
     }
+    return args;
   }
 
   @Override

@@ -25,6 +25,7 @@ import juzu.impl.common.Logger;
 import juzu.impl.common.RunMode;
 import juzu.impl.common.UriBuilder;
 import juzu.impl.inject.spi.InjectorProvider;
+import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.ControlParameter;
 import juzu.request.ClientContext;
 import juzu.request.Result;
@@ -50,6 +51,7 @@ import juzu.request.UserContext;
 import juzu.request.WindowContext;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -76,9 +78,6 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   final Method<?> target;
 
   /** . */
-  final Map<ControlParameter, Object> arguments;
-
-  /** . */
   protected Request request;
 
   /** . */
@@ -94,9 +93,6 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
       Phase phase,
       Method<?> target,
       Map<String, RequestParameter> requestParameters) {
-
-    //
-    this.arguments = target.getArguments(requestParameters);
     this.requestParameters = requestParameters;
     this.bridge = bridge;
     this.target = target;
@@ -107,6 +103,16 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   }
 
   //
+
+  @Override
+  public Charset getDefaultRequestEncoding() {
+    return bridge.getConfig().requestEncoding;
+  }
+
+  @Override
+  public Map<ContextualParameter, Object> getContextualArguments(Set<ContextualParameter> parameters) {
+    return Collections.emptyMap();
+  }
 
   public RunMode getRunMode() {
     return bridge.getRunMode();
@@ -120,16 +126,12 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
     return http.getLogger(name);
   }
 
-  public Map<String, RequestParameter> getRequestParameters() {
+  public Map<String, RequestParameter> getRequestArguments() {
     return requestParameters;
   }
 
   public MethodHandle getTarget() {
     return target.getHandle();
-  }
-
-  public Map<ControlParameter, Object> getArguments() {
-    return arguments;
   }
 
   public <T> T getProperty(PropertyType<T> propertyType) {
