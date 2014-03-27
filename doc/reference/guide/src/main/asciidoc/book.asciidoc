@@ -65,10 +65,6 @@ include::assets.asciidoc[]
 
 include::amd.asciidoc[]
 
-= File upload plugin
-
-include::fileupload.asciidoc[]
-
 = Less plugin
 
 include::less.asciidoc[]

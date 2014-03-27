@@ -335,6 +335,126 @@ is done with the controller method and therefore the HTTP method does not play a
 
 _not yet implemented_
 
+== Request entity processing
+
+When the request provides an HTTP entity, Juzu can decode it and make it available to your controllers. Such kind of
+requests can be:
+
+* a HTTP request targetting any phase
+* a Portlet request targetting an _action_ or a _resource_ phase
+
+In such case, the entity may be decoded by Juzu otherwise it is available to your controllers via the
++juzu.request.ClientContext+ interface.
+
+By default Juzu handles _application/x-www-form-urlencoded_ requests, decodes the associated form and map it
+ to the controllers parameters. Other requests can be processed by an _entity unmarshaller_ which is a pluggable
+ unmarshaller for mapping the entity to controller parameters.
+
+=== File upload plugin
+
+The file upload plugin integrates http://commons.apache.org/fileupload/[Apache Commons FileUpload] in Juzu.
+This unmarshaller decodes multipart requests as file objects and can inject them as controller method parameters.
+It works with the servlet bridge and the portlet bridge.
+
+The plugin can be used in your Maven build using a simple dependency:
+
+[source,xml,subs="attributes,specialcharacters"]
+----
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-plugin-upload</artifactId>
+  <version>{juzu-version}</version>
+</dependency>
+----
+
+==== File upload in an action phase
+
+File upload can be handled during an action of a portlet or a servlet:
+
+[source,java]
+----
+@Action
+@Route("/upload")
+public void upload(org.apache.commons.fileupload.FileItem file) {
+   if (file != null) {
+      // Handle the file upload
+   }
+}
+----
+
+NOTE: The +@Route+ annotation is only meaningfull for the servlet bridge. In case of a portlet, the URL
+is managed by the portal.
+
+==== File upload in a resource phase
+
+File upload can also be handled in a resource phase.
+
+[source,java]
+----
+@Resource
+@Route("/upload")
+public Response.Content upload(org.apache.commons.fileupload.FileItem file) {
+   if (file != null) {
+      // Handle the file upload
+   }
+   return Response.ok("Upload is done");
+}
+----
+
+Handling upload in a resource phase can be used when the file is uploaded via Ajax: the application
+ does not want a view phase to be triggered after the upload.
+
+=== Json processing
+
+The Json plugin decodes json entities using the https://github.com/FasterXML/jackson[Jackson] framework. It can
+decode to a Jackson native tree or perform mapping to Java object using Jackson mapper.
+
+The plugin can be used in your Maven build using a simple dependency:
+
+[source,xml,subs="attributes,specialcharacters"]
+----
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-plugin-jackson</artifactId>
+  <version>{juzu-version}</version>
+</dependency>
+----
+
+==== Decoding to a Json node
+
+[source,java]
+----
+@Action
+@Route("/post")
+public void post(com.fasterxml.jackson.databind.JsonNode tree) {
+  ...
+}
+----
+
+==== Decoding to a Java object
+
+Jackson provides a powerful mapper for creating java objects from Json documents, it can of course be used with
+this plugin.
+
+[source,java]
+----
+@Action
+@Route("/post")
+public Response.View action(MyObj obj) throws IOException {
+  ...
+}
+----
+
+Mapped java objects must be annotated with the +@juzu.plugin.jackson.Jackson+ annotation so the unmarshaller can recognize them.
+
+[source,java]
+----
+@Jackson
+public class MyObject {
+  ...
+}
+----
+
 == Controller classes
 
 Controller methods belongs to Java classes known as controller classes. Controller classes are ordinary java classes,
