@@ -68,6 +68,6 @@ public class ResourceMethodTestCase extends AbstractTestCase {
     Method cm = controllerDescriptor.getMethod(aClass, "oneArg", String.class);
     assertEquals("oneArg", cm.getName());
     assertEquals(Phase.RESOURCE, cm.getPhase());
-    assertEquals(Arrays.asList(new PhaseParameter("foo", null, Cardinality.SINGLE, null)), cm.getParameters());
+    assertEquals(Arrays.asList(new PhaseParameter("foo", null, null, Cardinality.SINGLE, null)), cm.getParameters());
   }
 }

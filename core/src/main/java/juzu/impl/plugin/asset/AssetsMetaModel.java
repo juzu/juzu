@@ -121,16 +121,7 @@ public class AssetsMetaModel extends MetaModelObject implements MethodInvocation
         src = context.resolveResourceFromSourcePath(pkg, qn, path);
       }
       catch (Exception e) {
-        if (e.getClass().getName().equals("com.sun.tools.javac.util.ClientCodeException") && e.getCause() instanceof NullPointerException) {
-          // com.sun.tools.javac.util.ClientCodeException: java.lang.NullPointerException
-          // Bug in java compiler for file not found
-          // at com.sun.tools.javac.util.ClientCodeException: java.lang.NullPointerException
-          // at com.sun.tools.javac.api.ClientCodeWrapper$WrappedJavaFileManager.getFileForInput(ClientCodeWrapper.java:307)
-          // at com.sun.tools.javac.processing.JavacFiler.getResource(JavacFiler.java:472)
-          src = null;
-        } else {
-          throw UNRESOLVED_ASSET.failure(path).initCause(e);
-        }
+        throw UNRESOLVED_ASSET.failure(path).initCause(e);
       }
       if (src != null) {
         URI uri = src.toUri();

@@ -367,7 +367,7 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
       for (StandardLocation location : RESOURCE_LOCATIONS) {
         try {
           log.info("Attempt to resolve " + coordinates + " from " + location.getName());
-          FileObject resource = getResource(location, pkg, relativeName);
+          FileObject resource = doGetResource(location, pkg, relativeName);
           if (resource != null && resource.getLastModified() > 0) {
             return resource;
           }
@@ -671,21 +671,38 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
     return getResource(location, key.packageFQN, key.name);
   }
 
-  public FileObject getResource(JavaFileManager.Location location, CharSequence pkg, CharSequence relativeName) throws IOException {
+  public FileObject getResource(JavaFileManager.Location location, CharSequence pkg, CharSequence relativeName) {
     return getResource(location, Name.parse(pkg), relativeName);
   }
 
-  public FileObject getResource(JavaFileManager.Location location, Name pkg, CharSequence relativeName) throws IOException {
+  private FileObject doGetResource(JavaFileManager.Location location, CharSequence pkg, CharSequence relativeName) {
+    try {
+      return env.getFiler().getResource(location, pkg, relativeName);
+    }
+    catch (IOException e) {
+      // Likely to happen in ECJ
+      return null;
+    }
+    catch (RuntimeException e) {
+      if (e.getClass().getName().equals("com.sun.tools.javac.util.ClientCodeException") && e.getCause() instanceof NullPointerException) {
+        // com.sun.tools.javac.util.ClientCodeException: java.lang.NullPointerException
+        // Bug in java compiler >= 1.7 for file not found
+        // at com.sun.tools.javac.util.ClientCodeException: java.lang.NullPointerException
+        // at com.sun.tools.javac.api.ClientCodeWrapper$WrappedJavaFileManager.getFileForInput(ClientCodeWrapper.java:307)
+        // at com.sun.tools.javac.processing.JavacFiler.getResource(JavacFiler.java:472)
+        return null;
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  public FileObject getResource(JavaFileManager.Location location, Name pkg, CharSequence relativeName) {
     Key key = new Key(location, pkg, relativeName.toString());
     String coordinates = "location=" + location + " pkg=" + pkg + " relativeName=" + relativeName;
     FileObject resource = resources != null ? resources.get(key) : null;
     if (resource == null) {
-      try {
-        resource = env.getFiler().getResource(location, pkg, relativeName);
-      }
-      catch (IOException e) {
-        // Likely to happen in ECJ
-      }
+      resource = doGetResource(location, pkg, relativeName);
       if (resource != null) {
         debug("Resolved resolved resource " + coordinates + " from filer");
         if (resource.getLastModified() > 0) {

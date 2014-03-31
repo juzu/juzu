@@ -23,6 +23,7 @@ import juzu.impl.plugin.application.Application;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.ControlParameter;
 import juzu.impl.request.EntityUnmarshaller;
+import juzu.impl.value.ValueType;
 import juzu.request.ClientContext;
 import juzu.request.Result;
 import juzu.io.UndeclaredIOException;
@@ -40,6 +41,7 @@ import juzu.request.Phase;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +50,9 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
 
   /** . */
   private ControllersDescriptor descriptor;
+
+  /** . */
+  final ArrayList<ValueType<?>> valueTypes = new ArrayList<ValueType<?>>();
 
   /** . */
   @Inject
@@ -71,11 +76,27 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
 
   @Override
   public PluginDescriptor init(PluginContext context) throws Exception {
+    valueTypes.addAll(ValueType.DEFAULT);
+    for (ValueType<?> valueType : Tools.loadService(ValueType.class, context.getClassLoader())) {
+      valueTypes.add(valueType);
+    }
     return descriptor = new ControllersDescriptor(context.getClassLoader(), context.getConfig());
   }
 
   public InjectionContext<?, ?> getInjectionContext() {
     return application.getInjectionContext();
+  }
+
+  public <T> ValueType<T> resolveValueType(Class<T> type) {
+    for (int i = 0;i < valueTypes.size();i++) {
+      ValueType<?> valueType = valueTypes.get(i);
+      for (Class<?> tmp : valueType.getTypes()) {
+        if (tmp.equals(type)) {
+          return (ValueType<T>)valueType;
+        }
+      }
+    }
+    return null;
   }
 
   public void invoke(RequestBridge bridge) {

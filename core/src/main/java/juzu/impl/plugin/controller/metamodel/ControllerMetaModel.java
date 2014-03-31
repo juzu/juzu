@@ -37,6 +37,7 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
@@ -94,6 +95,87 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
     return getChildren(MethodMetaModel.class);
   }
 
+  private PhaseParameterMetaModel foo(
+      VariableElement parameterVariableElt,
+      String parameterName,
+      Cardinality parameterCardinality,
+      String type,
+      String valueType) {
+    // Not sure we should use @Param for this (i.e for now it looks hackish)
+    // however it does make sense later to use the regex part for non router
+    // parameters
+    Param param = parameterVariableElt.getAnnotation(Param.class);
+    String alias = param != null && param.name().length() > 0 ? param.name() : null;
+    return new PhaseParameterMetaModel(parameterName, parameterCardinality, type, valueType, alias);
+  }
+
+  private ParameterMetaModel foo(ModuleMetaModel context, VariableElement parameterVariableElt, TypeMirror parameterTypeMirror) {
+    String type = context.processingContext.getLiteralName(parameterTypeMirror);
+
+    //
+    String parameterName = parameterVariableElt.getSimpleName().toString();
+
+    // Determine cardinality
+    TypeMirror parameterValueTypeMirror;
+    Cardinality parameterCardinality;
+    switch (parameterTypeMirror.getKind()) {
+      case INT:
+        return foo(parameterVariableElt, parameterName, Cardinality.SINGLE, "int", "int");
+      case DECLARED:
+        DeclaredType dt = (DeclaredType)parameterTypeMirror;
+        TypeElement col = context.processingContext.getTypeElement("java.util.List");
+        TypeMirror tm = context.processingContext.erasure(col.asType());
+        TypeMirror err = context.processingContext.erasure(dt);
+        if (err.equals(tm)) {
+          if (dt.getTypeArguments().size() != 1) {
+            throw CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(parameterVariableElt);
+          } else {
+            parameterCardinality = Cardinality.LIST;
+            parameterValueTypeMirror = dt.getTypeArguments().get(0);
+            if (parameterValueTypeMirror.getKind() != TypeKind.DECLARED) {
+              throw CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(parameterVariableElt);
+            }
+          }
+        } else {
+          TypeElement valueType = (TypeElement)context.processingContext.asElement(parameterTypeMirror);
+          if (valueType.getAnnotation(Mapped.class) != null) {
+            return new BeanParameterMetaModel(parameterName, type);
+          } else {
+            parameterCardinality = Cardinality.SINGLE;
+            parameterValueTypeMirror = parameterTypeMirror;
+          }
+        }
+        break;
+      case ARRAY:
+        // Unwrap array
+        ArrayType arrayType = (ArrayType)parameterTypeMirror;
+        parameterCardinality = Cardinality.ARRAY;
+        parameterValueTypeMirror = arrayType.getComponentType();
+        switch (parameterValueTypeMirror.getKind()) {
+          case DECLARED:
+            break;
+          case INT:
+            return foo(parameterVariableElt, parameterName, Cardinality.ARRAY, "int[]", "int");
+          default:
+            throw CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(parameterVariableElt);
+        }
+        break;
+      default:
+        throw CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(parameterVariableElt);
+    }
+
+    //
+    TypeElement valueType = (TypeElement)context.processingContext.asElement(parameterValueTypeMirror);
+    ElementHandle.Type valueTypeHandle = ElementHandle.Type.create(valueType);
+
+    //
+    if (valueType.toString().equals("java.lang.String") || controllers.plugin.valueTypes.contains(valueTypeHandle)) {
+      return foo(parameterVariableElt, parameterName, parameterCardinality, type, valueType.toString());
+    } else {
+      return new ContextualParameterMetaModel(parameterName, type);
+    }
+  }
+
   void addMethod(ModuleMetaModel context, AnnotationKey annotationKey, AnnotationState annotationState) {
 
     //
@@ -116,63 +198,8 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
           for (int i = 0;i < parameterTypeMirrors.size();i++) {
             VariableElement parameterVariableElt = parameterVariableElements.get(i);
             TypeMirror parameterTypeMirror = parameterTypeMirrors.get(i);
-            String typeLiteral = context.processingContext.getLiteralName(parameterTypeMirror);
-
-            //
-            String parameterName = parameterVariableElt.getSimpleName().toString();
-
-            // Determine cardinality
-            TypeMirror parameterSimpleTypeMirror;
-            Cardinality parameterCardinality;
-            switch (parameterTypeMirror.getKind()) {
-              case DECLARED:
-                DeclaredType dt = (DeclaredType)parameterTypeMirror;
-                TypeElement col = context.processingContext.getTypeElement("java.util.List");
-                TypeMirror tm = context.processingContext.erasure(col.asType());
-                TypeMirror err = context.processingContext.erasure(dt);
-                // context.env.isSubtype(err, tm)
-                if (err.equals(tm)) {
-                  if (dt.getTypeArguments().size() != 1) {
-                    throw CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(parameterVariableElt);
-                  }
-                  else {
-                    parameterCardinality = Cardinality.LIST;
-                    parameterSimpleTypeMirror = dt.getTypeArguments().get(0);
-                  }
-                }
-                else {
-                  parameterCardinality = Cardinality.SINGLE;
-                  parameterSimpleTypeMirror = parameterTypeMirror;
-                }
-                break;
-              case ARRAY:
-                // Unwrap array
-                ArrayType arrayType = (ArrayType)parameterTypeMirror;
-                parameterCardinality = Cardinality.ARRAY;
-                parameterSimpleTypeMirror = arrayType.getComponentType();
-                break;
-              default:
-                throw CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(parameterVariableElt);
-            }
-            if (parameterSimpleTypeMirror.getKind() != TypeKind.DECLARED) {
-              throw CONTROLLER_METHOD_PARAMETER_NOT_RESOLVED.failure(parameterVariableElt);
-            }
-
-            //
-            TypeElement te = (TypeElement)context.processingContext.asElement(parameterSimpleTypeMirror);
-            ElementHandle.Type a = ElementHandle.Type.create(te);
-
-            //
-            if (te.toString().equals("java.lang.String") || te.getAnnotation(Mapped.class) != null) {
-              // Not sure we should use @Param for this (i.e for now it looks hackish)
-              // however it does make sense later to use the regex part for non router
-              // parameters
-              Param param = parameterVariableElt.getAnnotation(Param.class);
-              String alias = param != null && param.name().length() > 0 ? param.name() : null;
-              parameters.add(new PhaseParameterMetaModel(parameterName, parameterCardinality, a, typeLiteral, alias));
-            } else {
-              parameters.add(new ContextualParameterMetaModel(parameterName, typeLiteral));
-            }
+            ParameterMetaModel parameterMetaModel = foo(context, parameterVariableElt, parameterTypeMirror);
+            parameters.add(parameterMetaModel);
           }
 
           //

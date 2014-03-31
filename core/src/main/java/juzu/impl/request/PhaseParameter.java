@@ -19,8 +19,11 @@ package juzu.impl.request;
 import juzu.impl.common.Cardinality;
 import juzu.impl.common.Tools;
 
+import java.lang.reflect.Array;
+import java.util.List;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PhaseParameter extends ControlParameter {
+public class PhaseParameter<V> extends ControlParameter {
 
   /** . */
   private final Cardinality cardinality;
@@ -28,7 +31,15 @@ public class PhaseParameter extends ControlParameter {
   /** . */
   private final String alias;
 
-  public PhaseParameter(String name, Class<?> type, Cardinality cardinality, String alias) throws NullPointerException {
+  /** . */
+  private final Class<V> valueType;
+
+  public PhaseParameter(
+      String name,
+      Class<?> type,
+      Class<V> valueType,
+      Cardinality cardinality,
+      String alias) throws NullPointerException {
     super(name, type);
 
     //
@@ -39,6 +50,7 @@ public class PhaseParameter extends ControlParameter {
     //
     this.cardinality = cardinality;
     this.alias = alias;
+    this.valueType = valueType;
   }
 
   /**
@@ -52,6 +64,27 @@ public class PhaseParameter extends ControlParameter {
 
   public String getAlias() {
     return alias;
+  }
+
+  public Class<V> getValueType() {
+    return valueType;
+  }
+
+  public Object getValue(List<V> values) {
+    switch (cardinality) {
+      case SINGLE:
+        return (values.size() > 0) ? values.get(0) : null;
+      case ARRAY:
+        Object array = Array.newInstance(getValueType(), values.size());
+        for (int i = 0;i < values.size();i++) {
+          Array.set(array, i, values.get(i));
+        }
+        return array;
+      case LIST:
+        return values;
+      default:
+        throw new UnsupportedOperationException("Handle me gracefully");
+    }
   }
 
   /**

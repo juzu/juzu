@@ -18,7 +18,6 @@ package juzu.impl.plugin.controller.metamodel;
 
 import juzu.impl.common.Cardinality;
 import juzu.impl.common.JSON;
-import juzu.impl.compiler.ElementHandle;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class PhaseParameterMetaModel extends ParameterMetaModel {
@@ -27,7 +26,7 @@ public class PhaseParameterMetaModel extends ParameterMetaModel {
   final Cardinality cardinality;
 
   /** . */
-  final ElementHandle.Type type;
+  final String valueType;
 
   /** . */
   final String alias;
@@ -35,23 +34,23 @@ public class PhaseParameterMetaModel extends ParameterMetaModel {
   public PhaseParameterMetaModel(
       String name,
       Cardinality cardinality,
-      ElementHandle.Type type,
       String typeLiteral,
+      String valueType,
       String alias) {
     super(name, typeLiteral);
 
     //
     this.cardinality = cardinality;
-    this.type = type;
     this.alias = alias;
+    this.valueType = valueType;
   }
 
   public Cardinality getCardinality() {
     return cardinality;
   }
 
-  public ElementHandle.Type getType() {
-    return type;
+  public String getValueType() {
+    return valueType;
   }
 
   public String getAlias() {
@@ -66,8 +65,8 @@ public class PhaseParameterMetaModel extends ParameterMetaModel {
   public JSON toJSON() {
     return new JSON().
         set("name", name).
+        set("valueType", valueType).
         set("type", type).
-        set("typeLiteral", typeLiteral).
         set("cardinality", cardinality);
   }
 }

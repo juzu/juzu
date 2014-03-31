@@ -14,29 +14,6 @@
  * limitations under the License.
  */
 
-package juzu.impl.plugin.controller.metamodel;
+@Application package plugin.controller.valuetype.integer;
 
-import juzu.impl.metamodel.MetaModelObject;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ParameterMetaModel extends MetaModelObject {
-
-  /** . */
-  final String name;
-
-  /** . */
-  final String type;
-
-  protected ParameterMetaModel(String name, String type) {
-    this.name = name;
-    this.type = type;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public String getType() {
-    return type;
-  }
-}
+import juzu.Application;

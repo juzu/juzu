@@ -16,7 +16,6 @@
 
 package juzu.impl.request;
 
-import juzu.Mapped;
 import juzu.Response;
 import juzu.Scope;
 import juzu.asset.AssetLocation;
@@ -34,6 +33,7 @@ import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
+import juzu.impl.value.ValueType;
 import juzu.io.UndeclaredIOException;
 import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
@@ -47,9 +47,11 @@ import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -312,82 +314,11 @@ public class Request implements ScopingContext {
     return lifeCycle;
   }
 
-  private <T> void tryInject(ContextualParameter parameter, Class<T> type, T instance) {
-    if (instance != null && type.isAssignableFrom(parameter.getType())) {
-      contextualArguments.put(parameter, instance);
-    }
-  }
-
   private <B, I> Response dispatch(Request request, InjectionContext<B, I> manager) {
 
-    // Create context
-    RequestContext context = new RequestContext(this, method);
-
-    // Build arguments
-    Object[] args = new Object[method.getParameters().size()];
-    for (int i = 0;i < args.length;i++) {
-      ControlParameter parameter = method.getParameters().get(i);
-      Object value;
-      if (parameter instanceof PhaseParameter) {
-        PhaseParameter phaseParam = (PhaseParameter)parameter;
-        Class<?> type = phaseParam.getType();
-        if (type.isAnnotationPresent(Mapped.class)) {
-          // build bean parameter
-          try {
-            value = method.createMappedBean(type, phaseParam.getMappedName(), parameterArguments);
-          }
-          catch (Exception e) {
-            value = null;
-          }
-        } else {
-          RequestParameter requestParam = parameterArguments.get(phaseParam.getMappedName());
-          if (requestParam != null) {
-            Object[] values = requestParam.toArray();
-            switch (phaseParam.getCardinality()) {
-              case SINGLE:
-                value = (values.length > 0) ? values[0] : null;
-                break;
-              case ARRAY:
-                value = values.clone();
-                break;
-              case LIST:
-                ArrayList<Object> list = new ArrayList<Object>(values.length);
-                Collections.addAll(list, values);
-                value = list;
-                break;
-              default:
-                throw new UnsupportedOperationException("Handle me gracefully");
-            }
-          } else {
-            value = null;
-          }
-        }
-      } else {
-        ContextualParameter contextualParameter = (ContextualParameter)parameter;
-        value = contextualArguments.get(contextualParameter);
-        if (value == null) {
-          Class<?> contextualType = contextualParameter.getType();
-          if (RequestContext.class.isAssignableFrom(contextualType)) {
-            value = context;
-          } else if (HttpContext.class.isAssignableFrom(contextualType)) {
-            value = request.getHttpContext();
-          } else if (SecurityContext.class.isAssignableFrom(contextualType)) {
-            value = request.getSecurityContext();
-          } else if (ApplicationContext.class.isAssignableFrom(contextualType)) {
-            value = request.getApplicationContext();
-          } else if (UserContext.class.isAssignableFrom(contextualType)) {
-            value = request.getUserContext();
-          } else if (ClientContext.class.isAssignableFrom(contextualType) && (bridge.getPhase() == Phase.RESOURCE || bridge.getPhase() == Phase.ACTION)) {
-            value = request.getClientContext();
-          }
-        }
-      }
-      args[i] = value;
-    }
-
     //
-    Class<?> type = context.getMethod().getType();
-    controllerLifeCycle = manager.get(type);
+    Class<?> controllerType = method.getType();
+    controllerLifeCycle = manager.get(controllerType);
     if (controllerLifeCycle != null) {
 
       // Get controller
@@ -396,59 +327,121 @@ public class Request implements ScopingContext {
         controller = controllerLifeCycle.get();
       }
       catch (InvocationTargetException e) {
-        context.setResponse(Response.error(Tools.safeCause(e)));
-        controller = null;
+        return Response.error(e.getCause());
+      }
+
+      // Create context
+      RequestContext context = new RequestContext(this, method);
+
+      // Build arguments
+      Object[] args = new Object[method.getParameters().size()];
+      for (int i = 0;i < args.length;i++) {
+        ControlParameter parameter = method.getParameters().get(i);
+        Object value;
+        if (parameter instanceof PhaseParameter) {
+          PhaseParameter phaseParam = (PhaseParameter)parameter;
+          RequestParameter requestParam = parameterArguments.get(phaseParam.getMappedName());
+          if (requestParam != null) {
+            ValueType<?> valueType = controllerPlugin.resolveValueType(phaseParam.getValueType());
+            if (valueType != null) {
+              List values = new ArrayList(requestParam.size());
+              for (String s : requestParam) {
+                Object converted;
+                try {
+                  converted = valueType.parse(s);
+                }
+                catch (Exception e) {
+                  return Response.error(e);
+                }
+                values.add(converted);
+              }
+              value = phaseParam.getValue(values);
+            } else {
+              value = null;
+            }
+          } else {
+            value = null;
+          }
+        } else if (parameter instanceof BeanParameter) {
+          BeanParameter beanParam = (BeanParameter)parameter;
+          Class<?> type = beanParam.getType();
+          try {
+            value = beanParam.createMappedBean(controllerPlugin, method.requiresPrefix, type, beanParam.getName(), parameterArguments);
+          }
+          catch (Exception e) {
+            value = null;
+          }
+        } else {
+          ContextualParameter contextualParameter = (ContextualParameter)parameter;
+          value = contextualArguments.get(contextualParameter);
+          if (value == null) {
+            Class<?> contextualType = contextualParameter.getType();
+            if (RequestContext.class.isAssignableFrom(contextualType)) {
+              value = context;
+            } else if (HttpContext.class.isAssignableFrom(contextualType)) {
+              value = request.getHttpContext();
+            } else if (SecurityContext.class.isAssignableFrom(contextualType)) {
+              value = request.getSecurityContext();
+            } else if (ApplicationContext.class.isAssignableFrom(contextualType)) {
+              value = request.getApplicationContext();
+            } else if (UserContext.class.isAssignableFrom(contextualType)) {
+              value = request.getUserContext();
+            } else if (ClientContext.class.isAssignableFrom(contextualType) && (bridge.getPhase() == Phase.RESOURCE || bridge.getPhase() == Phase.ACTION)) {
+              value = request.getClientContext();
+            }
+          }
+        }
+        args[i] = value;
+      }
+
+      // Begin request callback
+      if (controller instanceof juzu.request.RequestLifeCycle) {
+        try {
+          ((juzu.request.RequestLifeCycle)controller).beginRequest(context);
+        }
+        catch (Exception e) {
+          return new Response.Error(e);
+        }
+      }
+
+      // If we have no response yet
+      if (context.getResponse() == null) {
+        // We invoke method on controller
+        try {
+          Object ret = context.getMethod().getMethod().invoke(controller, args);
+          if (ret instanceof Response) {
+            // We should check that it matches....
+            // btw we should try to enforce matching during compilation phase
+            // @Action -> Response.Action
+            // @View -> Response.Mime
+            // as we can do it
+            context.setResponse((Response)ret);
+          }
+        }
+        catch (InvocationTargetException e) {
+          context.setResponse(Response.error(e.getCause()));
+        }
+        catch (IllegalAccessException e) {
+          throw new UnsupportedOperationException("hanle me gracefully", e);
+        }
+
+        // End request callback
+        if (controller instanceof juzu.request.RequestLifeCycle) {
+          try {
+            ((juzu.request.RequestLifeCycle)controller).endRequest(context);
+          }
+          catch (Exception e) {
+            context.setResponse(Response.error(e));
+          }
+        }
       }
 
       //
-      if (controller != null) {
-
-        // Begin request callback
-        if (controller instanceof juzu.request.RequestLifeCycle) {
-          try {
-            ((juzu.request.RequestLifeCycle)controller).beginRequest(context);
-          }
-          catch (Exception e) {
-            context.setResponse(new Response.Error(e));
-          }
-        }
-
-        // If we have no response yet
-        if (context.getResponse() == null) {
-          // We invoke method on controller
-          try {
-            Object ret = context.getMethod().getMethod().invoke(controller, args);
-            if (ret instanceof Response) {
-              // We should check that it matches....
-              // btw we should try to enforce matching during compilation phase
-              // @Action -> Response.Action
-              // @View -> Response.Mime
-              // as we can do it
-              context.setResponse((Response)ret);
-            }
-          }
-          catch (InvocationTargetException e) {
-             context.setResponse(Response.error(e.getCause()));
-          }
-          catch (IllegalAccessException e) {
-            throw new UnsupportedOperationException("hanle me gracefully", e);
-          }
-
-          // End request callback
-          if (controller instanceof juzu.request.RequestLifeCycle) {
-            try {
-              ((juzu.request.RequestLifeCycle)controller).endRequest(context);
-            }
-            catch (Exception e) {
-              context.setResponse(Response.error(e));
-            }
-          }
-        }
-      }
+      return context.getResponse();
+    } else {
+      // Handle that...
+      return null;
     }
-
-    //
-    return context.getResponse();
   }
 
   private Dispatch createDispatch(Method<?> method, DispatchBridge spi) {
@@ -469,9 +462,66 @@ public class Request implements ScopingContext {
     return dispatch;
   }
 
+  private String valueOf(Object o) {
+    ValueType vt = controllerPlugin.resolveValueType(o.getClass());
+    if (vt != null) {
+      return vt.format(o);
+    } else {
+      return null;
+    }
+  }
+
+  private void setArgs(Object[] args, Parameters parameterMap, Method<?> method) {
+    int index = 0;
+    for (ControlParameter parameter : method.getParameters()) {
+      if (parameter instanceof PhaseParameter) {
+        PhaseParameter phaseParameter = (PhaseParameter)parameter;
+        Object value = args[index++];
+        if (value != null) {
+          String name = phaseParameter.getMappedName();
+          switch (phaseParameter.getCardinality()) {
+            case SINGLE: {
+              parameterMap.setParameter(name, valueOf(value));
+              break;
+            }
+            case ARRAY: {
+              int length = Array.getLength(value);
+              String[] array = new String[length];
+              for (int i = 0;i < length;i++) {
+                Object component = Array.get(value, i);
+                array[i] = valueOf(component);
+              }
+              parameterMap.setParameter(name, array);
+              break;
+            }
+            case LIST: {
+              Collection<?> c = (Collection<?>)value;
+              int length = c.size();
+              String[] array = new String[length];
+              Iterator<?> iterator = c.iterator();
+              for (int i = 0;i < length;i++) {
+                Object element = iterator.next();
+                array[i] = valueOf(element);
+              }
+              parameterMap.setParameter(name, array);
+              break;
+            }
+            default:
+              throw new UnsupportedOperationException("Not yet implemented");
+          }
+        }
+      } else if (parameter instanceof BeanParameter) {
+        BeanParameter beanParameter = (BeanParameter)parameter;
+        Object value = args[index++];
+        Map<String, String[]> p = beanParameter.buildBeanParameter(controllerPlugin, method.requiresPrefix, beanParameter.getName(), value);
+        parameterMap.setParameters(p);
+      }
+    }
+  }
+
   public Dispatch createDispatch(Method<?> method, Object[] args) {
     Parameters parameters = new Parameters();
-    method.setArgs(args, parameters);
+    setArgs(args, parameters, method);
     DispatchBridge spi = getBridge().createDispatch(method.getPhase(), method.getHandle(), parameters);
     return createDispatch(method, spi);
   }

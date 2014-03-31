@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
-package juzu.impl.plugin.controller.metamodel;
+package plugin.controller.valuetype.custom;
 
-import juzu.impl.metamodel.MetaModelObject;
+import juzu.Response;
+import juzu.View;
+
+import java.io.IOException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public abstract class ParameterMetaModel extends MetaModelObject {
+public class A {
 
-  /** . */
-  final String name;
-
-  /** . */
-  final String type;
-
-  protected ParameterMetaModel(String name, String type) {
-    this.name = name;
-    this.type = type;
+  @View
+  public Response.Content index() {
+    return Response.ok("" + A_.foo(new Foo("the_value")));
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public String getType() {
-    return type;
+  @View
+  public Response.Content foo(Foo i) {
+    if (i != null && i.value != null && i.value.equals("the_value")) {
+      return Response.ok("pass");
+    } else {
+      return Response.ok("fail");
+    }
   }
 }

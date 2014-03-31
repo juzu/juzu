@@ -26,6 +26,7 @@ import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
+import juzu.impl.request.BeanParameter;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -47,6 +48,13 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
 
   /** . */
   private ApplicationMetaModel application;
+
+  /** . */
+  final ControllerMetaModelPlugin plugin;
+
+  public ControllersMetaModel(ControllerMetaModelPlugin plugin) {
+    this.plugin = plugin;
+  }
 
   @Override
   public JSON toJSON() {
@@ -85,7 +93,7 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
     } else {
       List<String> args = new ArrayList<String>();
       for (ParameterMetaModel param : method.getParameters()) {
-        if (param instanceof PhaseParameterMetaModel) {
+        if (param instanceof PhaseParameterMetaModel || param instanceof BeanParameterMetaModel) {
           String value = parameterMap.get(param.getName());
           args.add(value);
         }
