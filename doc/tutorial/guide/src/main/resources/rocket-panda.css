@@ -204,7 +204,7 @@ code { font-family: Menlo, Monaco, "Liberation Mono", Consolas, monospace; font-
 /* Lists */
 ul, ol, dl { font-size: 0.9375em; line-height: 1.4; margin-bottom: 1.375em; list-style-position: outside; font-family: "Helvetica Neue", Helvetica, "Liberation Sans", Arial, sans-serif; }
 
-ul, ol { margin-left: 1.625em; }
+ul, ol { margin-left: 1.625em; list-style: none;}
 
 /* Unordered Lists */
 ul li ul, ul li ol { margin-left: 1.25em; margin-bottom: 0; font-size: 1em; /* Override nested font-size change */ }
