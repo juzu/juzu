@@ -256,11 +256,11 @@ should produce markup that will be aggregated in larger page, therefore it shoul
 structure.
 
 View parameters describe the current parameters of the view, they are often used for navigation purpose in the application.
-Juzu supports simple data types such as string and structured data types modelled by Java objects.
+Juzu supports simple data types such as string or integers, structured data types modelled by Java objects.
 
 * Simple data types can be the following types +String+, +List<String>+ and +String[]+. Later this will be expanded
 to more simple types such as number, etc..
-* Structured data types : todo
+* Structured data types using the +@juzu.Mapped+ annotation
 
 View controller method should return a +juzu.Response+ object that is the content produced by the method. To be more precise
  it should return a +Response.Body+ or +Response.Content+ object (the latter being a subclass of the former) that contains
@@ -334,6 +334,98 @@ is done with the controller method and therefore the HTTP method does not play a
 === Event controllers
 
 _not yet implemented_
+
+== Request parameters
+
+Juzu supports request parameter mapping with:
+
+* Plugable value types with support for various primitive types, +java.util.Date+ type
+* Multivalued list and array types
+* Bean types
+
+=== Primitive type
+
+Primitive types can be mapped to request parameters, Juzu will do automatically the conversion between the types
+and the request parameters. Most primitive types can be used, the only exception is the +char+ type, as it could be
+ambiguously mapped to the char codepoint or the char value, +String+ or numeric types shall be used instead. Those types
+can be used under their boxed type or their primitive type.
+
+[source,java]
+----
+@Action
+public Response.Content sum(Integer left, int right) {
+  if (left != null) {
+    return Response.ok("sum = " + (left + right));
+  } else {
+    return Response.error("Missing input");
+  }
+}
+----
+
+NOTE: when the parameter of a primitive value is not present in the request, the default primitive value is used
+
+=== Date type
+
+The +java.util.Date+ type can also be mapped, in addition it can be formatted with a specific pattern thanks to the
++juzu.Format+ annotation:
+
+[source,java]
+----
+@View
+public Response.Content show(@Format("yyyy.MM.dd G 'at' HH:mm:ss z") Date date) throws Exception {
+  ...
+}
+----
+
+=== Multivalued type
+
+Multivalued types can be used under the form of a Java array or a generic +java.util.List+ easily:
+
+[source,java]
+----
+@View
+public Response.Content sum(int[] values) {
+  ...
+}
+----
+
+or
+
+[source,java]
+----
+@View
+public Response.Content sum(List<Integer> values) {
+  ...
+}
+----
+
+=== Bean type
+
+Juzu is able to map a set of request parameters, to the properties of a simple bean:
+
+[source,java]
+----
+@juzu.Mapped
+public class User {
+
+  public String username;
+  public String password;
+  public String name;
+
+  public User() {}
+
+  public User(String name, String password, String username) {
+    this.name = name;
+    this.password = password;
+    this.username = username;
+  }
+}
+----
+
+The properties can either be:
+
+* public fields
+* getters/setters
 
 == Request entity processing
 
