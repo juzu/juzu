@@ -22,6 +22,7 @@ import juzu.asset.AssetLocation;
 import juzu.impl.bridge.Parameters;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.bridge.spi.ScopedContext;
+import juzu.impl.common.AbstractAnnotatedElement;
 import juzu.impl.common.RunMode;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopeController;
@@ -47,6 +48,8 @@ import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -335,6 +338,7 @@ public class Request implements ScopingContext {
 
       // Build arguments
       Object[] args = new Object[method.getParameters().size()];
+      final Annotation[][] annotations = method.getMethod().getParameterAnnotations();
       for (int i = 0;i < args.length;i++) {
         ControlParameter parameter = method.getParameters().get(i);
         Object value;
@@ -347,8 +351,15 @@ public class Request implements ScopingContext {
               List values = new ArrayList(requestParam.size());
               for (String s : requestParam) {
                 Object converted;
+                final int index = i;
                 try {
-                  converted = valueType.parse(s);
+                  AbstractAnnotatedElement annotated = new AbstractAnnotatedElement() {
+                    @Override
+                    public Annotation[] getDeclaredAnnotations() {
+                      return annotations[index];
+                    }
+                  };
+                  converted = valueType.parse(annotated, s);
                 }
                 catch (Exception e) {
                   return Response.error(e);
@@ -462,26 +473,33 @@ public class Request implements ScopingContext {
     return dispatch;
   }
 
-  private String valueOf(Object o) {
+  private String valueOf(AnnotatedElement annotated, Object o) {
     ValueType vt = controllerPlugin.resolveValueType(o.getClass());
     if (vt != null) {
-      return vt.format(o);
+      return vt.format(annotated, o);
     } else {
       return null;
     }
   }
 
-  private void setArgs(Object[] args, Parameters parameterMap, Method<?> method) {
+  private void setArgs(Object[] args, Parameters parameterMap, final Method<?> method) {
     int index = 0;
     for (ControlParameter parameter : method.getParameters()) {
       if (parameter instanceof PhaseParameter) {
         PhaseParameter phaseParameter = (PhaseParameter)parameter;
-        Object value = args[index++];
+        final int at = index++;
+        Object value = args[at];
+        AnnotatedElement annotated = new AbstractAnnotatedElement() {
+          @Override
+          public Annotation[] getDeclaredAnnotations() {
+            return method.getMethod().getParameterAnnotations()[at];
+          }
+        };
         if (value != null) {
           String name = phaseParameter.getMappedName();
           switch (phaseParameter.getCardinality()) {
             case SINGLE: {
-              parameterMap.setParameter(name, valueOf(value));
+              parameterMap.setParameter(name, valueOf(annotated, value));
               break;
             }
             case ARRAY: {
@@ -489,7 +507,7 @@ public class Request implements ScopingContext {
               String[] array = new String[length];
               for (int i = 0;i < length;i++) {
                 Object component = Array.get(value, i);
-                array[i] = valueOf(component);
+                array[i] = valueOf(annotated, component);
               }
               parameterMap.setParameter(name, array);
               break;
@@ -501,7 +519,7 @@ public class Request implements ScopingContext {
               Iterator<?> iterator = c.iterator();
               for (int i = 0;i < length;i++) {
                 Object element = iterator.next();
-                array[i] = valueOf(element);
+                array[i] = valueOf(annotated, element);
               }
               parameterMap.setParameter(name, array);
               break;

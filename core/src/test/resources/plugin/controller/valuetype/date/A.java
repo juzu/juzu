@@ -16,8 +16,10 @@
 
 package plugin.controller.valuetype.date;
 
+import juzu.Format;
 import juzu.Response;
 import juzu.View;
+import juzu.Format;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,8 +36,8 @@ public class A {
   }
 
   @View
-  public Response.Content foo(Date i) throws Exception {
-    SimpleDateFormat format = new SimpleDateFormat();
+  public Response.Content foo(@Format("yyyy.MM.dd G 'at' HH:mm:ss z") Date i) throws Exception {
+    SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
     Date expectedDate = format.parse(format.format(new Date(TEST_VALUE)));
     if (i != null && i.equals(expectedDate)) {
       return Response.ok("pass");

@@ -15,10 +15,13 @@
  */
 package juzu.impl.request;
 
+import juzu.impl.common.AbstractAnnotatedElement;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.value.ValueType;
 import juzu.request.RequestParameter;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -60,7 +63,7 @@ public class BeanParameter extends ControlParameter {
         boolean success = callSetter(plugin, setterName, clazz, bean, value);
         if (!success) {
           Field f = clazz.getField(key);
-          Object o = getValue(plugin, f.getGenericType(), value);
+          Object o = getValue(plugin, f, f.getGenericType(), value);
           if (o != null) {
             f.set(bean, o);
           }
@@ -74,7 +77,7 @@ public class BeanParameter extends ControlParameter {
     return bean;
   }
 
-  Object getValue(ControllerPlugin plugin, Type type, String[] value) throws Exception {
+  Object getValue(ControllerPlugin plugin, AnnotatedElement annotated, Type type, String[] value) throws Exception {
     if (type instanceof Class<?>) {
       Class<?> clazz = (Class<?>)type;
       if (clazz.isArray()) {
@@ -83,14 +86,14 @@ public class BeanParameter extends ControlParameter {
         if (valueType != null) {
           Object array = Array.newInstance(clazz, value.length);
           for (int i = 0;i < value.length;i++) {
-            Array.set(array, i, valueType.parse(value[i]));
+            Array.set(array, i, valueType.parse(annotated, value[i]));
           }
           return array;
         }
       } else {
         ValueType valueType = plugin.resolveValueType(clazz);
         if (valueType != null) {
-          return valueType.parse(value[0]);
+          return valueType.parse(annotated, value[0]);
         }
       }
     } else if (type instanceof ParameterizedType) {
@@ -102,7 +105,7 @@ public class BeanParameter extends ControlParameter {
           if (valueType != null) {
             ArrayList list = new ArrayList(value.length);
             for (String s : value) {
-              list.add(valueType.parse(s));
+              list.add(valueType.parse(annotated, s));
             }
             return list;
           }
@@ -113,13 +116,19 @@ public class BeanParameter extends ControlParameter {
   }
 
   <T> boolean callSetter(ControllerPlugin plugin, String methodName, Class<T> clazz, T target, String[] value) throws Exception {
-    for (java.lang.reflect.Method m : clazz.getMethods()) {
+    for (final java.lang.reflect.Method m : clazz.getMethods()) {
       if (m.getName().equals(methodName)) {
         int modifiers = m.getModifiers();
         if (Modifier.isPublic(modifiers) && !Modifier.isStatic(modifiers)) {
           Type[] parameterTypes = m.getGenericParameterTypes();
           if (parameterTypes.length == 1) {
-            Object o = getValue(plugin, parameterTypes[0], value);
+            AbstractAnnotatedElement element = new AbstractAnnotatedElement() {
+              @Override
+              public Annotation[] getDeclaredAnnotations() {
+                return m.getParameterAnnotations()[0];
+              }
+            };
+            Object o = getValue(plugin, element, parameterTypes[0], value);
             if (o != null) {
               m.invoke(target, o);
               return true;
@@ -140,7 +149,7 @@ public class BeanParameter extends ControlParameter {
           Object v = f.get(value);
           if (v != null) {
             String name = requiresPrefix ? baseName + "." + f.getName() : f.getName();
-            addParameter(plugin, parameters, name, f.getGenericType(), v);
+            addParameter(plugin, parameters, name, f, f.getGenericType(), v);
           }
         }
       }
@@ -151,7 +160,7 @@ public class BeanParameter extends ControlParameter {
           if (v != null) {
             String n = Character.toLowerCase(m.getName().charAt(3)) + m.getName().substring(4);
             String name = requiresPrefix ? baseName + "." + n : n;
-            addParameter(plugin, parameters, name, m.getGenericReturnType(), v);
+            addParameter(plugin, parameters, name, m, m.getGenericReturnType(), v);
           }
         }
       }
@@ -162,14 +171,14 @@ public class BeanParameter extends ControlParameter {
     return parameters;
   }
 
-  private void addParameter(ControllerPlugin plugin, Map<String, String[]> parameters, String name, Type type, Object value) {
-    String[] v = getParameters(plugin, type, value);
+  private void addParameter(ControllerPlugin plugin, Map<String, String[]> parameters, String name, AnnotatedElement annotated, Type type, Object value) {
+    String[] v = getParameters(plugin, annotated, type, value);
     if (v != null) {
       parameters.put(name, v);
     }
   }
 
-  private String[] getParameters(ControllerPlugin plugin, Type type, Object value) {
+  private String[] getParameters(ControllerPlugin plugin, AnnotatedElement annotated, Type type, Object value) {
     if (type instanceof Class) {
       Class clazz = (Class)type;
       if (clazz.isArray()) {
@@ -181,7 +190,7 @@ public class BeanParameter extends ControlParameter {
             String[] ret = new String[length];
             for (int i = 0;i < length;i++) {
               Object element = Array.get(value, i);
-              ret[i] = valueType.format(element);
+              ret[i] = valueType.format(annotated, element);
             }
             return ret;
           }
@@ -189,7 +198,7 @@ public class BeanParameter extends ControlParameter {
       } else {
         ValueType valueType = plugin.resolveValueType(clazz);
         if (valueType != null) {
-          return new String[]{valueType.format(value)};
+          return new String[]{valueType.format(annotated, value)};
         }
       }
     } else if (type instanceof ParameterizedType) {
@@ -205,7 +214,7 @@ public class BeanParameter extends ControlParameter {
               String[] ret = new String[size];
               for (int i = 0;i < size;i++) {
                 Object element = list.get(i);
-                ret[i] = valueType.format(element);
+                ret[i] = valueType.format(annotated, element);
               }
               return ret;
             }

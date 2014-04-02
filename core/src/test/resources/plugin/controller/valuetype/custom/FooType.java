@@ -2,6 +2,7 @@ package plugin.controller.valuetype.custom;
 
 import juzu.impl.value.ValueType;
 
+import java.lang.reflect.AnnotatedElement;
 import java.util.Collections;
 
 public class FooType extends ValueType<Foo> {
@@ -12,12 +13,12 @@ public class FooType extends ValueType<Foo> {
   }
 
   @Override
-  public Foo parse(String s) {
+  public Foo parse(AnnotatedElement element, String s) {
     return new Foo(s);
   }
 
   @Override
-  public String format(Foo value) {
+  public String format(AnnotatedElement element, Foo value) {
     return value.value;
   }
 }

@@ -15,8 +15,10 @@
  */
 package juzu.impl.value;
 
+import juzu.Format;
 import juzu.impl.common.Tools;
 
+import java.lang.reflect.AnnotatedElement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -40,19 +42,21 @@ public abstract class ValueType<T> {
   /**
    * Parse a string and returns the corresponding value type.
    *
+   * @param element the element annotations
    * @param s the string to parse
    * @return the corresponding value
    * @throws java.lang.Exception any exception preventing the parse to succeed
    */
-  public abstract T parse(String s) throws Exception;
+  public abstract T parse(AnnotatedElement element, String s) throws Exception;
 
   /**
    * Format a value and returns the corresponding string.
    *
+   * @param element the element annotations
    * @param value the value to format
    * @return the corresponding string
    */
-  public abstract String format(T value);
+  public abstract String format(AnnotatedElement element, T value);
 
   public static ValueType<String> STRING = new ValueType<String>() {
 
@@ -65,12 +69,12 @@ public abstract class ValueType<T> {
     }
 
     @Override
-    public String parse(String s) {
+    public String parse(AnnotatedElement element, String s) {
       return s;
     }
 
     @Override
-    public String format(String value) {
+    public String format(AnnotatedElement element, String value) {
       return value;
     }
   };
@@ -86,12 +90,12 @@ public abstract class ValueType<T> {
     }
 
     @Override
-    public Integer parse(String s) {
+    public Integer parse(AnnotatedElement element, String s) {
       return Integer.parseInt(s);
     }
 
     @Override
-    public String format(Integer value) {
+    public String format(AnnotatedElement element, Integer value) {
       return value.toString();
     }
   };
@@ -107,12 +111,12 @@ public abstract class ValueType<T> {
     }
 
     @Override
-    public Boolean parse(String s) {
+    public Boolean parse(AnnotatedElement element, String s) {
       return Boolean.parseBoolean(s);
     }
 
     @Override
-    public String format(Boolean value) {
+    public String format(AnnotatedElement element, Boolean value) {
       return value.toString();
     }
   };
@@ -127,10 +131,15 @@ public abstract class ValueType<T> {
       return TYPES;
     }
 
+    private SimpleDateFormat getSimpleDateFormat(AnnotatedElement element) {
+      Format format = element.getAnnotation(Format.class);
+      return format != null ? new SimpleDateFormat(format.value()) : new SimpleDateFormat();
+    }
+
     @Override
-    public Date parse(String s) {
+    public Date parse(AnnotatedElement element, String s) {
       try {
-        return new SimpleDateFormat().parse(s);
+        return getSimpleDateFormat(element).parse(s);
       }
       catch (ParseException e) {
         throw new UnsupportedOperationException("Handle me gracefully", e);
@@ -138,8 +147,8 @@ public abstract class ValueType<T> {
     }
 
     @Override
-    public String format(Date value) {
-      return new SimpleDateFormat().format(value);
+    public String format(AnnotatedElement element, Date value) {
+      return getSimpleDateFormat(element).format(value);
     }
   };
 
