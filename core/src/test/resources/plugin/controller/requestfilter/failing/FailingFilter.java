@@ -16,18 +16,24 @@
 
 package plugin.controller.requestfilter.failing;
 
-import juzu.Response;
-import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
+import juzu.impl.request.Stage;
+import juzu.request.Result;
 
 import java.util.ConcurrentModificationException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FailingFilter implements RequestFilter {
+public class FailingFilter implements RequestFilter<Stage.Handler> {
   public FailingFilter() {
   }
 
-  public juzu.request.Result filter(Request request) {
+  @Override
+  public Class<Stage.Handler> getStageType() {
+    return Stage.Handler.class;
+  }
+
+  @Override
+  public Result filter(Stage.Handler source) {
     throw new ConcurrentModificationException();
   }
 }

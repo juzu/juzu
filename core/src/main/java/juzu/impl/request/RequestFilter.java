@@ -24,5 +24,13 @@ import juzu.request.Result;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public interface RequestFilter extends Filter<Request, Result> {
+public interface RequestFilter<S extends Stage> extends Filter<S, Result> {
+
+  /**
+   * Return the stage type this filter accepts.
+   *
+   * @return the stage type
+   */
+  public Class<S> getStageType();
+
 }

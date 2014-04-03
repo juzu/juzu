@@ -18,18 +18,26 @@ package plugin.controller.requestfilter.lifecycle;
 
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
+import juzu.impl.request.Stage;
 import juzu.test.Registry;
 import juzu.request.Result;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class LifeCycleFilter implements RequestFilter {
+public class LifeCycleFilter implements RequestFilter<Stage.Handler> {
   public LifeCycleFilter() {
     Registry.compareAndSet("request.filter.lifecycle", null, "created");
   }
 
-  public Result filter(Request request) {
+  @Override
+  public Class<Stage.Handler> getStageType() {
+    return Stage.Handler.class;
+  }
+
+  @Override
+  public Result filter(Stage.Handler source) {
+    Request request = source.getRequest();
     Registry.compareAndSet("request.filter.lifecycle", "created", "before");
-    Result result = request.invoke();
+    Result result = source.invoke();
     Registry.compareAndSet("request.filter.lifecycle", "before", "after");
     return result;
   }

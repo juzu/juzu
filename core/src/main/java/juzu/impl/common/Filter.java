@@ -20,16 +20,17 @@ package juzu.impl.common;
  * A filter.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
+ * @param <A> the argument
+ * @param <R> the result
  */
-public interface Filter<S, D> {
+public interface Filter<A, R> {
 
   /**
-   * Filters the element
+   * Filters the argument
    *
-   *
-   * @param source the source
-   * @return the filtered element
+   * @param source the argument
+   * @return the result
    */
-  D filter(S source);
+  R filter(A source);
 
 }

@@ -29,6 +29,7 @@ import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.common.JSON;
+import juzu.impl.request.Stage;
 import juzu.plugin.asset.Assets;
 import juzu.request.Result;
 import juzu.io.Chunk;
@@ -48,7 +49,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
+public class AssetPlugin extends ApplicationPlugin implements RequestFilter<Stage.Handler> {
 
   /** . */
   private LinkedHashMap<String, Chunk.Property<String>> assets;
@@ -270,8 +271,15 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     }
   }
 
-  public Result filter(Request request) {
-    Result result = request.invoke();
+  @Override
+  public Class<Stage.Handler> getStageType() {
+    return Stage.Handler.class;
+  }
+
+  @Override
+  public Result filter(Stage.Handler source) {
+    Result result = source.invoke();
+    Request request = source.getRequest();
     if (request.getPhase() == Phase.VIEW) {
       if (result instanceof Result.Status) {
         final Collection<Chunk.Property<String>> bar = foo(request.getHandler().getMethod(), Collections.<Chunk.Property<String>>emptyList());

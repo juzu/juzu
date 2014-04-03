@@ -16,16 +16,11 @@
 
 package juzu.impl.plugin.controller;
 
-import juzu.impl.common.Spliterator;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.application.Application;
-import juzu.impl.request.ContextualParameter;
-import juzu.impl.request.ControlParameter;
-import juzu.impl.request.EntityUnmarshaller;
 import juzu.impl.request.Handler;
 import juzu.impl.value.ValueType;
-import juzu.request.ClientContext;
 import juzu.request.Result;
 import juzu.io.UndeclaredIOException;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -36,13 +31,10 @@ import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.Request;
 import juzu.request.RequestParameter;
-import juzu.request.Phase;
 
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerPlugin extends ApplicationPlugin {
@@ -99,19 +91,15 @@ public class ControllerPlugin extends ApplicationPlugin {
   }
 
   public void invoke(RequestBridge bridge) {
-    Phase phase = bridge.getPhase();
 
     //
-    Map<String, RequestParameter> parameterArguments = new HashMap<String, RequestParameter>(bridge.getRequestArguments());
     MethodHandle handle = bridge.getTarget();
     Handler<?> handler = descriptor.getMethodByHandle(handle);
-
-    //
     if (handler == null) {
       StringBuilder sb = new StringBuilder("handle me gracefully : no method could be resolved for " +
-          "phase=").append(phase).append(" handle=").append(handle).append(" parameters={");
+          "phase=").append(bridge.getPhase()).append(" handle=").append(handle).append(" parameters={");
       int index = 0;
-      for (RequestParameter parameter : parameterArguments.values()) {
+      for (RequestParameter parameter : bridge.getRequestArguments().values()) {
         if (index++ > 0) {
           sb.append(',');
         }
@@ -128,47 +116,8 @@ public class ControllerPlugin extends ApplicationPlugin {
       throw new UnsupportedOperationException(sb.toString());
     }
 
-    // Make a copy of the original arguments provided by the bridge
-    Map<ContextualParameter, Object> contextualArguments = new HashMap<ContextualParameter, Object>();
-    for (ControlParameter a : handler.getParameters()) {
-      if (a instanceof ContextualParameter) {
-        contextualArguments.put((ContextualParameter)a, null);
-      }
-    }
-    contextualArguments.putAll(bridge.getContextualArguments(contextualArguments.keySet()));
-
     //
-    ClientContext clientContext = bridge.getClientContext();
-    if (clientContext != null) {
-      String contentType = clientContext.getContentType();
-      if (contentType != null) {
-        Spliterator i = new Spliterator(contentType, ';');
-
-        //
-        String mediaType;
-        if (i.hasNext()) {
-          mediaType = i.next().trim();
-
-          //
-          if (!mediaType.equals("application/x-www-form-urlencoded")) {
-            for (EntityUnmarshaller reader : Tools.loadService(EntityUnmarshaller.class, application.getClassLoader())) {
-              try {
-                if (reader.accept(mediaType)) {
-                  reader.unmarshall(mediaType, clientContext, contextualArguments.entrySet(), parameterArguments);
-                  break;
-                }
-              }
-              catch (IOException e) {
-                throw new UnsupportedOperationException("handle me gracefully", e);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    //
-    Request request = new Request(this, handler, parameterArguments, contextualArguments, bridge);
+    Request request = new Request(this, handler, bridge);
 
     //
     ClassLoader oldCL = Thread.currentThread().getContextClassLoader();

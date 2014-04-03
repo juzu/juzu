@@ -80,7 +80,7 @@ public class LifeCycleTestCase extends AbstractInjectTestCase {
     MockViewBridge render = client.render();
     render.assertFailure(ConcurrentModificationException.class);
     Integer count = Registry.get("count");
-    assertEquals((Integer)2, count);
+    assertEquals((Integer)1, count);
   }
 
   @Test

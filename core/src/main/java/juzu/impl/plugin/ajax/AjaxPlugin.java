@@ -23,9 +23,9 @@ import juzu.impl.plugin.PluginContext;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.ControllerPlugin;
-import juzu.impl.request.Handler;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
+import juzu.impl.request.Stage;
 import juzu.request.Result;
 import juzu.io.Chunk;
 import juzu.io.Stream;
@@ -40,10 +40,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
+public class AjaxPlugin extends ApplicationPlugin implements RequestFilter<Stage.Handler> {
 
   /** . */
-  Map<String, Handler> table;
+  Map<String, juzu.impl.request.Handler> table;
 
   @Inject
   ControllerPlugin controllerPlugin;
@@ -81,8 +81,8 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
         "jquery").deploy();
 
     //
-    Map<String, Handler> table = new HashMap<String, Handler>();
-    for (Handler cm : controllerPlugin.getDescriptor().getHandlers()) {
+    Map<String, juzu.impl.request.Handler> table = new HashMap<String, juzu.impl.request.Handler>();
+    for (juzu.impl.request.Handler cm : controllerPlugin.getDescriptor().getHandlers()) {
       Ajax ajax = cm.getMethod().getAnnotation(Ajax.class);
       if (ajax != null) {
         table.put(cm.getName(), cm);
@@ -93,8 +93,15 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
     this.table = table;
   }
 
-  public Result filter(final Request request) {
-    Result result = request.invoke();
+  @Override
+  public Class<Stage.Handler> getStageType() {
+    return Stage.Handler.class;
+  }
+
+  @Override
+  public Result filter(Stage.Handler source) {
+    final Request request = source.getRequest();
+    Result result = source.invoke();
 
     //
     if (request.getPhase() == Phase.VIEW) {
@@ -114,7 +121,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
                     // BUT THAT SHOULD BE REVISED TO USE THE ID INSTEAD
                     StringBuilder sb = new StringBuilder();
                     sb.append("<div class=\"jz\">\n");
-                    for (Map.Entry<String, Handler> entry : table.entrySet()) {
+                    for (Map.Entry<String, juzu.impl.request.Handler> entry : table.entrySet()) {
                       String baseURL = request.createDispatch(entry.getValue()).toString();
                       sb.append("<div data-method-id=\"");
                       sb.append(entry.getValue().getId());

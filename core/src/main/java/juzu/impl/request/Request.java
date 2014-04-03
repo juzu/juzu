@@ -16,7 +16,6 @@
 
 package juzu.impl.request;
 
-import juzu.Response;
 import juzu.Scope;
 import juzu.asset.AssetLocation;
 import juzu.impl.bridge.Parameters;
@@ -24,12 +23,10 @@ import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.common.AbstractAnnotatedElement;
 import juzu.impl.common.RunMode;
-import juzu.impl.common.Tools;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.Scoped;
 import juzu.impl.inject.ScopingContext;
 import juzu.impl.inject.spi.BeanLifeCycle;
-import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.controller.ControllerPlugin;
@@ -41,7 +38,6 @@ import juzu.request.ClientContext;
 import juzu.request.Dispatch;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
-import juzu.request.RequestContext;
 import juzu.request.RequestParameter;
 import juzu.request.Result;
 import juzu.request.SecurityContext;
@@ -51,12 +47,10 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
@@ -85,30 +79,36 @@ public class Request implements ScopingContext {
   final RequestBridge bridge;
 
   /** . */
-  private final ControllerPlugin controllerPlugin;
+  final ControllerPlugin controllerPlugin;
 
   /** . */
-  private final Map<String, RequestParameter> parameterArguments;
+  final Handler<?> handler;
 
   /** . */
-  private final Map<ContextualParameter, Object> contextualArguments;
+  Map<String, RequestParameter> parameterArguments;
 
   /** . */
-  private final Handler<?> handler;
+  Map<ContextualParameter, Object> contextualArguments;
 
   public Request(
     ControllerPlugin controllerPlugin,
     Handler handler,
-    Map<String, RequestParameter> parameterArguments,
-    Map<ContextualParameter, Object> contextualArguments,
     RequestBridge bridge) {
 
     //
     this.bridge = bridge;
-    this.parameterArguments = parameterArguments;
-    this.contextualArguments = contextualArguments;
     this.controllerPlugin = controllerPlugin;
     this.handler = handler;
+    this.parameterArguments = new HashMap<String, RequestParameter>();
+    this.contextualArguments = new HashMap<ContextualParameter, Object>();
+  }
+
+  public Map<String, RequestParameter> getParameterArguments() {
+    return parameterArguments;
+  }
+
+  public Map<ContextualParameter, Object> getContextualArguments() {
+    return contextualArguments;
   }
 
   public RunMode getRunMode() {
@@ -155,14 +155,6 @@ public class Request implements ScopingContext {
     return bridge;
   }
 
-  public Map<String, RequestParameter> getParameterArguments() {
-    return parameterArguments;
-  }
-
-  public Map<ContextualParameter, Object> getContextualArguments() {
-    return contextualArguments;
-  }
-
   public final Scoped getContextualValue(Scope scope, Object key) {
     ScopedContext context = bridge.getScopedContext(scope, false);
     return context != null ? context.get(key) : null;
@@ -184,9 +176,6 @@ public class Request implements ScopingContext {
     return true;
   }
 
-  /** . */
-  private int index = 0;
-
   /** The main contextual for this request. */
   private ContextLifeCycle contextLifeCycle;
 
@@ -200,34 +189,11 @@ public class Request implements ScopingContext {
         getScopeController().begin(this);
       }
 
-      //
-      List<RequestFilter> filters = Tools.list(controllerPlugin.getInjectionContext().resolveInstances(RequestFilter.class));
+      // Create first stage
+      Stage stage = new Stage.Unmarshalling(this);
 
-      //
-      if (index >= 0 && index < filters.size()) {
-
-        RequestFilter plugin = filters.get(index);
-        try {
-          index++;
-          return plugin.filter(this);
-        }
-        finally {
-          index--;
-        }
-      }
-      else if (index == filters.size()) {
-
-        // Dispatch request
-        Response response = dispatch(this, controllerPlugin.getInjectionContext());
-        if (response != null) {
-          return response.result();
-        } else {
-          return null;
-        }
-      }
-      else {
-        throw new AssertionError();
-      }
+      // Dispatch request
+      return stage.invoke();
     }
     finally {
       if (set) {
@@ -298,164 +264,6 @@ public class Request implements ScopingContext {
 
     //
     return lifeCycle;
-  }
-
-  private <B, I> Response dispatch(Request request, InjectionContext<B, I> manager) {
-
-    //
-    Class<?> controllerType = handler.getType();
-    controllerLifeCycle = manager.get(controllerType);
-    if (controllerLifeCycle != null) {
-
-      // Get controller
-      Object controller;
-      try {
-        controller = controllerLifeCycle.get();
-      }
-      catch (InvocationTargetException e) {
-        return Response.error(e.getCause());
-      }
-
-      // Create context
-      RequestContext context = new RequestContext(this, handler);
-
-      // Build arguments
-      Object[] args = new Object[handler.getParameters().size()];
-      final Annotation[][] annotations = handler.getMethod().getParameterAnnotations();
-      for (int i = 0;i < args.length;i++) {
-        ControlParameter parameter = handler.getParameters().get(i);
-        Object value;
-        if (parameter instanceof PhaseParameter) {
-          PhaseParameter phaseParam = (PhaseParameter)parameter;
-          RequestParameter requestParam = parameterArguments.get(phaseParam.getMappedName());
-          if (requestParam != null) {
-            ValueType<?> valueType = controllerPlugin.resolveValueType(phaseParam.getValueType());
-            if (valueType != null) {
-              List values = new ArrayList(requestParam.size());
-              for (String s : requestParam) {
-                Object converted;
-                final int index = i;
-                try {
-                  AbstractAnnotatedElement annotated = new AbstractAnnotatedElement() {
-                    @Override
-                    public Annotation[] getDeclaredAnnotations() {
-                      return annotations[index];
-                    }
-                  };
-                  converted = valueType.parse(annotated, s);
-                }
-                catch (Exception e) {
-                  return Response.error(e);
-                }
-                values.add(converted);
-              }
-              value = phaseParam.getValue(values);
-            } else {
-              value = null;
-            }
-          } else {
-            value = null;
-          }
-          Class<?> type = phaseParam.getType();
-          if (value == null && type.isPrimitive()) {
-            if (type == int.class) {
-              value = 0;
-            } else if (type == long.class) {
-              value = 0L;
-            } else if (type == byte.class) {
-              value = (byte)0;
-            } else if (type == short.class) {
-              value = (short)0;
-            } else if (type == boolean.class) {
-              value = false;
-            } else if (type == float.class) {
-              value = 0.0f;
-            } else if (type == double.class) {
-              value = 0.0d;
-            } else if (type == char.class) {
-              value = '\u0000';
-            }
-          }
-        } else if (parameter instanceof BeanParameter) {
-          BeanParameter beanParam = (BeanParameter)parameter;
-          Class<?> type = beanParam.getType();
-          try {
-            value = beanParam.createMappedBean(controllerPlugin, handler.requiresPrefix, type, beanParam.getName(), parameterArguments);
-          }
-          catch (Exception e) {
-            value = null;
-          }
-        } else {
-          ContextualParameter contextualParameter = (ContextualParameter)parameter;
-          value = contextualArguments.get(contextualParameter);
-          if (value == null) {
-            Class<?> contextualType = contextualParameter.getType();
-            if (RequestContext.class.isAssignableFrom(contextualType)) {
-              value = context;
-            } else if (HttpContext.class.isAssignableFrom(contextualType)) {
-              value = request.getHttpContext();
-            } else if (SecurityContext.class.isAssignableFrom(contextualType)) {
-              value = request.getSecurityContext();
-            } else if (ApplicationContext.class.isAssignableFrom(contextualType)) {
-              value = request.getApplicationContext();
-            } else if (UserContext.class.isAssignableFrom(contextualType)) {
-              value = request.getUserContext();
-            } else if (ClientContext.class.isAssignableFrom(contextualType) && (bridge.getPhase() == Phase.RESOURCE || bridge.getPhase() == Phase.ACTION)) {
-              value = request.getClientContext();
-            }
-          }
-        }
-        args[i] = value;
-      }
-
-      // Begin request callback
-      if (controller instanceof juzu.request.RequestLifeCycle) {
-        try {
-          ((juzu.request.RequestLifeCycle)controller).beginRequest(context);
-        }
-        catch (Exception e) {
-          return new Response.Error(e);
-        }
-      }
-
-      // If we have no response yet
-      if (context.getResponse() == null) {
-        // We invoke method on controller
-        try {
-          Object ret = context.getHandler().getMethod().invoke(controller, args);
-          if (ret instanceof Response) {
-            // We should check that it matches....
-            // btw we should try to enforce matching during compilation phase
-            // @Action -> Response.Action
-            // @View -> Response.Mime
-            // as we can do it
-            context.setResponse((Response)ret);
-          }
-        }
-        catch (InvocationTargetException e) {
-          context.setResponse(Response.error(e.getCause()));
-        }
-        catch (IllegalAccessException e) {
-          throw new UnsupportedOperationException("hanle me gracefully", e);
-        }
-
-        // End request callback
-        if (controller instanceof juzu.request.RequestLifeCycle) {
-          try {
-            ((juzu.request.RequestLifeCycle)controller).endRequest(context);
-          }
-          catch (Exception e) {
-            context.setResponse(Response.error(e));
-          }
-        }
-      }
-
-      //
-      return context.getResponse();
-    } else {
-      // Handle that...
-      return null;
-    }
   }
 
   private Dispatch createDispatch(Handler<?> handler, DispatchBridge spi) {

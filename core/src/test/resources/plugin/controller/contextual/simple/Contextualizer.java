@@ -16,20 +16,28 @@
 
 package plugin.controller.contextual.simple;
 
+import juzu.impl.request.Stage;
 import juzu.request.Result;
 import juzu.impl.request.ContextualParameter;
-import juzu.impl.request.Handler;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 
 import java.io.ByteArrayInputStream;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Contextualizer implements RequestFilter {
-  public Result filter(Request request) {
-    Handler m = request.getHandler();
+public class Contextualizer implements RequestFilter<Stage.Handler> {
+
+  @Override
+  public Class<Stage.Handler> getStageType() {
+    return Stage.Handler.class;
+  }
+
+  @Override
+  public Result filter(Stage.Handler source) {
+    Request request = source.getRequest();
+    juzu.impl.request.Handler m = request.getHandler();
     ContextualParameter in = (ContextualParameter)m.getParameter("in");
     request.getContextualArguments().put(in, new ByteArrayInputStream("__foo__".getBytes()));
-    return request.invoke();
+    return source.invoke();
   }
 }

@@ -19,15 +19,23 @@ package plugin.controller.requestfilter.failure;
 import juzu.Response;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
+import juzu.impl.request.Stage;
 import juzu.request.Result;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class FailureFilter implements RequestFilter {
+public class FailureFilter implements RequestFilter<Stage.Handler> {
   public FailureFilter() {
   }
 
-  public Result filter(Request request) {
-    Result result = request.invoke();
+  @Override
+  public Class<Stage.Handler> getStageType() {
+    return Stage.Handler.class;
+  }
+
+  @Override
+  public Result filter(Stage.Handler source) {
+    Request request = source.getRequest();
+    Result result = source.invoke();
     if (result instanceof Result.Error) {
       result = Response.ok("pass").result();
     }
