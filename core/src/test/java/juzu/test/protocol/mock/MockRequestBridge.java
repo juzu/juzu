@@ -39,7 +39,7 @@ import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.runtime.ApplicationRuntime;
 import juzu.impl.plugin.controller.ControllerPlugin;
-import juzu.impl.request.Method;
+import juzu.impl.request.Handler;
 import juzu.impl.inject.Scoped;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.request.Request;
@@ -260,14 +260,14 @@ public abstract class MockRequestBridge implements RequestBridge {
 
       public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
         //
-        Method method = application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
+        Handler handler = application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 
         //
         JSON props = new JSON();
         if (properties != null) {
           for (PropertyType<?> property : properties) {
             Object value = properties.getValue(property);
-            String valid = _checkPropertyValidity(method.getPhase(), property, value);
+            String valid = _checkPropertyValidity(handler.getPhase(), property, value);
             if (valid != null) {
               throw new IllegalArgumentException(valid);
             }

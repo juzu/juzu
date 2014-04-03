@@ -33,7 +33,7 @@ import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.request.BeanParameter;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.ControlParameter;
-import juzu.impl.request.Method;
+import juzu.impl.request.Handler;
 import juzu.impl.request.PhaseParameter;
 import juzu.impl.plugin.controller.descriptor.ControllerDescriptor;
 import juzu.impl.metamodel.MetaModelEvent;
@@ -77,7 +77,7 @@ import java.util.Set;
 public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
-  private static final String METHOD_DESCRIPTOR = Method.class.getSimpleName();
+  private static final String METHOD_DESCRIPTOR = Handler.class.getSimpleName();
 
   /** . */
   private static final String CONTROLLER_DESCRIPTOR = ControllerDescriptor.class.getSimpleName();
@@ -219,7 +219,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     ControllerMetaModel controller = controllers.get(controllerHandle);
     if (controller != null) {
       controller.removeMethod(methodHandle);
-      if (controller.getMethods().isEmpty()) {
+      if (controller.getHandlers().isEmpty()) {
         controller.remove();
       }
     }
@@ -323,7 +323,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
   private void emitController(ProcessingContext env, ControllerMetaModel controller) throws ProcessingException {
     Name fqn = controller.getHandle().getName();
     Element origin = env.get(controller.getHandle());
-    Collection<MethodMetaModel> methods = controller.getMethods();
+    Collection<HandlerMetaModel> methods = controller.getHandlers();
     Writer writer = null;
     try {
       JavaFileObject file = env.createSourceFile(fqn + "_", origin);
@@ -333,7 +333,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       writer.append("package ").append(fqn.getParent()).append(";\n");
 
       // Imports
-      writer.append("import ").append(Method.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(Handler.class.getCanonicalName()).append(";\n");
       writer.append("import ").append(ControlParameter.class.getCanonicalName()).append(";\n");
       writer.append("import ").append(PhaseParameter.class.getCanonicalName()).append(";\n");
       writer.append("import ").append(ContextualParameter.class.getCanonicalName()).append(";\n");
@@ -355,7 +355,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
       //
       int index = 0;
-      for (MethodMetaModel method : methods) {
+      for (HandlerMetaModel method : methods) {
 
         //
         String methodRef = "method_" + index++;

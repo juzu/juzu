@@ -23,6 +23,7 @@ import juzu.impl.plugin.application.Application;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.ControlParameter;
 import juzu.impl.request.EntityUnmarshaller;
+import juzu.impl.request.Handler;
 import juzu.impl.value.ValueType;
 import juzu.request.ClientContext;
 import juzu.request.Result;
@@ -33,7 +34,6 @@ import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
-import juzu.impl.request.Method;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.request.RequestParameter;
@@ -70,7 +70,7 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
     return descriptor;
   }
 
-  public ControllerResolver<Method> getResolver() {
+  public ControllerResolver<Handler> getResolver() {
     return descriptor != null ? descriptor.getResolver() : null;
   }
 
@@ -105,10 +105,10 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
     //
     Map<String, RequestParameter> parameterArguments = new HashMap<String, RequestParameter>(bridge.getRequestArguments());
     MethodHandle handle = bridge.getTarget();
-    Method<?> method = descriptor.getMethodByHandle(handle);
+    Handler<?> handler = descriptor.getMethodByHandle(handle);
 
     //
-    if (method == null) {
+    if (handler == null) {
       StringBuilder sb = new StringBuilder("handle me gracefully : no method could be resolved for " +
           "phase=").append(phase).append(" handle=").append(handle).append(" parameters={");
       int index = 0;
@@ -131,7 +131,7 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
 
     // Make a copy of the original arguments provided by the bridge
     Map<ContextualParameter, Object> contextualArguments = new HashMap<ContextualParameter, Object>();
-    for (ControlParameter a : method.getParameters()) {
+    for (ControlParameter a : handler.getParameters()) {
       if (a instanceof ContextualParameter) {
         contextualArguments.put((ContextualParameter)a, null);
       }
@@ -169,7 +169,7 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
     }
 
     //
-    Request request = new Request(this, method, parameterArguments, contextualArguments, bridge);
+    Request request = new Request(this, handler, parameterArguments, contextualArguments, bridge);
 
     //
     ClassLoader oldCL = Thread.currentThread().getContextClassLoader();

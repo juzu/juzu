@@ -23,10 +23,10 @@ import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
 import juzu.impl.common.JSON;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.ProcessingContext;
+import juzu.impl.plugin.controller.metamodel.HandlerMetaModel;
 import juzu.impl.plugin.controller.metamodel.PhaseParameterMetaModel;
 import juzu.impl.plugin.controller.metamodel.ControllerMetaModel;
 import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
-import juzu.impl.plugin.controller.metamodel.MethodMetaModel;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
 import juzu.impl.plugin.controller.metamodel.ParameterMetaModel;
@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -84,13 +83,13 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
       ControllersMetaModel controllers = metaModel.getChild(ControllersMetaModel.KEY);
       if (controllers != null) {
         for (ControllerMetaModel controller : controllers) {
-          for (MethodMetaModel method : controller) {
-            AnnotationState annotation = router.annotations.get(method.getHandle());
+          for (HandlerMetaModel method : controller) {
+            AnnotationState annotation = router.annotations.get(method.getMethod());
             if (annotation != null) {
               String path = (String)annotation.get("value");
               Integer priority = (Integer)annotation.get("priority");
               HashMap<String, ParamDescriptor> parameters = null;
-              ExecutableElement exe = metaModel.processingContext.get(method.getHandle());
+              ExecutableElement exe = metaModel.processingContext.get(method.getMethod());
               for (VariableElement ve : exe.getParameters()) {
                 Param param = ve.getAnnotation(Param.class);
                 if (param != null) {
@@ -110,7 +109,7 @@ public class RouterApplicationMetaModelPlugin extends ApplicationMetaModelPlugin
               }
               //
               // parameters
-              String handle = method.getHandle().getMethodHandle().toString();
+              String handle = method.getMethod().getMethodHandle().toString();
               RouteMetaModel route = new RouteMetaModel(path, handle, priority != null ? priority : 0, parameters);
               router.routes.add(route);
             }

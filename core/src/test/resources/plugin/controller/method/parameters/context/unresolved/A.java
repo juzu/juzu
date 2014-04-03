@@ -18,7 +18,7 @@ package plugin.controller.method.parameters.context.unresolved;
 
 import juzu.Response;
 import juzu.View;
-import juzu.impl.plugin.controller.MethodParametersTestCase;
+import juzu.impl.plugin.controller.HandlerParametersTestCase;
 
 /** @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a> */
 public class A {
@@ -26,7 +26,7 @@ public class A {
   @View(id = "index")
   public Response.Content index(Object unresolved) {
     if (unresolved == null) {
-      MethodParametersTestCase.WAS_NULL = true;
+      HandlerParametersTestCase.WAS_NULL = true;
     }
     return Response.ok("" + A_.index());
   }

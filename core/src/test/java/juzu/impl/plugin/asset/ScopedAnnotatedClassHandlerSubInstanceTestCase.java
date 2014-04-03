@@ -20,15 +20,15 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ScopedAnnotatedClassSubClassMethodTestCase extends AbstractScopedTestCase {
+public class ScopedAnnotatedClassHandlerSubInstanceTestCase extends AbstractScopedTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment(true, "plugin.asset.scope.annotatedclass.subclassmethod");
+    return createServletDeployment(true, "plugin.asset.scope.annotatedclass.classmethodsubinstance");
   }
 
   @Override
   protected String getExpectedAsset() {
-    return null;
+    return "test.js";
   }
 }

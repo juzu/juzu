@@ -26,7 +26,6 @@ import juzu.impl.common.RunMode;
 import juzu.impl.common.UriBuilder;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.request.ContextualParameter;
-import juzu.impl.request.ControlParameter;
 import juzu.request.ClientContext;
 import juzu.request.Result;
 import juzu.request.RequestParameter;
@@ -35,7 +34,7 @@ import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.ControllerPlugin;
-import juzu.impl.request.Method;
+import juzu.impl.request.Handler;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -66,7 +65,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   final Bridge bridge;
 
   /** . */
-  final Handler handler;
+  final juzu.impl.bridge.spi.web.Handler handler;
 
   /** . */
   final WebBridge http;
@@ -75,7 +74,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   final Phase phase;
 
   /** . */
-  final Method<?> target;
+  final Handler<?> target;
 
   /** . */
   protected Request request;
@@ -88,10 +87,10 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
 
   WebRequestBridge(
       Bridge bridge,
-      Handler handler,
+      juzu.impl.bridge.spi.web.Handler handler,
       WebBridge http,
       Phase phase,
-      Method<?> target,
+      Handler<?> target,
       Map<String, RequestParameter> requestParameters) {
     this.requestParameters = requestParameters;
     this.bridge = bridge;
@@ -199,13 +198,13 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   }
 
   public final DispatchBridge createDispatch(Phase phase, final MethodHandle target, final Map<String, ResponseParameter> parameters) {
-    Method method = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
+    Handler handler = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 
     //
-    Route route = handler.getRoute(method.getHandle());
+    Route route = this.handler.getRoute(handler.getHandle());
     if (route == null) {
-      if (bridge.getApplication().resolveBean(ControllerPlugin.class).getResolver().isIndex(method)) {
-        route = handler.getRoot();
+      if (bridge.getApplication().resolveBean(ControllerPlugin.class).getResolver().isIndex(handler)) {
+        route = this.handler.getRoot();
       }
     }
 
@@ -268,7 +267,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
         throw new IllegalArgumentException("The parameters " + parameters + " are not valid");
       }
     } else {
-      throw new UnsupportedOperationException("handle me gracefully method not mapped " + method.getHandle());
+      throw new UnsupportedOperationException("handle me gracefully method not mapped " + handler.getHandle());
     }
   }
 
@@ -312,7 +311,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
       Phase.View.Dispatch update = (Phase.View.Dispatch)view.dispatch;
       Boolean redirect = view.properties.getValue(PropertyType.REDIRECT_AFTER_ACTION);
       if (redirect != null && !redirect) {
-        Method<?> desc = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
+        Handler<?> desc = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
         Map<String, RequestParameter> rp = Collections.emptyMap();
         for (ResponseParameter parameter : update.getParameters().values()) {
           if (rp.isEmpty()) {

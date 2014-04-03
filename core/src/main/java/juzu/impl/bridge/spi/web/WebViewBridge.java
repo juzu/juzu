@@ -17,7 +17,7 @@
 package juzu.impl.bridge.spi.web;
 
 import juzu.impl.bridge.Bridge;
-import juzu.impl.request.Method;
+import juzu.impl.request.Handler;
 import juzu.request.Phase;
 import juzu.request.RequestParameter;
 
@@ -28,9 +28,9 @@ public class WebViewBridge extends WebMimeBridge {
 
   WebViewBridge(
       Bridge bridge,
-      Handler handler,
+      juzu.impl.bridge.spi.web.Handler handler,
       WebBridge http,
-      Method<?> target,
+      Handler<?> target,
       Map<String, RequestParameter> parameters) {
     super(bridge, handler, http, Phase.VIEW, target, parameters);
   }

@@ -37,7 +37,6 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerMetaModel extends MetaModelObject implements Iterable<MethodMetaModel> {
+public class ControllerMetaModel extends MetaModelObject implements Iterable<HandlerMetaModel> {
 
   /** . */
   public static final MessageCode CANNOT_WRITE_CONTROLLER_COMPANION = new MessageCode("CANNOT_WRITE_CONTROLLER_COMPANION", "The controller companion %1$s cannot be written");
@@ -72,14 +71,14 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
     this.modified = false;
   }
 
-  public Iterator<MethodMetaModel> iterator() {
-    return getMethods().iterator();
+  public Iterator<HandlerMetaModel> iterator() {
+    return getHandlers().iterator();
   }
 
   public JSON toJSON() {
     JSON json = new JSON();
     json.set("handle", handle);
-    json.map("methods", getMethods());
+    json.map("methods", getHandlers());
     return json;
   }
 
@@ -91,8 +90,8 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
     return handle;
   }
 
-  public Collection<MethodMetaModel> getMethods() {
-    return getChildren(MethodMetaModel.class);
+  public Collection<HandlerMetaModel> getHandlers() {
+    return getChildren(HandlerMetaModel.class);
   }
 
   private PhaseParameterMetaModel foo(
@@ -189,7 +188,7 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
       if (phase.annotation.getName().equals(annotationKey.getType().toString())) {
 
         // First remove the previous method
-        Key<MethodMetaModel> key = Key.of(methodHandle, MethodMetaModel.class);
+        Key<HandlerMetaModel> key = Key.of(methodHandle, HandlerMetaModel.class);
         if (getChild(key) == null) {
           // Parameters
           ArrayList<ParameterMetaModel> parameters = new ArrayList<ParameterMetaModel>();
@@ -203,7 +202,7 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
           }
 
           //
-          MethodMetaModel method = new MethodMetaModel(
+          HandlerMetaModel method = new HandlerMetaModel(
             methodHandle,
             id,
             phase,
@@ -220,7 +219,7 @@ public class ControllerMetaModel extends MetaModelObject implements Iterable<Met
 
   void removeMethod(ElementHandle.Method handle) {
     ProcessingContext.log.log(Level.FINE, "Removing method " + handle + " from controller class " + handle);
-    if (removeChild(Key.of(handle, MethodMetaModel.class)) != null) {
+    if (removeChild(Key.of(handle, HandlerMetaModel.class)) != null) {
       modified = true;
       ProcessingContext.log.log(Level.FINE, "Removed method " + handle + " from controller class " + handle);
     }

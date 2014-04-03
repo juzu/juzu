@@ -27,6 +27,7 @@ import juzu.impl.common.JUL;
 import juzu.impl.common.Logger;
 import juzu.impl.common.RunMode;
 import juzu.impl.inject.spi.InjectorProvider;
+import juzu.impl.request.Handler;
 import juzu.io.UndeclaredIOException;
 import juzu.request.ClientContext;
 import juzu.request.Result;
@@ -38,7 +39,6 @@ import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.ControllerResolver;
-import juzu.impl.request.Method;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -85,7 +85,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   protected final Rs resp;
 
   /** . */
-  protected final Method<?> target;
+  protected final Handler<?> target;
 
   /** . */
   protected  final Map<String ,RequestParameter> requestParameters;
@@ -135,8 +135,8 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     }
 
     //
-    ControllerResolver<Method> resolver = bridge.getApplication().resolveBean(ControllerPlugin.class).getResolver();
-    Method<?> target;
+    ControllerResolver<Handler> resolver = bridge.getApplication().resolveBean(ControllerPlugin.class).getResolver();
+    Handler<?> target;
     if (methodId != null) {
       target = resolver.resolveMethod(phase, methodId, parameters.keySet());
     } else {
@@ -157,7 +157,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     this.phase = phase;
   }
 
-  PortletRequestBridge(Bridge bridge,  Phase phase, Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters) {
+  PortletRequestBridge(Bridge bridge,  Phase phase, Rq req, Rs resp, PortletConfig config, Handler<?> target, Map<String, String[]> parameters) {
 
     //
     Map<String, RequestParameter> requestParameters = Collections.emptyMap();
@@ -370,15 +370,15 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
           MimeResponse mimeResp = (MimeResponse)resp;
 
           //
-          Method method = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
+          Handler handler = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 
           //
           BaseURL url;
-          if (method.getPhase() == Phase.ACTION) {
+          if (handler.getPhase() == Phase.ACTION) {
             url = mimeResp.createActionURL();
-          } else if (method.getPhase() == Phase.VIEW) {
+          } else if (handler.getPhase() == Phase.VIEW) {
             url = mimeResp.createRenderURL();
-          } else if (method.getPhase() == Phase.RESOURCE) {
+          } else if (handler.getPhase() == Phase.RESOURCE) {
             url = mimeResp.createResourceURL();
           } else {
             throw new AssertionError();
@@ -430,7 +430,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
             }
 
             // Set method id
-            url.setParameter("juzu.op", method.getId());
+            url.setParameter("juzu.op", handler.getId());
           }
 
           //

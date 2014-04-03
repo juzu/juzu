@@ -27,9 +27,9 @@ import org.junit.Test;
 import java.util.Arrays;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MethodParametersTestCase extends AbstractInjectTestCase {
+public class HandlerParametersTestCase extends AbstractInjectTestCase {
 
-  public MethodParametersTestCase(InjectorProvider di) {
+  public HandlerParametersTestCase(InjectorProvider di) {
     super(di);
   }
 

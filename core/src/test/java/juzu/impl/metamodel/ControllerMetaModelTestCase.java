@@ -29,13 +29,13 @@ import juzu.View;
 import juzu.impl.common.Name;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
+import juzu.impl.plugin.controller.metamodel.HandlerMetaModel;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.compiler.ElementHandle;
 import juzu.impl.plugin.controller.metamodel.ControllerMetaModel;
 import juzu.impl.plugin.controller.metamodel.ControllersMetaModel;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
-import juzu.impl.plugin.controller.metamodel.MethodMetaModel;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
 import juzu.test.JavaFile;
@@ -85,7 +85,7 @@ public class ControllerMetaModelTestCase extends AbstractTestCase {
     List<MetaModelEvent> events = mm.getQueue().clear();
     ApplicationMetaModel application = mm.getChildren(ApplicationMetaModel.class).iterator().next();
     ControllerMetaModel controller = application.getChild(ControllersMetaModel.KEY).iterator().next();
-    MethodMetaModel method = controller.getMethods().iterator().next();
+    HandlerMetaModel method = controller.getHandlers().iterator().next();
     assertEquals(Arrays.asList(
       MetaModelEvent.createAdded(application),
       MetaModelEvent.createAdded(controller),
@@ -122,7 +122,7 @@ public class ControllerMetaModelTestCase extends AbstractTestCase {
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(3, events.size());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-    assertInstanceOf(MethodMetaModel.class, events.get(0).getObject());
+    assertInstanceOf(HandlerMetaModel.class, events.get(0).getObject());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(1).getType());
     assertInstanceOf(ControllerMetaModel.class, events.get(1).getObject());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(2).getType());
@@ -161,7 +161,7 @@ public class ControllerMetaModelTestCase extends AbstractTestCase {
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(2, events.size());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-    assertInstanceOf(MethodMetaModel.class, events.get(0).getObject());
+    assertInstanceOf(HandlerMetaModel.class, events.get(0).getObject());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(1).getType());
     assertInstanceOf(ControllerMetaModel.class, events.get(1).getObject());
   }
@@ -211,13 +211,13 @@ public class ControllerMetaModelTestCase extends AbstractTestCase {
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(5, events.size());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-    assertInstanceOf(MethodMetaModel.class, events.get(0).getObject());
+    assertInstanceOf(HandlerMetaModel.class, events.get(0).getObject());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(1).getType());
     assertInstanceOf(ControllerMetaModel.class, events.get(1).getObject());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(2).getType());
     assertInstanceOf(ControllerMetaModel.class, events.get(2).getObject());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(3).getType());
-    assertInstanceOf(MethodMetaModel.class, events.get(3).getObject());
+    assertInstanceOf(HandlerMetaModel.class, events.get(3).getObject());
     assertEquals(MetaModelEvent.UPDATED, events.get(4).getType());
     assertInstanceOf(ControllerMetaModel.class, events.get(4).getObject());
   }
@@ -258,7 +258,7 @@ public class ControllerMetaModelTestCase extends AbstractTestCase {
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(2, events.size());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-    assertInstanceOf(MethodMetaModel.class, events.get(0).getObject());
+    assertInstanceOf(HandlerMetaModel.class, events.get(0).getObject());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(1).getType());
     assertInstanceOf(ControllerMetaModel.class, events.get(1).getObject());
   }
@@ -317,7 +317,7 @@ public class ControllerMetaModelTestCase extends AbstractTestCase {
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(0).getType());
     assertInstanceOf(ControllerMetaModel.class, events.get(0).getObject());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(1).getType());
-    assertInstanceOf(MethodMetaModel.class, events.get(1).getObject());
+    assertInstanceOf(HandlerMetaModel.class, events.get(1).getObject());
     assertEquals(MetaModelEvent.UPDATED, events.get(2).getType());
     assertInstanceOf(ControllerMetaModel.class, events.get(2).getObject());
   }
@@ -357,7 +357,7 @@ public class ControllerMetaModelTestCase extends AbstractTestCase {
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(2, events.size());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-    assertInstanceOf(MethodMetaModel.class, events.get(0).getObject());
+    assertInstanceOf(HandlerMetaModel.class, events.get(0).getObject());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(1).getType());
     assertInstanceOf(ControllerMetaModel.class, events.get(1).getObject());
   }
@@ -413,7 +413,7 @@ public class ControllerMetaModelTestCase extends AbstractTestCase {
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(2, events.size());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-    assertInstanceOf(MethodMetaModel.class, events.get(0).getObject());
+    assertInstanceOf(HandlerMetaModel.class, events.get(0).getObject());
     assertEquals(MetaModelEvent.UPDATED, events.get(1).getType());
     assertInstanceOf(ControllerMetaModel.class, events.get(1).getObject());
   }
@@ -470,7 +470,7 @@ public class ControllerMetaModelTestCase extends AbstractTestCase {
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(2, events.size());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-    assertInstanceOf(MethodMetaModel.class, events.get(0).getObject());
+    assertInstanceOf(HandlerMetaModel.class, events.get(0).getObject());
     assertEquals(MetaModelEvent.UPDATED, events.get(1).getType());
     assertInstanceOf(ControllerMetaModel.class, events.get(1).getObject());
   }
@@ -505,13 +505,13 @@ public class ControllerMetaModelTestCase extends AbstractTestCase {
     List<MetaModelEvent> events = mm.getQueue().clear();
     assertEquals(5, events.size());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(0).getType());
-    assertEquals(ElementHandle.Method.create(Name.parse("metamodel.controller.A"), "index", Collections.<String>emptyList()), ((MethodMetaModel)events.get(0).getObject()).getHandle());
+    assertEquals(ElementHandle.Method.create(Name.parse("metamodel.controller.A"), "index", Collections.<String>emptyList()), ((HandlerMetaModel)events.get(0).getObject()).getMethod());
     assertEquals(MetaModelEvent.BEFORE_REMOVE, events.get(1).getType());
     assertEquals(ElementHandle.Type.create(Name.parse("metamodel.controller.A")), ((ControllerMetaModel)events.get(1).getObject()).getHandle());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(2).getType());
     assertEquals(ElementHandle.Type.create(Name.parse("metamodel.controller.sub.A")), ((ControllerMetaModel)events.get(2).getObject()).getHandle());
     assertEquals(MetaModelEvent.AFTER_ADD, events.get(3).getType());
-    assertEquals(ElementHandle.Method.create(Name.parse("metamodel.controller.sub.A"), "index", Collections.<String>emptyList()), ((MethodMetaModel)events.get(3).getObject()).getHandle());
+    assertEquals(ElementHandle.Method.create(Name.parse("metamodel.controller.sub.A"), "index", Collections.<String>emptyList()), ((HandlerMetaModel)events.get(3).getObject()).getMethod());
     assertEquals(MetaModelEvent.UPDATED, events.get(4).getType());
     assertEquals(ElementHandle.Type.create(Name.parse("metamodel.controller.sub.A")), ((ControllerMetaModel)events.get(4).getObject()).getHandle());
   }

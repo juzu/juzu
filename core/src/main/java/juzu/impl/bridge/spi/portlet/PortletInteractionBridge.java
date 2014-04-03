@@ -23,7 +23,7 @@ import juzu.request.Result;
 import juzu.request.ResponseParameter;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.request.ContextualParameter;
-import juzu.impl.request.Method;
+import juzu.impl.request.Handler;
 import juzu.request.Phase;
 
 import javax.portlet.PortletConfig;
@@ -47,7 +47,7 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
     super(bridge, phase, req, resp, config);
   }
 
-  protected PortletInteractionBridge(Bridge bridge, Phase phase, Rq req, Rs resp, PortletConfig config, Method<?> target, Map<String, String[]> parameters) {
+  protected PortletInteractionBridge(Bridge bridge, Phase phase, Rq req, Rs resp, PortletConfig config, Handler<?> target, Map<String, String[]> parameters) {
     super(bridge, phase, req, resp, config, target, parameters);
   }
 
@@ -81,10 +81,10 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
       }
 
       //
-      Method method = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
+      Handler handler = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
 
       // Method id
-      super.resp.setRenderParameter("juzu.op", method.getId());
+      super.resp.setRenderParameter("juzu.op", handler.getId());
 
       //
       PortletMode portletMode = update.getProperties().getValue(JuzuPortlet.PORTLET_MODE);

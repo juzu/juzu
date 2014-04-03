@@ -41,7 +41,7 @@ import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.spring.SpringInjector;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.controller.ControllerResolver;
-import juzu.impl.request.Method;
+import juzu.impl.request.Handler;
 import juzu.impl.resource.ResourceResolver;
 import juzu.request.Phase;
 
@@ -259,19 +259,19 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
   }
 
   public void processEvent(EventRequest request, EventResponse response) throws PortletException, IOException {
-    ControllerResolver<Method> resolver = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getResolver();
-    List<Method> methods = resolver.resolveMethods(Phase.EVENT, null, request.getParameterMap().keySet());
+    ControllerResolver<Handler> resolver = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getResolver();
+    List<Handler> handlers = resolver.resolveMethods(Phase.EVENT, null, request.getParameterMap().keySet());
 
     //
-    Method target = null;
-    for (Method method : methods) {
-      Consumes consumes = method.getMethod().getAnnotation(Consumes.class);
+    Handler target = null;
+    for (Handler handler : handlers) {
+      Consumes consumes = handler.getMethod().getAnnotation(Consumes.class);
       if (consumes.value().equals("")) {
-        target = method;
+        target = handler;
         // we don't break here on purpose because having empty match is less important
         // than an explicit match
       } else if (consumes.value().equals(request.getEvent().getName())) {
-        target = method;
+        target = handler;
         break;
       }
     }

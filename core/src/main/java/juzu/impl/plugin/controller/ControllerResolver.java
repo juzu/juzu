@@ -50,7 +50,7 @@ public abstract class ControllerResolver<M> {
   // todo : take in account multi valued parameters
   // todo : what happens with type conversion, somehow we should forbid m(String a) and m(int a)
 
-  public abstract M[] getMethods();
+  public abstract M[] getHandlers();
 
   public abstract String getId(M method);
 
@@ -142,7 +142,7 @@ public abstract class ControllerResolver<M> {
 
     //
     List<Match> matches = new ArrayList<Match>();
-    for (M method : getMethods()) {
+    for (M method : getHandlers()) {
       if (getPhase(method) == phase) {
         if (phase == Phase.VIEW) {
           if (getName(method).equals("index")) {
@@ -179,7 +179,7 @@ public abstract class ControllerResolver<M> {
 
     //
     List<Match> matches = new ArrayList<Match>();
-    for (M method : getMethods()) {
+    for (M method : getHandlers()) {
       if (getPhase(method) == phase && (methodId == null || methodId.equals(getId(method)))) {
         matches.add(new Match(parameterNames, method));
       }
@@ -210,7 +210,7 @@ public abstract class ControllerResolver<M> {
 
     //
     List<Match> matches = new ArrayList<Match>();
-    for (M method : getMethods()) {
+    for (M method : getHandlers()) {
       if (getPhase(method) == phase && (methodId == null || methodId.equals(getId(method)))) {
         matches.add(new Match(parameterNames, method));
       }
@@ -248,7 +248,7 @@ public abstract class ControllerResolver<M> {
 
     //
     List<Match> matches = new ArrayList<Match>();
-    for (M method : getMethods()) {
+    for (M method : getHandlers()) {
       if (getParameterNames(method).containsAll(parameterNames)) {
         if (typeName == null) {
           if (getName(method).equals(methodName)) {

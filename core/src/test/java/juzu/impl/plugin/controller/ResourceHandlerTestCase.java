@@ -19,7 +19,7 @@ package juzu.impl.plugin.controller;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.ControlParameter;
-import juzu.impl.request.Method;
+import juzu.impl.request.Handler;
 import juzu.impl.request.PhaseParameter;
 import juzu.impl.common.Cardinality;
 import juzu.request.Phase;
@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ResourceMethodTestCase extends AbstractTestCase {
+public class ResourceHandlerTestCase extends AbstractTestCase {
 
   @Override
   public void setUp() throws Exception {
@@ -57,7 +57,7 @@ public class ResourceMethodTestCase extends AbstractTestCase {
 
   @Test
   public void testNoArg() throws Exception {
-    Method cm = controllerDescriptor.getMethod(aClass, "noArg");
+    Handler cm = controllerDescriptor.getMethod(aClass, "noArg");
     assertEquals("noArg", cm.getName());
     assertEquals(Phase.RESOURCE, cm.getPhase());
     assertEquals(Collections.<ControlParameter>emptyList(), cm.getParameters());
@@ -65,7 +65,7 @@ public class ResourceMethodTestCase extends AbstractTestCase {
 
   @Test
   public void testStringArg() throws Exception {
-    Method cm = controllerDescriptor.getMethod(aClass, "oneArg", String.class);
+    Handler cm = controllerDescriptor.getMethod(aClass, "oneArg", String.class);
     assertEquals("oneArg", cm.getName());
     assertEquals(Phase.RESOURCE, cm.getPhase());
     assertEquals(Arrays.asList(new PhaseParameter("foo", null, null, Cardinality.SINGLE, null)), cm.getParameters());

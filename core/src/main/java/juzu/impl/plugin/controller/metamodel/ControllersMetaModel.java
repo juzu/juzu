@@ -26,7 +26,6 @@ import juzu.impl.compiler.ElementHandle;
 import juzu.impl.metamodel.Key;
 import juzu.impl.metamodel.MetaModelObject;
 import juzu.impl.common.JSON;
-import juzu.impl.request.BeanParameter;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -87,7 +86,7 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
   }
 
   public MethodInvocation resolveMethodInvocation(String typeName, String methodName, Map<String, String> parameterMap) throws ProcessingException {
-    MethodMetaModel method = resolve(typeName, methodName, parameterMap.keySet());
+    HandlerMetaModel method = resolve(typeName, methodName, parameterMap.keySet());
     if (method == null) {
       return null;
     } else {
@@ -102,7 +101,7 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
     }
   }
 
-  public MethodMetaModel resolve(String typeName, String methodName, Set<String> parameterNames) throws AmbiguousResolutionException {
+  public HandlerMetaModel resolve(String typeName, String methodName, Set<String> parameterNames) throws AmbiguousResolutionException {
     try {
       ControllerMetaModelResolver resolver = new ControllerMetaModelResolver(this);
       return resolver.resolve(typeName, methodName, parameterNames);

@@ -20,7 +20,7 @@ import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.common.Logger;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.ControllerPlugin;
-import juzu.impl.request.Method;
+import juzu.impl.request.Handler;
 import juzu.impl.inject.Scoped;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.common.JSON;
@@ -58,20 +58,20 @@ public class MockClient implements UserContext {
       }
 
       //
-      Method method = null;
+      Handler handler = null;
       if (json.getString("target") != null) {
         MethodHandle target = MethodHandle.parse(json.getString("target"));
-        method = controllerPlugin.getDescriptor().getMethodByHandle(target);
+        handler = controllerPlugin.getDescriptor().getMethodByHandle(target);
       }
 
       //
-      if (method != null) {
-        if (method.getPhase() == Phase.ACTION) {
-          request = new MockActionBridge(application.getLifeCycle(), this, method.getHandle(), parameters);
-        } else if (method.getPhase() == Phase.VIEW) {
-          request = new MockViewBridge(application.getLifeCycle(), this, method.getHandle(), parameters);
-        } else if (method.getPhase() == Phase.RESOURCE) {
-          request = new MockResourceBridge(application.getLifeCycle(), this, method.getHandle(), parameters);
+      if (handler != null) {
+        if (handler.getPhase() == Phase.ACTION) {
+          request = new MockActionBridge(application.getLifeCycle(), this, handler.getHandle(), parameters);
+        } else if (handler.getPhase() == Phase.VIEW) {
+          request = new MockViewBridge(application.getLifeCycle(), this, handler.getHandle(), parameters);
+        } else if (handler.getPhase() == Phase.RESOURCE) {
+          request = new MockResourceBridge(application.getLifeCycle(), this, handler.getHandle(), parameters);
         } else {
           throw new AssertionError();
         }
@@ -130,14 +130,14 @@ public class MockClient implements UserContext {
 
   public MockViewBridge render(String methodId) {
     MethodHandle handle = null;
-    Method method = null;
+    Handler handler = null;
     if (methodId != null) {
-      method = controllerPlugin.getDescriptor().getMethodById(methodId);
+      handler = controllerPlugin.getDescriptor().getMethodById(methodId);
     } else {
-      method = controllerPlugin.getDescriptor().getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
+      handler = controllerPlugin.getDescriptor().getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
     }
-    if (method != null) {
-      handle = method.getHandle();
+    if (handler != null) {
+      handle = handler.getHandle();
     }
     MockViewBridge render = new MockViewBridge(application.getLifeCycle(), this, handle, new HashMap<String, String[]>());
     invoke(render);

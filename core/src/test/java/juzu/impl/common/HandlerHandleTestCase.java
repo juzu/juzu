@@ -23,7 +23,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MethodHandleTestCase extends AbstractTestCase {
+public class HandlerHandleTestCase extends AbstractTestCase {
 
   @Test
   public void testToString() {

@@ -27,19 +27,22 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteResourceMethodTestCase extends AbstractWebTestCase {
+public class RouteRequestHandlerResourceTestCase extends AbstractWebTestCase {
 
   @Deployment(testable = false)
   public static WebArchive createDeployment() {
-    return createServletDeployment(true, "bridge.servlet.route.resource.method");
+    return createServletDeployment(true, "bridge.servlet.request.method.resource");
   }
 
   @Test
   public void testMethods() throws Exception {
-    Method[] methods = { Method.GET, Method.POST, Method.PUT };
+    Method[] methods = { Method.GET, Method.POST, Method.PUT, Method.DELETE };
+    boolean[] doOutput = { false, true, true, true };
     URL url = applicationURL();
-    for (Method method : methods) {
+    for (int i = 0;i < methods.length;i++) {
       HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+      conn.setDoOutput(doOutput[i]);
+      Method method = methods[i];
       conn.setRequestMethod(method.name());
       assertEquals(200, conn.getResponseCode());
       String ret = Tools.read(conn.getInputStream());

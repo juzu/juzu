@@ -23,7 +23,7 @@ import juzu.impl.plugin.PluginContext;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.ControllerPlugin;
-import juzu.impl.request.Method;
+import juzu.impl.request.Handler;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.request.Result;
@@ -43,7 +43,7 @@ import java.util.Map;
 public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
 
   /** . */
-  Map<String, Method> table;
+  Map<String, Handler> table;
 
   @Inject
   ControllerPlugin controllerPlugin;
@@ -81,8 +81,8 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
         "jquery").deploy();
 
     //
-    Map<String, Method> table = new HashMap<String, Method>();
-    for (Method cm : controllerPlugin.getDescriptor().getMethods()) {
+    Map<String, Handler> table = new HashMap<String, Handler>();
+    for (Handler cm : controllerPlugin.getDescriptor().getHandlers()) {
       Ajax ajax = cm.getMethod().getAnnotation(Ajax.class);
       if (ajax != null) {
         table.put(cm.getName(), cm);
@@ -115,7 +115,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
                     // BUT THAT SHOULD BE REVISED TO USE THE ID INSTEAD
                     StringBuilder sb = new StringBuilder();
                     sb.append("<div class=\"jz\">\n");
-                    for (Map.Entry<String, Method> entry : table.entrySet()) {
+                    for (Map.Entry<String, Handler> entry : table.entrySet()) {
                       String baseURL = request.createDispatch(entry.getValue()).toString();
                       sb.append("<div data-method-id=\"");
                       sb.append(entry.getValue().getId());

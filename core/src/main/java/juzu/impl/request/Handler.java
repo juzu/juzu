@@ -16,61 +16,58 @@
 
 package juzu.impl.request;
 
-import juzu.impl.bridge.Parameters;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
 import juzu.request.Phase;
 
 import java.beans.Introspector;
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * A controller method.
+ * A controller handler.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public final class Method<P extends Phase> {
+public final class Handler<P extends Phase> {
 
-  /** . */
+  /** An optional id. */
   private final String id;
 
-  /** . */
+  /** The phase this handler targets. */
   private final P phase;
 
-  /** . */
+  /** The type of the controller owning this handler. */
   private final Class<?> type;
 
-  /** . */
-  private final java.lang.reflect.Method method;
+  /** The corresponding java method. */
+  private final Method method;
 
-  /** . */
+  /** The handler parameters as a list. */
   private final List<ControlParameter> parameterList;
 
-  /** . */
+  /** The handler parameters as a map. */
   private final Map<String, ControlParameter> parameterMap;
 
   /** . */
   final boolean requiresPrefix;
 
-  /** . */
+  /** The handle corresponding to the {@link #method} field. */
   private final MethodHandle handle;
 
-  public Method(
+  public Handler(
       String id,
       P phase,
       Class<?> type,
-      java.lang.reflect.Method method,
+      Method method,
       List<ControlParameter> parameterList) {
 
     // Fix parameter list
@@ -151,7 +148,7 @@ public final class Method<P extends Phase> {
     return type;
   }
 
-  public java.lang.reflect.Method getMethod() {
+  public Method getMethod() {
     return method;
   }
 

@@ -19,13 +19,11 @@ package juzu.impl.bridge.spi.web;
 import juzu.Resource;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.common.Tools;
 import juzu.impl.common.UriBuilder;
 import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.impl.plugin.router.RouterDescriptor;
 import juzu.impl.plugin.router.RouterPlugin;
-import juzu.impl.request.Method;
 import juzu.request.RequestParameter;
 import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
@@ -40,7 +38,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Handler implements Closeable {
@@ -115,7 +112,7 @@ public class Handler implements Closeable {
     String requestPath = bridge.getRequestContext().getRequestPath();
 
     // Determine first a possible match from the root route from the request path
-    Method requestTarget = null;
+    juzu.impl.request.Handler requestTarget = null;
     RouteMatch requestMatch = null;
     Map<String, RequestParameter> requestParameters = Collections.emptyMap();
     if (requestPath.startsWith(bridge.getRequestContext().getPath())) {
@@ -129,7 +126,7 @@ public class Handler implements Closeable {
         RouteMatch match = matches.next();
         RouteDescriptor routeDesc = getMethods(match.getRoute());
         if (routeDesc != null) {
-          Method target = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(routeDesc.handle);
+          juzu.impl.request.Handler target = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(routeDesc.handle);
           if (target.getPhase() == Phase.VIEW) {
             if (requestMethod == juzu.Method.POST) {
               requestTarget =  target;

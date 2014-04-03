@@ -24,60 +24,60 @@ import java.util.Collection;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-class ControllerMetaModelResolver extends ControllerResolver<MethodMetaModel> {
+class ControllerMetaModelResolver extends ControllerResolver<HandlerMetaModel> {
 
   /** . */
   private final ControllersMetaModel controllers;
 
   /** . */
-  private final MethodMetaModel[] methods;
+  private final HandlerMetaModel[] methods;
 
   /** . */
   private final int size;
 
   ControllerMetaModelResolver(ControllersMetaModel controllers) throws NullPointerException {
     int size = 0;
-    List<MethodMetaModel> methods = new ArrayList<MethodMetaModel>();
+    List<HandlerMetaModel> methods = new ArrayList<HandlerMetaModel>();
     for (ControllerMetaModel controller : controllers.getChildren(ControllerMetaModel.class)) {
       size++;
-      for (MethodMetaModel method : controller.getMethods()) {
+      for (HandlerMetaModel method : controller.getHandlers()) {
         methods.add(method);
       }
     }
 
     //
     this.controllers = controllers;
-    this.methods = methods.toArray(new MethodMetaModel[methods.size()]);
+    this.methods = methods.toArray(new HandlerMetaModel[methods.size()]);
     this.size = size;
   }
 
   @Override
-  public MethodMetaModel[] getMethods() {
+  public HandlerMetaModel[] getHandlers() {
     return methods;
   }
 
   @Override
-  public String getId(MethodMetaModel method) {
+  public String getId(HandlerMetaModel method) {
     return method.getId();
   }
 
   @Override
-  public Phase getPhase(MethodMetaModel method) {
+  public Phase getPhase(HandlerMetaModel method) {
     return method.getPhase();
   }
 
   @Override
-  public String getName(MethodMetaModel method) {
+  public String getName(HandlerMetaModel method) {
     return method.getName();
   }
 
   @Override
-  public boolean isDefault(MethodMetaModel method) {
+  public boolean isDefault(HandlerMetaModel method) {
     return method.getController().getHandle().getName().equals(controllers.defaultController) || size < 2;
   }
 
   @Override
-  public Collection<String> getParameterNames(MethodMetaModel method) {
+  public Collection<String> getParameterNames(HandlerMetaModel method) {
     return method.getParameterNames();
   }
 }

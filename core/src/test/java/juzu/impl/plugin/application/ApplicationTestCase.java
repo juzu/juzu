@@ -19,7 +19,7 @@ package juzu.impl.plugin.application;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
-import juzu.impl.request.Method;
+import juzu.impl.request.Handler;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
 import org.junit.Test;
@@ -51,9 +51,9 @@ public class ApplicationTestCase extends AbstractTestCase {
     //
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllersDescriptor controllerDesc = new ControllersDescriptor(desc);
-    Method a = controllerDesc.getMethod(aClass, "a");
-    Method b = controllerDesc.getMethod(aClass, "b");
-    Method c = controllerDesc.getMethod(aClass, "c");
+    Handler a = controllerDesc.getMethod(aClass, "a");
+    Handler b = controllerDesc.getMethod(aClass, "b");
+    Handler c = controllerDesc.getMethod(aClass, "c");
 
     //
     assertEquals("foo", a.getId());

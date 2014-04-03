@@ -275,7 +275,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     if (request.getPhase() == Phase.VIEW) {
       Result result = request.getResult();
       if (result instanceof Result.Status) {
-        final Collection<Chunk.Property<String>> bar = foo(request.getMethod().getMethod(), Collections.<Chunk.Property<String>>emptyList());
+        final Collection<Chunk.Property<String>> bar = foo(request.getHandler().getMethod(), Collections.<Chunk.Property<String>>emptyList());
         Result.Status status = (Result.Status)result;
         if (status.decorated && (bar.size() > 0)) {
           status = new Result.Status(status.code, true, new StreamableDecorator(status.streamable) {

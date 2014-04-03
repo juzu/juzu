@@ -22,7 +22,7 @@ import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.common.JSON;
-import juzu.impl.request.Method;
+import juzu.impl.request.Handler;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class ControllersDescriptor extends PluginDescriptor {
   private final List<ControllerDescriptor> controllers;
 
   /** . */
-  private final ArrayList<Method> methods;
+  private final ArrayList<Handler> handlers;
 
   /** . */
   private final ArrayList<juzu.impl.inject.BeanDescriptor> beans;
@@ -52,7 +52,7 @@ public class ControllersDescriptor extends PluginDescriptor {
   private ControllerDescriptorResolver resolver;
 
   /** . */
-  private final Map<MethodHandle, Method> byHandle;
+  private final Map<MethodHandle, Handler> byHandle;
 
   public ControllersDescriptor(ApplicationDescriptor desc) throws Exception {
     this(desc.getApplicationLoader(), desc.getConfig().getJSON("controller"));
@@ -60,20 +60,20 @@ public class ControllersDescriptor extends PluginDescriptor {
 
   public ControllersDescriptor(ClassLoader loader, JSON config) throws Exception {
     List<ControllerDescriptor> controllers = new ArrayList<ControllerDescriptor>();
-    ArrayList<Method> controllerMethods = new ArrayList<Method>();
+    ArrayList<Handler> handlers = new ArrayList<Handler>();
     ArrayList<juzu.impl.inject.BeanDescriptor> beans = new ArrayList<juzu.impl.inject.BeanDescriptor>();
-    HashMap<MethodHandle, Method> byHandle = new HashMap<MethodHandle, Method>();
+    HashMap<MethodHandle, Handler> byHandle = new HashMap<MethodHandle, Handler>();
 
     // Load controllers
     for (String fqn : config.getList("controllers", String.class)) {
       Class<?> clazz = loader.loadClass(fqn);
       Field f = clazz.getField("DESCRIPTOR");
       ControllerDescriptor bean = (ControllerDescriptor)f.get(null);
-      for (Method method : bean.getMethods()) {
-        byHandle.put(method.getHandle(), method);
+      for (Handler handler : bean.getHandlers()) {
+        byHandle.put(handler.getHandle(), handler);
       }
       controllers.add(bean);
-      controllerMethods.addAll(bean.getMethods());
+      handlers.addAll(bean.getHandlers());
       beans.add(BeanDescriptor.createFromBean(bean.getType(), null, null));
     }
 
@@ -91,7 +91,7 @@ public class ControllersDescriptor extends PluginDescriptor {
     this.escapeXML = escapeXML;
     this.defaultController = defaultController;
     this.controllers = controllers;
-    this.methods = controllerMethods;
+    this.handlers = handlers;
     this.beans = beans;
     this.resolver = new ControllerDescriptorResolver(this);
     this.byHandle = byHandle;
@@ -101,7 +101,7 @@ public class ControllersDescriptor extends PluginDescriptor {
     return beans;
   }
 
-  public ControllerResolver<Method> getResolver() {
+  public ControllerResolver<Handler> getResolver() {
     return resolver;
   }
 
@@ -117,13 +117,13 @@ public class ControllersDescriptor extends PluginDescriptor {
     return controllers;
   }
 
-  public List<Method> getMethods() {
-    return methods;
+  public List<Handler> getHandlers() {
+    return handlers;
   }
 
-  public Method getMethod(Class<?> type, String name, Class<?>... parameterTypes) {
-    for (int i = 0;i < methods.size();i++) {
-      Method cm = methods.get(i);
+  public Handler getMethod(Class<?> type, String name, Class<?>... parameterTypes) {
+    for (int i = 0;i < handlers.size();i++) {
+      Handler cm = handlers.get(i);
       java.lang.reflect.Method m = cm.getMethod();
       if (type.equals(cm.getType()) && m.getName().equals(name)) {
         Class<?>[] a = m.getParameterTypes();
@@ -140,9 +140,9 @@ public class ControllersDescriptor extends PluginDescriptor {
     return null;
   }
 
-  public Method getMethodById(String methodId) {
-    for (int i = 0;i < methods.size();i++) {
-      Method cm = methods.get(i);
+  public Handler getMethodById(String methodId) {
+    for (int i = 0;i < handlers.size();i++) {
+      Handler cm = handlers.get(i);
       if (cm.getId().equals(methodId)) {
         return cm;
       }
@@ -150,7 +150,7 @@ public class ControllersDescriptor extends PluginDescriptor {
     return null;
   }
 
-  public Method getMethodByHandle(MethodHandle handle) {
+  public Handler getMethodByHandle(MethodHandle handle) {
     return byHandle.get(handle);
   }
 }

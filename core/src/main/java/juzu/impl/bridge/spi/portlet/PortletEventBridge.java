@@ -20,7 +20,7 @@ import juzu.Event;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.Introspector;
 import juzu.impl.request.ContextualParameter;
-import juzu.impl.request.Method;
+import juzu.impl.request.Handler;
 import juzu.request.ClientContext;
 import juzu.request.Phase;
 
@@ -39,7 +39,7 @@ public class PortletEventBridge extends PortletInteractionBridge<EventRequest, E
       EventRequest req,
       EventResponse resp,
       PortletConfig config,
-      Method<?> target,
+      Handler<?> target,
       Map<String, String[]> parameters) {
     super(bridge, Phase.EVENT, req, resp, config, target, parameters);
   }

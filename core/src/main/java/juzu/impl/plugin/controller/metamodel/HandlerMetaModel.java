@@ -27,13 +27,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class MethodMetaModel extends MetaModelObject {
+public class HandlerMetaModel extends MetaModelObject {
 
   /** The controller. */
   ControllerMetaModel controller;
 
   /** . */
-  final ElementHandle.Method handle;
+  final ElementHandle.Method method;
 
   /** . */
   final String declaredId;
@@ -50,8 +50,8 @@ public class MethodMetaModel extends MetaModelObject {
   /** . */
   final String id;
 
-  MethodMetaModel(
-      ElementHandle.Method handle,
+  HandlerMetaModel(
+      ElementHandle.Method method,
       String declaredId,
       Phase phase,
       String name,
@@ -59,13 +59,13 @@ public class MethodMetaModel extends MetaModelObject {
 
     String id;
     if (declaredId == null) {
-      id = handle.getTypeName().getIdentifier() + "." + handle.getName();
+      id = method.getTypeName().getIdentifier() + "." + method.getName();
     } else {
       id = declaredId;
     }
 
     //
-    this.handle = handle;
+    this.method = method;
     this.declaredId = declaredId;
     this.phase = phase;
     this.name = name;
@@ -75,7 +75,7 @@ public class MethodMetaModel extends MetaModelObject {
 
   public JSON toJSON() {
     JSON json = new JSON();
-    json.set("handle", handle);
+    json.set("method", method);
     json.set("id", declaredId);
     json.set("phase", phase);
     json.set("name", name);
@@ -87,8 +87,8 @@ public class MethodMetaModel extends MetaModelObject {
     return controller;
   }
 
-  public ElementHandle.Method getHandle() {
-    return handle;
+  public ElementHandle.Method getMethod() {
+    return method;
   }
 
   public String getId() {

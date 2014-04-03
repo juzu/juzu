@@ -18,7 +18,7 @@ package juzu.request;
 
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.impl.request.Method;
+import juzu.impl.request.Handler;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
 
@@ -32,7 +32,7 @@ public class RequestContext {
   private static final Object[] EMPTY = new Object[0];
 
   /** . */
-  protected final Method method;
+  protected final Handler handler;
 
   /** . */
   protected final Request request;
@@ -40,13 +40,13 @@ public class RequestContext {
   /** . */
   protected Response response;
 
-  public RequestContext(Request request, Method method) {
+  public RequestContext(Request request, Handler handler) {
     this.request = request;
-    this.method = method;
+    this.handler = handler;
   }
 
-  public Method getMethod() {
-    return method;
+  public Handler getHandler() {
+    return handler;
   }
 
   public Map<String, RequestParameter> getParameters() {
@@ -96,47 +96,47 @@ public class RequestContext {
   /**
    * Create a dispatch object with unset parameters.
    *
-   * @param method the method descriptor
+   * @param handler the method descriptor
    * @return the corresponding dispatch object
    */
-  public Dispatch createDispatch(Method<?> method) {
-    return request.createDispatch(method);
+  public Dispatch createDispatch(Handler<?> handler) {
+    return request.createDispatch(handler);
   }
 
-  public Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method) {
-    return (Phase.Action.Dispatch)request.createDispatch(method, EMPTY);
+  public Phase.Action.Dispatch createActionDispatch(Handler<Phase.Action> handler) {
+    return (Phase.Action.Dispatch)request.createDispatch(handler, EMPTY);
   }
 
-  public Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method, Object arg) {
-    return (Phase.Action.Dispatch)request.createDispatch(method, new Object[]{arg});
+  public Phase.Action.Dispatch createActionDispatch(Handler<Phase.Action> handler, Object arg) {
+    return (Phase.Action.Dispatch)request.createDispatch(handler, new Object[]{arg});
   }
 
-  public Phase.Action.Dispatch createActionDispatch(Method<Phase.Action> method, Object[] args) {
-    return (Phase.Action.Dispatch)request.createDispatch(method, args);
+  public Phase.Action.Dispatch createActionDispatch(Handler<Phase.Action> handler, Object[] args) {
+    return (Phase.Action.Dispatch)request.createDispatch(handler, args);
   }
 
-  public Phase.View.Dispatch createViewDispatch(Method<Phase.View> method) {
-    return (Phase.View.Dispatch)request.createDispatch(method, EMPTY);
+  public Phase.View.Dispatch createViewDispatch(Handler<Phase.View> handler) {
+    return (Phase.View.Dispatch)request.createDispatch(handler, EMPTY);
   }
 
-  public Phase.View.Dispatch createViewDispatch(Method<Phase.View> method, Object arg) {
-    return (Phase.View.Dispatch)request.createDispatch(method, new Object[]{arg});
+  public Phase.View.Dispatch createViewDispatch(Handler<Phase.View> handler, Object arg) {
+    return (Phase.View.Dispatch)request.createDispatch(handler, new Object[]{arg});
   }
 
-  public Phase.View.Dispatch createViewDispatch(Method<Phase.View> method, Object[] args) {
-    return (Phase.View.Dispatch)request.createDispatch(method, args);
+  public Phase.View.Dispatch createViewDispatch(Handler<Phase.View> handler, Object[] args) {
+    return (Phase.View.Dispatch)request.createDispatch(handler, args);
   }
 
-  public Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method) {
-    return (Phase.Resource.Dispatch)request.createDispatch(method, EMPTY);
+  public Phase.Resource.Dispatch createResourceDispatch(Handler<Phase.Resource> handler) {
+    return (Phase.Resource.Dispatch)request.createDispatch(handler, EMPTY);
   }
 
-  public Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method, Object arg) {
-    return (Phase.Resource.Dispatch)request.createDispatch(method, new Object[]{arg});
+  public Phase.Resource.Dispatch createResourceDispatch(Handler<Phase.Resource> handler, Object arg) {
+    return (Phase.Resource.Dispatch)request.createDispatch(handler, new Object[]{arg});
   }
 
-  public Phase.Resource.Dispatch createResourceDispatch(Method<Phase.Resource> method, Object[] args) {
-    return (Phase.Resource.Dispatch)request.createDispatch(method, args);
+  public Phase.Resource.Dispatch createResourceDispatch(Handler<Phase.Resource> handler, Object[] args) {
+    return (Phase.Resource.Dispatch)request.createDispatch(handler, args);
   }
 
   public Response getResponse() {
