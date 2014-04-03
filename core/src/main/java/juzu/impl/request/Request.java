@@ -373,6 +373,26 @@ public class Request implements ScopingContext {
           } else {
             value = null;
           }
+          Class<?> type = phaseParam.getType();
+          if (value == null && type.isPrimitive()) {
+            if (type == int.class) {
+              value = 0;
+            } else if (type == long.class) {
+              value = 0L;
+            } else if (type == byte.class) {
+              value = (byte)0;
+            } else if (type == short.class) {
+              value = (short)0;
+            } else if (type == boolean.class) {
+              value = false;
+            } else if (type == float.class) {
+              value = 0.0f;
+            } else if (type == double.class) {
+              value = 0.0d;
+            } else if (type == char.class) {
+              value = '\u0000';
+            }
+          }
         } else if (parameter instanceof BeanParameter) {
           BeanParameter beanParam = (BeanParameter)parameter;
           Class<?> type = beanParam.getType();

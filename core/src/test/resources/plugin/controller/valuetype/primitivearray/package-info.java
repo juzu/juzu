@@ -14,27 +14,6 @@
  * limitations under the License.
  */
 
-package plugin.controller.valuetype.primitive.array;
+@Application package plugin.controller.valuetype.primitivearray;
 
-import juzu.Response;
-import juzu.View;
-
-import java.io.IOException;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class A {
-
-  @View
-  public Response.Content index() {
-    return Response.ok("" + A_.foo(new int[]{4}));
-  }
-
-  @View
-  public Response.Content foo(int[] i) {
-    if (i != null && i.length == 1 && i[0] == 4) {
-      return Response.ok("pass");
-    } else {
-      return Response.ok("fail");
-    }
-  }
-}
+import juzu.Application;

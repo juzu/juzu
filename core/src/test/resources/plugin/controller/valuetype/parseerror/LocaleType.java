@@ -1,4 +1,4 @@
-package plugin.controller.valuetype.error.parse;
+package plugin.controller.valuetype.parseerror;
 
 import juzu.impl.value.ValueType;
 

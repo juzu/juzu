@@ -14,6 +14,27 @@
  * limitations under the License.
  */
 
-@Application package plugin.controller.valuetype.primitive.integer;
+package plugin.controller.valuetype.primitiveinteger;
 
-import juzu.Application;
+import juzu.Response;
+import juzu.View;
+
+import java.io.IOException;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+
+  @View
+  public Response.Content index() {
+    return Response.ok("" + A_.foo(4));
+  }
+
+  @View
+  public Response.Content foo(int i) {
+    if (i == 4) {
+      return Response.ok("pass");
+    } else {
+      return Response.ok("fail");
+    }
+  }
+}

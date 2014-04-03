@@ -16,6 +16,7 @@
 
 package juzu.impl.plugin.controller;
 
+import juzu.impl.common.JSON;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.value.ValueType;
 import juzu.processor.MainProcessor;
@@ -75,12 +76,12 @@ public class ValueTypeTestCase extends AbstractTestCase {
 
   @Test
   public void testPrimitiveInteger() throws Exception {
-    runSuccess("plugin.controller.valuetype.primitive.integer");
+    runSuccess("plugin.controller.valuetype.primitiveinteger");
   }
 
   @Test
   public void testPrimitiveArray() throws Exception {
-    runSuccess("plugin.controller.valuetype.primitive.array");
+    runSuccess("plugin.controller.valuetype.primitivearray");
   }
 
   @Test
@@ -94,9 +95,19 @@ public class ValueTypeTestCase extends AbstractTestCase {
   }
 
   @Test
+  public void testMissingInteger() throws Exception {
+    runMissing("plugin.controller.valuetype.missinginteger");
+  }
+
+  @Test
+  public void testMissingPrimitiveInteger() throws Exception {
+    runMissing("plugin.controller.valuetype.missingprimitiveinteger");
+  }
+
+  @Test
   public void testParseError() throws Exception {
-    deploy("plugin.controller.valuetype.error.parse.LocaleType");
-    ParseException error = runParseError("plugin.controller.valuetype.error.parse", ParseException.class);
+    deploy("plugin.controller.valuetype.parseerror.LocaleType");
+    ParseException error = runParseError("plugin.controller.valuetype.parseerror", ParseException.class);
     assertEquals(0, error.getErrorOffset());
     assertEndsWith("Normal behavior", error.getMessage());
   }
@@ -122,5 +133,20 @@ public class ValueTypeTestCase extends AbstractTestCase {
     MockViewBridge render = client.render();
     MockViewBridge action = (MockViewBridge)client.invoke(render.assertStringResult());
     return action.assertFailure(expected);
+  }
+
+  private void runMissing(String pkg) throws Exception {
+    MockApplication<File> application = application(InjectorProvider.GUICE, pkg);
+    MockApplication<?> app = application.init();
+
+    //
+    MockClient client = app.client();
+    MockViewBridge render = client.render();
+    String url = render.assertStringResult();
+    JSON json = (JSON)JSON.parse(url);
+    json.set("parameters", new JSON());
+    MockViewBridge action = (MockViewBridge)client.invoke(json.toString());
+    String result = action.assertStringResult();
+    assertEquals("pass", result);
   }
 }

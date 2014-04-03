@@ -100,6 +100,69 @@ public abstract class ValueType<T> {
     }
   };
 
+  public static ValueType<Byte> BYTE = new ValueType<Byte>() {
+
+    /** . */
+    private final Iterable<Class<?>> TYPES = Tools.<Class<?>>safeUnmodifiableList(Byte.class, byte.class);
+
+    @Override
+    public Iterable<Class<?>> getTypes() {
+      return TYPES;
+    }
+
+    @Override
+    public Byte parse(AnnotatedElement element, String s) {
+      return Byte.parseByte(s);
+    }
+
+    @Override
+    public String format(AnnotatedElement element, Byte value) {
+      return value.toString();
+    }
+  };
+
+  public static ValueType<Long> LONG = new ValueType<Long>() {
+
+    /** . */
+    private final Iterable<Class<?>> TYPES = Tools.<Class<?>>safeUnmodifiableList(Long.class, long.class);
+
+    @Override
+    public Iterable<Class<?>> getTypes() {
+      return TYPES;
+    }
+
+    @Override
+    public Long parse(AnnotatedElement element, String s) {
+      return Long.parseLong(s);
+    }
+
+    @Override
+    public String format(AnnotatedElement element, Long value) {
+      return value.toString();
+    }
+  };
+
+  public static ValueType<Short> SHORT = new ValueType<Short>() {
+
+    /** . */
+    private final Iterable<Class<?>> TYPES = Tools.<Class<?>>safeUnmodifiableList(Short.class, short.class);
+
+    @Override
+    public Iterable<Class<?>> getTypes() {
+      return TYPES;
+    }
+
+    @Override
+    public Short parse(AnnotatedElement element, String s) {
+      return Short.parseShort(s);
+    }
+
+    @Override
+    public String format(AnnotatedElement element, Short value) {
+      return value.toString();
+    }
+  };
+
   public static ValueType<Boolean> BOOLEAN = new ValueType<Boolean>() {
 
     /** . */
@@ -117,6 +180,48 @@ public abstract class ValueType<T> {
 
     @Override
     public String format(AnnotatedElement element, Boolean value) {
+      return value.toString();
+    }
+  };
+
+  public static ValueType<Double> DOUBLE = new ValueType<Double>() {
+
+    /** . */
+    private final Iterable<Class<?>> TYPES = Tools.<Class<?>>safeUnmodifiableList(Double.class, double.class);
+
+    @Override
+    public Iterable<Class<?>> getTypes() {
+      return TYPES;
+    }
+
+    @Override
+    public Double parse(AnnotatedElement element, String s) {
+      return Double.parseDouble(s);
+    }
+
+    @Override
+    public String format(AnnotatedElement element, Double value) {
+      return value.toString();
+    }
+  };
+
+  public static ValueType<Float> FLOAT = new ValueType<Float>() {
+
+    /** . */
+    private final Iterable<Class<?>> TYPES = Tools.<Class<?>>safeUnmodifiableList(Float.class, float.class);
+
+    @Override
+    public Iterable<Class<?>> getTypes() {
+      return TYPES;
+    }
+
+    @Override
+    public Float parse(AnnotatedElement element, String s) {
+      return Float.parseFloat(s);
+    }
+
+    @Override
+    public String format(AnnotatedElement element, Float value) {
       return value.toString();
     }
   };
@@ -156,6 +261,6 @@ public abstract class ValueType<T> {
    * Builtins value types.
    */
   public static final List<ValueType<?>> DEFAULT = Tools.<ValueType<?>>safeUnmodifiableList(
-      STRING, INTEGER, BOOLEAN, DATE
+      STRING, INTEGER, LONG, BYTE, SHORT, FLOAT, DOUBLE, BOOLEAN, DATE
   );
 }

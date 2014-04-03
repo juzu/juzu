@@ -14,6 +14,25 @@
  * limitations under the License.
  */
 
-@Application package plugin.controller.valuetype.error.parse;
+package plugin.controller.valuetype.parseerror;
 
-import juzu.Application;
+import juzu.Response;
+import juzu.View;
+
+import java.io.IOException;
+import java.util.Locale;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+
+  @View
+  public Response.Content index() {
+    return Response.ok("" + A_.foo(Locale.FRANCE));
+  }
+
+  @View
+  public Response.Content foo(Locale i) {
+    // Should not be called since we have a bad locale...
+    return Response.ok("fail");
+  }
+}

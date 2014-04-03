@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-@Application package plugin.controller.valuetype.primitive.array;
+@Application package plugin.controller.valuetype.primitiveinteger;
 
 import juzu.Application;
