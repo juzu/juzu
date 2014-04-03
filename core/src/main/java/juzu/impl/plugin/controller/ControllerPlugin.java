@@ -178,8 +178,7 @@ public class ControllerPlugin extends ApplicationPlugin {
       bridge.begin(request);
 
 
-      request.invoke();
-      Result result = request.getResult();
+      Result result = request.invoke();
       if (result != null) {
         try {
           bridge.setResult(result);

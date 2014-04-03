@@ -93,12 +93,11 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
     this.table = table;
   }
 
-  public void invoke(final Request request) {
-    request.invoke();
+  public Result filter(final Request request) {
+    Result result = request.invoke();
 
     //
     if (request.getPhase() == Phase.VIEW) {
-      Result result = request.getResult();
       if (result instanceof Result.Status) {
         Result.Status status = (Result.Status)result;
         if (status.decorated) {
@@ -136,9 +135,12 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter {
               wrapped.send(our);
             }
           };
-          request.setResult(new Result.Status(status.code, true, wrapper));
+          result = new Result.Status(status.code, true, wrapper);
         }
       }
     }
+
+    //
+    return result;
   }
 }

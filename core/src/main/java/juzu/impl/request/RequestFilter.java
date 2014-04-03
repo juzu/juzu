@@ -16,17 +16,13 @@
 
 package juzu.impl.request;
 
+import juzu.impl.common.Filter;
+import juzu.request.Result;
+
 /**
  * The request filters should be implemented by beans wanting to filter the request.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public interface RequestFilter {
-
-  /**
-   * Invoke the request.
-   *
-   * @param request the request
-   */
-  void invoke(Request request);
+public interface RequestFilter extends Filter<Request, Result> {
 }

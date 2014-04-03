@@ -26,10 +26,11 @@ public class FailureFilter implements RequestFilter {
   public FailureFilter() {
   }
 
-  public void invoke(Request request) {
-    request.invoke();
-    if (request.getResult() instanceof Result.Error) {
-      request.setResponse(Response.ok("pass"));
+  public Result filter(Request request) {
+    Result result = request.invoke();
+    if (result instanceof Result.Error) {
+      result = Response.ok("pass").result();
     }
+    return result;
   }
 }

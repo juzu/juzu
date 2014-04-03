@@ -96,9 +96,6 @@ public class Request implements ScopingContext {
   /** . */
   private final Handler<?> handler;
 
-  /** The response. */
-  private Result result;
-
   public Request(
     ControllerPlugin controllerPlugin,
     Handler handler,
@@ -158,22 +155,6 @@ public class Request implements ScopingContext {
     return bridge;
   }
 
-  public Result getResult() {
-    return result;
-  }
-
-  public void setResult(Result result) {
-    this.result = result;
-  }
-
-  public void setResponse(Response response) {
-    if (response == null) {
-      result = null;
-    } else {
-      result = response.result();
-    }
-  }
-
   public Map<String, RequestParameter> getParameterArguments() {
     return parameterArguments;
   }
@@ -209,7 +190,7 @@ public class Request implements ScopingContext {
   /** The main contextual for this request. */
   private ContextLifeCycle contextLifeCycle;
 
-  public void invoke() {
+  public Result invoke() {
     boolean set = current.get() == null;
     try {
 
@@ -228,7 +209,7 @@ public class Request implements ScopingContext {
         RequestFilter plugin = filters.get(index);
         try {
           index++;
-          plugin.invoke(this);
+          return plugin.filter(this);
         }
         finally {
           index--;
@@ -239,7 +220,9 @@ public class Request implements ScopingContext {
         // Dispatch request
         Response response = dispatch(this, controllerPlugin.getInjectionContext());
         if (response != null) {
-          setResponse(response);
+          return response.result();
+        } else {
+          return null;
         }
       }
       else {

@@ -270,10 +270,9 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
     }
   }
 
-  public void invoke(Request request) {
-    request.invoke();
+  public Result filter(Request request) {
+    Result result = request.invoke();
     if (request.getPhase() == Phase.VIEW) {
-      Result result = request.getResult();
       if (result instanceof Result.Status) {
         final Collection<Chunk.Property<String>> bar = foo(request.getHandler().getMethod(), Collections.<Chunk.Property<String>>emptyList());
         Result.Status status = (Result.Status)result;
@@ -286,9 +285,10 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter {
               }
             }
           });
-          request.setResult(status);
+          result = status;
         }
       }
     }
+    return result;
   }
 }

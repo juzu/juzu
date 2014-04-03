@@ -19,6 +19,7 @@ package plugin.controller.requestfilter.lifecycle;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.test.Registry;
+import juzu.request.Result;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class LifeCycleFilter implements RequestFilter {
@@ -26,9 +27,10 @@ public class LifeCycleFilter implements RequestFilter {
     Registry.compareAndSet("request.filter.lifecycle", null, "created");
   }
 
-  public void invoke(Request request) {
+  public Result filter(Request request) {
     Registry.compareAndSet("request.filter.lifecycle", "created", "before");
-    request.invoke();
+    Result result = request.invoke();
     Registry.compareAndSet("request.filter.lifecycle", "before", "after");
+    return result;
   }
 }

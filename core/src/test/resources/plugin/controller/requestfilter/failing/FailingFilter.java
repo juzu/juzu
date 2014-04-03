@@ -27,7 +27,7 @@ public class FailingFilter implements RequestFilter {
   public FailingFilter() {
   }
 
-  public void invoke(Request request) {
+  public juzu.request.Result filter(Request request) {
     throw new ConcurrentModificationException();
   }
 }
