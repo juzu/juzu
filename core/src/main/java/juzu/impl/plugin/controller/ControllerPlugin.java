@@ -35,7 +35,6 @@ import juzu.impl.plugin.PluginContext;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.Request;
-import juzu.impl.request.RequestFilter;
 import juzu.request.RequestParameter;
 import juzu.request.Phase;
 
@@ -46,7 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerPlugin extends ApplicationPlugin implements RequestFilter {
+public class ControllerPlugin extends ApplicationPlugin {
 
   /** . */
   private ControllersDescriptor descriptor;
@@ -196,9 +195,5 @@ public class ControllerPlugin extends ApplicationPlugin implements RequestFilter
       bridge.end();
       Thread.currentThread().setContextClassLoader(oldCL);
     }
-  }
-
-  public void invoke(Request request) {
-    request.invoke();
   }
 }
