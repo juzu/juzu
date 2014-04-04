@@ -65,9 +65,14 @@ include::assets.asciidoc[]
 
 include::amd.asciidoc[]
 
+[[error_handling]]
 = Error handling
 
 include::errorhandling.asciidoc[]
+
+= Validation plugin
+
+include::validation.asciidoc[]
 
 = Less plugin
 

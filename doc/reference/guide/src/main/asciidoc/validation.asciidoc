@@ -1,0 +1,82 @@
+Juzu provides controller handler parameter validation via the http://beanvalidation.org/1.1/[Bean Validation framework].
+
+## Controller parameter validation
+
+The usage of Bean Validation for validating method parameters is very easy:
+
+[source,java]
+----
+public class Controller {
+  @View
+  public Response.Content doSomething(@javax.validation.constraints.NotNull String s) {
+     return Response.ok("The parameter 's' should never be null");
+  }
+}
+----
+
+When a controller handler
+
+## Controller response validation
+
+todo.
+
+## Handling validation errors
+
+When a controller validation fails, Juzu will not call the method however it can invoke other controllers that can
+handle the validation error better than the default mechanism. The validation plugin uses the
++juzu.plugin.validation.ValidationError+ response (which is a subclass of +juzu.Response.Error+). The +ValidationError+
+object gives access to the bean violations.
+
+### Using request life ycle
+
+When the controller implements the +juzu.request.RequestLifeCycle+ the +endRequest+ method will be invoked with the bean
+validation error.
+
+[source,java]
+----
+@Inject
+@Path("error.gtmpl")
+Template errorTemplate;
+
+@Override
+public void endRequest(RequestContext context) {
+  Response response = context.getResponse();
+  if (response instanceof ValidationError) {
+    ValidationError error = (ValidationError)response;
+    Set<ConstraintViolation<Object>> violations = error.getViolations();
+    context.setResponse(errorTemplate.ok());
+  }
+}
+----
+
+See <<request_lifecycle>> to learn more about the request lifecycle feature.
+
+NOTE: this works only with the request lifecycle of the bean that is requested. If you need a more centralalized
+handler, you can make your controller beans extend the same class and perform the handling at this place or use
+an application error handler as explained below
+
+### Using error handler
+
+The application error handler can also be used to achieve the same result:
+
+[source,java]
+----
+public class ErrorHandler implements Handler<Response.Error, Response> {
+
+  @Inject
+  @Path("error.gtmpl")
+  Template errorTemplate;
+
+  @Override
+  public Response handle(Response.Error argument) {
+    if (argument instanceof ValidationError) {
+      ValidationError error = (ValidationError)response;
+      Set<ConstraintViolation<Object>> violations = error.getViolations();
+      argument = errorTemplate.ok();
+    }
+    return argument;
+  }
+}
+----
+
+See <<error_handling>> to learn more about application error handling.

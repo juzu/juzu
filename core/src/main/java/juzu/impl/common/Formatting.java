@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -162,19 +161,34 @@ public class Formatting {
   }
 
   /**
+   * Renders an iterable of {@link CompilationError} in the specified buffer.
+   *
+   * @param buffer the buffer
+   * @param errors the errors
+   */
+  public static void renderErrors(StringBuilder buffer, Iterable<CompilationError> errors) {
+    try {
+      renderErrors((Appendable)buffer, errors);
+    }
+    catch (IOException e) {
+      throw new UndeclaredIOException(e);
+    }
+  }
+
+  /**
    * Renders an iterable of {@link CompilationError} in the specified appendable.
    *
-   * @param writer the writer
+   * @param appendable the appendable
    * @param errors the errors
    * @throws IOException any io exception
    */
-  public static void renderErrors(Writer writer, Iterable<CompilationError> errors) throws IOException {
-    renderStyleSheet(writer);
+  public static void renderErrors(Appendable appendable, Iterable<CompilationError> errors) throws IOException {
+    renderStyleSheet(appendable);
 
     //
     for (CompilationError error : errors) {
-      writer.append("<section>");
-      writer.append("<p>").append(error.getMessage()).append("</p>");
+      appendable.append("<section>");
+      appendable.append("<p>").append(error.getMessage()).append("</p>");
 
       // Display the source code
       File source = error.getSourceFile();
@@ -184,21 +198,21 @@ public class Formatting {
         int to = line + 3;
         BufferedReader reader = new BufferedReader(new FileReader(source));
         int count = 1;
-        writer.append("<div class=\"code\"><ol start=\"").append(String.valueOf(from)).append("\">");
+        appendable.append("<div class=\"code\"><ol start=\"").append(String.valueOf(from)).append("\">");
         for (String s = reader.readLine();s != null;s = reader.readLine()) {
           if (count >= from && count < to) {
             if (count == line) {
-              writer.append("<li><p class=\"error\">").append(s).append("</p></li>");
+              appendable.append("<li><p class=\"error\">").append(s).append("</p></li>");
             }
             else {
-              writer.append("<li><p>").append(s).append("</p></li>");
+              appendable.append("<li><p>").append(s).append("</p></li>");
             }
           }
           count++;
         }
-        writer.append("</ol></div>");
+        appendable.append("</ol></div>");
       }
-      writer.append("</section>");
+      appendable.append("</section>");
     }
   }
 }

@@ -16,9 +16,7 @@
 
 package juzu.impl.bridge.spi.portlet;
 
-import juzu.Response;
 import juzu.impl.bridge.Bridge;
-import juzu.impl.common.Formatting;
 import juzu.impl.compiler.CompilationException;
 import juzu.io.OutputStream;
 import juzu.io.Stream;
@@ -29,8 +27,6 @@ import javax.portlet.PortletConfig;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.charset.Charset;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -62,10 +58,7 @@ public class PortletViewBridge extends PortletMimeBridge<RenderRequest, RenderRe
       bridge.refresh();
     }
     catch (CompilationException e) {
-      StringWriter buffer = new StringWriter();
-      PrintWriter printer = new PrintWriter(buffer);
-      Formatting.renderErrors(printer, e.getErrors());
-      setResponse(Response.error(buffer.toString()));
+      setResponse(e.asResponse());
       return;
     }
 

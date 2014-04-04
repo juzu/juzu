@@ -19,9 +19,6 @@ package juzu.impl.compiler;
 import juzu.Response;
 import juzu.impl.common.Formatting;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -44,15 +41,21 @@ public class CompilationException extends Exception {
   }
 
   public Response.Error asResponse() {
-    try {
-      StringWriter writer = new StringWriter();
-      PrintWriter printer = new PrintWriter(writer);
-      Formatting.renderErrors(printer, errors);
-      return Response.error(writer.getBuffer().toString());
-    }
-    catch (IOException e) {
-      // Should not happen
-      throw new AssertionError(e);
-    }
+    return new Response.Error((String)null) {
+      @Override
+      public String getMessage() {
+        StringBuilder buffer = new StringBuilder();
+        for (CompilationError error : errors) {
+          buffer.append(error).append("\n");
+        }
+        return buffer.toString();
+      }
+      @Override
+      public String getHtmlMessage() {
+        StringBuilder buffer = new StringBuilder();
+        Formatting.renderErrors(buffer, errors);
+        return buffer.toString();
+      }
+    };
   }
 }

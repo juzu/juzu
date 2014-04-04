@@ -577,8 +577,8 @@ or the constructor annotated with ##@Inject##
 .. It makes the instance available to the garbage collector
 . Juzu ends the request and use the ##Response## objet returned by the controller method
 
-[controller_dispatch]
-=== Controller dispatch
+[[request_lifecycle]]
+=== Request lifecycle
 
 The bare minimum Juzu will do when dispatching to a controller method is to invoke this method with the proper
 arguments and use the optionally returned object as a response for the request.

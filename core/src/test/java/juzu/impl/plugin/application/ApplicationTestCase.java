@@ -51,9 +51,9 @@ public class ApplicationTestCase extends AbstractTestCase {
     //
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllersDescriptor controllerDesc = new ControllersDescriptor(desc);
-    ControllerHandler a = controllerDesc.getMethod(aClass, "a");
-    ControllerHandler b = controllerDesc.getMethod(aClass, "b");
-    ControllerHandler c = controllerDesc.getMethod(aClass, "c");
+    ControllerHandler a = controllerDesc.getHandler(aClass, "a");
+    ControllerHandler b = controllerDesc.getHandler(aClass, "b");
+    ControllerHandler c = controllerDesc.getHandler(aClass, "c");
 
     //
     assertEquals("foo", a.getId());

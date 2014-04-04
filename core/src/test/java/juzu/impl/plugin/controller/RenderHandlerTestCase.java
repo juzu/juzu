@@ -57,7 +57,7 @@ public class RenderHandlerTestCase extends AbstractTestCase {
 
   @Test
   public void testNoArg() throws Exception {
-    ControllerHandler cm = controllerDescriptor.getMethod(aClass, "noArg");
+    ControllerHandler cm = controllerDescriptor.getHandler(aClass, "noArg");
     assertEquals("noArg", cm.getName());
     assertEquals(Phase.VIEW, cm.getPhase());
     assertEquals(Collections.<ControlParameter>emptyList(), cm.getParameters());
@@ -65,7 +65,7 @@ public class RenderHandlerTestCase extends AbstractTestCase {
 
   @Test
   public void testStringArg() throws Exception {
-    ControllerHandler cm = controllerDescriptor.getMethod(aClass, "oneArg", String.class);
+    ControllerHandler cm = controllerDescriptor.getHandler(aClass, "oneArg", String.class);
     assertEquals("oneArg", cm.getName());
     assertEquals(Phase.VIEW, cm.getPhase());
     assertEquals(Arrays.asList(new PhaseParameter("foo", null, null, Cardinality.SINGLE, null)), cm.getParameters());

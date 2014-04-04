@@ -100,6 +100,7 @@
 		<module>upload</module>
 		<module>webjars</module>
 		<module>jackson</module>
+		<module>validation</module>
   </modules>
 
 </project>

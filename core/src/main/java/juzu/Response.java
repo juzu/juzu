@@ -35,9 +35,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.AbstractMap;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * <p>A response object signalling to the framework the action to take after an interaction. This object is usually
@@ -585,13 +582,10 @@ public abstract class Response {
   public static class Error extends Response {
 
     /** . */
-    private final List<StackTraceElement> at;
-
-    /** . */
     private final Throwable cause;
 
     /** . */
-    private final String msg;
+    private final String message;
 
     public Error(Throwable cause) {
       this(null, cause);
@@ -602,13 +596,8 @@ public abstract class Response {
     }
 
     private Error(String message, Throwable cause) {
-      this.at = Collections.unmodifiableList(Arrays.asList(new Exception().getStackTrace()));
       this.cause = cause;
-      this.msg = message;
-    }
-
-    public List<StackTraceElement> getAt() {
-      return at;
+      this.message = message;
     }
 
     public Throwable getCause() {
@@ -616,7 +605,14 @@ public abstract class Response {
     }
 
     public String getMessage() {
-      return msg;
+      return message;
+    }
+
+    /**
+     * @return the HTML formatted message, the default implementation returns the raw message
+     */
+    public String getHtmlMessage() {
+      return message;
     }
 
     public Status asStatus(boolean verbose) {
@@ -626,10 +622,14 @@ public abstract class Response {
         Formatting.renderStyleSheet(buffer);
         buffer.append("<div class=\"juzu\">");
         buffer.append("<h1>Oups something went wrong</h1>");
-        if (cause != null) {
-          Formatting.renderThrowable(null, buffer, cause);
+        // Use getCause as it can be overriden with subclasses
+        Throwable c = getCause();
+        if (c != null) {
+          Formatting.renderThrowable(null, buffer, c);
         } else {
-          buffer.append(msg);
+          // Use getMessage as it can be overriden with subclasses
+          String m = getHtmlMessage();
+          buffer.append(m);
         }
         buffer.append("</div>");
         response = response.content(buffer).withMimeType("text/html");

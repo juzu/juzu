@@ -142,6 +142,10 @@ public abstract class MockRequestBridge implements RequestBridge {
     this.phase = phase;
   }
 
+  public Response getResponse() {
+    return response;
+  }
+
   @Override
   public Charset getDefaultRequestEncoding() {
     return Tools.ISO_8859_1;

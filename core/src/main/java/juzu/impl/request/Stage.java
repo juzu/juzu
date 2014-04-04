@@ -33,6 +33,7 @@ import juzu.request.UserContext;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -325,10 +326,10 @@ public abstract class Stage {
 
       //
       Response response = context.getResponse();
-      Response result;
       if (response == null) {
         Stage.Invoke invokeStage = new Invoke(request, context, controller, args);
-        result = invokeStage.invoke();
+        response = invokeStage.invoke();
+        context.setResponse(response);
 
         // End request callback
         if (controller instanceof juzu.request.RequestLifeCycle) {
@@ -342,15 +343,10 @@ public abstract class Stage {
 
         //
         response = context.getResponse();
-        if (response != null) {
-          result = response;
-        }
-      } else {
-        result = response;
       }
 
       //
-      return result;
+      return response;
     }
   }
 
@@ -375,6 +371,18 @@ public abstract class Stage {
       this.controller = controller;
       this.context = context;
       this.args = args;
+    }
+
+    public Object getController() {
+      return controller;
+    }
+
+    public Object[] getArguments() {
+      return args;
+    }
+
+    public Method getMethod() {
+      return context.getHandler().getMethod();
     }
 
     @Override

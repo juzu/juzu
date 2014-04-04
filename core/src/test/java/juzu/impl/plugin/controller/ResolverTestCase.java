@@ -151,8 +151,8 @@ public class ResolverTestCase extends AbstractTestCase {
     ApplicationDescriptor desc = ApplicationDescriptor.create(clazz);
     ControllersDescriptor controllerDesc = new ControllersDescriptor(desc);
     ControllerResolver<ControllerHandler> resolver = controllerDesc.getResolver();
-    ControllerHandler cm1_ = controllerDesc.getMethod(aClass, "noArg");
-    ControllerHandler cm2_ = controllerDesc.getMethod(aClass, "fooArg", String.class);
+    ControllerHandler cm1_ = controllerDesc.getHandler(aClass, "noArg");
+    ControllerHandler cm2_ = controllerDesc.getHandler(aClass, "fooArg", String.class);
 
     //
     ControllerHandler cm1 = resolver.resolveMethod(Phase.VIEW, cm1_.getId(), cm1_.getParameterNames());

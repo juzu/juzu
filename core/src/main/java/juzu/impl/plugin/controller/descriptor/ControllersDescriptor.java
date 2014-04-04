@@ -27,6 +27,7 @@ import juzu.impl.request.ControllerHandler;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -140,11 +141,20 @@ public class ControllersDescriptor extends PluginDescriptor {
     return handlers;
   }
 
-  public ControllerHandler getMethod(Class<?> type, String name, Class<?>... parameterTypes) {
-    for (int i = 0;i < handlers.size();i++) {
-      ControllerHandler cm = handlers.get(i);
-      java.lang.reflect.Method m = cm.getMethod();
-      if (type.equals(cm.getType()) && m.getName().equals(name)) {
+  public ControllerHandler getHandler(Method method) {
+    for (ControllerHandler handler : handlers) {
+      Method m = handler.getMethod();
+      if (m.equals(method)) {
+        return handler;
+      }
+    }
+    return null;
+  }
+
+  public ControllerHandler getHandler(Class<?> type, String name, Class<?>... parameterTypes) {
+    for (ControllerHandler handler : handlers) {
+      Method m = handler.getMethod();
+      if (type.equals(handler.getType()) && m.getName().equals(name)) {
         Class<?>[] a = m.getParameterTypes();
         if (a.length == parameterTypes.length) {
           for (int j = 0;j < parameterTypes.length;j++) {
@@ -152,7 +162,7 @@ public class ControllersDescriptor extends PluginDescriptor {
               continue;
             }
           }
-          return cm;
+          return handler;
         }
       }
     }
