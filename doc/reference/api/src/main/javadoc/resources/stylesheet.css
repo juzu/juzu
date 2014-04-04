@@ -381,6 +381,7 @@ caption a:link, caption a:hover, caption a:active, caption a:visited {
     background-position:top right;
     position:relative;
     float:left;
+	display: none;
 }
 ul.blockList ul.blockList li.blockList table {
     margin:0 0 12px 0px;
@@ -500,9 +501,6 @@ h1.hidden {
 	border-right: 1px solid #333333;
 }
 
-.overviewSummary .tabEnd{
-	display: none;
-}
 
 .bottomNav{
 	display: none;
