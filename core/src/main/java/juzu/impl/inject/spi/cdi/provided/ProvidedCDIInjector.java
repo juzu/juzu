@@ -15,9 +15,9 @@
  */
 package juzu.impl.inject.spi.cdi.provided;
 
+import juzu.Handler;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.application.Application;
-import juzu.impl.common.Filter;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.inject.spi.Injector;
@@ -94,7 +94,7 @@ public class ProvidedCDIInjector extends CDIInjector {
   }
 
   @Override
-  public InjectionContext<?, ?> create(Filter<Class<?>, Boolean> filter) throws Exception {
+  public InjectionContext<?, ?> create(Handler<Class<?>, Boolean> filter) throws Exception {
     return new CDIContext(this, filter) {
       @Override
       public ClassLoader getClassLoader() {

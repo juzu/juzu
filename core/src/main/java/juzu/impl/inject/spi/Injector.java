@@ -17,7 +17,7 @@
 package juzu.impl.inject.spi;
 
 import juzu.Scope;
-import juzu.impl.common.Filter;
+import juzu.Handler;
 import juzu.impl.fs.spi.ReadFileSystem;
 
 import javax.inject.Provider;
@@ -30,8 +30,8 @@ import java.lang.annotation.Annotation;
  */
 public abstract class Injector implements Provider<Injector> {
 
-  private static final Filter<Class<?>, Boolean> ALL = new Filter<Class<?>, Boolean>() {
-    public Boolean filter(Class<?> source) {
+  private static final Handler<Class<?>, Boolean> ALL = new Handler<Class<?>, Boolean>() {
+    public Boolean handle(Class<?> argument) {
       return true;
     }
   };
@@ -106,7 +106,7 @@ public abstract class Injector implements Provider<Injector> {
     return create(ALL);
   }
 
-  public abstract InjectionContext<?, ?> create(Filter<Class<?>, Boolean> filter) throws Exception;
+  public abstract InjectionContext<?, ?> create(Handler<Class<?>, Boolean> filter) throws Exception;
 
   /**
    * Clone this injector.

@@ -15,7 +15,7 @@
  */
 package juzu.impl.inject.spi.cdi.weld;
 
-import juzu.impl.common.Filter;
+import juzu.Handler;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.inject.spi.Injector;
@@ -68,7 +68,7 @@ public class WeldInjector extends CDIInjector {
   }
 
   @Override
-  public InjectionContext<?, ?> create(Filter<Class<?>, Boolean> filter) throws Exception {
+  public InjectionContext<?, ?> create(Handler<Class<?>, Boolean> filter) throws Exception {
     final Container container = new WeldContainer(classLoader, scopeController, scopes);
     for (ReadFileSystem<?> fs : fileSystems) {
       container.addFileSystem(fs);

@@ -33,9 +33,9 @@ public class FailureFilter implements RequestFilter<Stage.Handler> {
   }
 
   @Override
-  public Result filter(Stage.Handler source) {
-    Request request = source.getRequest();
-    Result result = source.invoke();
+  public Result handle(Stage.Handler argument) {
+    Request request = argument.getRequest();
+    Result result = argument.invoke();
     if (result instanceof Result.Error) {
       result = Response.ok("pass").result();
     }

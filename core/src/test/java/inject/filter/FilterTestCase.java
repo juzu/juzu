@@ -17,7 +17,7 @@
 package inject.filter;
 
 import inject.AbstractInjectTestCase;
-import juzu.impl.common.Filter;
+import juzu.Handler;
 import juzu.impl.inject.spi.InjectorProvider;
 import org.junit.Test;
 
@@ -33,9 +33,9 @@ public class FilterTestCase<B, I> extends AbstractInjectTestCase<B, I> {
     init();
     bootstrap.declareBean(Bean.class, null, null, Bean1.class);
     bootstrap.declareBean(Injected.class, null, null, null);
-    boot(new Filter<Class<?>, Boolean>() {
-      public Boolean filter(Class<?> source) {
-        return !source.equals(Bean2.class);
+    boot(new Handler<Class<?>, Boolean>() {
+      public Boolean handle(Class<?> argument) {
+        return !argument.equals(Bean2.class);
       }
     });
 

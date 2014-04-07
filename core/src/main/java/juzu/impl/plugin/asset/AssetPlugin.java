@@ -277,9 +277,9 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter<Stag
   }
 
   @Override
-  public Result filter(Stage.Handler source) {
-    Result result = source.invoke();
-    Request request = source.getRequest();
+  public Result handle(Stage.Handler argument) {
+    Result result = argument.invoke();
+    Request request = argument.getRequest();
     if (request.getPhase() == Phase.VIEW) {
       if (result instanceof Result.Status) {
         final Collection<Chunk.Property<String>> bar = foo(request.getHandler().getMethod(), Collections.<Chunk.Property<String>>emptyList());

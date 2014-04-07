@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package juzu.impl.common;
+package juzu;
 
 /**
- * A filter.
+ * A generic handler interface.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  * @param <A> the argument
  * @param <R> the result
  */
-public interface Filter<A, R> {
+public interface Handler<A, R> {
 
   /**
-   * Filters the argument
+   * Perform handling.
    *
-   * @param source the argument
+   * @param argument the argument
    * @return the result
    */
-  R filter(A source);
+  R handle(A argument);
 
 }

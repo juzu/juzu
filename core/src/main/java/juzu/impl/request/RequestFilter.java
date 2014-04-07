@@ -16,7 +16,6 @@
 
 package juzu.impl.request;
 
-import juzu.impl.common.Filter;
 import juzu.request.Result;
 
 /**
@@ -24,7 +23,7 @@ import juzu.request.Result;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public interface RequestFilter<S extends Stage> extends Filter<S, Result> {
+public interface RequestFilter<S extends Stage> extends juzu.Handler<S, Result> {
 
   /**
    * Return the stage type this filter accepts.

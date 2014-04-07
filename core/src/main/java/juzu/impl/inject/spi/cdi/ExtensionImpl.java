@@ -119,7 +119,7 @@ public class ExtensionImpl implements Extension {
     Class<T> type = annotatedType.getJavaClass();
 
     // Determine if bean should be processed
-    boolean veto = !context.filter.filter(type);
+    boolean veto = !context.filter.handle(type);
     if (!veto) {
       for (AbstractBean boundBean : context.injector.boundBeans) {
         Class<?> beanType = boundBean.getBeanClass();

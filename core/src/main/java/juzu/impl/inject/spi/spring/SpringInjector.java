@@ -17,7 +17,7 @@
 package juzu.impl.inject.spi.spring;
 
 import juzu.Scope;
-import juzu.impl.common.Filter;
+import juzu.Handler;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.spi.Injector;
@@ -148,7 +148,7 @@ public class SpringInjector extends Injector {
   }
 
   @Override
-  public InjectionContext<?, ?> create(Filter<Class<?>, Boolean> filter) throws Exception {
+  public InjectionContext<?, ?> create(Handler<Class<?>, Boolean> filter) throws Exception {
 
     //
     DefaultListableBeanFactory factory;

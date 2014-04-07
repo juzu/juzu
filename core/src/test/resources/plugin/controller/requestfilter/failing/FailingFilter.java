@@ -33,7 +33,7 @@ public class FailingFilter implements RequestFilter<Stage.Handler> {
   }
 
   @Override
-  public Result filter(Stage.Handler source) {
+  public Result handle(Stage.Handler argument) {
     throw new ConcurrentModificationException();
   }
 }

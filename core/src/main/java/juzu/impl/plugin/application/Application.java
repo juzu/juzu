@@ -17,7 +17,7 @@
 package juzu.impl.plugin.application;
 
 import juzu.Scope;
-import juzu.impl.common.Filter;
+import juzu.Handler;
 import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.BeanDescriptor;
@@ -168,15 +168,15 @@ public class Application implements ResourceResolver {
     // any class beginning with juzu. is refused
     // any class prefixed with the application package is accepted
     // any other application class is refused (i.e a class having an ancestor package annotated with @Application)
-    Filter<Class<?>, Boolean> filter = new Filter<Class<?>, Boolean>() {
+    Handler<Class<?>, Boolean> filter = new Handler<Class<?>, Boolean>() {
       HashSet<String> blackList = new HashSet<String>();
-      public Boolean filter(Class<?> source) {
-        if (source.getName().startsWith("juzu.")) {
+      public Boolean handle(Class<?> argument) {
+        if (argument.getName().startsWith("juzu.")) {
           return false;
-        } else if (source.getPackage().getName().startsWith(descriptor.getPackageName())) {
+        } else if (argument.getPackage().getName().startsWith(descriptor.getPackageName())) {
           return true;
         } else {
-          for (String currentPkg = source.getPackage().getName();currentPkg != null;currentPkg = Tools.parentPackageOf(currentPkg)) {
+          for (String currentPkg = argument.getPackage().getName();currentPkg != null;currentPkg = Tools.parentPackageOf(currentPkg)) {
             if (blackList.contains(currentPkg)) {
               return false;
             } else {

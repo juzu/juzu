@@ -34,10 +34,10 @@ public class LifeCycleFilter implements RequestFilter<Stage.Handler> {
   }
 
   @Override
-  public Result filter(Stage.Handler source) {
-    Request request = source.getRequest();
+  public Result handle(Stage.Handler argument) {
+    Request request = argument.getRequest();
     Registry.compareAndSet("request.filter.lifecycle", "created", "before");
-    Result result = source.invoke();
+    Result result = argument.invoke();
     Registry.compareAndSet("request.filter.lifecycle", "before", "after");
     return result;
   }

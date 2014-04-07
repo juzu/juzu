@@ -33,11 +33,11 @@ public class Contextualizer implements RequestFilter<Stage.Handler> {
   }
 
   @Override
-  public Result filter(Stage.Handler source) {
-    Request request = source.getRequest();
+  public Result handle(Stage.Handler argument) {
+    Request request = argument.getRequest();
     juzu.impl.request.Handler m = request.getHandler();
     ContextualParameter in = (ContextualParameter)m.getParameter("in");
     request.getContextualArguments().put(in, new ByteArrayInputStream("__foo__".getBytes()));
-    return source.invoke();
+    return argument.invoke();
   }
 }

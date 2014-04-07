@@ -17,7 +17,7 @@
 package juzu.impl.inject.spi.guice;
 
 import juzu.Scope;
-import juzu.impl.common.Filter;
+import juzu.Handler;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.inject.spi.Injector;
@@ -99,7 +99,7 @@ public class GuiceInjector extends Injector {
   }
 
   @Override
-  public InjectionContext<?, ?> create(Filter<Class<?>, Boolean> filter) throws Exception {
+  public InjectionContext<?, ?> create(Handler<Class<?>, Boolean> filter) throws Exception {
     return new GuiceContext(this);
   }
 

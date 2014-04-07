@@ -77,7 +77,7 @@ public abstract class Stage {
       RequestFilter plugin = filters.get(index);
       try {
         index++;
-        return (Result)plugin.filter(this);
+        return (Result)plugin.handle(this);
       }
       finally {
         index--;

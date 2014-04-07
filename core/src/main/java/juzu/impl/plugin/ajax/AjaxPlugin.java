@@ -99,9 +99,9 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter<Stage
   }
 
   @Override
-  public Result filter(Stage.Handler source) {
-    final Request request = source.getRequest();
-    Result result = source.invoke();
+  public Result handle(Stage.Handler argument) {
+    final Request request = argument.getRequest();
+    Result result = argument.invoke();
 
     //
     if (request.getPhase() == Phase.VIEW) {
