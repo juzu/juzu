@@ -40,7 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AjaxPlugin extends ApplicationPlugin implements RequestFilter<Stage.Handler> {
+public class AjaxPlugin extends ApplicationPlugin implements RequestFilter<Stage.Unmarshalling> {
 
   /** . */
   Map<String, juzu.impl.request.Handler> table;
@@ -94,12 +94,12 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter<Stage
   }
 
   @Override
-  public Class<Stage.Handler> getStageType() {
-    return Stage.Handler.class;
+  public Class<Stage.Unmarshalling> getStageType() {
+    return Stage.Unmarshalling.class;
   }
 
   @Override
-  public Result handle(Stage.Handler argument) {
+  public Result handle(Stage.Unmarshalling argument) {
     final Request request = argument.getRequest();
     Result result = argument.invoke();
 

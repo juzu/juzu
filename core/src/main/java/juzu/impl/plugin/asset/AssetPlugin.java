@@ -49,7 +49,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AssetPlugin extends ApplicationPlugin implements RequestFilter<Stage.Handler> {
+public class AssetPlugin extends ApplicationPlugin implements RequestFilter<Stage.Unmarshalling> {
 
   /** . */
   private LinkedHashMap<String, Chunk.Property<String>> assets;
@@ -272,12 +272,12 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter<Stag
   }
 
   @Override
-  public Class<Stage.Handler> getStageType() {
-    return Stage.Handler.class;
+  public Class<Stage.Unmarshalling> getStageType() {
+    return Stage.Unmarshalling.class;
   }
 
   @Override
-  public Result handle(Stage.Handler argument) {
+  public Result handle(Stage.Unmarshalling argument) {
     Result result = argument.invoke();
     Request request = argument.getRequest();
     if (request.getPhase() == Phase.VIEW) {
