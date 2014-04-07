@@ -16,28 +16,27 @@
 
 package bridge.servlet.route.resource.method;
 
+import juzu.HttpMethod;
 import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
-import juzu.Method;
-import juzu.request.HttpContext;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
 
-  @Resource(method = Method.GET)
+  @Resource(method = HttpMethod.GET)
   @Route("/")
   public Response.Content doGet() {
     return handle("GET");
   }
 
-  @Resource(method = Method.POST)
+  @Resource(method = HttpMethod.POST)
   @Route("/")
   public Response.Content doPost() {
     return handle("POST");
   }
 
-  @Resource(method = Method.PUT)
+  @Resource(method = HttpMethod.PUT)
   @Route("/")
   public Response.Content doPut() {
     return handle("PUT");

@@ -16,7 +16,7 @@
 
 package juzu.impl.bridge.spi.servlet;
 
-import juzu.Method;
+import juzu.HttpMethod;
 import juzu.impl.bridge.spi.web.WebBridge;
 import juzu.impl.common.JUL;
 import juzu.impl.common.Logger;
@@ -45,14 +45,14 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
   private final ServletRequestContext ctx;
 
   /** . */
-  private final Method method;
+  private final HttpMethod method;
 
   /** . */
   private final ServletBridge servlet;
 
   public ServletWebBridge(ServletBridge servlet, ServletRequestContext ctx) {
     this.ctx = ctx;
-    this.method = Method.valueOf(ctx.req.getMethod());
+    this.method = HttpMethod.valueOf(ctx.req.getMethod());
     this.servlet = servlet;
   }
 
@@ -186,7 +186,7 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
 
   // HttpContext implementation
 
-  public Method getMethod() {
+  public HttpMethod getMethod() {
     return method;
   }
 

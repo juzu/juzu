@@ -16,7 +16,7 @@
 
 package juzu.request;
 
-import juzu.Method;
+import juzu.HttpMethod;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public interface HttpContext {
@@ -26,7 +26,7 @@ public interface HttpContext {
    *
    * @return the http method.
    */
-  Method getMethod();
+  HttpMethod getMethod();
 
   javax.servlet.http.Cookie[] getCookies();
 

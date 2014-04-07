@@ -16,6 +16,7 @@
 
 package juzu.impl.bridge.spi.web;
 
+import juzu.HttpMethod;
 import juzu.Resource;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MethodHandle;
@@ -118,7 +119,7 @@ public class Handler implements Closeable {
     if (requestPath.startsWith(bridge.getRequestContext().getPath())) {
 
       //
-      juzu.Method requestMethod = bridge.getHttpContext().getMethod();
+      HttpMethod requestMethod = bridge.getHttpContext().getMethod();
       Iterator<RouteMatch> matches = root.matcher(requestPath.substring(bridge.getRequestContext().getPath().length()), Collections.<String, String[]>emptyMap());
 
       // Determine a method
@@ -128,19 +129,19 @@ public class Handler implements Closeable {
         if (routeDesc != null) {
           juzu.impl.request.Handler target = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(routeDesc.handle);
           if (target.getPhase() == Phase.VIEW) {
-            if (requestMethod == juzu.Method.POST) {
+            if (requestMethod == HttpMethod.POST) {
               requestTarget =  target;
               requestMatch = match;
-            } else if (requestMethod == juzu.Method.GET) {
+            } else if (requestMethod == HttpMethod.GET) {
               requestTarget =  target;
               requestMatch = match;
               break;
             }
           } else if (target.getPhase() == Phase.ACTION) {
-            if (requestMethod == juzu.Method.GET) {
+            if (requestMethod == HttpMethod.GET) {
               requestTarget =  target;
               requestMatch = match;
-            } else if (requestMethod == juzu.Method.POST) {
+            } else if (requestMethod == HttpMethod.POST) {
               requestTarget =  target;
               requestMatch = match;
               break;

@@ -16,7 +16,7 @@
 
 package juzu.impl.bridge.servlet;
 
-import juzu.Method;
+import juzu.HttpMethod;
 import juzu.impl.common.Tools;
 import juzu.test.AbstractWebTestCase;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -36,9 +36,9 @@ public class RouteResourceHandlerTestCase extends AbstractWebTestCase {
 
   @Test
   public void testMethods() throws Exception {
-    Method[] methods = { Method.GET, Method.POST, Method.PUT };
+    HttpMethod[] methods = { HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT };
     URL url = applicationURL();
-    for (Method method : methods) {
+    for (HttpMethod method : methods) {
       HttpURLConnection conn = (HttpURLConnection)url.openConnection();
       conn.setRequestMethod(method.name());
       assertEquals(200, conn.getResponseCode());

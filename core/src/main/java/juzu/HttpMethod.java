@@ -21,7 +21,7 @@ package juzu;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public enum Method {
+public enum HttpMethod {
 
   GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, CONNECT
 

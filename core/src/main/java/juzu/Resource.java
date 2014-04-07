@@ -52,14 +52,14 @@ public @interface Resource {
    *
    * @return the http verbs
    */
-  Method[] method() default {
-      Method.GET,
-      Method.HEAD,
-      Method.POST,
-      Method.PUT,
-      Method.DELETE,
-      Method.TRACE,
-      Method.OPTIONS,
-      Method.CONNECT
+  HttpMethod[] method() default {
+      HttpMethod.GET,
+      HttpMethod.HEAD,
+      HttpMethod.POST,
+      HttpMethod.PUT,
+      HttpMethod.DELETE,
+      HttpMethod.TRACE,
+      HttpMethod.OPTIONS,
+      HttpMethod.CONNECT
   };
 }

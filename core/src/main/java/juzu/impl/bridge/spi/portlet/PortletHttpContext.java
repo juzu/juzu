@@ -16,7 +16,7 @@
 
 package juzu.impl.bridge.spi.portlet;
 
-import juzu.Method;
+import juzu.HttpMethod;
 import juzu.request.HttpContext;
 
 import javax.portlet.ClientDataRequest;
@@ -30,14 +30,14 @@ public class PortletHttpContext implements HttpContext {
   private final PortletRequest request;
 
   /** . */
-  private final Method method;
+  private final HttpMethod method;
 
   public PortletHttpContext(PortletRequest request) {
     this.request = request;
-    this.method = request instanceof ClientDataRequest ? Method.valueOf(((ClientDataRequest)request).getMethod()) : Method.GET;
+    this.method = request instanceof ClientDataRequest ? HttpMethod.valueOf(((ClientDataRequest)request).getMethod()) : HttpMethod.GET;
   }
 
-  public Method getMethod() {
+  public HttpMethod getMethod() {
     return method;
   }
 
