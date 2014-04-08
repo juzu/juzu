@@ -27,7 +27,7 @@ import juzu.impl.common.JUL;
 import juzu.impl.common.Logger;
 import juzu.impl.common.RunMode;
 import juzu.impl.inject.spi.InjectorProvider;
-import juzu.impl.request.Handler;
+import juzu.impl.request.ControllerHandler;
 import juzu.io.UndeclaredIOException;
 import juzu.request.ClientContext;
 import juzu.request.Result;
@@ -85,7 +85,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   protected final Rs resp;
 
   /** . */
-  protected final Handler<?> target;
+  protected final ControllerHandler<?> target;
 
   /** . */
   protected  final Map<String ,RequestParameter> requestParameters;
@@ -135,8 +135,8 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     }
 
     //
-    ControllerResolver<Handler> resolver = bridge.getApplication().resolveBean(ControllerPlugin.class).getResolver();
-    Handler<?> target;
+    ControllerResolver<ControllerHandler> resolver = bridge.getApplication().resolveBean(ControllerPlugin.class).getResolver();
+    ControllerHandler<?> target;
     if (methodId != null) {
       target = resolver.resolveMethod(phase, methodId, parameters.keySet());
     } else {
@@ -157,7 +157,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     this.phase = phase;
   }
 
-  PortletRequestBridge(Bridge bridge,  Phase phase, Rq req, Rs resp, PortletConfig config, Handler<?> target, Map<String, String[]> parameters) {
+  PortletRequestBridge(Bridge bridge,  Phase phase, Rq req, Rs resp, PortletConfig config, ControllerHandler<?> target, Map<String, String[]> parameters) {
 
     //
     Map<String, RequestParameter> requestParameters = Collections.emptyMap();
@@ -370,7 +370,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
           MimeResponse mimeResp = (MimeResponse)resp;
 
           //
-          Handler handler = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
+          ControllerHandler handler = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 
           //
           BaseURL url;

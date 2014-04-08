@@ -13,25 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package juzu.request;
 
-package juzu.impl.bridge.spi.web;
+import juzu.Handler;
+import juzu.Response;
 
-import juzu.impl.bridge.Bridge;
-import juzu.impl.request.ControllerHandler;
-import juzu.request.Phase;
-import juzu.request.RequestParameter;
+/**
+ * @author Julien Viet
+ */
+public class DefaultErrorController implements Handler<Result.Error, Response> {
 
-import java.util.Map;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class WebViewBridge extends WebMimeBridge {
-
-  WebViewBridge(
-      Bridge bridge,
-      juzu.impl.bridge.spi.web.Handler handler,
-      WebBridge http,
-      ControllerHandler<?> target,
-      Map<String, RequestParameter> parameters) {
-    super(bridge, handler, http, Phase.VIEW, target, parameters);
+  @Override
+  public Response.Error handle(Result.Error argument) {
+    return Response.error(argument.cause);
   }
 }

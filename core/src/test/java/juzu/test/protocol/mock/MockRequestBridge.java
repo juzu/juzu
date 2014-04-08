@@ -27,6 +27,7 @@ import juzu.impl.common.Tools;
 import juzu.impl.io.BinaryOutputStream;
 import juzu.impl.io.BinaryStream;
 import juzu.impl.request.ContextualParameter;
+import juzu.impl.request.ControllerHandler;
 import juzu.request.ClientContext;
 import juzu.request.Result;
 import juzu.io.Chunk;
@@ -39,7 +40,6 @@ import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.runtime.ApplicationRuntime;
 import juzu.impl.plugin.controller.ControllerPlugin;
-import juzu.impl.request.Handler;
 import juzu.impl.inject.Scoped;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.request.Request;
@@ -260,7 +260,7 @@ public abstract class MockRequestBridge implements RequestBridge {
 
       public void renderURL(PropertyMap properties, MimeType mimeType, Appendable appendable) throws IOException {
         //
-        Handler handler = application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
+        ControllerHandler handler = application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 
         //
         JSON props = new JSON();

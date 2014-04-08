@@ -33,7 +33,7 @@ import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.request.BeanParameter;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.ControlParameter;
-import juzu.impl.request.Handler;
+import juzu.impl.request.ControllerHandler;
 import juzu.impl.request.PhaseParameter;
 import juzu.impl.plugin.controller.descriptor.ControllerDescriptor;
 import juzu.impl.metamodel.MetaModelEvent;
@@ -77,7 +77,7 @@ import java.util.Set;
 public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
 
   /** . */
-  private static final String METHOD_DESCRIPTOR = Handler.class.getSimpleName();
+  private static final String METHOD_DESCRIPTOR = ControllerHandler.class.getSimpleName();
 
   /** . */
   private static final String CONTROLLER_DESCRIPTOR = ControllerDescriptor.class.getSimpleName();
@@ -194,8 +194,10 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     AnnotationState values = AnnotationState.create(annotation);
     Boolean escapeXML = (Boolean)values.get("escapeXML");
     ElementHandle.Type defaultControllerElt = (ElementHandle.Type)values.get("defaultController");
+    ElementHandle.Type errorControllerElt = (ElementHandle.Type)values.get("errorController");
     controllers.escapeXML = escapeXML;
     controllers.defaultController = defaultControllerElt != null ? defaultControllerElt.getName() : null;
+    controllers.errorController = errorControllerElt != null ? errorControllerElt.getName() : null;
     application.addChild(ControllersMetaModel.KEY, controllers);
   }
 
@@ -265,6 +267,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
     //
     JSON config = new JSON();
     config.set("default", ac.defaultController != null ? ac.defaultController.toString() : null);
+    config.set("error", ac.errorController != null ? ac.errorController.toString() : null);
     config.set("escapeXML", ac.escapeXML);
     config.map("controllers", controllers);
 
@@ -333,7 +336,7 @@ public class ControllerMetaModelPlugin extends ApplicationMetaModelPlugin {
       writer.append("package ").append(fqn.getParent()).append(";\n");
 
       // Imports
-      writer.append("import ").append(Handler.class.getCanonicalName()).append(";\n");
+      writer.append("import ").append(ControllerHandler.class.getCanonicalName()).append(";\n");
       writer.append("import ").append(ControlParameter.class.getCanonicalName()).append(";\n");
       writer.append("import ").append(PhaseParameter.class.getCanonicalName()).append(";\n");
       writer.append("import ").append(ContextualParameter.class.getCanonicalName()).append(";\n");

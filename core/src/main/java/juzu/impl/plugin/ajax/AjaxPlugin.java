@@ -23,6 +23,7 @@ import juzu.impl.plugin.PluginContext;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.plugin.application.ApplicationPlugin;
 import juzu.impl.plugin.controller.ControllerPlugin;
+import juzu.impl.request.ControllerHandler;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.request.Stage;
@@ -43,7 +44,7 @@ import java.util.Map;
 public class AjaxPlugin extends ApplicationPlugin implements RequestFilter<Stage.Unmarshalling> {
 
   /** . */
-  Map<String, juzu.impl.request.Handler> table;
+  Map<String, ControllerHandler> table;
 
   @Inject
   ControllerPlugin controllerPlugin;
@@ -81,8 +82,8 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter<Stage
         "jquery").deploy();
 
     //
-    Map<String, juzu.impl.request.Handler> table = new HashMap<String, juzu.impl.request.Handler>();
-    for (juzu.impl.request.Handler cm : controllerPlugin.getDescriptor().getHandlers()) {
+    Map<String, ControllerHandler> table = new HashMap<String, ControllerHandler>();
+    for (ControllerHandler cm : controllerPlugin.getDescriptor().getHandlers()) {
       Ajax ajax = cm.getMethod().getAnnotation(Ajax.class);
       if (ajax != null) {
         table.put(cm.getName(), cm);
@@ -121,7 +122,7 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter<Stage
                     // BUT THAT SHOULD BE REVISED TO USE THE ID INSTEAD
                     StringBuilder sb = new StringBuilder();
                     sb.append("<div class=\"jz\">\n");
-                    for (Map.Entry<String, juzu.impl.request.Handler> entry : table.entrySet()) {
+                    for (Map.Entry<String, ControllerHandler> entry : table.entrySet()) {
                       String baseURL = request.createDispatch(entry.getValue()).toString();
                       sb.append("<div data-method-id=\"");
                       sb.append(entry.getValue().getId());

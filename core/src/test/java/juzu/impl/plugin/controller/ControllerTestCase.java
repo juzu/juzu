@@ -18,9 +18,14 @@ package juzu.impl.plugin.controller;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.controller.metamodel.ControllerMetaModel;
+import juzu.request.Result;
 import juzu.test.AbstractInjectTestCase;
+import juzu.test.protocol.mock.MockApplication;
+import juzu.test.protocol.mock.MockClient;
+import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 /** @author Julien Viet */
@@ -37,5 +42,30 @@ public class ControllerTestCase extends AbstractInjectTestCase {
     CompilationError error = app.get(0);
     assertEquals(ControllerMetaModel.CONTROLLER_IS_ABSTRACT, error.getCode());
     assertTrue("Was expecting source to end with abstract_/A.java", error.getSource().endsWith("abstract_/A.java"));
+  }
+
+  public static Object shared;
+
+  @Test
+  public void testErrorHandler() throws Exception {
+    Object ret = invokeErrorHandler("plugin.controller.error.invoke");
+    assertInstanceOf(ConcurrentModificationException.class, assertInstanceOf(Result.Error.class, ret).cause);
+  }
+
+  @Test
+  public void testErrorHandlerInjection() throws Exception {
+    Object ret = invokeErrorHandler("plugin.controller.error.inject");
+    assertEquals("plugin.controller.error.inject.A", ret.getClass().getName());
+  }
+
+  private Object invokeErrorHandler(String pkg) throws Exception {
+    MockApplication app = application(pkg).init();
+    MockClient client = app.client();
+    shared = null;
+    MockViewBridge render = client.render();
+    render.assertOk();
+    render.assertStringResult("hello");
+    assertNotNull(shared);
+    return shared;
   }
 }

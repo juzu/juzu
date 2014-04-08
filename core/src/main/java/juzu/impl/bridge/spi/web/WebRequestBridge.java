@@ -26,6 +26,7 @@ import juzu.impl.common.RunMode;
 import juzu.impl.common.UriBuilder;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.request.ContextualParameter;
+import juzu.impl.request.ControllerHandler;
 import juzu.request.ClientContext;
 import juzu.request.Result;
 import juzu.request.RequestParameter;
@@ -34,7 +35,6 @@ import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.ControllerPlugin;
-import juzu.impl.request.Handler;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -74,7 +74,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   final Phase phase;
 
   /** . */
-  final Handler<?> target;
+  final ControllerHandler<?> target;
 
   /** . */
   protected Request request;
@@ -90,7 +90,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
       juzu.impl.bridge.spi.web.Handler handler,
       WebBridge http,
       Phase phase,
-      Handler<?> target,
+      ControllerHandler<?> target,
       Map<String, RequestParameter> requestParameters) {
     this.requestParameters = requestParameters;
     this.bridge = bridge;
@@ -198,7 +198,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   }
 
   public final DispatchBridge createDispatch(Phase phase, final MethodHandle target, final Map<String, ResponseParameter> parameters) {
-    Handler handler = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
+    ControllerHandler handler = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
 
     //
     Route route = this.handler.getRoute(handler.getHandle());
@@ -311,7 +311,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
       Phase.View.Dispatch update = (Phase.View.Dispatch)view.dispatch;
       Boolean redirect = view.properties.getValue(PropertyType.REDIRECT_AFTER_ACTION);
       if (redirect != null && !redirect) {
-        Handler<?> desc = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
+        ControllerHandler<?> desc = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
         Map<String, RequestParameter> rp = Collections.emptyMap();
         for (ResponseParameter parameter : update.getParameters().values()) {
           if (rp.isEmpty()) {

@@ -16,6 +16,9 @@
 
 package juzu;
 
+import juzu.request.DefaultErrorController;
+import juzu.request.Result;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -47,6 +50,13 @@ public @interface Application {
    * @return the default controller
    */
   Class<?> defaultController() default Object.class;
+
+  /**
+   * Returns an optional error controller class.
+   *
+   * @return the error controller
+   */
+  Class<? extends Handler<Result.Error, Response>> errorController() default DefaultErrorController.class;
 
   /**
    * Controls if the application generated URL should be escaped to valid XML, this is valid for portlet applications.

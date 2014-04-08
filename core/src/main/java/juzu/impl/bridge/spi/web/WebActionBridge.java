@@ -17,7 +17,7 @@
 package juzu.impl.bridge.spi.web;
 
 import juzu.impl.bridge.Bridge;
-import juzu.impl.request.Handler;
+import juzu.impl.request.ControllerHandler;
 import juzu.request.Phase;
 import juzu.request.RequestParameter;
 
@@ -30,7 +30,7 @@ public class WebActionBridge extends WebRequestBridge {
       Bridge bridge,
       juzu.impl.bridge.spi.web.Handler handler,
       WebBridge http,
-      Handler<?> target,
+      ControllerHandler<?> target,
       Map<String, RequestParameter> parameters) {
     super(bridge, handler, http, Phase.ACTION, target, parameters);
   }

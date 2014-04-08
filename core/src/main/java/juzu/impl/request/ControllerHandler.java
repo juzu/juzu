@@ -37,7 +37,7 @@ import java.util.Set;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public final class Handler<P extends Phase> {
+public final class ControllerHandler<P extends Phase> {
 
   /** An optional id. */
   private final String id;
@@ -63,7 +63,7 @@ public final class Handler<P extends Phase> {
   /** The handle corresponding to the {@link #method} field. */
   private final MethodHandle handle;
 
-  public Handler(
+  public ControllerHandler(
       String id,
       P phase,
       Class<?> type,

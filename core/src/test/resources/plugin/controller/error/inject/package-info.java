@@ -14,24 +14,7 @@
  * limitations under the License.
  */
 
-package juzu.impl.bridge.spi.web;
+@Application(errorController = ErrorHandler.class)
+package plugin.controller.error.inject;
 
-import juzu.impl.bridge.Bridge;
-import juzu.impl.request.ControllerHandler;
-import juzu.request.Phase;
-import juzu.request.RequestParameter;
-
-import java.util.Map;
-
-/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class WebViewBridge extends WebMimeBridge {
-
-  WebViewBridge(
-      Bridge bridge,
-      juzu.impl.bridge.spi.web.Handler handler,
-      WebBridge http,
-      ControllerHandler<?> target,
-      Map<String, RequestParameter> parameters) {
-    super(bridge, handler, http, Phase.VIEW, target, parameters);
-  }
-}
+import juzu.Application;

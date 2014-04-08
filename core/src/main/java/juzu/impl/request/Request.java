@@ -82,17 +82,17 @@ public class Request implements ScopingContext {
   final ControllerPlugin controllerPlugin;
 
   /** . */
-  final Handler<?> handler;
+  final ControllerHandler<?> handler;
 
   /** . */
-  Map<String, RequestParameter> parameterArguments;
+  private Map<String, RequestParameter> parameterArguments;
 
   /** . */
-  Map<ContextualParameter, Object> contextualArguments;
+  private Map<ContextualParameter, Object> contextualArguments;
 
   public Request(
     ControllerPlugin controllerPlugin,
-    Handler handler,
+    ControllerHandler handler,
     RequestBridge bridge) {
 
     //
@@ -139,7 +139,7 @@ public class Request implements ScopingContext {
     return getBridge().getApplicationContext();
   }
 
-  public Handler<?> getHandler() {
+  public ControllerHandler<?> getHandler() {
     return handler;
   }
 
@@ -266,7 +266,7 @@ public class Request implements ScopingContext {
     return lifeCycle;
   }
 
-  private Dispatch createDispatch(Handler<?> handler, DispatchBridge spi) {
+  private Dispatch createDispatch(ControllerHandler<?> handler, DispatchBridge spi) {
     ControllersDescriptor desc = controllerPlugin.getDescriptor();
     Dispatch dispatch;
     if (handler.getPhase() == Phase.ACTION) {
@@ -293,7 +293,7 @@ public class Request implements ScopingContext {
     }
   }
 
-  private void setArgs(Object[] args, Parameters parameterMap, final Handler<?> handler) {
+  private void setArgs(Object[] args, Parameters parameterMap, final ControllerHandler<?> handler) {
     int index = 0;
     for (ControlParameter parameter : handler.getParameters()) {
       if (parameter instanceof PhaseParameter) {
@@ -348,19 +348,19 @@ public class Request implements ScopingContext {
     }
   }
 
-  public Dispatch createDispatch(Handler<?> handler, Object[] args) {
+  public Dispatch createDispatch(ControllerHandler<?> handler, Object[] args) {
     Parameters parameters = new Parameters();
     setArgs(args, parameters, handler);
     DispatchBridge spi = getBridge().createDispatch(handler.getPhase(), handler.getHandle(), parameters);
     return createDispatch(handler, spi);
   }
 
-  public Dispatch createDispatch(Handler<?> handler) {
+  public Dispatch createDispatch(ControllerHandler<?> handler) {
     DispatchBridge spi = getBridge().createDispatch(handler.getPhase(), handler.getHandle(), new Parameters());
     return createDispatch(handler, spi);
   }
 
-  private static Dispatch safeCreateDispatch(Handler<?> handler, Object[] args) {
+  private static Dispatch safeCreateDispatch(ControllerHandler<?> handler, Object[] args) {
     ContextLifeCycle context = current.get();
     if (context != null) {
       return context.getRequest().createDispatch(handler, args);
@@ -370,39 +370,39 @@ public class Request implements ScopingContext {
     }
   }
 
-  public static Phase.Action.Dispatch createActionDispatch(Handler<Phase.Action> handler) {
+  public static Phase.Action.Dispatch createActionDispatch(ControllerHandler<Phase.Action> handler) {
     return (Phase.Action.Dispatch)safeCreateDispatch(handler, EMPTY);
   }
 
-  public static Phase.Action.Dispatch createActionDispatch(Handler<Phase.Action> handler, Object arg) {
+  public static Phase.Action.Dispatch createActionDispatch(ControllerHandler<Phase.Action> handler, Object arg) {
     return (Phase.Action.Dispatch)safeCreateDispatch(handler, new Object[]{arg});
   }
 
-  public static Phase.Action.Dispatch createActionDispatch(Handler<Phase.Action> handler, Object[] args) {
+  public static Phase.Action.Dispatch createActionDispatch(ControllerHandler<Phase.Action> handler, Object[] args) {
     return (Phase.Action.Dispatch)safeCreateDispatch(handler, args);
   }
 
-  public static Phase.View.Dispatch createViewDispatch(Handler<Phase.View> handler) {
+  public static Phase.View.Dispatch createViewDispatch(ControllerHandler<Phase.View> handler) {
     return (Phase.View.Dispatch)safeCreateDispatch(handler, EMPTY);
   }
 
-  public static Phase.View.Dispatch createViewDispatch(Handler<Phase.View> handler, Object arg) {
+  public static Phase.View.Dispatch createViewDispatch(ControllerHandler<Phase.View> handler, Object arg) {
     return (Phase.View.Dispatch)safeCreateDispatch(handler, new Object[]{arg});
   }
 
-  public static Phase.View.Dispatch createViewDispatch(Handler<Phase.View> handler, Object[] args) {
+  public static Phase.View.Dispatch createViewDispatch(ControllerHandler<Phase.View> handler, Object[] args) {
     return (Phase.View.Dispatch)safeCreateDispatch(handler, args);
   }
 
-  public static Phase.Resource.Dispatch createResourceDispatch(Handler<Phase.Resource> handler) {
+  public static Phase.Resource.Dispatch createResourceDispatch(ControllerHandler<Phase.Resource> handler) {
     return (Phase.Resource.Dispatch)safeCreateDispatch(handler, EMPTY);
   }
 
-  public static Phase.Resource.Dispatch createResourceDispatch(Handler<Phase.Resource> handler, Object arg) {
+  public static Phase.Resource.Dispatch createResourceDispatch(ControllerHandler<Phase.Resource> handler, Object arg) {
     return (Phase.Resource.Dispatch)safeCreateDispatch(handler, new Object[]{arg});
   }
 
-  public static Phase.Resource.Dispatch createResourceDispatch(Handler<Phase.Resource> handler, Object[] args) {
+  public static Phase.Resource.Dispatch createResourceDispatch(ControllerHandler<Phase.Resource> handler, Object[] args) {
     return (Phase.Resource.Dispatch)safeCreateDispatch(handler, args);
   }
 

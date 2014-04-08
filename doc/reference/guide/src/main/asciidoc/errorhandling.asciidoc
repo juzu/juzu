@@ -1,0 +1,33 @@
+
+Juzu provides a central error handling mechanism, allowing to handle error that may occur at runtime in controllers
+or plugins (entity marshalling/unmarshalling, validation, etc...).
+
+An error handle is a special controller that must implement the +Handler<Result.Error, Response>+ interface:
+
+.Error handler example
+[source,java]
+----
+
+import juzu.Handler;
+import juzu.Response;
+import juzu.request.Result;
+
+public class ErrorHandler implements Handler<Result.Error, Response> {
+
+  @Override
+  public Response handle(Result.Error argument) {
+    return Response.content(500, "An error occured");
+  }
+}
+----
+
+The error handler controller must be declared in the +@Application+ interface:
+
+.Error handler declaration.
+[source,java]
+----
+@Application(errorController = ErrorHandler.class)
+----
+
+The error handler can return any type of response as it is a controller like others, therefore it can also be injected
+with application beans, templates, etc...

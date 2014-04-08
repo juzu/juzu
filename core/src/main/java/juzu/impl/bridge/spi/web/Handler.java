@@ -25,6 +25,7 @@ import juzu.impl.plugin.controller.ControllerPlugin;
 import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.impl.plugin.router.RouterDescriptor;
 import juzu.impl.plugin.router.RouterPlugin;
+import juzu.impl.request.ControllerHandler;
 import juzu.request.RequestParameter;
 import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
@@ -113,7 +114,7 @@ public class Handler implements Closeable {
     String requestPath = bridge.getRequestContext().getRequestPath();
 
     // Determine first a possible match from the root route from the request path
-    juzu.impl.request.Handler requestTarget = null;
+    ControllerHandler requestTarget = null;
     RouteMatch requestMatch = null;
     Map<String, RequestParameter> requestParameters = Collections.emptyMap();
     if (requestPath.startsWith(bridge.getRequestContext().getPath())) {
@@ -127,7 +128,7 @@ public class Handler implements Closeable {
         RouteMatch match = matches.next();
         RouteDescriptor routeDesc = getMethods(match.getRoute());
         if (routeDesc != null) {
-          juzu.impl.request.Handler target = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(routeDesc.handle);
+          ControllerHandler target = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(routeDesc.handle);
           if (target.getPhase() == Phase.VIEW) {
             if (requestMethod == HttpMethod.POST) {
               requestTarget =  target;

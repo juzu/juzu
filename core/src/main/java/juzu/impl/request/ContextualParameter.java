@@ -39,13 +39,4 @@ public class ContextualParameter extends ControlParameter {
     return genericType;
   }
 
-  @Override
-  public boolean equals(Object obj) {
-    if (obj instanceof ContextualParameter) {
-      ContextualParameter that = (ContextualParameter)obj;
-      return super.equals(that) && genericType.equals(that.genericType);
-    } else {
-      return false;
-    }
-  }
 }

@@ -17,7 +17,7 @@
 package juzu.impl.plugin.controller.descriptor;
 
 import juzu.impl.plugin.controller.ControllerResolver;
-import juzu.impl.request.Handler;
+import juzu.impl.request.ControllerHandler;
 import juzu.request.Phase;
 
 import java.util.Collection;
@@ -27,46 +27,46 @@ import java.util.Collection;
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-class ControllerDescriptorResolver extends ControllerResolver<Handler> {
+class ControllerDescriptorResolver extends ControllerResolver<ControllerHandler> {
 
   /** . */
   private final ControllersDescriptor desc;
 
   /** . */
-  private final Handler[] handlers;
+  private final ControllerHandler[] handlers;
 
   ControllerDescriptorResolver(ControllersDescriptor desc) throws NullPointerException {
-    this.handlers = desc.getHandlers().toArray(new Handler[desc.getHandlers().size()]);
+    this.handlers = desc.getHandlers().toArray(new ControllerHandler[desc.getHandlers().size()]);
     this.desc = desc;
   }
 
   @Override
-  public Handler[] getHandlers() {
+  public ControllerHandler[] getHandlers() {
     return handlers;
   }
 
   @Override
-  public String getId(Handler handler) {
+  public String getId(ControllerHandler handler) {
     return handler.getId();
   }
 
   @Override
-  public Phase getPhase(Handler handler) {
+  public Phase getPhase(ControllerHandler handler) {
     return handler.getPhase();
   }
 
   @Override
-  public String getName(Handler handler) {
+  public String getName(ControllerHandler handler) {
     return handler.getName();
   }
 
   @Override
-  public boolean isDefault(Handler handler) {
-    return handler.getType() == desc.getDefault() || desc.getControllers().size() < 2;
+  public boolean isDefault(ControllerHandler handler) {
+    return handler.getType() == desc.getDefaultController() || desc.getControllers().size() < 2;
   }
 
   @Override
-  public Collection<String> getParameterNames(Handler handler) {
+  public Collection<String> getParameterNames(ControllerHandler handler) {
     return handler.getParameterNames();
   }
 }

@@ -20,7 +20,7 @@ import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.common.Logger;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.controller.ControllerPlugin;
-import juzu.impl.request.Handler;
+import juzu.impl.request.ControllerHandler;
 import juzu.impl.inject.Scoped;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.common.JSON;
@@ -58,7 +58,7 @@ public class MockClient implements UserContext {
       }
 
       //
-      Handler handler = null;
+      ControllerHandler handler = null;
       if (json.getString("target") != null) {
         MethodHandle target = MethodHandle.parse(json.getString("target"));
         handler = controllerPlugin.getDescriptor().getMethodByHandle(target);
@@ -130,7 +130,7 @@ public class MockClient implements UserContext {
 
   public MockViewBridge render(String methodId) {
     MethodHandle handle = null;
-    Handler handler = null;
+    ControllerHandler handler = null;
     if (methodId != null) {
       handler = controllerPlugin.getDescriptor().getMethodById(methodId);
     } else {

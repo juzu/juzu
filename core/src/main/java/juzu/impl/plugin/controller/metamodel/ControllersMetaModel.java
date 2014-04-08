@@ -43,6 +43,9 @@ public class ControllersMetaModel extends MetaModelObject implements Iterable<Co
   Name defaultController;
 
   /** . */
+  Name errorController;
+
+  /** . */
   Boolean escapeXML;
 
   /** . */

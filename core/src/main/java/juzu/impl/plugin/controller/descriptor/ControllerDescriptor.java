@@ -16,7 +16,7 @@
 
 package juzu.impl.plugin.controller.descriptor;
 
-import juzu.impl.request.Handler;
+import juzu.impl.request.ControllerHandler;
 
 import java.util.Collections;
 import java.util.List;
@@ -28,9 +28,9 @@ public class ControllerDescriptor {
   private final Class<?> type;
 
   /** . */
-  private final List<Handler<?>> handlers;
+  private final List<ControllerHandler<?>> handlers;
 
-  public ControllerDescriptor(Class<?> type, List<Handler<?>> handlers) {
+  public ControllerDescriptor(Class<?> type, List<ControllerHandler<?>> handlers) {
     this.type = type;
     this.handlers = Collections.unmodifiableList(handlers);
   }
@@ -43,7 +43,7 @@ public class ControllerDescriptor {
     return type;
   }
 
-  public List<Handler<?>> getHandlers() {
+  public List<ControllerHandler<?>> getHandlers() {
     return handlers;
   }
 }

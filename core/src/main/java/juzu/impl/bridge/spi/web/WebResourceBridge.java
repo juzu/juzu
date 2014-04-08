@@ -17,7 +17,7 @@
 package juzu.impl.bridge.spi.web;
 
 import juzu.impl.bridge.Bridge;
-import juzu.impl.request.Handler;
+import juzu.impl.request.ControllerHandler;
 import juzu.request.Phase;
 import juzu.request.RequestParameter;
 import juzu.request.ClientContext;
@@ -31,7 +31,7 @@ public class WebResourceBridge extends WebMimeBridge {
       Bridge bridge,
       juzu.impl.bridge.spi.web.Handler handler,
       WebBridge webBridge,
-      Handler<?> target,
+      ControllerHandler<?> target,
       Map<String, RequestParameter> parameters) {
     super(bridge, handler, webBridge, Phase.RESOURCE, target, parameters);
   }

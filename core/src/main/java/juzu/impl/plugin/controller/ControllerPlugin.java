@@ -16,11 +16,15 @@
 
 package juzu.impl.plugin.controller;
 
+import juzu.Response;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.application.Application;
-import juzu.impl.request.Handler;
+import juzu.impl.request.ContextualParameter;
+import juzu.impl.request.ControlParameter;
+import juzu.impl.request.ControllerHandler;
 import juzu.impl.value.ValueType;
+import juzu.request.Phase;
 import juzu.request.Result;
 import juzu.io.UndeclaredIOException;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -34,7 +38,10 @@ import juzu.request.RequestParameter;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerPlugin extends ApplicationPlugin {
@@ -61,7 +68,7 @@ public class ControllerPlugin extends ApplicationPlugin {
     return descriptor;
   }
 
-  public ControllerResolver<Handler> getResolver() {
+  public ControllerResolver<ControllerHandler> getResolver() {
     return descriptor != null ? descriptor.getResolver() : null;
   }
 
@@ -94,7 +101,7 @@ public class ControllerPlugin extends ApplicationPlugin {
 
     //
     MethodHandle handle = bridge.getTarget();
-    Handler<?> handler = descriptor.getMethodByHandle(handle);
+    ControllerHandler<?> handler = descriptor.getMethodByHandle(handle);
     if (handler == null) {
       StringBuilder sb = new StringBuilder("handle me gracefully : no method could be resolved for " +
           "phase=").append(bridge.getPhase()).append(" handle=").append(handle).append(" parameters={");
@@ -126,8 +133,29 @@ public class ControllerPlugin extends ApplicationPlugin {
       Thread.currentThread().setContextClassLoader(classLoader);
       bridge.begin(request);
 
-
+      //
       Result result = request.invoke();
+
+      //
+      if (result instanceof Result.Error && descriptor.getErrorController() != null) {
+        Class<? extends juzu.Handler<Result.Error, Response>> a = descriptor.getErrorController();
+        Method m;
+        try {
+          m = a.getMethod("handle", Result.Error.class);
+        }
+        catch (NoSuchMethodException e) {
+          throw new UndeclaredThrowableException(e);
+        }
+
+        //
+        ContextualParameter argument = new ContextualParameter("argument", Result.Error.class);
+        handler = new ControllerHandler<Phase.View>(null, Phase.VIEW, a, m, Collections.<ControlParameter>singletonList(argument));
+        request = new Request(this, handler, bridge);
+        request.getContextualArguments().put(argument, result);
+        result = request.invoke();
+      }
+
+      //
       if (result != null) {
         try {
           bridge.setResult(result);

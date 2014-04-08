@@ -36,6 +36,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A stage in the request pipeline.
@@ -106,15 +107,20 @@ public abstract class Stage {
     protected Result result() {
 
       //
-      request.parameterArguments.putAll(request.bridge.getRequestArguments());
+      Map<String, RequestParameter> parameterArguments = request.getParameterArguments();
+      parameterArguments.putAll(request.bridge.getRequestArguments());
 
-      // Make a copy of the original arguments provided by the bridge
-      for (ControlParameter a : request.handler.getParameters()) {
-        if (a instanceof ContextualParameter) {
-          request.contextualArguments.put((ContextualParameter)a, null);
+      //
+      Map<ContextualParameter,Object> contextualArguments = request.getContextualArguments();
+      for (ControlParameter controlParameter : request.handler.getParameters()) {
+        if (controlParameter instanceof ContextualParameter) {
+          ContextualParameter contextualParameter = (ContextualParameter)controlParameter;
+          if (!contextualArguments.containsKey(contextualParameter)) {
+            contextualArguments.put(contextualParameter, null);
+          }
         }
       }
-      request.contextualArguments.putAll(request.bridge.getContextualArguments(request.contextualArguments.keySet()));
+      contextualArguments.putAll(request.bridge.getContextualArguments(contextualArguments.keySet()));
 
       //
       ClientContext clientContext = request.bridge.getClientContext();
@@ -133,7 +139,7 @@ public abstract class Stage {
               for (EntityUnmarshaller reader : Tools.loadService(EntityUnmarshaller.class, request.controllerPlugin.getApplication().getClassLoader())) {
                 try {
                   if (reader.accept(mediaType)) {
-                    reader.unmarshall(mediaType, clientContext, request.contextualArguments.entrySet(), request.parameterArguments);
+                    reader.unmarshall(mediaType, clientContext, contextualArguments.entrySet(), parameterArguments);
                     break;
                   }
                 }
@@ -163,7 +169,7 @@ public abstract class Stage {
 
     public Result result() {
 
-      juzu.impl.request.Handler<?> handler = request.getHandler();
+      ControllerHandler<?> handler = request.getHandler();
       InjectionContext<?, ?> manager = request.controllerPlugin.getInjectionContext();
       //
       Class<?> controllerType = handler.getType();
@@ -181,7 +187,7 @@ public abstract class Stage {
           Object value;
           if (parameter instanceof PhaseParameter) {
             PhaseParameter phaseParam = (PhaseParameter)parameter;
-            RequestParameter requestParam = request.parameterArguments.get(phaseParam.getMappedName());
+            RequestParameter requestParam = request.getParameterArguments().get(phaseParam.getMappedName());
             if (requestParam != null) {
               ValueType<?> valueType = request.controllerPlugin.resolveValueType(phaseParam.getValueType());
               if (valueType != null) {
@@ -234,14 +240,14 @@ public abstract class Stage {
             BeanParameter beanParam = (BeanParameter)parameter;
             Class<?> type = beanParam.getType();
             try {
-              value = beanParam.createMappedBean(request.controllerPlugin, handler.requiresPrefix, type, beanParam.getName(), request.parameterArguments);
+              value = beanParam.createMappedBean(request.controllerPlugin, handler.requiresPrefix, type, beanParam.getName(), request.getParameterArguments());
             }
             catch (Exception e) {
               value = null;
             }
           } else {
             ContextualParameter contextualParameter = (ContextualParameter)parameter;
-            value = request.contextualArguments.get(contextualParameter);
+            value = request.getContextualArguments().get(contextualParameter);
             if (value == null) {
               Class<?> contextualType = contextualParameter.getType();
               if (RequestContext.class.isAssignableFrom(contextualType)) {

@@ -19,7 +19,7 @@ package juzu.impl.plugin.application;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
-import juzu.impl.request.Handler;
+import juzu.impl.request.ControllerHandler;
 import juzu.test.AbstractTestCase;
 import juzu.test.CompilerAssert;
 import org.junit.Test;
@@ -39,7 +39,7 @@ public class ApplicationTestCase extends AbstractTestCase {
     //
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllersDescriptor controller = new ControllersDescriptor(desc);
-    assertSame(aClass, controller.getDefault());
+    assertSame(aClass, controller.getDefaultController());
   }
 
   public void _testMethodId() throws Exception {
@@ -51,9 +51,9 @@ public class ApplicationTestCase extends AbstractTestCase {
     //
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllersDescriptor controllerDesc = new ControllersDescriptor(desc);
-    Handler a = controllerDesc.getMethod(aClass, "a");
-    Handler b = controllerDesc.getMethod(aClass, "b");
-    Handler c = controllerDesc.getMethod(aClass, "c");
+    ControllerHandler a = controllerDesc.getMethod(aClass, "a");
+    ControllerHandler b = controllerDesc.getMethod(aClass, "b");
+    ControllerHandler c = controllerDesc.getMethod(aClass, "c");
 
     //
     assertEquals("foo", a.getId());

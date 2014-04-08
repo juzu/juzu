@@ -18,7 +18,7 @@ package juzu.impl.plugin.controller;
 
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
-import juzu.impl.request.Handler;
+import juzu.impl.request.ControllerHandler;
 import juzu.impl.common.Tools;
 import juzu.request.Phase;
 import juzu.test.AbstractTestCase;
@@ -44,8 +44,8 @@ public class ResolverTestCase extends AbstractTestCase {
     //
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllersDescriptor controllerDesc = new ControllersDescriptor(desc);
-    ControllerResolver<Handler> resolver = controllerDesc.getResolver();
-    Handler handler = resolver.resolve(Phase.VIEW, Collections.<String>emptySet());
+    ControllerResolver<ControllerHandler> resolver = controllerDesc.getResolver();
+    ControllerHandler handler = resolver.resolve(Phase.VIEW, Collections.<String>emptySet());
     assertEquals("index", handler.getName());
   }
 
@@ -63,7 +63,7 @@ public class ResolverTestCase extends AbstractTestCase {
     //
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllersDescriptor controllerDesc = new ControllersDescriptor(desc);
-    ControllerResolver<Handler> resolver = controllerDesc.getResolver();
+    ControllerResolver<ControllerHandler> resolver = controllerDesc.getResolver();
     try {
       resolver.resolve(Phase.VIEW, Collections.<String>emptySet());
       fail();
@@ -87,8 +87,8 @@ public class ResolverTestCase extends AbstractTestCase {
     //
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllersDescriptor controllerDesc = new ControllersDescriptor(desc);
-    ControllerResolver<Handler> resolver = controllerDesc.getResolver();
-    Handler handler = resolver.resolve(Phase.VIEW, Collections.<String>emptySet());
+    ControllerResolver<ControllerHandler> resolver = controllerDesc.getResolver();
+    ControllerHandler handler = resolver.resolve(Phase.VIEW, Collections.<String>emptySet());
     assertEquals("index", handler.getName());
     assertSame(aClass, handler.getMethod().getDeclaringClass());
   }
@@ -107,10 +107,10 @@ public class ResolverTestCase extends AbstractTestCase {
     Class<?> aClass = compiler.assertClass("plugin.controller.resolver.overload.A");
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllersDescriptor controllerDesc = new ControllersDescriptor(desc);
-    ControllerResolver<Handler> resolver = controllerDesc.getResolver();
+    ControllerResolver<ControllerHandler> resolver = controllerDesc.getResolver();
 
     //
-    Handler handler = resolver.resolveMethod(Phase.VIEW, "A.m", Tools.<String>set());
+    ControllerHandler handler = resolver.resolveMethod(Phase.VIEW, "A.m", Tools.<String>set());
     assertEquals("m", handler.getName());
     assertEquals(Tools.<String>set(), handler.getParameterNames());
 
@@ -150,17 +150,17 @@ public class ResolverTestCase extends AbstractTestCase {
     Class<?> clazz = compiler.assertClass("plugin.controller.resolver.method.Application");
     ApplicationDescriptor desc = ApplicationDescriptor.create(clazz);
     ControllersDescriptor controllerDesc = new ControllersDescriptor(desc);
-    ControllerResolver<Handler> resolver = controllerDesc.getResolver();
-    Handler cm1_ = controllerDesc.getMethod(aClass, "noArg");
-    Handler cm2_ = controllerDesc.getMethod(aClass, "fooArg", String.class);
+    ControllerResolver<ControllerHandler> resolver = controllerDesc.getResolver();
+    ControllerHandler cm1_ = controllerDesc.getMethod(aClass, "noArg");
+    ControllerHandler cm2_ = controllerDesc.getMethod(aClass, "fooArg", String.class);
 
     //
-    Handler cm1 = resolver.resolveMethod(Phase.VIEW, cm1_.getId(), cm1_.getParameterNames());
+    ControllerHandler cm1 = resolver.resolveMethod(Phase.VIEW, cm1_.getId(), cm1_.getParameterNames());
     assertNotNull(cm1);
     assertEquals("noArg", cm1.getName());
 
     //
-    Handler cm2 = resolver.resolveMethod(Phase.VIEW, cm2_.getId(), cm2_.getParameterNames());
+    ControllerHandler cm2 = resolver.resolveMethod(Phase.VIEW, cm2_.getId(), cm2_.getParameterNames());
     assertNotNull(cm2);
     assertEquals("fooArg", cm2.getName());
   }
@@ -174,10 +174,10 @@ public class ResolverTestCase extends AbstractTestCase {
     Class<?> bClass = compiler.assertClass("plugin.controller.resolver.default_controller.B");
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllersDescriptor controllerDesc = new ControllersDescriptor(desc);
-    ControllerResolver<Handler> resolver = controllerDesc.getResolver();
+    ControllerResolver<ControllerHandler> resolver = controllerDesc.getResolver();
 
     //
-    Handler handler = resolver.resolve((String)null, "index", Collections.<String>emptySet());
+    ControllerHandler handler = resolver.resolve((String)null, "index", Collections.<String>emptySet());
     assertEquals("index", handler.getName());
     assertSame(handler.getType(), aClass);
 
@@ -200,10 +200,10 @@ public class ResolverTestCase extends AbstractTestCase {
     Class<?> aClass = compiler.assertClass("plugin.controller.resolver.method.A");
     ApplicationDescriptor desc = ApplicationDescriptor.create(appClass);
     ControllersDescriptor controllerDesc = new ControllersDescriptor(desc);
-    ControllerResolver<Handler> resolver = controllerDesc.getResolver();
+    ControllerResolver<ControllerHandler> resolver = controllerDesc.getResolver();
 
     //
-    Handler handler = resolver.resolve((String)null, "noArg", Collections.<String>emptySet());
+    ControllerHandler handler = resolver.resolve((String)null, "noArg", Collections.<String>emptySet());
     assertEquals("noArg", handler.getName());
     assertSame(handler.getType(), aClass);
     //

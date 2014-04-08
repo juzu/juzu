@@ -19,7 +19,7 @@ package juzu.impl.plugin.controller;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.ControlParameter;
-import juzu.impl.request.Handler;
+import juzu.impl.request.ControllerHandler;
 import juzu.impl.request.PhaseParameter;
 import juzu.impl.common.Cardinality;
 import juzu.request.Phase;
@@ -57,7 +57,7 @@ public class ResourceHandlerTestCase extends AbstractTestCase {
 
   @Test
   public void testNoArg() throws Exception {
-    Handler cm = controllerDescriptor.getMethod(aClass, "noArg");
+    ControllerHandler cm = controllerDescriptor.getMethod(aClass, "noArg");
     assertEquals("noArg", cm.getName());
     assertEquals(Phase.RESOURCE, cm.getPhase());
     assertEquals(Collections.<ControlParameter>emptyList(), cm.getParameters());
@@ -65,7 +65,7 @@ public class ResourceHandlerTestCase extends AbstractTestCase {
 
   @Test
   public void testStringArg() throws Exception {
-    Handler cm = controllerDescriptor.getMethod(aClass, "oneArg", String.class);
+    ControllerHandler cm = controllerDescriptor.getMethod(aClass, "oneArg", String.class);
     assertEquals("oneArg", cm.getName());
     assertEquals(Phase.RESOURCE, cm.getPhase());
     assertEquals(Arrays.asList(new PhaseParameter("foo", null, null, Cardinality.SINGLE, null)), cm.getParameters());

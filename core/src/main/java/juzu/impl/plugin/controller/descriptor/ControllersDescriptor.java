@@ -16,16 +16,20 @@
 
 package juzu.impl.plugin.controller.descriptor;
 
+import juzu.Response;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.common.JSON;
-import juzu.impl.request.Handler;
+import juzu.impl.request.ControllerHandler;
+import juzu.request.Result;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,10 +41,13 @@ public class ControllersDescriptor extends PluginDescriptor {
   private final Class<?> defaultController;
 
   /** . */
+  private final Class<? extends juzu.Handler<Result.Error, Response>> errorController;
+
+  /** . */
   private final List<ControllerDescriptor> controllers;
 
   /** . */
-  private final ArrayList<Handler> handlers;
+  private final ArrayList<ControllerHandler> handlers;
 
   /** . */
   private final ArrayList<juzu.impl.inject.BeanDescriptor> beans;
@@ -52,7 +59,7 @@ public class ControllersDescriptor extends PluginDescriptor {
   private ControllerDescriptorResolver resolver;
 
   /** . */
-  private final Map<MethodHandle, Handler> byHandle;
+  private final Map<MethodHandle, ControllerHandler> byHandle;
 
   public ControllersDescriptor(ApplicationDescriptor desc) throws Exception {
     this(desc.getApplicationLoader(), desc.getConfig().getJSON("controller"));
@@ -60,16 +67,16 @@ public class ControllersDescriptor extends PluginDescriptor {
 
   public ControllersDescriptor(ClassLoader loader, JSON config) throws Exception {
     List<ControllerDescriptor> controllers = new ArrayList<ControllerDescriptor>();
-    ArrayList<Handler> handlers = new ArrayList<Handler>();
+    ArrayList<ControllerHandler> handlers = new ArrayList<ControllerHandler>();
     ArrayList<juzu.impl.inject.BeanDescriptor> beans = new ArrayList<juzu.impl.inject.BeanDescriptor>();
-    HashMap<MethodHandle, Handler> byHandle = new HashMap<MethodHandle, Handler>();
+    HashMap<MethodHandle, ControllerHandler> byHandle = new HashMap<MethodHandle, ControllerHandler>();
 
     // Load controllers
     for (String fqn : config.getList("controllers", String.class)) {
       Class<?> clazz = loader.loadClass(fqn);
       Field f = clazz.getField("DESCRIPTOR");
       ControllerDescriptor bean = (ControllerDescriptor)f.get(null);
-      for (Handler handler : bean.getHandlers()) {
+      for (ControllerHandler handler : bean.getHandlers()) {
         byHandle.put(handler.getHandle(), handler);
       }
       controllers.add(bean);
@@ -88,8 +95,17 @@ public class ControllersDescriptor extends PluginDescriptor {
     }
 
     //
+    Class<? extends juzu.Handler<Result.Error, Response>> errorController = null;
+    String errorControllerName = config.getString("error");
+    if (errorControllerName != null) {
+      errorController = (Class<? extends juzu.Handler<Result.Error,Response>>)loader.loadClass(errorControllerName);
+      beans.add(BeanDescriptor.createFromBean(errorController, null, Collections.<Annotation>emptyList()));
+    }
+
+    //
     this.escapeXML = escapeXML;
     this.defaultController = defaultController;
+    this.errorController = errorController;
     this.controllers = controllers;
     this.handlers = handlers;
     this.beans = beans;
@@ -101,12 +117,16 @@ public class ControllersDescriptor extends PluginDescriptor {
     return beans;
   }
 
-  public ControllerResolver<Handler> getResolver() {
+  public ControllerResolver<ControllerHandler> getResolver() {
     return resolver;
   }
 
-  public Class<?> getDefault() {
+  public Class<?> getDefaultController() {
     return defaultController;
+  }
+
+  public Class<? extends juzu.Handler<Result.Error, Response>> getErrorController() {
+    return errorController;
   }
 
   public Boolean getEscapeXML() {
@@ -117,13 +137,13 @@ public class ControllersDescriptor extends PluginDescriptor {
     return controllers;
   }
 
-  public List<Handler> getHandlers() {
+  public List<ControllerHandler> getHandlers() {
     return handlers;
   }
 
-  public Handler getMethod(Class<?> type, String name, Class<?>... parameterTypes) {
+  public ControllerHandler getMethod(Class<?> type, String name, Class<?>... parameterTypes) {
     for (int i = 0;i < handlers.size();i++) {
-      Handler cm = handlers.get(i);
+      ControllerHandler cm = handlers.get(i);
       java.lang.reflect.Method m = cm.getMethod();
       if (type.equals(cm.getType()) && m.getName().equals(name)) {
         Class<?>[] a = m.getParameterTypes();
@@ -140,9 +160,9 @@ public class ControllersDescriptor extends PluginDescriptor {
     return null;
   }
 
-  public Handler getMethodById(String methodId) {
+  public ControllerHandler getMethodById(String methodId) {
     for (int i = 0;i < handlers.size();i++) {
-      Handler cm = handlers.get(i);
+      ControllerHandler cm = handlers.get(i);
       if (cm.getId().equals(methodId)) {
         return cm;
       }
@@ -150,7 +170,7 @@ public class ControllersDescriptor extends PluginDescriptor {
     return null;
   }
 
-  public Handler getMethodByHandle(MethodHandle handle) {
+  public ControllerHandler getMethodByHandle(MethodHandle handle) {
     return byHandle.get(handle);
   }
 }
