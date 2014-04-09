@@ -65,7 +65,7 @@ public class PortletViewBridge extends PortletMimeBridge<RenderRequest, RenderRe
       StringWriter buffer = new StringWriter();
       PrintWriter printer = new PrintWriter(buffer);
       Formatting.renderErrors(printer, e.getErrors());
-      setResult(Response.error(buffer.toString()).result());
+      setResponse(Response.error(buffer.toString()));
       return;
     }
 

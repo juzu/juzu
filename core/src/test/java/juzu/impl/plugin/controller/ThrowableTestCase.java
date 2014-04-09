@@ -100,7 +100,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    MockRequestBridge request = client.invoke(render.assertStringResult());
+    MockRequestBridge request = client.invoke(render.assertStringResponse());
     request.assertFailure(AuthenticationException.class);
   }
 
@@ -111,7 +111,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    MockRequestBridge request = client.invoke(render.assertStringResult());
+    MockRequestBridge request = client.invoke(render.assertStringResponse());
     request.assertFailure(ConcurrentModificationException.class);
   }
 
@@ -122,7 +122,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    MockRequestBridge request = client.invoke(render.assertStringResult());
+    MockRequestBridge request = client.invoke(render.assertStringResponse());
     request.assertFailure(UnknownError.class);
   }
 
@@ -133,7 +133,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    MockRequestBridge request = client.invoke(render.assertStringResult());
+    MockRequestBridge request = client.invoke(render.assertStringResponse());
     request.assertFailure(AuthenticationException.class);
   }
 
@@ -144,7 +144,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    MockRequestBridge request = client.invoke(render.assertStringResult());
+    MockRequestBridge request = client.invoke(render.assertStringResponse());
     request.assertFailure(ConcurrentModificationException.class);
   }
 
@@ -155,7 +155,7 @@ public class ThrowableTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    MockRequestBridge request = client.invoke(render.assertStringResult());
+    MockRequestBridge request = client.invoke(render.assertStringResponse());
     request.assertFailure(UnknownError.class);
   }
 }

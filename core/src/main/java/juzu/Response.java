@@ -16,13 +16,13 @@
 
 package juzu;
 
+import juzu.impl.common.Formatting;
 import juzu.io.ChunkBuffer;
 import juzu.io.Stream;
 import juzu.io.Streamable;
 import juzu.io.UndeclaredIOException;
 import juzu.io.Chunk;
 import juzu.request.Dispatch;
-import juzu.request.Result;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -194,8 +194,6 @@ public abstract class Response {
     return with(PropertyType.HEADER, new AbstractMap.SimpleEntry<String, String[]>(name, value));
   }
 
-  public abstract Result result();
-
   /**
    * A response instructing to execute a render phase of a controller method after the current interaction.
    */
@@ -228,10 +226,6 @@ public abstract class Response {
 
     public abstract boolean equals(Object obj);
 
-    @Override
-    public final Result.View result() {
-      return new Result.View(properties, this);
-    }
   }
 
   /**
@@ -285,11 +279,6 @@ public abstract class Response {
         return location.equals(that.location);
       }
       return false;
-    }
-
-    @Override
-    public final Result.Redirect result() {
-      return new Result.Redirect(properties, location);
     }
 
     @Override
@@ -375,9 +364,8 @@ public abstract class Response {
       return (Status)super.with(propertyType, propertyValue);
     }
 
-    @Override
-    public Result.Status result() {
-      Streamable foo = new Streamable() {
+    public Streamable streamable() {
+      return new Streamable() {
         public void send(Stream stream) throws IllegalStateException {
 
           // Send properties
@@ -392,52 +380,43 @@ public abstract class Response {
 
           // Send real stream
           if (Status.this instanceof Response.Body) {
-            ((Response.Body)Status.this).getStreamable().send(stream);
+            ((Response.Body)Status.this).getData().send(stream);
           } else {
             stream.close(null);
           }
         }
       };
-
-      //
-      if (Status.this instanceof Response.Content) {
-        return new Result.Status(code, true, foo);
-      } else if (Status.this instanceof Response.Body) {
-        return new Result.Status(code, false, foo);
-      } else {
-        return new Result.Status(code, false, foo);
-      }
     }
   }
 
   public static class Body extends Status {
 
     /** . */
-    private Streamable streamable;
+    private Streamable data;
 
     protected Body(int status, PropertyMap properties) {
       super(status, properties);
 
       //
-      this.streamable = null;
+      this.data = null;
     }
 
-    protected Body(int status, Streamable streamable) {
+    protected Body(int status, Streamable data) {
       super(status);
 
       //
-      this.streamable = streamable;
+      this.data = data;
     }
 
-    protected Body(int status, PropertyMap properties, Streamable streamable) {
+    protected Body(int status, PropertyMap properties, Streamable data) {
       super(status, properties);
 
       //
-      this.streamable = streamable;
+      this.data = data;
     }
 
-    public Streamable getStreamable() {
-      return streamable;
+    public Streamable getData() {
+      return data;
     }
 
     public String getMimeType() {
@@ -640,14 +619,27 @@ public abstract class Response {
       return msg;
     }
 
-    @Override
-    public String toString() {
-      return "Response.Error[" + (cause != null ? cause.getMessage() : "") + "]";
+    public Status asStatus(boolean verbose) {
+      Response.Status response = Response.status(500);
+      if (verbose) {
+        StringBuilder buffer = new StringBuilder();
+        Formatting.renderStyleSheet(buffer);
+        buffer.append("<div class=\"juzu\">");
+        buffer.append("<h1>Oups something went wrong</h1>");
+        if (cause != null) {
+          Formatting.renderThrowable(null, buffer, cause);
+        } else {
+          buffer.append(msg);
+        }
+        buffer.append("</div>");
+        response = response.content(buffer).withMimeType("text/html");
+      }
+      return response;
     }
 
     @Override
-    public Result.Error result() {
-      return new Result.Error(properties, at, cause, msg);
+    public String toString() {
+      return "Response.Error[" + (cause != null ? cause.getMessage() : "") + "]";
     }
   }
 

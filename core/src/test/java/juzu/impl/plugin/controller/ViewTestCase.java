@@ -44,7 +44,7 @@ public class ViewTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    assertEquals("index", render.assertStringResult());
+    assertEquals("index", render.assertStringResponse());
   }
 
   @Test
@@ -54,16 +54,16 @@ public class ViewTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String result = render.assertStringResult();
+    String result = render.assertStringResponse();
     Matcher m = P.matcher(result);
     assertTrue("Was expecting " + result + " to match", m.matches());
     assertEquals("0", m.group(1));
     render = (MockViewBridge)client.invoke(m.group(2));
-    m.reset(result = render.assertStringResult());
+    m.reset(result = render.assertStringResponse());
     assertTrue("Was expecting " + result + " to match", m.matches());
     assertEquals("1", m.group(1));
     render = (MockViewBridge)client.invoke(m.group(2));
-    m.reset(result = render.assertStringResult());
+    m.reset(result = render.assertStringResponse());
     assertTrue("Was expecting " + result + " to match", m.matches());
     assertEquals("0", m.group(1));
   }
@@ -75,16 +75,16 @@ public class ViewTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String result = render.assertStringResult();
+    String result = render.assertStringResponse();
     Matcher m = P.matcher(result);
     assertTrue("Was expecting " + result + " to match", m.matches());
     assertEquals("0", m.group(1));
     render = (MockViewBridge)client.invoke(m.group(2));
-    m.reset(result = render.assertStringResult());
+    m.reset(result = render.assertStringResponse());
     assertTrue("Was expecting " + result + " to match", m.matches());
     assertEquals("1", m.group(1));
     render = (MockViewBridge)client.invoke(m.group(2));
-    m.reset(result = render.assertStringResult());
+    m.reset(result = render.assertStringResponse());
     assertTrue("Was expecting " + result + " to match", m.matches());
     assertEquals("2", m.group(1));
   }
@@ -95,7 +95,7 @@ public class ViewTestCase extends AbstractInjectTestCase {
 
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String result = render.assertStringResult();
+    String result = render.assertStringResponse();
     assertEquals("foo", result);
   }
 
@@ -106,7 +106,7 @@ public class ViewTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String result = render.assertStringResult();
+    String result = render.assertStringResponse();
     MockActionBridge action = (MockActionBridge)client.invoke(result);
     action.assertRender("A.done", Collections.<String, String>emptyMap());
   }

@@ -42,23 +42,23 @@ public class HandlerParametersTestCase extends AbstractInjectTestCase {
 
     //
     MockViewBridge render = client.render("none");
-    MockViewBridge mv = (MockViewBridge)client.invoke(render.assertStringResult());
-    assertEquals("", mv.assertStringResult());
+    MockViewBridge mv = (MockViewBridge)client.invoke(render.assertStringResponse());
+    assertEquals("", mv.assertStringResponse());
 
     //
     render = client.render("0");
-    mv = (MockViewBridge)client.invoke(render.assertStringResult());
-    assertEquals("", mv.assertStringResult());
+    mv = (MockViewBridge)client.invoke(render.assertStringResponse());
+    assertEquals("", mv.assertStringResponse());
 
     //
     render = client.render("1");
-    mv = (MockViewBridge)client.invoke(render.assertStringResult());
-    assertEquals(Arrays.asList("bar").toString(), mv.assertStringResult());
+    mv = (MockViewBridge)client.invoke(render.assertStringResponse());
+    assertEquals(Arrays.asList("bar").toString(), mv.assertStringResponse());
 
     //
     render = client.render("2");
-    mv = (MockViewBridge)client.invoke(render.assertStringResult());
-    assertEquals(Arrays.asList("bar_1", "bar_2").toString(), mv.assertStringResult());
+    mv = (MockViewBridge)client.invoke(render.assertStringResponse());
+    assertEquals(Arrays.asList("bar_1", "bar_2").toString(), mv.assertStringResponse());
   }
 
   @Test
@@ -70,23 +70,23 @@ public class HandlerParametersTestCase extends AbstractInjectTestCase {
 
     //
     MockViewBridge render = client.render("none");
-    MockViewBridge mv = (MockViewBridge)client.invoke(render.assertStringResult());
-    assertEquals("", mv.assertStringResult());
+    MockViewBridge mv = (MockViewBridge)client.invoke(render.assertStringResponse());
+    assertEquals("", mv.assertStringResponse());
 
     //
     render = client.render("0");
-    mv = (MockViewBridge)client.invoke(render.assertStringResult());
-    assertEquals("", mv.assertStringResult());
+    mv = (MockViewBridge)client.invoke(render.assertStringResponse());
+    assertEquals("", mv.assertStringResponse());
 
     //
     render = client.render("1");
-    mv = (MockViewBridge)client.invoke(render.assertStringResult());
-    assertEquals(Arrays.asList("bar").toString(), mv.assertStringResult());
+    mv = (MockViewBridge)client.invoke(render.assertStringResponse());
+    assertEquals(Arrays.asList("bar").toString(), mv.assertStringResponse());
 
     //
     render = client.render("2");
-    mv = (MockViewBridge)client.invoke(render.assertStringResult());
-    assertEquals(Arrays.asList("bar_1", "bar_2").toString(), mv.assertStringResult());
+    mv = (MockViewBridge)client.invoke(render.assertStringResponse());
+    assertEquals(Arrays.asList("bar_1", "bar_2").toString(), mv.assertStringResponse());
   }
 
   @Test
@@ -111,15 +111,15 @@ public class HandlerParametersTestCase extends AbstractInjectTestCase {
 
   private void assertBean(MockClient client, String name, Object expected) throws Exception {
     MockViewBridge render = client.render(name);
-    String url = render.assertStringResult();
+    String url = render.assertStringResponse();
     MockViewBridge m = (MockViewBridge)client.invoke(url);
-    assertEquals(expected, m.assertStringResult());
+    assertEquals(expected, m.assertStringResponse());
 
     render = client.render(name + "Action");
-    url = render.assertStringResult();
+    url = render.assertStringResponse();
     MockActionBridge action = (MockActionBridge)client.invoke(url);
     MockViewBridge m2 = (MockViewBridge)client.invoke(action.assertUpdate());
-    assertEquals(expected, m2.assertStringResult());
+    assertEquals(expected, m2.assertStringResponse());
   }
 
   public static boolean WAS_NULL;

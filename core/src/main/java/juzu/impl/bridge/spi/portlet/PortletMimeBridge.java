@@ -17,6 +17,7 @@
 package juzu.impl.bridge.spi.portlet;
 
 import juzu.PropertyType;
+import juzu.Response;
 import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.Formatting;
@@ -24,7 +25,6 @@ import juzu.impl.common.Tools;
 import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.impl.request.ContextualParameter;
 import juzu.request.Phase;
-import juzu.request.Result;
 import juzu.io.Chunk;
 import juzu.io.Stream;
 import org.w3c.dom.Comment;
@@ -61,10 +61,10 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
 
   @Override
   public void send() throws IOException, PortletException {
-    if (result instanceof Result.Status) {
+    if (response instanceof Response.Status) {
 
       //
-      Result.Status status = (Result.Status)result;
+      Response.Status status = (Response.Status)response;
 
       //
       final AssetPlugin assetPlugin = (AssetPlugin)bridge.getApplication().getPlugin("asset");
@@ -164,26 +164,26 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
       };
 
       //
-      if (status.code != 200) {
-        resp.addProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status.code));
+      if (status.getCode() != 200) {
+        resp.addProperty(ResourceResponse.HTTP_STATUS_CODE, Integer.toString(status.getCode()));
       }
-      status.streamable.send(stream);
-    } else if (result instanceof Result.Error) {
-      Result.Error error = (Result.Error)result;
+      status.streamable().send(stream);
+    } else if (response instanceof Response.Error) {
+      Response.Error error = (Response.Error)response;
       if (bridge.getRunMode().getPrettyFail()) {
         resp.setContentType("text/html");
         PrintWriter writer = resp.getWriter();
         writer.append("<div class=\"juzu\">");
-        Throwable cause = error.cause;
+        Throwable cause = error.getCause();
         if (cause != null) {
           Formatting.renderThrowable(null, writer, cause);
         } else {
-          writer.append(error.message);
+          writer.append(error.getMessage());
         }
         writer.append("</div>");
         writer.close();
       } else {
-        throw new PortletException(error.cause);
+        throw new PortletException(error.getCause());
       }
     }
   }

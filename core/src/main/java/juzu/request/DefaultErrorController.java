@@ -21,10 +21,10 @@ import juzu.Response;
 /**
  * @author Julien Viet
  */
-public class DefaultErrorController implements Handler<Result.Error, Response> {
+public class DefaultErrorController implements Handler<Response.Error, Response> {
 
   @Override
-  public Response.Error handle(Result.Error argument) {
-    return Response.error(argument.cause);
+  public Response handle(Response.Error argument) {
+    return argument;
   }
 }

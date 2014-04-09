@@ -83,7 +83,7 @@ public class TemplateTestCase extends AbstractInjectTestCase {
         Name.parse("plugin.template.external"));
     app.init();
     MockClient client = app.client();
-    assertEquals("hello", client.render().assertStringResult());
+    assertEquals("hello", client.render().assertStringResponse());
   }
 
   @Test
@@ -101,21 +101,21 @@ public class TemplateTestCase extends AbstractInjectTestCase {
   public void testRelativePath() throws Exception {
     MockApplication<?> app = application("plugin.template.relativepath").init();
     MockClient client = app.client();
-    assertEquals("relative_path_template", client.render().assertStringResult());
+    assertEquals("relative_path_template", client.render().assertStringResponse());
   }
 
   @Test
   public void testTyped() throws Exception {
     MockApplication<?> app = application("plugin.template.typed").init();
     MockClient client = app.client();
-    assertEquals("typed_template", client.render().assertStringResult());
+    assertEquals("typed_template", client.render().assertStringResponse());
   }
 
   @Test
   public void testUndeclaredIOE() throws Exception {
     MockApplication<?> app = application("plugin.template.ioe").init();
     MockClient client = app.client();
-    assertEquals("pass", client.render().assertStringResult());
+    assertEquals("pass", client.render().assertStringResponse());
   }
 
   @Test
@@ -128,7 +128,7 @@ public class TemplateTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("plugin.template.message").init();
     app.addMessage(Locale.ENGLISH, "the_key", "the_key_en");
     MockClient client = app.client();
-    assertEquals("(the_key_en,)", client.render().assertStringResult());
+    assertEquals("(the_key_en,)", client.render().assertStringResponse());
   }
 
   @Test
@@ -144,6 +144,6 @@ public class TemplateTestCase extends AbstractInjectTestCase {
     cu.compile();
     assertTrue(groovy.delete());
     MockClient client = app.client();
-    assertEquals("hello", client.render().assertStringResult());
+    assertEquals("hello", client.render().assertStringResponse());
   }
 }

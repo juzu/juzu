@@ -16,6 +16,7 @@
 
 package juzu.impl.request;
 
+import juzu.Response;
 import juzu.Scope;
 import juzu.asset.AssetLocation;
 import juzu.impl.bridge.Parameters;
@@ -39,7 +40,6 @@ import juzu.request.Dispatch;
 import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.RequestParameter;
-import juzu.request.Result;
 import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 
@@ -179,7 +179,7 @@ public class Request implements ScopingContext {
   /** The main contextual for this request. */
   private ContextLifeCycle contextLifeCycle;
 
-  public Result invoke() {
+  public Response invoke() {
     boolean set = current.get() == null;
     try {
 

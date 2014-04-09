@@ -37,6 +37,6 @@ public class PrinterTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render("implicit");
-    assertEquals("implicit_render", render.assertStringResult());
+    assertEquals("implicit_render", render.assertStringResponse());
   }
 }

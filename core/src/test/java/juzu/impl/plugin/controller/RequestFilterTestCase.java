@@ -51,7 +51,7 @@ public class RequestFilterTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("plugin.controller.requestfilter.failure").init();
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    assertEquals("pass", render.assertStringResult());
+    assertEquals("pass", render.assertStringResponse());
   }
 
   @Test

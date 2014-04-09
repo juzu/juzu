@@ -16,11 +16,11 @@
 
 package juzu.impl.bridge.spi.web;
 
+import juzu.Response;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.plugin.asset.AssetPlugin;
 import juzu.impl.request.ControllerHandler;
 import juzu.request.Phase;
-import juzu.request.Result;
 import juzu.request.RequestParameter;
 
 import java.util.Map;
@@ -42,10 +42,10 @@ public abstract class WebMimeBridge extends WebRequestBridge {
   boolean send() throws Exception {
     if (super.send()) {
       return true;
-    } else if (response instanceof Result.Status) {
+    } else if (response instanceof Response.Status) {
 
       // For now we hardcode this
-      Result.Status status = (Result.Status)response;
+      Response.Status status = (Response.Status)response;
 
       //
       AssetPlugin assetPlugin = (AssetPlugin)handler.getBridge().getApplication().getPlugin("asset");

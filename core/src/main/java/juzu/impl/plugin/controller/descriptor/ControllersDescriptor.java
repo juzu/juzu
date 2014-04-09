@@ -24,7 +24,6 @@ import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.common.JSON;
 import juzu.impl.request.ControllerHandler;
-import juzu.request.Result;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -41,7 +40,7 @@ public class ControllersDescriptor extends PluginDescriptor {
   private final Class<?> defaultController;
 
   /** . */
-  private final Class<? extends juzu.Handler<Result.Error, Response>> errorController;
+  private final Class<? extends juzu.Handler<Response.Error, Response>> errorController;
 
   /** . */
   private final List<ControllerDescriptor> controllers;
@@ -95,10 +94,10 @@ public class ControllersDescriptor extends PluginDescriptor {
     }
 
     //
-    Class<? extends juzu.Handler<Result.Error, Response>> errorController = null;
+    Class<? extends juzu.Handler<Response.Error, Response>> errorController = null;
     String errorControllerName = config.getString("error");
     if (errorControllerName != null) {
-      errorController = (Class<? extends juzu.Handler<Result.Error,Response>>)loader.loadClass(errorControllerName);
+      errorController = (Class<? extends juzu.Handler<Response.Error,Response>>)loader.loadClass(errorControllerName);
       beans.add(BeanDescriptor.createFromBean(errorController, null, Collections.<Annotation>emptyList()));
     }
 
@@ -125,7 +124,7 @@ public class ControllersDescriptor extends PluginDescriptor {
     return defaultController;
   }
 
-  public Class<? extends juzu.Handler<Result.Error, Response>> getErrorController() {
+  public Class<? extends juzu.Handler<Response.Error, Response>> getErrorController() {
     return errorController;
   }
 

@@ -37,6 +37,6 @@ public class AmbiguousTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    assertEquals("app1", render.assertStringResult());
+    assertEquals("app1", render.assertStringResponse());
   }
 }

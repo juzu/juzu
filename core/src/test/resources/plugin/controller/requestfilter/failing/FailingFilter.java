@@ -18,7 +18,7 @@ package plugin.controller.requestfilter.failing;
 
 import juzu.impl.request.RequestFilter;
 import juzu.impl.request.Stage;
-import juzu.request.Result;
+import juzu.Response;
 
 import java.util.ConcurrentModificationException;
 
@@ -33,7 +33,7 @@ public class FailingFilter implements RequestFilter<Stage.Handler> {
   }
 
   @Override
-  public Result handle(Stage.Handler argument) {
+  public Response handle(Stage.Handler argument) {
     throw new ConcurrentModificationException();
   }
 }

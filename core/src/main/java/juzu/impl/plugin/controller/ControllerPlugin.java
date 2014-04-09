@@ -25,7 +25,6 @@ import juzu.impl.request.ControlParameter;
 import juzu.impl.request.ControllerHandler;
 import juzu.impl.value.ValueType;
 import juzu.request.Phase;
-import juzu.request.Result;
 import juzu.io.UndeclaredIOException;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.MethodHandle;
@@ -134,21 +133,21 @@ public class ControllerPlugin extends ApplicationPlugin {
       bridge.begin(request);
 
       //
-      Result result = request.invoke();
+      Response result = request.invoke();
 
       //
-      if (result instanceof Result.Error && descriptor.getErrorController() != null) {
-        Class<? extends juzu.Handler<Result.Error, Response>> a = descriptor.getErrorController();
+      if (result instanceof Response.Error && descriptor.getErrorController() != null) {
+        Class<? extends juzu.Handler<Response.Error, Response>> a = descriptor.getErrorController();
         Method m;
         try {
-          m = a.getMethod("handle", Result.Error.class);
+          m = a.getMethod("handle", Response.Error.class);
         }
         catch (NoSuchMethodException e) {
           throw new UndeclaredThrowableException(e);
         }
 
         //
-        ContextualParameter argument = new ContextualParameter("argument", Result.Error.class);
+        ContextualParameter argument = new ContextualParameter("argument", Response.Error.class);
         handler = new ControllerHandler<Phase.View>(null, Phase.VIEW, a, m, Collections.<ControlParameter>singletonList(argument));
         request = new Request(this, handler, bridge);
         request.getContextualArguments().put(argument, result);
@@ -158,7 +157,7 @@ public class ControllerPlugin extends ApplicationPlugin {
       //
       if (result != null) {
         try {
-          bridge.setResult(result);
+          bridge.setResponse(result);
         }
         catch (IOException e) {
           throw new UndeclaredIOException(e);

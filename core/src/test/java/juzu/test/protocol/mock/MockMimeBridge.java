@@ -16,9 +16,9 @@
 
 package juzu.test.protocol.mock;
 
+import juzu.Response;
 import juzu.impl.common.MethodHandle;
 import juzu.request.Phase;
-import juzu.request.Result;
 import juzu.impl.runtime.ApplicationRuntime;
 import juzu.test.AbstractTestCase;
 import org.junit.Assert;
@@ -33,13 +33,13 @@ public abstract class MockMimeBridge extends MockRequestBridge {
     super(application, client, phase, target, parameters);
   }
 
-  public String assertStringResult(String expected) {
-    String actual = assertStringResult();
+  public String assertStringResponse(String expected) {
+    String actual = assertStringResponse();
     Assert.assertEquals(expected, actual);
     return actual;
   }
 
-  public String assertStringResult() {
+  public String assertStringResponse() {
     if (buffer == null) {
       throw AbstractTestCase.failure("No data");
     } else {
@@ -52,7 +52,7 @@ public abstract class MockMimeBridge extends MockRequestBridge {
     }
   }
 
-  public byte[] assertBinaryResult() {
+  public byte[] assertBinaryResponse() {
     if (buffer == null) {
       throw AbstractTestCase.failure("No data");
     } else {
@@ -73,7 +73,7 @@ public abstract class MockMimeBridge extends MockRequestBridge {
   }
 
   public void assertStatus(int status) {
-    Result.Status content = AbstractTestCase.assertInstanceOf(Result.Status.class, result);
-    Assert.assertEquals(status, content.code);
+    Response.Status content = AbstractTestCase.assertInstanceOf(Response.Status.class, response);
+    Assert.assertEquals(status, content.getCode());
   }
 }

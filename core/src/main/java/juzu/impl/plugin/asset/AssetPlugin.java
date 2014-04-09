@@ -17,6 +17,7 @@
 package juzu.impl.plugin.asset;
 
 import juzu.PropertyType;
+import juzu.Response;
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetDeployment;
 import juzu.impl.common.Name;
@@ -31,7 +32,6 @@ import juzu.impl.request.RequestFilter;
 import juzu.impl.common.JSON;
 import juzu.impl.request.Stage;
 import juzu.plugin.asset.Assets;
-import juzu.request.Result;
 import juzu.io.Chunk;
 import juzu.io.Stream;
 import juzu.impl.io.StreamableDecorator;
@@ -277,15 +277,15 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter<Stag
   }
 
   @Override
-  public Result handle(Stage.Unmarshalling argument) {
-    Result result = argument.invoke();
+  public Response handle(Stage.Unmarshalling argument) {
+    Response result = argument.invoke();
     Request request = argument.getRequest();
     if (request.getPhase() == Phase.VIEW) {
-      if (result instanceof Result.Status) {
+      if (result instanceof Response.Content) {
         final Collection<Chunk.Property<String>> bar = foo(request.getHandler().getMethod(), Collections.<Chunk.Property<String>>emptyList());
-        Result.Status status = (Result.Status)result;
-        if (status.decorated && (bar.size() > 0)) {
-          status = new Result.Status(status.code, true, new StreamableDecorator(status.streamable) {
+        Response.Status status = (Response.Status)result;
+        if ((bar.size() > 0)) {
+          status = new Response.Content(status.getCode(), new StreamableDecorator(status.streamable()) {
             @Override
             protected void sendHeader(Stream consumer) {
               for (Chunk.Property<String> asset : bar) {

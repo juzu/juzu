@@ -100,7 +100,7 @@ public class BindingProviderFactoryTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    assertEquals("pass", render.assertStringResult());
+    assertEquals("pass", render.assertStringResponse());
   }
 
   @Test

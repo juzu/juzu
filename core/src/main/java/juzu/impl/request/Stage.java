@@ -27,7 +27,6 @@ import juzu.request.HttpContext;
 import juzu.request.Phase;
 import juzu.request.RequestContext;
 import juzu.request.RequestParameter;
-import juzu.request.Result;
 import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 
@@ -73,26 +72,26 @@ public abstract class Stage {
     this.filters = filters;
   }
 
-  public Result invoke() {
+  public Response invoke() {
     if (index >= 0 && index < filters.size()) {
       RequestFilter plugin = filters.get(index);
       try {
         index++;
-        return (Result)plugin.handle(this);
+        return (Response)plugin.handle(this);
       }
       finally {
         index--;
       }
     }
     else if (index == filters.size()) {
-      return result();
+      return response();
     }
     else {
       throw new AssertionError();
     }
   }
 
-  protected abstract Result result();
+  protected abstract Response response();
 
   /**
    * This stage attempt to unmarshall the http entity when there is one.
@@ -104,7 +103,7 @@ public abstract class Stage {
     }
 
     @Override
-    protected Result result() {
+    protected Response response() {
 
       //
       Map<String, RequestParameter> parameterArguments = request.getParameterArguments();
@@ -167,7 +166,7 @@ public abstract class Stage {
       super(request);
     }
 
-    public Result result() {
+    public Response response() {
 
       ControllerHandler<?> handler = request.getHandler();
       InjectionContext<?, ?> manager = request.controllerPlugin.getInjectionContext();
@@ -205,7 +204,7 @@ public abstract class Stage {
                     converted = valueType.parse(annotated, s);
                   }
                   catch (Exception e) {
-                    return Response.error(e).result();
+                    return Response.error(e);
                   }
                   values.add(converted);
                 }
@@ -274,7 +273,7 @@ public abstract class Stage {
           controller = request.controllerLifeCycle.get();
         }
         catch (InvocationTargetException e) {
-          return Response.error(e.getCause()).result();
+          return Response.error(e.getCause());
         }
 
         //
@@ -312,7 +311,7 @@ public abstract class Stage {
     }
 
     @Override
-    protected Result result() {
+    protected Response response() {
 
       // Begin request callback
       if (controller instanceof juzu.request.RequestLifeCycle) {
@@ -320,13 +319,13 @@ public abstract class Stage {
           ((juzu.request.RequestLifeCycle)controller).beginRequest(context);
         }
         catch (Exception e) {
-          return new Response.Error(e).result();
+          return new Response.Error(e);
         }
       }
 
       //
       Response response = context.getResponse();
-      Result result;
+      Response result;
       if (response == null) {
         Stage.Invoke invokeStage = new Invoke(request, context, controller, args);
         result = invokeStage.invoke();
@@ -344,10 +343,10 @@ public abstract class Stage {
         //
         response = context.getResponse();
         if (response != null) {
-          result = response.result();
+          result = response;
         }
       } else {
-        result = response.result();
+        result = response;
       }
 
       //
@@ -379,7 +378,7 @@ public abstract class Stage {
     }
 
     @Override
-    protected Result result() {
+    protected Response response() {
       try {
         Object ret = context.getHandler().getMethod().invoke(controller, args);
         if (ret instanceof Response) {
@@ -388,13 +387,13 @@ public abstract class Stage {
           // @Action -> Response.Action
           // @View -> Response.Mime
           // as we can do it
-          return ((Response)ret).result();
+          return ((Response)ret);
         } else {
           return null;
         }
       }
       catch (InvocationTargetException e) {
-        return Response.error(e.getCause()).result();
+        return Response.error(e.getCause());
       }
       catch (IllegalAccessException e) {
         throw new UnsupportedOperationException("hanle me gracefully", e);

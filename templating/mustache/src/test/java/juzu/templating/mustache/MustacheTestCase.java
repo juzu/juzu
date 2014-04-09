@@ -35,7 +35,7 @@ public class MustacheTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("basic").init();
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    assertEquals("foo", render.assertStringResult());
+    assertEquals("foo", render.assertStringResponse());
   }
 
   @Test
@@ -43,7 +43,7 @@ public class MustacheTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("resolveparameter").init();
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    assertEquals("bar", render.assertStringResult());
+    assertEquals("bar", render.assertStringResponse());
   }
 
   @Test
@@ -51,7 +51,7 @@ public class MustacheTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("resolvebean").init();
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    assertEquals("bar", render.assertStringResult());
+    assertEquals("bar", render.assertStringResponse());
   }
 
   @Test
@@ -59,7 +59,7 @@ public class MustacheTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("partial").init();
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    assertEquals("<bar>foo</bar>", render.assertStringResult());
+    assertEquals("<bar>foo</bar>", render.assertStringResponse());
   }
 
   @Test
@@ -68,7 +68,7 @@ public class MustacheTestCase extends AbstractInjectTestCase {
       MockApplication<?> app = application("parameterdeclaration").init();
       MockClient client = app.client();
       MockViewBridge render = client.render();
-      assertEquals("bar", render.assertStringResult());
+      assertEquals("bar", render.assertStringResponse());
     }
   }
 }

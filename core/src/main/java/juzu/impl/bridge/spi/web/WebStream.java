@@ -108,7 +108,7 @@ public abstract class WebStream implements AsyncStream {
           stream.setStatusCode(500);
           page.clear();
           page.sendHeader(stream);
-          Response.error(e).result().asStatus(true).streamable.send(new Stream() {
+          Response.error(e).asStatus(true).streamable().send(new Stream() {
             public void provide(Chunk chunk) {
               stream.provide(chunk);
             }

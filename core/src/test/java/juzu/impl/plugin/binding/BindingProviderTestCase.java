@@ -42,7 +42,7 @@ public class BindingProviderTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    assertEquals("pass", render.assertStringResult());
+    assertEquals("pass", render.assertStringResponse());
   }
 
   @Test
@@ -76,6 +76,6 @@ public class BindingProviderTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    assertEquals("pass", render.assertStringResult());
+    assertEquals("pass", render.assertStringResponse());
   }
 }

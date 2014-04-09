@@ -16,8 +16,8 @@
 
 package juzu.impl.bridge.spi.portlet;
 
+import juzu.Response;
 import juzu.impl.bridge.Bridge;
-import juzu.request.Result;
 import juzu.request.ClientContext;
 import juzu.request.Phase;
 
@@ -46,9 +46,9 @@ public class PortletActionBridge extends PortletInteractionBridge<ActionRequest,
 
   @Override
   public void send() throws IOException, PortletException {
-    if (result instanceof Result.Redirect) {
-      Result.Redirect redirect = (Result.Redirect)result;
-      super.resp.sendRedirect(redirect.location);
+    if (response instanceof Response.Redirect) {
+      Response.Redirect redirect = (Response.Redirect)response;
+      super.resp.sendRedirect(redirect.getLocation());
     } else {
       super.send();
     }

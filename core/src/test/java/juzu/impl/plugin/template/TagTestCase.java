@@ -61,7 +61,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String out = render.assertStringResult();
+    String out = render.assertStringResponse();
     assertEquals("<foo>bar</foo>", out);
   }
 
@@ -72,7 +72,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String out = render.assertStringResult();
+    String out = render.assertStringResponse();
     assertEquals("<juu><foo>bar</foo></juu>", out);
   }
 
@@ -89,7 +89,7 @@ public class TagTestCase extends AbstractInjectTestCase {
         Name.parse("plugin.template.tag.decorateexternal"));
     app.init();
     MockClient client = app.client();
-    assertEquals("<foo>bar</foo>", client.render().assertStringResult());
+    assertEquals("<foo>bar</foo>", client.render().assertStringResponse());
   }
 
   @Test
@@ -99,7 +99,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String out = render.assertStringResult();
+    String out = render.assertStringResponse();
     assertEquals("foo", out);
   }
 
@@ -110,7 +110,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String out = render.assertStringResult();
+    String out = render.assertStringResponse();
     assertEquals("foobar", out);
   }
 
@@ -121,7 +121,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String out = render.assertStringResult();
+    String out = render.assertStringResponse();
     assertEquals("foofoo", out);
   }
 
@@ -150,7 +150,7 @@ public class TagTestCase extends AbstractInjectTestCase {
         Name.parse("plugin.template.tag.includeexternal"));
     app.init();
     MockClient client = app.client();
-    assertEquals("hello", client.render().assertStringResult());
+    assertEquals("hello", client.render().assertStringResponse());
   }
 
   @Test
@@ -160,7 +160,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String url = render.assertStringResult();
+    String url = render.assertStringResponse();
     assertEquals("the_title", render.getTitle());
     render = (MockViewBridge)client.invoke(url);
     assertEquals("4", render.getTitle());
@@ -174,7 +174,7 @@ public class TagTestCase extends AbstractInjectTestCase {
       //
       MockClient client = app.client();
       MockViewBridge render = client.render();
-      String content = render.assertStringResult();
+      String content = render.assertStringResponse();
       assertEquals("foo_value", content);
     }
   }
@@ -241,7 +241,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("plugin.template.tag.simple.render").init();
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String out = render.assertStringResult();
+    String out = render.assertStringResponse();
     assertEquals("foothe_tagbar", out);
   }
 
@@ -250,7 +250,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("plugin.template.tag.simple.parameters").init();
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String out = render.assertStringResult();
+    String out = render.assertStringResponse();
     assertEquals("-[:]-[a:b]-", out);
   }
 
@@ -259,7 +259,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("plugin.template.tag.simple.body").init();
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String out = render.assertStringResult();
+    String out = render.assertStringResponse();
     assertEquals("<foo>the_body</foo>", out);
   }
 
@@ -268,7 +268,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("plugin.template.tag.simple.nested").init();
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String out = render.assertStringResult();
+    String out = render.assertStringResponse();
     assertEquals("<index><foo><bar>foo_content</bar></foo></index>", out);
   }
 
@@ -277,7 +277,7 @@ public class TagTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("plugin.template.tag.simple.include").init();
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String out = render.assertStringResult();
+    String out = render.assertStringResponse();
     assertEquals("pass", out);
   }
 
@@ -304,7 +304,7 @@ public class TagTestCase extends AbstractInjectTestCase {
       app.init();
       MockClient client = app.client();
       MockViewBridge render = client.render();
-      String out = render.assertStringResult();
+      String out = render.assertStringResponse();
       assertEquals("foothe_tagbar", out);
     }
     finally {

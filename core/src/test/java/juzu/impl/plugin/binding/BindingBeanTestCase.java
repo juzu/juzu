@@ -37,7 +37,7 @@ public class BindingBeanTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    assertEquals("pass", render.assertStringResult());
+    assertEquals("pass", render.assertStringResponse());
   }
 
   @Test
@@ -47,12 +47,12 @@ public class BindingBeanTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String url = render.assertStringResult();
+    String url = render.assertStringResponse();
     assertNotSame("", url);
 
     //
     render = (MockViewBridge)client.invoke(url);
-    String result = render.assertStringResult();
+    String result = render.assertStringResponse();
     assertEquals("pass", result);
   }
 }

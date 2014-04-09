@@ -40,7 +40,7 @@ public class URLTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    JSON url = (JSON)JSON.parse(render.assertStringResult());
+    JSON url = (JSON)JSON.parse(render.assertStringResponse());
     assertFalse(url.getJSON("properties").contains(PropertyType.ESCAPE_XML.getClass().getName()));
   }
 
@@ -52,7 +52,7 @@ public class URLTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    JSON url = (JSON)JSON.parse(render.assertStringResult());
+    JSON url = (JSON)JSON.parse(render.assertStringResponse());
     assertEquals(Boolean.TRUE, url.getJSON("properties").get(PropertyType.ESCAPE_XML.getClass().getName()));
   }
 
@@ -64,6 +64,6 @@ public class URLTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    assertEquals("pass", render.assertStringResult());
+    assertEquals("pass", render.assertStringResponse());
   }
 }

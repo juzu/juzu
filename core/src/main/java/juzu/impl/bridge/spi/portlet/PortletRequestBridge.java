@@ -18,6 +18,7 @@ package juzu.impl.bridge.spi.portlet;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
+import juzu.Response;
 import juzu.Scope;
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.Asset;
@@ -30,7 +31,6 @@ import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.request.ControllerHandler;
 import juzu.io.UndeclaredIOException;
 import juzu.request.ClientContext;
-import juzu.request.Result;
 import juzu.request.RequestParameter;
 import juzu.request.ResponseParameter;
 import juzu.impl.bridge.spi.DispatchBridge;
@@ -112,7 +112,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
   protected Request request;
 
   /** . */
-  protected Result result;
+  protected Response response;
 
   PortletRequestBridge(Bridge bridge, Phase phase, Rq req, Rs resp, PortletConfig config) {
     String methodId = null;
@@ -294,8 +294,8 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     return context;
   }
 
-  public final void setResult(Result result) throws IllegalArgumentException, IOException {
-    this.result = result;
+  public final void setResponse(Response response) throws IllegalArgumentException, IOException {
+    this.response = response;
   }
 
   public void begin(Request request) {

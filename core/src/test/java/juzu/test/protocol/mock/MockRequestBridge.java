@@ -18,6 +18,7 @@ package juzu.test.protocol.mock;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
+import juzu.Response;
 import juzu.Scope;
 import juzu.asset.AssetLocation;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
@@ -29,7 +30,6 @@ import juzu.impl.io.BinaryStream;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.ControllerHandler;
 import juzu.request.ClientContext;
-import juzu.request.Result;
 import juzu.io.Chunk;
 import juzu.io.Stream;
 import juzu.request.RequestParameter;
@@ -95,7 +95,7 @@ public abstract class MockRequestBridge implements RequestBridge {
   protected Map<String, RequestParameter> requestParameters;
 
   /** . */
-  protected Result result;
+  protected Response response;
 
   /** . */
   protected ByteArrayOutputStream buffer = null;
@@ -309,10 +309,10 @@ public abstract class MockRequestBridge implements RequestBridge {
     throw new IllegalStateException();
   }
 
-  public void setResult(Result result) throws IllegalArgumentException, IOException {
-    if (result instanceof Result.Status) {
-      Result.Status body = (Result.Status)result;
-      body.streamable.send(new Stream() {
+  public void setResponse(Response response) throws IllegalArgumentException, IOException {
+    if (response instanceof Response.Status) {
+      Response.Status body = (Response.Status)response;
+      body.streamable().send(new Stream() {
         BinaryStream dataStream = null;
         public void provide(Chunk chunk) {
           if (chunk instanceof Chunk.Property) {
@@ -337,11 +337,11 @@ public abstract class MockRequestBridge implements RequestBridge {
         }
       });
     }
-    this.result = result;
+    this.response = response;
   }
 
   public <T extends Throwable> T assertFailure(Class<T> expected) {
-    Result.Error error = AbstractTestCase.assertInstanceOf(Result.Error.class, result);
-    return AbstractTestCase.assertInstanceOf(expected, error.cause);
+    Response.Error error = AbstractTestCase.assertInstanceOf(Response.Error.class, response);
+    return AbstractTestCase.assertInstanceOf(expected, error.getCause());
   }
 }

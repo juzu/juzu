@@ -17,6 +17,7 @@
 package juzu.impl.bridge.spi;
 
 import juzu.PropertyType;
+import juzu.Response;
 import juzu.Scope;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.Logger;
@@ -24,7 +25,6 @@ import juzu.impl.common.RunMode;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.ControlParameter;
 import juzu.request.ClientContext;
-import juzu.request.Result;
 import juzu.request.RequestParameter;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.request.Request;
@@ -104,11 +104,11 @@ public interface RequestBridge extends Closeable {
    * Set the specified response on the bridge.
    *
    *
-   * @param result the response
+   * @param response the response
    * @throws IllegalArgumentException if the response cannot be honoured
    * @throws IOException              any io exception
    */
-  void setResult(Result result) throws IllegalArgumentException, IOException;
+  void setResponse(Response response) throws IllegalArgumentException, IOException;
 
   /**
    * Signals the beginning of a request.

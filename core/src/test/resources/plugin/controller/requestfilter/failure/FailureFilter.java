@@ -20,7 +20,7 @@ import juzu.Response;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.request.Stage;
-import juzu.request.Result;
+import juzu.Response;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class FailureFilter implements RequestFilter<Stage.Handler> {
@@ -33,11 +33,11 @@ public class FailureFilter implements RequestFilter<Stage.Handler> {
   }
 
   @Override
-  public Result handle(Stage.Handler argument) {
+  public Response handle(Stage.Handler argument) {
     Request request = argument.getRequest();
-    Result result = argument.invoke();
-    if (result instanceof Result.Error) {
-      result = Response.ok("pass").result();
+    Response result = argument.invoke();
+    if (result instanceof Response.Error) {
+      result = Response.ok("pass");
     }
     return result;
   }

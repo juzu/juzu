@@ -37,7 +37,7 @@ public class ContextualArgumentTestCase extends AbstractTestCase {
     application.init();
     MockClient client = application.client();
     MockViewBridge request = client.render();
-    Assert.assertEquals("__foo__", request.assertStringResult());
+    Assert.assertEquals("__foo__", request.assertStringResponse());
   }
 
   @Test
@@ -46,7 +46,7 @@ public class ContextualArgumentTestCase extends AbstractTestCase {
     application.init();
     MockClient client = application.client();
     MockViewBridge request = client.render();
-    Assert.assertEquals("pass", request.assertStringResult());
+    Assert.assertEquals("pass", request.assertStringResponse());
   }
 }
 

@@ -15,10 +15,10 @@
  */
 package juzu.impl.plugin.controller;
 
+import juzu.Response;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.plugin.controller.metamodel.ControllerMetaModel;
-import juzu.request.Result;
 import juzu.test.AbstractInjectTestCase;
 import juzu.test.protocol.mock.MockApplication;
 import juzu.test.protocol.mock.MockClient;
@@ -49,7 +49,7 @@ public class ControllerTestCase extends AbstractInjectTestCase {
   @Test
   public void testErrorHandler() throws Exception {
     Object ret = invokeErrorHandler("plugin.controller.error.invoke");
-    assertInstanceOf(ConcurrentModificationException.class, assertInstanceOf(Result.Error.class, ret).cause);
+    assertInstanceOf(ConcurrentModificationException.class, assertInstanceOf(Response.Error.class, ret).getCause());
   }
 
   @Test
@@ -64,7 +64,7 @@ public class ControllerTestCase extends AbstractInjectTestCase {
     shared = null;
     MockViewBridge render = client.render();
     render.assertOk();
-    render.assertStringResult("hello");
+    render.assertStringResponse("hello");
     assertNotNull(shared);
     return shared;
   }

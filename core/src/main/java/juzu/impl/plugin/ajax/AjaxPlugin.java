@@ -17,6 +17,7 @@
 package juzu.impl.plugin.ajax;
 
 import juzu.PropertyType;
+import juzu.Response;
 import juzu.asset.AssetLocation;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.PluginContext;
@@ -27,7 +28,6 @@ import juzu.impl.request.ControllerHandler;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.request.Stage;
-import juzu.request.Result;
 import juzu.io.Chunk;
 import juzu.io.Stream;
 import juzu.io.Streamable;
@@ -100,51 +100,49 @@ public class AjaxPlugin extends ApplicationPlugin implements RequestFilter<Stage
   }
 
   @Override
-  public Result handle(Stage.Unmarshalling argument) {
+  public Response handle(Stage.Unmarshalling argument) {
     final Request request = argument.getRequest();
-    Result result = argument.invoke();
+    Response result = argument.invoke();
 
     //
     if (request.getPhase() == Phase.VIEW) {
-      if (result instanceof Result.Status) {
-        Result.Status status = (Result.Status)result;
-        if (status.decorated) {
-          final Streamable wrapped = status.streamable;
-          Streamable wrapper = new Streamable() {
-            public void send(final Stream stream) throws IllegalStateException {
-              Stream our = new Stream() {
-                boolean done = false;
-                public void provide(Chunk chunk) {
-                  if (chunk instanceof Chunk.Data && !done) {
-                    done = true;
-                    stream.provide(new Chunk.Property<String>("juzu.ajax", PropertyType.ASSET));
-                    // FOR NOW WE DO WITH THE METHOD NAME
-                    // BUT THAT SHOULD BE REVISED TO USE THE ID INSTEAD
-                    StringBuilder sb = new StringBuilder();
-                    sb.append("<div class=\"jz\">\n");
-                    for (Map.Entry<String, ControllerHandler> entry : table.entrySet()) {
-                      String baseURL = request.createDispatch(entry.getValue()).toString();
-                      sb.append("<div data-method-id=\"");
-                      sb.append(entry.getValue().getId());
-                      sb.append("\" data-url=\"");
-                      sb.append(baseURL);
-                      sb.append("\"/>");
-                      sb.append("</div>");
-                    }
-                    stream.provide(Chunk.create(sb));
+      if (result instanceof Response.Content) {
+        Response.Status status = (Response.Status)result;
+        final Streamable wrapped = status.streamable();
+        Streamable wrapper = new Streamable() {
+          public void send(final Stream stream) throws IllegalStateException {
+            Stream our = new Stream() {
+              boolean done = false;
+              public void provide(Chunk chunk) {
+                if (chunk instanceof Chunk.Data && !done) {
+                  done = true;
+                  stream.provide(new Chunk.Property<String>("juzu.ajax", PropertyType.ASSET));
+                  // FOR NOW WE DO WITH THE METHOD NAME
+                  // BUT THAT SHOULD BE REVISED TO USE THE ID INSTEAD
+                  StringBuilder sb = new StringBuilder();
+                  sb.append("<div class=\"jz\">\n");
+                  for (Map.Entry<String, ControllerHandler> entry : table.entrySet()) {
+                    String baseURL = request.createDispatch(entry.getValue()).toString();
+                    sb.append("<div data-method-id=\"");
+                    sb.append(entry.getValue().getId());
+                    sb.append("\" data-url=\"");
+                    sb.append(baseURL);
+                    sb.append("\"/>");
+                    sb.append("</div>");
                   }
-                  stream.provide(chunk);
+                  stream.provide(Chunk.create(sb));
                 }
-                public void close(Thread.UncaughtExceptionHandler errorHandler) {
-                  stream.provide(Chunk.create("</div>"));
-                  stream.close(errorHandler);
-                }
-              };
-              wrapped.send(our);
-            }
-          };
-          result = new Result.Status(status.code, true, wrapper);
-        }
+                stream.provide(chunk);
+              }
+              public void close(Thread.UncaughtExceptionHandler errorHandler) {
+                stream.provide(Chunk.create("</div>"));
+                stream.close(errorHandler);
+              }
+            };
+            wrapped.send(our);
+          }
+        };
+        result = new Response.Content(status.getCode(), wrapper);
       }
     }
 

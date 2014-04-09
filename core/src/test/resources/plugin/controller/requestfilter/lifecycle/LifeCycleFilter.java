@@ -20,7 +20,7 @@ import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.request.Stage;
 import juzu.test.Registry;
-import juzu.request.Result;
+import juzu.Response;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class LifeCycleFilter implements RequestFilter<Stage.Handler> {
@@ -34,10 +34,10 @@ public class LifeCycleFilter implements RequestFilter<Stage.Handler> {
   }
 
   @Override
-  public Result handle(Stage.Handler argument) {
+  public Response handle(Stage.Handler argument) {
     Request request = argument.getRequest();
     Registry.compareAndSet("request.filter.lifecycle", "created", "before");
-    Result result = argument.invoke();
+    Response result = argument.invoke();
     Registry.compareAndSet("request.filter.lifecycle", "before", "after");
     return result;
   }

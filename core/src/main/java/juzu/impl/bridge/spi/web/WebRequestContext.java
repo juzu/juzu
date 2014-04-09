@@ -15,13 +15,13 @@
  */
 package juzu.impl.bridge.spi.web;
 
+import juzu.Response;
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.common.RunMode;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.io.SafeStream;
 import juzu.impl.plugin.asset.AssetPlugin;
-import juzu.request.Result;
 import juzu.request.RequestParameter;
 
 import java.io.IOException;
@@ -32,20 +32,20 @@ import java.util.Map;
 public abstract class WebRequestContext {
 
   public final void send(CompilationException e) throws IOException {
-    send(e.result(), true);
+    send(e.asResponse(), true);
   }
 
-  public final void send(Result.Error error, boolean verbose) throws IOException {
+  public final void send(Response.Error error, boolean verbose) throws IOException {
     send(null, error.asStatus(verbose));
   }
 
-  public final void send(AssetPlugin assetPlugin, Result.Status response) throws IOException {
+  public final void send(AssetPlugin assetPlugin, Response.Status response) throws IOException {
 
     //
-    AsyncStream stream = getStream(response.code);
+    AsyncStream stream = getStream(response.getCode());
 
     //
-    if (response.decorated) {
+    if (response instanceof Response.Content) {
 
       //
       AssetManager assetManager;
@@ -74,7 +74,7 @@ public abstract class WebRequestContext {
 
     //
     try {
-      response.streamable.send(new SafeStream(stream));
+      response.streamable().send(new SafeStream(stream));
     } finally {
       stream.end();
     }

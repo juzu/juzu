@@ -119,8 +119,8 @@ public class ValueTypeTestCase extends AbstractTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    MockViewBridge action = (MockViewBridge)client.invoke(render.assertStringResult());
-    String result = action.assertStringResult();
+    MockViewBridge action = (MockViewBridge)client.invoke(render.assertStringResponse());
+    String result = action.assertStringResponse();
     assertEquals("pass", result);
   }
 
@@ -131,7 +131,7 @@ public class ValueTypeTestCase extends AbstractTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    MockViewBridge action = (MockViewBridge)client.invoke(render.assertStringResult());
+    MockViewBridge action = (MockViewBridge)client.invoke(render.assertStringResponse());
     return action.assertFailure(expected);
   }
 
@@ -142,11 +142,11 @@ public class ValueTypeTestCase extends AbstractTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    String url = render.assertStringResult();
+    String url = render.assertStringResponse();
     JSON json = (JSON)JSON.parse(url);
     json.set("parameters", new JSON());
     MockViewBridge action = (MockViewBridge)client.invoke(json.toString());
-    String result = action.assertStringResult();
+    String result = action.assertStringResponse();
     assertEquals("pass", result);
   }
 }

@@ -18,6 +18,7 @@ package juzu.impl.bridge.spi.web;
 
 import juzu.PropertyMap;
 import juzu.PropertyType;
+import juzu.Response;
 import juzu.Scope;
 import juzu.asset.AssetLocation;
 import juzu.impl.bridge.Bridge;
@@ -28,7 +29,6 @@ import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.ControllerHandler;
 import juzu.request.ClientContext;
-import juzu.request.Result;
 import juzu.request.RequestParameter;
 import juzu.request.ResponseParameter;
 import juzu.impl.bridge.spi.DispatchBridge;
@@ -83,7 +83,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   protected Map<String, RequestParameter> requestParameters;
 
   /** . */
-  protected Result response;
+  protected Response response;
 
   WebRequestBridge(
       Bridge bridge,
@@ -271,8 +271,8 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
     }
   }
 
-  public void setResult(Result result) throws IllegalArgumentException, IOException {
-    this.response = result;
+  public void setResponse(Response response) throws IllegalArgumentException, IOException {
+    this.response = response;
   }
 
   public final void begin(Request request) {
@@ -302,14 +302,14 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
    * Send the response to the client.
    */
   boolean send() throws Exception {
-    if (response instanceof Result.Error) {
-      Result.Error error = (Result.Error)response;
+    if (response instanceof Response.Error) {
+      Response.Error error = (Response.Error)response;
       http.getRequestContext().send(error, bridge.getRunMode().getPrettyFail());
       return true;
-    } else if (response instanceof Result.View) {
-      Result.View view = (Result.View)response;
-      Phase.View.Dispatch update = (Phase.View.Dispatch)view.dispatch;
-      Boolean redirect = view.properties.getValue(PropertyType.REDIRECT_AFTER_ACTION);
+    } else if (response instanceof Response.View) {
+      Response.View view = (Response.View)response;
+      Phase.View.Dispatch update = (Phase.View.Dispatch)view;
+      Boolean redirect = view.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
       if (redirect != null && !redirect) {
         ControllerHandler<?> desc = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
         Map<String, RequestParameter> rp = Collections.emptyMap();
@@ -325,7 +325,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
         return requestBridge.send();
       } else {
         String url = update.with(MimeType.PLAIN).with(update.getProperties()).toString();
-        Iterable<Map.Entry<String, String[]>> headers = view.properties.getValues(PropertyType.HEADER);
+        Iterable<Map.Entry<String, String[]>> headers = view.getProperties().getValues(PropertyType.HEADER);
         if (headers == null) {
           headers = Tools.emptyIterable();
         }
@@ -334,9 +334,9 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
         return true;
       }
     }
-    else if (response instanceof Result.Redirect) {
-      Result.Redirect redirect = (Result.Redirect)response;
-      String url = redirect.location;
+    else if (response instanceof Response.Redirect) {
+      Response.Redirect redirect = (Response.Redirect)response;
+      String url = redirect.getLocation();
       http.getRequestContext().sendRedirect(url);
       return true;
     } else {

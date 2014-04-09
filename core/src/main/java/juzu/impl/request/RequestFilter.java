@@ -16,14 +16,14 @@
 
 package juzu.impl.request;
 
-import juzu.request.Result;
+import juzu.Response;
 
 /**
  * The request filters should be implemented by beans wanting to filter the request.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public interface RequestFilter<S extends Stage> extends juzu.Handler<S, Result> {
+public interface RequestFilter<S extends Stage> extends juzu.Handler<S, Response> {
 
   /**
    * Return the stage type this filter accepts.

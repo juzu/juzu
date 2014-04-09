@@ -38,7 +38,7 @@ public class ResourceTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    MockResourceBridge resource = (MockResourceBridge)client.invoke(render.assertStringResult());
+    MockResourceBridge resource = (MockResourceBridge)client.invoke(render.assertStringResponse());
     resource.assertNotFound();
   }
 
@@ -49,8 +49,8 @@ public class ResourceTestCase extends AbstractInjectTestCase {
     //
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    MockResourceBridge resource = (MockResourceBridge)client.invoke(render.assertStringResult());
-    assertEquals("hello", new String(resource.assertBinaryResult(), "UTF-8"));
+    MockResourceBridge resource = (MockResourceBridge)client.invoke(render.assertStringResponse());
+    assertEquals("hello", new String(resource.assertBinaryResponse(), "UTF-8"));
     assertEquals("application/octet-stream", resource.getMimeType());
   }
 }

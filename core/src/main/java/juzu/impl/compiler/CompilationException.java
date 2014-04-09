@@ -18,8 +18,6 @@ package juzu.impl.compiler;
 
 import juzu.Response;
 import juzu.impl.common.Formatting;
-import juzu.io.UndeclaredIOException;
-import juzu.request.Result;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -45,12 +43,12 @@ public class CompilationException extends Exception {
     return "CompilationException[" + errors + "]";
   }
 
-  public Result.Error result() {
+  public Response.Error asResponse() {
     try {
       StringWriter writer = new StringWriter();
       PrintWriter printer = new PrintWriter(writer);
       Formatting.renderErrors(printer, errors);
-      return Response.error(writer.getBuffer().toString()).result();
+      return Response.error(writer.getBuffer().toString());
     }
     catch (IOException e) {
       // Should not happen

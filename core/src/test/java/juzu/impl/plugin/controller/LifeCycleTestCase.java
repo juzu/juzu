@@ -38,7 +38,7 @@ public class LifeCycleTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("plugin.controller.lifecycle.dispatch").init();
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    render.assertStringResult("index");
+    render.assertStringResponse("index");
     Integer count = Registry.get("count");
     assertEquals((Integer)2, count);
   }
@@ -48,7 +48,7 @@ public class LifeCycleTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("plugin.controller.lifecycle.overridebegin").init();
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    render.assertStringResult("begin");
+    render.assertStringResponse("begin");
     Integer count = Registry.get("count");
     assertEquals((Integer)0, count);
   }
@@ -58,7 +58,7 @@ public class LifeCycleTestCase extends AbstractInjectTestCase {
     MockApplication<?> app = application("plugin.controller.lifecycle.overrideend").init();
     MockClient client = app.client();
     MockViewBridge render = client.render();
-    render.assertStringResult("end");
+    render.assertStringResponse("end");
     Integer count = Registry.get("count");
     assertEquals((Integer)2, count);
   }
