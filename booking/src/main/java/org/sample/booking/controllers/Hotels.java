@@ -30,6 +30,7 @@ import org.sample.booking.models.Hotel;
 import org.sample.booking.models.User;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -118,7 +119,7 @@ public class Hotels // extends Application
 
   @Action
   @Route("/hotels/{id}/booking")
-  public Response processConfirmBooking(String confirm, String id, String revise, Booking booking) {
+  public Response processConfirmBooking(String confirm, String id, String revise, @Valid Booking booking) {
     Hotel hotel = Hotel.findById(id);
     User user = User.find(login.getUserName(), null);
     booking.hotel = hotel;

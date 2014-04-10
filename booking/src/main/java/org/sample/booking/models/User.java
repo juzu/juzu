@@ -18,6 +18,9 @@ package org.sample.booking.models;
 
 import juzu.Mapped;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,19 +30,17 @@ import java.util.Map;
 @Mapped
 public class User {
 
-  //    @Required
-//    @MaxSize(15)
-//    @MinSize(4)
-//    @Match(value="^\\w*$", message="Not a valid username")
+  @NotNull
+  @Size(min = 4, max = 20)
+  @Pattern(regexp = "^\\w*$", message = "Not a valid username")
   public String username;
 
-  //    @Required
-//    @MaxSize(15)
-//    @MinSize(5)
+  @NotNull
+  @Size(min = 5, max = 20)
   public String password;
 
-  //    @Required
-//    @MaxSize(100)
+  @NotNull
+  @Size(max = 100)
   public String name;
 
   public User() {

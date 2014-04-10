@@ -28,11 +28,11 @@
         <strong>Nightly rate:</strong> ${hotel.price}
     </p>
         <p>
-            <strong>Check In Date:</strong> <input type="text" size="10" name="booking.checkinDate" class="datepicker" value="${booking.checkinDate}"> *
+            <strong>Check In Date:</strong> <input type="text" size="10" name="booking.checkinDate" class="datepicker" value="${booking.checkinDate?.format('yyyy-MM-dd')?:''}"> *
             <span class="error"></span>
         </p>
         <p class="">
-            <strong>Check Out Date:</strong> <input type="text" size="10" name="booking.checkoutDate" class="datepicker" value="${booking.checkoutDate}"> *
+            <strong>Check Out Date:</strong> <input type="text" size="10" name="booking.checkoutDate" class="datepicker" value="${booking.checkoutDate?.format('yyyy-MM-dd')?:''}"> *
             <span class="error"></span>
         </p>
     <p>
@@ -49,11 +49,11 @@
         <input type="radio" name="booking.smoking" value="false" <%= booking.smoking == 'false' ? 'checked' : '' %>> Non smoking
     </p>
         <p>
-            <strong>Credit Card #:</strong> <input type="text" name="booking.creditCard" size="16" value="${booking.creditCard}"> *
+            <strong>Credit Card #:</strong> <input type="text" name="booking.creditCard" size="16" value="${booking.creditCard?:''}"> *
             <span class="error"></span>
         </p>
         <p>
-            <strong>Credit Card Name:</strong> <input type="text" name="booking.creditCardName" size="16" value="${booking.creditCardName}"> *
+            <strong>Credit Card Name:</strong> <input type="text" name="booking.creditCardName" size="16" value="${booking.creditCardName?:''}"> *
             <span class="error"></span>
         </p>
     <p>

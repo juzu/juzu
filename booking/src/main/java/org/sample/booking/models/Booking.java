@@ -16,11 +16,16 @@
 
 package org.sample.booking.models;
 
+import juzu.Format;
 import juzu.Mapped;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,44 +38,37 @@ public class Booking {
 
   public String id;
 
-  //    @Required
 //     @ManyToOne
   public User user;
 
-  //    @Required
 //     @ManyToOne
   public Hotel hotel;
 
-  //    @Required
 //     @Temporal(TemporalType.DATE)
-//    public Date checkinDate;
-  public String checkinDate = "";
+  @NotNull
+  @Format("yyyy-MM-dd")
+  public Date checkinDate;
 
-  //    @Required
 //     @Temporal(TemporalType.DATE)
-//    public Date checkoutDate;
-  public String checkoutDate = "";
+  @NotNull
+  @Format("yyyy-MM-dd")
+  public Date checkoutDate;
 
-  //    @Required(message="Credit card number is required")
-//    @Match(value="^\\d{16}$", message="Credit card number must be numeric and 16 digits long")
+  @NotNull(message = "Credit card number is required")
+  @Pattern(regexp = "^\\d{16}$", message = "Credit card number must be numeric and 16 digits long")
   public String creditCard = "";
 
-  //    @Required(message="Credit card name is required")
-//    @MinSize(value=3, message="Credit card name is required")
-//    @MaxSize(value=70, message="Credit card name is required")
-  public String creditCardName = "";
+  @Size(min = 3, max = 70, message = "Credit card name must be between 3 and 70 letters long")
+  @NotNull(message = "Credit card name is required")
+  public String creditCardName;
 
-  //    public int creditCardExpiryMonth;
-  public String creditCardExpiryMonth = "";
+  public int creditCardExpiryMonth;
 
-  //    public int creditCardExpiryYear;
-  public String creditCardExpiryYear = "";
+  public int creditCardExpiryYear;
 
-  //    public boolean smoking;
-  public String smoking = "";
+  public boolean smoking;
 
-  //    public int beds;
-  public String beds = "";
+  public int beds;
 
   public Booking() {
   }

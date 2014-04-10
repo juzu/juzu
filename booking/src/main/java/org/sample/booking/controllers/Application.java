@@ -26,6 +26,7 @@ import org.sample.booking.Flash;
 import org.sample.booking.models.User;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Application {
@@ -89,7 +90,7 @@ public class Application {
 
   @Action
   @Route("/register")
-  public Response saveUser(User user, String verifyPassword) {
+  public Response saveUser(@Valid User user, String verifyPassword) {
 /*
        validation.required(verifyPassword);
        validation.equals(verifyPassword, user.password).message("Your password doesn't match");

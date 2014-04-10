@@ -54,6 +54,10 @@
 
     <dependency>
       <groupId>org.juzu</groupId>
+      <artifactId>juzu-plugins-validation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-webjars</artifactId>
     </dependency>
     <dependency>

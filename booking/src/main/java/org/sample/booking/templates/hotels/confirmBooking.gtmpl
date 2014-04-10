@@ -37,13 +37,12 @@
         <strong>Total:</strong> ${total}
     </p>
     <p>
-        <strong>Check in date:</strong> ${booking.checkinDate}
-        <input type="hidden" name="booking.checkinDate" value="${booking.checkinDate}">
+        <strong>Check in date:</strong> ${booking.checkinDate.format('yyyy-MM-dd')}
+        <input type="hidden" name="booking.checkinDate" value="${booking.checkinDate.format('yyyy-MM-dd')}">
     </p>
     <p>
-        <!--<strong>Check out date:</strong> ${booking.checkoutDate.format('yyyy-MM-dd')}-->
-        <strong>Check out date:</strong> ${booking.checkoutDate}
-        <input type="hidden" name="booking.checkoutDate" value="${booking.checkoutDate}">
+        <strong>Check out date:</strong> ${booking.checkoutDate.format('yyyy-MM-dd')}
+        <input type="hidden" name="booking.checkoutDate" value="${booking.checkoutDate.format('yyyy-MM-dd')}">
     </p>
     <p>
         <strong>Credit card #:</strong> ${booking.creditCard}

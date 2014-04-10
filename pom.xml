@@ -209,6 +209,18 @@
 
       <dependency>
         <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-validation</artifactId>
+        <version>1.0.0-beta1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-plugins-validation</artifactId>
+        <classifier>sources</classifier>
+        <version>1.0.0-beta1-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-less4j</artifactId>
         <version>1.0.0-beta1-SNAPSHOT</version>
       </dependency>

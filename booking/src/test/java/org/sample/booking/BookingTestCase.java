@@ -117,6 +117,14 @@ public class BookingTestCase extends AbstractBookingTestCase {
     bookLink.click();
     WebElement bookForm = driver.findElement(By.tagName("form"));
     assertNotNull(bookForm);
+    WebElement checkinDate = driver.findElement(By.name("booking.checkinDate"));
+    checkinDate.sendKeys("2013-01-01");
+    WebElement checkoutDate = driver.findElement(By.name("booking.checkoutDate"));
+    checkoutDate.sendKeys("2013-01-03");
+    WebElement creditCard = driver.findElement(By.name("booking.creditCard"));
+    creditCard.sendKeys("0123456701234567");
+    WebElement creditCardName = driver.findElement(By.name("booking.creditCardName"));
+    creditCardName.sendKeys("Dale Cooper");
     bookForm.findElement(By.className("buttons")).findElement(By.name("proceed")).click();
   }
 
