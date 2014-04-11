@@ -1,0 +1,11 @@
+= Juzu Extension Guide
+Julien Viet <http://www.julienviet.com>
+
+Juzu is a web framework based on MVC concepts for developing applications. Juzu is an
+open source project developed on https://github.com/juzu/juzu[GitHub] licensed under the
+http://www.apache.org/licenses/LICENSE-2.0[Apache 2 License].
+
+[[templatespi]]
+= Templating SPI
+
+include::templatespi.asciidoc[]

@@ -50,11 +50,6 @@ include::taglib.asciidoc[]
 
 include::i18n.asciidoc[]
 
-[[templatespi]]
-= Templating SPI
-
-include::templatespi.asciidoc[]
-
 [[assets]]
 = Assets
 

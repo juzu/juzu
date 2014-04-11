@@ -18,6 +18,7 @@
   <modules>
     <module>tutorial</module>
     <module>reference</module>
+    <module>extension</module>
   </modules>
 
   <build>

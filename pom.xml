@@ -343,6 +343,26 @@
       </dependency>
 
       <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-doc-extension-guide</artifactId>
+        <classifier>html</classifier>
+        <type>zip</type>
+        <version>1.0.0-beta1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-doc-extension-api</artifactId>
+        <classifier>javadoc</classifier>
+        <version>1.0.0-beta1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>org.juzu</groupId>
+        <artifactId>juzu-doc-extension-guide</artifactId>
+        <type>pdf</type>
+        <version>1.0.0-beta1-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
         <groupId>javax.inject</groupId>
         <artifactId>javax.inject</artifactId>
         <version>${inject.version}</version>
