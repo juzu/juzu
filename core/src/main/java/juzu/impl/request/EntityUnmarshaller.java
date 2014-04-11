@@ -26,6 +26,7 @@ import java.util.Map;
  *
  * @author Julien Viet
  */
+// tag::class[]
 public abstract class EntityUnmarshaller {
 
   /**
@@ -57,3 +58,4 @@ public abstract class EntityUnmarshaller {
       Map<String, RequestParameter> parameterArguments) throws IOException;
 
 }
+// end::class[]

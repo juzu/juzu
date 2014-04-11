@@ -1,0 +1,59 @@
+Juzu allows the application to interact with request and response entities with the +juzu.request.ClientContext+ and
+the +juzu.Response.Body+ objects. Those objects are binary data (or character data) oriented and provide a low
+ level interface for reading or writing request entities.
+
+Juzu provides also a plugable higher level API for dealing with request entities such as _File Upload_ or _Json_. In this
+section we will explain how to implement such plugins.
+
+== Entity unmarshallers
+
+Entity unmarshallers are plugins that decodes a +juzu.request.ClientContext+ into a set of arguments that will be
+used by Juzu when invoking the controller. The unmarshaller can manipulate those arguments, usually reading the
+request entity. The +juzu.impl.request.EntityUnmarshaller+ abstract class has two methods to implement, let's review
+them.
+
+.The EntityUnmarshaller abstract class
+[source,java]
+----
+include::{sourcesdir}/juzu/impl/request/EntityUnmarshaller.java[tags=class]
+----
+
+=== Implementing an unmarshaller
+
+The +accept+ method is quite simple to implement, it should return true when the unmarshaller wants to unmarshall
+the incoming request, for instance:
+
+[source,java]
+----
+@Override
+public boolean accept(String mediaType) {
+  return mediaType.equals("application/json");
+}
+----
+
+The +unmarshall+ method will be invoked when the +accept+ method returns true. At this moment, the unmarshaller should
+read the entity data using the +ClientContext+ interface and update the request arguments. There are two kinds of
+request arguments that can be modified:
+
+* parameter arguments using the +parameterArguments+ method parameter
+* contextual arguments using the +contextualArguments+ method parameter
+
+Parameter arguments is a mutable map that provides string parameter values, those parameters are used by Juzu at
+a later stage when invoking the controller handler. Those parameters can be used as is, or can be transformed into
+other types via the +ValueType+ extension or the +@Mapped+ bean mapping. The _File Upload_ unmarshaller
+will create parameter arguments when reading the file upload form.
+
+Contextual arguments are any controller argument that are not parameter arguments (i.e any type that is not a +ValueType+
+or annotated with +@Mapped+). The unmarshall method can iterate over such arguments and modify them freely. The
++ContextualParameter+ object provides the _name_, _class+ and _generic type+ of the argument. Those shall be used by
+ the unmarshaller to properly modify the arguments. The _File Upload_ unmarshaller will look at the contextual
+ arguments having the type +org.apache.commons.fileupload.FileItem+ and the right argument name to do the match.
+
+=== Declaring an unmarshaller
+
+Unmarshallers are declared in the +META-INF/services/juzu.impl.request.EntityUnmarshaller+ file, such plugins are
+loaded via the +java.util.ServiceLoader+ interface.
+
+== Entity marshallers
+
+Not yet implemented

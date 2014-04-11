@@ -1,0 +1,68 @@
+Value types is a Juzu plugin for dealing with controller parameters that can trivially be converted from and to strings.
+In this section we will explain how the +juzu.impl.value.ValueType+ interface works.
+
+== Implementing the +ValueType+
+
+.The ValueType abstract class
+[source,java]
+----
+public abstract class ValueType<T> {
+include::{sourcesdir}/juzu/impl/value/ValueType.java[tags=class]
+}
+----
+
+The base implementation should extend the +ValueType+ interface and provide a class type for the +<T>+ generic parameter
+of the class:
+
+.The ValueType abstract class
+[source,java]
+----
+public class DateValueType extends ValueType<java.util.Date> {
+  ...
+}
+----
+
+The +getTypes()+ interface should return the class type the value type is converting:
+
+.The getTypes implementation
+[source,java]
+----
+public Iterable<Class<?>> getTypes() {
+  return Collections.singleton(java.util.Date.class);
+}
+----
+
+NOTE: several types can be returned by the method, this is used by the +ValueType+ that handle primitive types such
+as +int+, +boolean+, etc...
+
+Finally the +parse+ and +format+ methods need to be implemented too:
+
+.The parse and format implementations
+[source,java]
+----
+public Date parse(AnnotatedElement element, String s) throws ParseException {
+  return getSimpleDateFormat(element).parse(s);
+}
+
+public String format(AnnotatedElement element, Date value) {
+  return getSimpleDateFormat(element).format(value);
+}
+----
+
+The +parse+ and +format+ methods provides access to the +element+ that is converted, the purpose of those
+objects is to provide access to optional annotation the element may have. Such annotations can be used by the
+value type for doing the conversion:
+
+.Using the annotated element for configuring the SimpleDateFormat object
+[source,java]
+----
+private SimpleDateFormat getSimpleDateFormat(AnnotatedElement element) {
+  Format format = element.getAnnotation(Format.class);
+  return format != null ? new SimpleDateFormat(format.value()) : new SimpleDateFormat();
+}
+----
+
+== Declaring the +ValueType+
+
+Value types are declared in the +META-INF/services/juzu.impl.value.ValueType+ file, such plugins are
+loaded via the +java.util.ServiceLoader+ interface.

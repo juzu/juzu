@@ -32,6 +32,8 @@ import java.util.List;
  */
 public abstract class ValueType<T> {
 
+// tag::class[]
+
   /**
    * The list of java classes this implementation can handle.
    *
@@ -57,6 +59,8 @@ public abstract class ValueType<T> {
    * @return the corresponding string
    */
   public abstract String format(AnnotatedElement element, T value);
+
+// end::class[]
 
   public static ValueType<String> STRING = new ValueType<String>() {
 
@@ -242,13 +246,8 @@ public abstract class ValueType<T> {
     }
 
     @Override
-    public Date parse(AnnotatedElement element, String s) {
-      try {
-        return getSimpleDateFormat(element).parse(s);
-      }
-      catch (ParseException e) {
-        throw new UnsupportedOperationException("Handle me gracefully", e);
-      }
+    public Date parse(AnnotatedElement element, String s) throws ParseException {
+      return getSimpleDateFormat(element).parse(s);
     }
 
     @Override
