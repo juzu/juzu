@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package juzu.plugin.jackson;
+package juzu.impl.bridge.response;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 
 /**
- * Annotate an object to be marked as mapped by Jackson.
- *
  * @author Julien Viet
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Jackson {
+public class ResponseEntityWriterViewServletTestCase extends AbstractResponseEntityWriter {
+
+  @Deployment(testable = false)
+  public static WebArchive createDeployment() {
+    return createDeployment(createServletDeployment("bridge.response.entitywriter.view"));
+  }
 }

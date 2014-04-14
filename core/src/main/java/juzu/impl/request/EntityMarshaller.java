@@ -13,19 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package juzu.plugin.jackson;
+package juzu.impl.request;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import juzu.io.Streamable;
+
+import java.lang.reflect.AnnotatedElement;
 
 /**
- * Annotate an object to be marked as mapped by Jackson.
+ * The entity unmarshaller is used by Juzu for translating an object into an HTTP entity.
  *
  * @author Julien Viet
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Jackson {
+// tag::class[]
+public abstract class EntityMarshaller {
+
+  /**
+   * Marshall the object for the specified <code>mimeType</code> or return null.
+   *
+   * @param mimeType the mime type to test
+   * @param annotations the contextual annotations
+   * @param object the object to marshall  @return the corresponding streamable
+   */
+  public abstract Streamable marshall(String mimeType, AnnotatedElement annotations, Object object);
+
 }
+// end::class[]

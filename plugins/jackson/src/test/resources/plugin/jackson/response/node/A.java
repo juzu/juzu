@@ -13,19 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package juzu.plugin.jackson;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package plugin.jackson.response.node;
 
-/**
- * Annotate an object to be marked as mapped by Jackson.
- *
- * @author Julien Viet
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Jackson {
+import juzu.MimeType;
+import juzu.View;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.TreeNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+
+import java.io.IOException;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+
+  @View
+  @MimeType.JSON
+  public TreeNode index() throws IOException {
+    JsonNodeFactory factory = JsonNodeFactory.instance;
+    return factory.objectNode().set("foo", factory.textNode("bar"));
+  }
 }

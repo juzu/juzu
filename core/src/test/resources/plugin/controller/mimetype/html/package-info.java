@@ -13,19 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package juzu.plugin.jackson;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+@Application package plugin.controller.mimetype.html;
 
-/**
- * Annotate an object to be marked as mapped by Jackson.
- *
- * @author Julien Viet
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Jackson {
-}
+import juzu.Application;

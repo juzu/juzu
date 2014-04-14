@@ -15,12 +15,15 @@
  */
 package juzu.impl.request;
 
+import juzu.MimeType;
+import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.common.AbstractAnnotatedElement;
 import juzu.impl.common.Spliterator;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.value.ValueType;
+import juzu.io.Streamable;
 import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
@@ -389,16 +392,45 @@ public abstract class Stage {
     protected Response response() {
       try {
         Object ret = context.getHandler().getMethod().invoke(controller, args);
+
+        //
+        MimeType mimeType = null;
+        for (Annotation annotation : context.getHandler().getMethod().getDeclaredAnnotations()) {
+          if (annotation instanceof MimeType) {
+            mimeType = (MimeType)annotation;
+          } else {
+            mimeType = annotation.annotationType().getAnnotation(MimeType.class);
+          }
+          if (mimeType != null && mimeType.value().length > 0) {
+            // For now we stop but we should look at the accept types of the client
+            // for doing some basic content negociation
+            break;
+          }
+        }
+
+        //
         if (ret instanceof Response) {
           // We should check that it matches....
           // btw we should try to enforce matching during compilation phase
           // @Action -> Response.Action
           // @View -> Response.Mime
           // as we can do it
-          return ((Response)ret);
-        } else {
-          return null;
+          Response resp = (Response)ret;
+          if (mimeType != null) {
+            resp = resp.with(PropertyType.MIME_TYPE, mimeType.value()[0]);
+          }
+          return resp;
+        } else if (ret != null && mimeType != null) {
+          for (EntityMarshaller writer : Tools.loadService(EntityMarshaller.class, request.controllerPlugin.getApplication().getClassLoader())) {
+            for (String s : mimeType.value()) {
+              Streamable streamable = writer.marshall(s, context.getHandler().getMethod(), ret);
+              if (streamable != null) {
+                return Response.ok().with(PropertyType.MIME_TYPE, s).body(streamable);
+              }
+            }
+          }
         }
+        return null;
       }
       catch (InvocationTargetException e) {
         return Response.error(e.getCause());

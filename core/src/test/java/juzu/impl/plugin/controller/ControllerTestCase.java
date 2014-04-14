@@ -15,6 +15,7 @@
  */
 package juzu.impl.plugin.controller;
 
+import juzu.PropertyType;
 import juzu.Response;
 import juzu.impl.compiler.CompilationError;
 import juzu.impl.inject.spi.InjectorProvider;
@@ -26,6 +27,7 @@ import juzu.test.protocol.mock.MockViewBridge;
 import org.junit.Test;
 
 import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.List;
 
 /** @author Julien Viet */
@@ -67,5 +69,18 @@ public class ControllerTestCase extends AbstractInjectTestCase {
     render.assertStringResponse("hello");
     assertNotNull(shared);
     return shared;
+  }
+
+  @Test
+  public void testMimeType() throws Exception {
+    MockApplication app = application("plugin.controller.mimetype.html").init();
+    MockClient client = app.client();
+    MockViewBridge render = client.render();
+    render.assertStringResponse("HELLO");
+    Iterable<String> mimeType = render.getResponse().getProperties().getValues(PropertyType.MIME_TYPE);
+    assertNotNull(mimeType);
+    Iterator<String> iterator = mimeType.iterator();
+    assertTrue(iterator.hasNext());
+    assertEquals("text/html", iterator.next());
   }
 }

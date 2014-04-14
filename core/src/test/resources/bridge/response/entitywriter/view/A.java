@@ -13,19 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package juzu.plugin.jackson;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package bridge.response.entitywriter.view;
 
-/**
- * Annotate an object to be marked as mapped by Jackson.
- *
- * @author Julien Viet
- */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Jackson {
+import juzu.Response;
+import juzu.Route;
+import juzu.View;
+import juzu.MimeType;
+import juzu.impl.bridge.response.Foo;
+
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class A {
+
+  @View
+  public Response.Content index() {
+    return Response.ok("<span id=\"view\">" + A_.view() + "</a>");
+  }
+
+  @View
+  @Route("/view")
+  @MimeType("text/foo")
+  public Foo view() throws Exception {
+    return new Foo("from_view".getBytes());
+  }
 }

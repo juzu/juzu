@@ -304,6 +304,10 @@ public abstract class Response {
       return code;
     }
 
+    public Body body(Streamable s) {
+      return new Body(code, properties, s);
+    }
+
     public Body body(ChunkBuffer s) {
       return new Body(code, properties, s);
     }

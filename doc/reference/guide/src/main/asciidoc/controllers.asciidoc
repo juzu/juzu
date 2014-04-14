@@ -498,7 +498,7 @@ Handling upload in a resource phase can be used when the file is uploaded via Aj
 
 === Json processing
 
-The Json plugin decodes json entities using the https://github.com/FasterXML/jackson[Jackson] framework. It can
+The _Jackson_ plugin decodes json entities using the https://github.com/FasterXML/jackson[Jackson] framework. It can
 decode to a Jackson native tree or perform mapping to Java object using Jackson mapper.
 
 The plugin can be used in your Maven build using a simple dependency:
@@ -512,7 +512,7 @@ The plugin can be used in your Maven build using a simple dependency:
 </dependency>
 ----
 
-==== Decoding to a Json node
+==== Decoding to a Json tree
 
 [source,java]
 ----

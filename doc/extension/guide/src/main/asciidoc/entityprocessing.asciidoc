@@ -56,4 +56,24 @@ loaded via the +java.util.ServiceLoader+ interface.
 
 == Entity marshallers
 
-Not yet implemented
+Entity marshallers are plugins that encodes an object, usually returned by a controller handler into binary data
+sent with the response. The +juzu.impl.request.EntityMarshaller+ abstract class has a single method _marshall_
+to implement, let's review it.
+
+=== Implementing a marshaller
+
+.The EntityMarshaller abstract class
+[source,java]
+----
+include::{sourcesdir}/juzu/impl/request/EntityMarshaller.java[tags=class]
+----
+
+The marshall method will be invoked by Juzu, when a controller returns an unknown object response (i.e an object
+that does not inherit from the +juzu.Response+ class). The marshall method can either return a null response to
+signal that it cannot handle it or a +Streamable+ implementation that will be used to create a +juzu.Response+.
+
+=== Declaring a marshaller
+
+Unmarshallers are declared in the +META-INF/services/juzu.impl.request.EntityMarshaller+ file, such plugins are
+loaded via the +java.util.ServiceLoader+ interface.
+

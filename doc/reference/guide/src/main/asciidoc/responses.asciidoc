@@ -26,7 +26,7 @@ public Response.Content index() {
 }
 ----
 
-== Render response
+=== Render response
 
 A _render_ response extends a _content_ response, it specializes it for aggregated markup, i.e a response where the
  application manages only one portion of the full page such as a portal:
@@ -36,6 +36,81 @@ A _render_ response extends a _content_ response, it specializes it for aggregat
 @View
 public Response.Content index() {
   return Response.ok("Hello World").withTitle("The Hello");
+}
+----
+
+=== Response mime type
+
+The response mime type can be set on using the response properties with +PropertyType.MIME_TYPE+ property:
+
+[source,java]
+----
+@View
+public Response.Content index() {
+  return Response.ok("Hello World").with(PropertyType.MIME_TYPE, "text/html");
+}
+----
+
+This can also be achieved with the +@MimeType+ annotation:
+
+[source,java]
+----
+@View
+@MimeType("text/html")
+public Response.Content index() {
+  return Response.ok("Hello World");
+}
+----
+
+or the +MimeType.HTML+ can be used as a shortcut:
+
+[source,java]
+----
+@View
+@MimeType.HTML
+public Response.Content index() {
+  return Response.ok("Hello World");
+}
+----
+
+=== JSON response
+
+Producing a JSON response can done using the _Jackson+ plugin. It can encode a native JsonTree or an object using
+the Jackson mapper. The plugin can be used in your Maven build using a simple dependency:
+
+[source,xml,subs="attributes,specialcharacters"]
+----
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-plugin-jackson</artifactId>
+  <version>{juzu-version}</version>
+</dependency>
+----
+
+==== Encoding an object
+
+[source,java]
+----
+@View
+@MimeType.JSON
+@Jackson
+public MyObj index() {
+  return new MyObj("Hello World");
+}
+----
+
+The +@Jackson+ annotation is mandatory to tell the Jackson plugin it should encode the response. Indeed there could
+be several plugin able to handle the _application/json_ mime type.
+
+==== Encoding a Json tree
+
+[source,java]
+----
+@View
+@MimeType.JSON
+public TreeNode index() {
+  JsonNodeFactory factory = JsonNodeFactory.instance;
+  return factory.factory.textNode("Hello World");
 }
 ----
 
