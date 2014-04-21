@@ -26,6 +26,8 @@ import juzu.impl.plugin.module.Module;
 import juzu.impl.resource.ResourceResolver;
 
 import java.io.Closeable;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class Bridge implements Closeable {
@@ -51,6 +53,22 @@ public class Bridge implements Closeable {
   /** . */
   public ApplicationLifeCycle<?, ?> application;
 
+  FutureTask<Boolean> refreshTask = new FutureTask<Boolean>(new Callable<Boolean>() {
+      public Boolean call() throws Exception {
+          if(application == null) {
+              application = new ApplicationLifeCycle(
+                      log,
+                      module.context.getLifeCycle(),
+                      config.injectImpl,
+                      config.name,
+                      resources,
+                      server,
+                      resolver);
+          }
+          return application.refresh();
+      }
+  });
+
   public Bridge(Logger log, Module module, BridgeConfig config, ReadFileSystem<?> resources, AssetServer server, ResourceResolver resolver) {
     this.log = log;
     this.module = module;
@@ -71,22 +89,30 @@ public class Bridge implements Closeable {
   public boolean refresh(boolean recompile) throws Exception {
 
     // For now refresh module first
-    module.context.getLifeCycle().refresh(recompile);
+    boolean recompiled = module.context.getLifeCycle().refresh(recompile);
 
-    //
-    if (application == null) {
-      application = new ApplicationLifeCycle(
-          log,
-          module.context.getLifeCycle(),
-          config.injectImpl,
-          config.name,
-          resources,
-          server,
-          resolver);
+    if(recompiled) {
+        // If source code was recompiled (in LIVE mode), we need create new FutureTask and refresh again
+        // Concurrency is not supported in LIVE mode
+        refreshTask = new FutureTask<Boolean>(new Callable<Boolean>() {
+          public Boolean call() throws Exception {
+                if(application == null) {
+                    application = new ApplicationLifeCycle(
+                            log,
+                            module.context.getLifeCycle(),
+                            config.injectImpl,
+                            config.name,
+                            resources,
+                            server,
+                            resolver);
+                }
+                return application.refresh();
+          }
+        });
     }
-
-    //
-    return application.refresh();
+    
+    refreshTask.run();
+    return refreshTask.get();
   }
 
   public Application getApplication() {
