@@ -15,7 +15,7 @@ body {
 }
 
 .topNav, .subNav, .header, .contentContainer, .bottomNav, .subNav, .legalCopy{
-	background: url('../../src/main/javadoc/resources/images/Background.png') repeat;
+	background: url('resources/images/Background.png') repeat;
 	margin: 0px;
 }
 
@@ -96,7 +96,7 @@ Document title and Copyright styles
 }
 .tab {
     background-color:#0066FF;
-    background-image:url(../../src/main/javadoc/resources/images/titlebar.gif);
+    background-image:url(resources/images/titlebar.gif);
     background-position:left top;
     background-repeat:no-repeat;
     color:#ffffff;
@@ -108,7 +108,7 @@ Document title and Copyright styles
 Navigation bar styles
 */
 .bar {
-    background:url("../../src/main/javadoc/resources/images/ArrowBigIcon.png") no-repeat scroll left 4px;
+    background:url("resources/images/ArrowBigIcon.png") no-repeat scroll left 4px;
 	margin: 19px 4px 23px 19px;
 	font-size: 18px;
 	color: white;
@@ -127,7 +127,7 @@ Navigation bar styles
 }
 .bottomNav {
     margin-top:10px;
-    background-image:url(../../src/main/javadoc/resources/images/background.gif);
+    background-image:url(resources/images/background.gif);
     background-repeat:repeat-x;
     color:#FFFFFF;
     float:left;
@@ -477,7 +477,7 @@ h1.hidden {
 }
 
 .indexHeader a, .indexContainer h2{
-	background: url('../../src/main/javadoc/resources/images/ArrowBigIcon.png') no-repeat left 4px;
+	background: url('resources/images/ArrowBigIcon.png') no-repeat left 4px;
 	padding-left:16px;
 	font-size: 18px;
 	margin: 26px 0 23px 0;
@@ -485,7 +485,7 @@ h1.hidden {
 }
 
 .indexContainer ul li{
-	background: url('../../src/main/javadoc/resources/images/ArrowSmallIcon.png') no-repeat left 8px;
+	background: url('resources/images/ArrowSmallIcon.png') no-repeat left 8px;
 	padding-left:16px;
 	font-weight: bold;
 	line-height: 23px;
@@ -511,7 +511,7 @@ h1.hidden {
 }
 
 .legalCopy small{
-	background: url('../../src/main/javadoc/resources/images/legalCopy.png') repeat-x top;
+	background: url('resources/images/legalCopy.png') repeat-x top;
 	padding: 20px 0;
 	display: block;
 	text-align: center;
