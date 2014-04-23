@@ -29,7 +29,7 @@ public class A {
 
   @Action
   @Route("/post")
-  public Response.View action(Foo foo) throws IOException {
+  public Response.View action(@juzu.plugin.jackson.Jackson Foo foo) throws IOException {
     JacksonRequestTreeTestCase.payload = foo;
     return A_.pass();
   }

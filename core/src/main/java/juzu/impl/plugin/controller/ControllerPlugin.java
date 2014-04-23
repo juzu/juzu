@@ -17,6 +17,7 @@
 package juzu.impl.plugin.controller;
 
 import juzu.Response;
+import juzu.impl.common.AbstractAnnotatedElement;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.PluginDescriptor;
 import juzu.impl.plugin.application.Application;
@@ -37,6 +38,7 @@ import juzu.request.RequestParameter;
 
 import javax.inject.Inject;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;

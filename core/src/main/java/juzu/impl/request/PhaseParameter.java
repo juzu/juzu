@@ -19,6 +19,7 @@ package juzu.impl.request;
 import juzu.impl.common.Cardinality;
 import juzu.impl.common.Tools;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.util.List;
 
@@ -41,6 +42,26 @@ public class PhaseParameter<V> extends ControlParameter {
       Cardinality cardinality,
       String alias) throws NullPointerException {
     super(name, type);
+
+    //
+    if (cardinality == null) {
+      throw new NullPointerException("No null parameter cardinality accepted");
+    }
+
+    //
+    this.cardinality = cardinality;
+    this.alias = alias;
+    this.valueType = valueType;
+  }
+
+  public PhaseParameter(
+      String name,
+      AnnotatedElement annotations,
+      Class<?> type,
+      Class<V> valueType,
+      Cardinality cardinality,
+      String alias) throws NullPointerException {
+    super(name, annotations, type);
 
     //
     if (cardinality == null) {

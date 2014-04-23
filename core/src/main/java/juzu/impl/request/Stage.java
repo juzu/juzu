@@ -18,7 +18,6 @@ package juzu.impl.request;
 import juzu.MimeType;
 import juzu.PropertyType;
 import juzu.Response;
-import juzu.impl.common.AbstractAnnotatedElement;
 import juzu.impl.common.Spliterator;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.InjectionContext;
@@ -184,7 +183,6 @@ public abstract class Stage {
 
         // Build arguments
         Object[] args = new Object[handler.getParameters().size()];
-        final Annotation[][] annotations = handler.getMethod().getParameterAnnotations();
         for (int i = 0;i < args.length;i++) {
           ControlParameter parameter = handler.getParameters().get(i);
           Object value;
@@ -197,15 +195,8 @@ public abstract class Stage {
                 List values = new ArrayList(requestParam.size());
                 for (String s : requestParam) {
                   Object converted;
-                  final int index = i;
                   try {
-                    AbstractAnnotatedElement annotated = new AbstractAnnotatedElement() {
-                      @Override
-                      public Annotation[] getDeclaredAnnotations() {
-                        return annotations[index];
-                      }
-                    };
-                    converted = valueType.parse(annotated, s);
+                    converted = valueType.parse(phaseParam.getAnnotations(), s);
                   }
                   catch (Exception e) {
                     return Response.error(e);

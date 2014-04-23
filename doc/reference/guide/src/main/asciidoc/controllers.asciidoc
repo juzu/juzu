@@ -532,20 +532,13 @@ this plugin.
 ----
 @Action
 @Route("/post")
-public Response.View action(MyObj obj) throws IOException {
+public Response.View action(@Jackson MyObj obj) throws IOException {
   ...
 }
 ----
 
-Mapped java objects must be annotated with the +@juzu.plugin.jackson.Jackson+ annotation so the unmarshaller can recognize them.
-
-[source,java]
-----
-@Jackson
-public class MyObject {
-  ...
-}
-----
+The +obj+ argument mapped to the java objects must be annotated with the +@juzu.plugin.jackson.Jackson+ annotation
+so the unmarshaller can recognize it.
 
 == Controller classes
 

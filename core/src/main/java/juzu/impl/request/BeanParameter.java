@@ -43,6 +43,10 @@ public class BeanParameter extends ControlParameter {
     super(name, type);
   }
 
+  public BeanParameter(String name, AnnotatedElement annotations, Class<?> type) throws NullPointerException {
+    super(name, annotations, type);
+  }
+
   <T> T createMappedBean(ControllerPlugin plugin, boolean requiresPrefix, Class<T> clazz, String beanName, Map<String, RequestParameter> parameters) throws IllegalAccessException, InstantiationException {
     // Extract parameters
     Map<String, String[]> beanParams = new HashMap<String, String[]>();

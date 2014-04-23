@@ -26,6 +26,6 @@ import java.lang.annotation.Target;
  * @author Julien Viet
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
+@Target({ElementType.PARAMETER, ElementType.METHOD})
 public @interface Jackson {
 }

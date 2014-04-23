@@ -300,17 +300,11 @@ public class Request implements ScopingContext {
         PhaseParameter phaseParameter = (PhaseParameter)parameter;
         final int at = index++;
         Object value = args[at];
-        AnnotatedElement annotated = new AbstractAnnotatedElement() {
-          @Override
-          public Annotation[] getDeclaredAnnotations() {
-            return handler.getMethod().getParameterAnnotations()[at];
-          }
-        };
         if (value != null) {
           String name = phaseParameter.getMappedName();
           switch (phaseParameter.getCardinality()) {
             case SINGLE: {
-              parameterMap.setParameter(name, valueOf(annotated, value));
+              parameterMap.setParameter(name, valueOf(phaseParameter.getAnnotations(), value));
               break;
             }
             case ARRAY: {
@@ -318,7 +312,7 @@ public class Request implements ScopingContext {
               String[] array = new String[length];
               for (int i = 0;i < length;i++) {
                 Object component = Array.get(value, i);
-                array[i] = valueOf(annotated, component);
+                array[i] = valueOf(phaseParameter.getAnnotations(), component);
               }
               parameterMap.setParameter(name, array);
               break;
@@ -330,7 +324,7 @@ public class Request implements ScopingContext {
               Iterator<?> iterator = c.iterator();
               for (int i = 0;i < length;i++) {
                 Object element = iterator.next();
-                array[i] = valueOf(annotated, element);
+                array[i] = valueOf(phaseParameter.getAnnotations(), element);
               }
               parameterMap.setParameter(name, array);
               break;

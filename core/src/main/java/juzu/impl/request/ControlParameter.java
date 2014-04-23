@@ -16,6 +16,10 @@
 
 package juzu.impl.request;
 
+import juzu.impl.common.AbstractAnnotatedElement;
+
+import java.lang.reflect.AnnotatedElement;
+
 /**
  * A parameter of a controller.
  *
@@ -29,7 +33,14 @@ public abstract class ControlParameter {
   /** . */
   private final Class<?> type;
 
+  /** . */
+  private final AnnotatedElement annotations;
+
   public ControlParameter(String name, Class<?> type) throws NullPointerException {
+    this(name, AbstractAnnotatedElement.EMPTY, type);
+  }
+
+  public ControlParameter(String name, AnnotatedElement annotations, Class<?> type) throws NullPointerException {
     if (name == null) {
       throw new NullPointerException("No null parameter name accepted");
     }
@@ -37,19 +48,28 @@ public abstract class ControlParameter {
     //
     this.name = name;
     this.type = type;
+    this.annotations = annotations;
   }
 
   /**
-   * Returns the parameter name.
-   *
    * @return the parameter name
    */
   public String getName() {
     return name;
   }
 
+  /**
+   * @return the parameter class type.
+   */
   public Class<?> getType() {
     return type;
+  }
+
+  /**
+   * @return the parameter annotations
+   */
+  public AnnotatedElement getAnnotations() {
+    return annotations;
   }
 
   @Override

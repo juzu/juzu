@@ -23,6 +23,18 @@ import java.lang.reflect.AnnotatedElement;
  */
 public abstract class AbstractAnnotatedElement implements AnnotatedElement {
 
+  /** . */
+  public static final AbstractAnnotatedElement EMPTY = wrap(new Annotation[0]);
+
+  public static AbstractAnnotatedElement wrap(final Annotation[] annotations) {
+    return new AbstractAnnotatedElement() {
+      @Override
+      public Annotation[] getDeclaredAnnotations() {
+        return annotations;
+      }
+    };
+  }
+
   @Override
   public boolean isAnnotationPresent(Class<? extends Annotation> annotationClass) {
     return getAnnotation(annotationClass) != null;

@@ -55,7 +55,7 @@ public class JacksonUnmarshaller extends EntityUnmarshaller {
       Class<?> type = contextualArgument.getKey().getType();
       if (JsonNode.class.isAssignableFrom(type)) {
         contextualArgument.setValue(tree);
-      } else if (type.getAnnotation(Jackson.class) != null) {
+      } else if (contextualArgument.getKey().getAnnotations().getAnnotation(Jackson.class) != null) {
         Object value = mapper.readValue(new TreeTraversingParser(tree), type);
         contextualArgument.setValue(value);
       }

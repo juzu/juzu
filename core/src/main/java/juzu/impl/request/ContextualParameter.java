@@ -16,6 +16,7 @@
 
 package juzu.impl.request;
 
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Type;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -25,11 +26,14 @@ public class ContextualParameter extends ControlParameter {
   private final Type genericType;
 
   public ContextualParameter(String name, Class<?> classType) throws NullPointerException {
-    this(name, classType, classType);
+    super(name, classType, classType);
+
+    //
+    this.genericType = null;
   }
 
-  public ContextualParameter(String name, Class<?> classType, Type genericType) throws NullPointerException {
-    super(name, classType);
+  public ContextualParameter(String name, AnnotatedElement annotations, Class<?> classType, Type genericType) throws NullPointerException {
+    super(name, annotations, classType);
 
     //
     this.genericType = genericType;

@@ -16,11 +16,14 @@
 
 package juzu.impl.request;
 
+import juzu.impl.common.AbstractAnnotatedElement;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
 import juzu.request.Phase;
 
 import java.beans.Introspector;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -70,15 +73,28 @@ public final class ControllerHandler<P extends Phase> {
       Method method,
       List<ControlParameter> parameterList) {
 
-    // Fix parameter list
+    // Enhance parameter list
     Class<?>[] parameterTypes = method.getParameterTypes();
     Type[] genericParameterTypes = method.getGenericParameterTypes();
+    final Annotation[][] parameterAnnotations = method.getParameterAnnotations();
     parameterList = new ArrayList<ControlParameter>(parameterList);
     for (int i = 0;i < parameterList.size();i++) {
       ControlParameter parameter = parameterList.get(i);
+      AnnotatedElement annotations = AbstractAnnotatedElement.wrap(parameterAnnotations[i]);
       if (parameter instanceof ContextualParameter) {
         Type genericParameterType = genericParameterTypes[i];
-        parameterList.set(i, new ContextualParameter(parameter.getName(), parameterTypes[i], genericParameterType));
+        parameterList.set(i, new ContextualParameter(parameter.getName(), annotations, parameterTypes[i], genericParameterType));
+      } else if (parameter instanceof PhaseParameter) {
+        PhaseParameter phaseParameter = (PhaseParameter)parameter;
+        parameterList.set(i, new PhaseParameter(
+            parameter.getName(),
+            annotations,
+            parameterTypes[i],
+            phaseParameter.getValueType(),
+            phaseParameter.getCardinality(),
+            phaseParameter.getAlias()));
+      } else {
+        parameterList.set(i , new BeanParameter(parameter.getName(), annotations, parameter.getType()));
       }
     }
 
