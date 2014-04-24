@@ -88,6 +88,8 @@
                 <link>http://docs.oracle.com/javaee/6/api/</link>
                 <link>http://www.bluesunrise.com/portlet-api/</link>
               </links>
+              <stylesheetfile>${basedir}/src/main/javadoc/resources/stylesheet.css</stylesheetfile>
+              <docfilessubdirs>true</docfilessubdirs>
             </configuration>
           </execution>
         </executions>
