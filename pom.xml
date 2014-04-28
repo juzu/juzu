@@ -1081,7 +1081,7 @@
       </properties>
       <build>
         <plugins>
-          <!-- Release with Java 6 -->
+          <!-- Release with Java 7 -->
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
@@ -1094,8 +1094,8 @@
                 <configuration>
                   <rules>
                     <requireJavaVersion>
-                      <message>You must release with Java 6!</message>
-                      <version>1.6</version>
+                      <message>You must release with Java 7!</message>
+                      <version>[1.7,1.8)</version>
                     </requireJavaVersion>
                   </rules>
                 </configuration>
