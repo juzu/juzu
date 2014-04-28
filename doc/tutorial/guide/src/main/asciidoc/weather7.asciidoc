@@ -15,7 +15,7 @@ We will then modify the +bootstrap.less+ file to keep only what is necessary for
 .The necessary Bootstrap less files
 [source,java]
 ----
-include::{sourcesdir}/examples/tutorial/assets/bootstrap.less[]
+include::{sourcesdir}/examples/tutorial/weather7/assets/bootstrap.less[]
 ----
 
 This version of bootstrap.less is a trimmed down of the original files.
