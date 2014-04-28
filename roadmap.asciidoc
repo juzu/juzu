@@ -6,6 +6,40 @@
 |Description
 |Use case
 
+|Simple authorization plugin
+|Feature
+|Authorization
+|Provide a simple implemententation of JAX-RS annotations for servlet/portlet container
+
+|JavaScript footer declarations
+|Improvement
+|It should be possible to declare Script assets in page footer
+|Today JavaScript can only be declared in header
+
+|Plugin tutorials
+|Improvement
+|Tutorials for writing plugins
+|Plugins are not yet documented
+
+|Extension guide
+|Improvement
+|A guide for extending Juzu
+|The guide will explain how to properly extend Juzu
+
+|Asset filtering
+|Improvement
+|Allow to filter assets
+|Minify assets
+|===
+
+.Juzu 1.0.0-beta2
+[cols="2,2,4,8",options="header"]
+|===
+|Name
+|Type
+|Description
+|Use case
+
 |Bean Validation
 |Feature
 |Provide bean validation with JSR 303
@@ -26,30 +60,10 @@
 |Response does not provide a mechanism for easily marshalling objects to JSON
 |Allow a controller to marshall an object into JSON
 
-|Simple authorization plugin
-|Feature
-|Authorization
-|Provide a simple implemententation of JAX-RS annotations for servlet/portlet container
-
-|@Application escapeXML
-|Improvement
-|This feature only concerns portlets and is confusing in @Application
-|Move this feature to the @Portlet plugin
-
-|Asset Shiro plugin
+|Apache Shiro plugin
 |Feature
 |Authentication and Authorization
 |The plugin already exists but it has not yet been integrated in Juzu codebase : https://github.com/haint/juzu/tree/shiro-plugin/plugins/shiro
-
-|Asset grouping
-|Improvement
-|Group assets together
-|Allow to group assets together for performance reason
-
-|Asset filtering
-|Improvement
-|Allow to filter assets
-|Minify assets
 |===
 
 .Juzu 0.8
