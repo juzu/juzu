@@ -164,7 +164,7 @@ controller and the whole application
 * the _index_.groovy_ Groovy template is the effective template code: it produces the markup, resolve expressions, etc...
 
 .index groovy at work
-image::images/request/interaction3.png[At work,250,align="center"]
+image::images/templatespi/lifecycle3.png[At work,750,align="center"]
 
 When a controller is instantiated, the +index+ template instance is injected into the controller, the +@Path+ annotation
 plays an essential role because it's a qualifier and that qualifier is used to distinguish the correct subclass to inject
