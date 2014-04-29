@@ -248,57 +248,6 @@ public class MailerProvider implements Provider<Mailer> {
 This is useful for declaring qualifiers on a class that is not annotated by qualifiers, because it is not possible
 to declare qualifiers in an +@Binding+ annotation due to limitations of the Java language.
 
-== Provider factories
-
-Provider factories provides plugability for integrating beans that are not managed by the IOC container. The provider
-factory is a factory for +javax.inject.Provider+ whose purpose is to return a provider for a specific class. Usually
-provider factories will lookup the service in a registry (like another IOC container) and returns a provider that
-return them lazily or not.
-
-The provider factory defines the +getProvider+ method:
-
-[source,java]
-----
-include::{sourcesdir}/juzu/inject/ProviderFactory.java[tags=getProvider]
-----
-
-The factory implementation must provide a public zero argument constructor and it will be instantiated
-during the application boostrap by Juzu to obtain the provider. The returned providers will then be bound into
-the IOC container.
-
-The IOC container uses the +java.util.ServiceLoader+ discovery mechanism for finding provider factories when
- injection occurs.
-
-Let's study a simple example with a provider for the current time:
-
-.Time provider factory
-[source,java]
-----
-package my;
-
-public class TimeProviderFactory implements java.inject.ProviderFactory {
-  public <T> Provider<? extends T> getProvider(final Class<T> implementationType) throws Exception {
-    if (implementationType == java.util.Date.class) {
-      return new Provider<T>() {
-        public T get() {
-          return implementationType.cast(new java.util.Date());
-        }
-      };
-    }
-    else {
-      return null;
-    }
-  }
-}
-----
-
-This provider should be declared in the _META-INF/services/juzu.inject.ProviderFactory_ file:
-
-.Time provider configuration
-----
-my.TimeProvider
-----
-
 == Provided container
 
 Sometimes a Juzu application needs to run with a provided container, i.e a container whose life cycle is not

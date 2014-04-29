@@ -17,6 +17,10 @@ include::valuetypes.asciidoc[]
 
 include::entityprocessing.asciidoc[]
 
+= Provider factories
+
+include::providerfactories.asciidoc[]
+
 [[templatespi]]
 = Templating SPI
 

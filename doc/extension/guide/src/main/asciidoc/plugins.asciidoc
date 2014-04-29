@@ -31,6 +31,11 @@ Entity processors map the request and response stream to Java objects.
 
 Value types map the controller request parameters to request parameters.
 
+=== Provider factories
+
+A provider factory provides plugability for integrating beans that are not managed natively by the IOC container
+but needs to be integrated inside the container.
+
 === Templating engine
 
 Juzu can easily be extended with new templating engine. Templating engine integrates of course at runtime, however

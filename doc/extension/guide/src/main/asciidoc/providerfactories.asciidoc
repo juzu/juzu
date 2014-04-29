@@ -1,0 +1,49 @@
+Provider factories provide plugability for integrating beans that are not managed by the IOC container. A provider
+factory is dynamic: it is a factory for +javax.inject.Provider+ that returns a provider for a specificied class. Usually
+provider factories will lookup the service in a registry (like another IOC container) and returns a provider that
+return them lazily or not.
+
+The provider factory defines the +getProvider+ method:
+
+[source,java]
+----
+include::{sourcesdir}/juzu/inject/ProviderFactory.java[tags=getProvider]
+----
+
+The factory implementation must provide a public zero argument constructor and it will be instantiated
+during the application boostrap by Juzu to obtain the provider. The returned providers will then be bound into
+the IOC container.
+
+The IOC container uses the +java.util.ServiceLoader+ discovery mechanism for finding provider factories when
+ injection occurs.
+
+Let's study a simple example with a provider for the current time:
+
+.Time provider factory
+[source,java]
+----
+package my;
+
+public class TimeProviderFactory implements java.inject.ProviderFactory {
+  public <T> Provider<? extends T> getProvider(final Class<T> implementationType) throws Exception {
+    if (implementationType == java.util.Date.class) {
+      return new Provider<T>() {
+        public T get() {
+          return implementationType.cast(new java.util.Date());
+        }
+      };
+    }
+    else {
+      return null;
+    }
+  }
+}
+----
+
+This provider should be declared in the _META-INF/services/juzu.inject.ProviderFactory_ file:
+
+.Time provider configuration
+----
+my.TimeProvider
+----
+
