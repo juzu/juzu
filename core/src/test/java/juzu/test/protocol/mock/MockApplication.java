@@ -26,7 +26,7 @@ import juzu.impl.runtime.ApplicationRuntime;
 import juzu.impl.fs.spi.ReadFileSystem;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.Logger;
-import juzu.impl.plugin.controller.ControllerPlugin;
+import juzu.impl.plugin.controller.ControllerService;
 import juzu.impl.runtime.ModuleRuntime;
 import juzu.impl.resource.ResourceResolver;
 import juzu.request.ApplicationContext;
@@ -132,7 +132,7 @@ public class MockApplication<P> implements Closeable, ApplicationContext {
   }
 
   void invoke(RequestBridge bridge) {
-    lifeCycle.resolveBean(ControllerPlugin.class).invoke(bridge);
+    lifeCycle.resolveBean(ControllerService.class).invoke(bridge);
   }
 
   public MockClient client() {

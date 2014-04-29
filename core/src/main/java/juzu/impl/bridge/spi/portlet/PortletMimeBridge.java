@@ -22,7 +22,7 @@ import juzu.impl.asset.Asset;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.Formatting;
 import juzu.impl.common.Tools;
-import juzu.impl.plugin.asset.AssetPlugin;
+import juzu.impl.plugin.asset.AssetService;
 import juzu.impl.request.ContextualParameter;
 import juzu.request.Phase;
 import juzu.io.Chunk;
@@ -67,7 +67,7 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
       Response.Status status = (Response.Status)response;
 
       //
-      final AssetPlugin assetPlugin = (AssetPlugin)bridge.getApplication().getPlugin("asset");
+      final AssetService assetPlugin = (AssetService)bridge.getApplication().getPlugin("asset");
 
       //
       Stream stream = new Stream() {

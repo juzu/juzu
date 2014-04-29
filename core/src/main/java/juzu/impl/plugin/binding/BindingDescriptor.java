@@ -16,13 +16,13 @@
 
 package juzu.impl.plugin.binding;
 
-import juzu.impl.plugin.PluginDescriptor;
+import juzu.impl.plugin.ServiceDescriptor;
 import juzu.impl.inject.BeanDescriptor;
 
 import java.util.ArrayList;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class BindingDescriptor extends PluginDescriptor {
+public class BindingDescriptor extends ServiceDescriptor {
 
   /** . */
   private final ArrayList<BeanDescriptor> beans;

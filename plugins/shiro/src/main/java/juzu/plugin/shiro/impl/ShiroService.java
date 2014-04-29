@@ -28,9 +28,9 @@ import juzu.Response;
 import juzu.Scope;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.JSON;
-import juzu.impl.plugin.PluginContext;
-import juzu.impl.plugin.PluginDescriptor;
-import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.plugin.ServiceContext;
+import juzu.impl.plugin.ServiceDescriptor;
+import juzu.impl.plugin.application.ApplicationService;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 
@@ -47,7 +47,7 @@ import org.apache.shiro.util.ThreadContext;
  * @version $Id$
  * 
  */
-public class ShiroPlugin extends ApplicationPlugin implements RequestFilter<Stage.Handler> {
+public class ShiroService extends ApplicationService implements RequestFilter<Stage.Handler> {
 
   /** . */
   SecurityManager manager;
@@ -55,12 +55,12 @@ public class ShiroPlugin extends ApplicationPlugin implements RequestFilter<Stag
   /** . */
   private ShiroDescriptor descriptor;
 
-  public ShiroPlugin() {
+  public ShiroService() {
     super("shiro");
   }
 
   @Override
-  public PluginDescriptor init(PluginContext context) throws Exception {
+  public ServiceDescriptor init(ServiceContext context) throws Exception {
     return context.getConfig() != null ? descriptor = new ShiroDescriptor(context) : null;
   }
 

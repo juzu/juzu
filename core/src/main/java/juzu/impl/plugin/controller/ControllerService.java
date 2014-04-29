@@ -17,9 +17,9 @@
 package juzu.impl.plugin.controller;
 
 import juzu.Response;
-import juzu.impl.common.AbstractAnnotatedElement;
 import juzu.impl.common.Tools;
-import juzu.impl.plugin.PluginDescriptor;
+import juzu.impl.plugin.ServiceContext;
+import juzu.impl.plugin.ServiceDescriptor;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.ControlParameter;
@@ -30,22 +30,20 @@ import juzu.io.UndeclaredIOException;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.inject.spi.InjectionContext;
-import juzu.impl.plugin.PluginContext;
-import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.plugin.application.ApplicationService;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.request.Request;
 import juzu.request.RequestParameter;
 
 import javax.inject.Inject;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Collections;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllerPlugin extends ApplicationPlugin {
+public class ControllerService extends ApplicationService {
 
   /** . */
   private ControllersDescriptor descriptor;
@@ -57,7 +55,7 @@ public class ControllerPlugin extends ApplicationPlugin {
   @Inject
   private Application application;
 
-  public ControllerPlugin() {
+  public ControllerService() {
     super("controller");
   }
 
@@ -74,7 +72,7 @@ public class ControllerPlugin extends ApplicationPlugin {
   }
 
   @Override
-  public PluginDescriptor init(PluginContext context) throws Exception {
+  public ServiceDescriptor init(ServiceContext context) throws Exception {
     valueTypes.addAll(ValueType.DEFAULT);
     for (ValueType<?> valueType : Tools.loadService(ValueType.class, context.getClassLoader())) {
       valueTypes.add(valueType);

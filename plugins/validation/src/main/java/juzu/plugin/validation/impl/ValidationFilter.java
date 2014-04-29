@@ -17,7 +17,7 @@
  */package juzu.plugin.validation.impl;
 
 import juzu.Response;
-import juzu.impl.plugin.controller.ControllerPlugin;
+import juzu.impl.plugin.controller.ControllerService;
 import juzu.impl.request.ControlParameter;
 import juzu.impl.request.ControllerHandler;
 import juzu.impl.request.RequestFilter;
@@ -48,10 +48,10 @@ public class ValidationFilter implements RequestFilter<Stage.Invoke>, ParameterN
   private Validator validator;
 
   /** . */
-  private final ControllerPlugin controllerPlugin;
+  private final ControllerService controllerPlugin;
 
   @Inject
-  public ValidationFilter(ControllerPlugin controllerPlugin) {
+  public ValidationFilter(ControllerService controllerPlugin) {
     this.controllerPlugin = controllerPlugin;
   }
 

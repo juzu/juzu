@@ -23,8 +23,8 @@ import juzu.Response;
 import juzu.Scope;
 import juzu.impl.common.JSON;
 import juzu.impl.inject.BeanDescriptor;
-import juzu.impl.plugin.PluginContext;
-import juzu.impl.plugin.PluginDescriptor;
+import juzu.impl.plugin.ServiceContext;
+import juzu.impl.plugin.ServiceDescriptor;
 
 import juzu.impl.request.Stage;
 import org.apache.shiro.mgt.SecurityManager;
@@ -34,7 +34,7 @@ import org.apache.shiro.mgt.SecurityManager;
  * @version $Id$
  * 
  */
-public class ShiroDescriptor extends PluginDescriptor {
+public class ShiroDescriptor extends ServiceDescriptor {
   /** . */
   private final ShiroAuthorizor authorizer;
 
@@ -45,9 +45,9 @@ public class ShiroDescriptor extends PluginDescriptor {
   private final BeanDescriptor bean;
   
   /** .*/
-  private PluginContext context;
+  private ServiceContext context;
 
-  ShiroDescriptor(PluginContext context) {
+  ShiroDescriptor(ServiceContext context) {
     JSON config = context.getConfig();
     this.authenticater = new ShiroAuthenticator(config.get("rememberMe") != null ? true : false);
     this.authorizer = new ShiroAuthorizor();
@@ -61,7 +61,7 @@ public class ShiroDescriptor extends PluginDescriptor {
     return context.getConfig();
   }
   
-  public PluginContext getContext() {
+  public ServiceContext getContext() {
     return context;
   }
 

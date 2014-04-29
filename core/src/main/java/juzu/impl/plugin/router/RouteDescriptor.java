@@ -18,7 +18,7 @@ package juzu.impl.plugin.router;
 
 import juzu.impl.common.JSON;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.PluginDescriptor;
+import juzu.impl.plugin.ServiceDescriptor;
 import juzu.impl.router.PathParam;
 import juzu.impl.router.Route;
 
@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouteDescriptor extends PluginDescriptor {
+public class RouteDescriptor extends ServiceDescriptor {
 
   /** . */
   private final String path;

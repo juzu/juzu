@@ -19,11 +19,11 @@ package juzu.impl.plugin.ajax;
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.AssetLocation;
-import juzu.impl.plugin.PluginDescriptor;
-import juzu.impl.plugin.PluginContext;
+import juzu.impl.plugin.ServiceContext;
+import juzu.impl.plugin.ServiceDescriptor;
 import juzu.impl.asset.AssetManager;
-import juzu.impl.plugin.application.ApplicationPlugin;
-import juzu.impl.plugin.controller.ControllerPlugin;
+import juzu.impl.plugin.application.ApplicationService;
+import juzu.impl.plugin.controller.ControllerService;
 import juzu.impl.request.ControllerHandler;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
@@ -41,31 +41,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AjaxPlugin extends ApplicationPlugin implements RequestFilter<Stage.Unmarshalling> {
+public class AjaxService extends ApplicationService implements RequestFilter<Stage.Unmarshalling> {
 
   /** . */
   Map<String, ControllerHandler> table;
 
   @Inject
-  ControllerPlugin controllerPlugin;
+  ControllerService controllerPlugin;
 
   @Inject
   AssetManager manager;
 
-  public AjaxPlugin() {
+  public AjaxService() {
     super("ajax");
   }
 
   @Override
-  public PluginDescriptor init(PluginContext context) throws Exception {
-    return context.getConfig() != null ? new PluginDescriptor() : null;
+  public ServiceDescriptor init(ServiceContext context) throws Exception {
+    return context.getConfig() != null ? new ServiceDescriptor() : null;
   }
 
   @PostConstruct
   public void start() throws Exception {
 
     //
-    URL url = AjaxPlugin.class.getClassLoader().getResource("juzu/impl/plugin/ajax/script.js");
+    URL url = AjaxService.class.getClassLoader().getResource("juzu/impl/plugin/ajax/script.js");
     if (url == null) {
       throw new Exception("Not found script.js");
     }

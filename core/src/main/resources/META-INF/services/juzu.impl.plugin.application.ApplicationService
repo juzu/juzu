@@ -1,0 +1,7 @@
+juzu.impl.plugin.controller.ControllerService
+juzu.impl.plugin.template.TemplateService
+juzu.impl.plugin.binding.BindingService
+juzu.impl.plugin.ajax.AjaxService
+juzu.impl.plugin.asset.AssetService
+juzu.impl.plugin.router.RouterService
+juzu.impl.plugin.bundle.BundleService

@@ -22,7 +22,7 @@ import juzu.bridge.portlet.JuzuPortlet;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.request.ControllerHandler;
 import juzu.request.ResponseParameter;
-import juzu.impl.plugin.controller.ControllerPlugin;
+import juzu.impl.plugin.controller.ControllerService;
 import juzu.impl.request.ContextualParameter;
 import juzu.request.Phase;
 
@@ -81,7 +81,7 @@ public abstract class PortletInteractionBridge<Rq extends PortletRequest, Rs ext
       }
 
       //
-      ControllerHandler handler = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
+      ControllerHandler handler = bridge.getApplication().resolveBean(ControllerService.class).getDescriptor().getMethodByHandle(update.getTarget());
 
       // Method id
       super.resp.setRenderParameter("juzu.op", handler.getId());

@@ -18,7 +18,7 @@ package juzu.impl.plugin.controller.descriptor;
 
 import juzu.Response;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.PluginDescriptor;
+import juzu.impl.plugin.ServiceDescriptor;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.plugin.controller.ControllerResolver;
@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ControllersDescriptor extends PluginDescriptor {
+public class ControllersDescriptor extends ServiceDescriptor {
 
   /** . */
   private final Class<?> defaultController;

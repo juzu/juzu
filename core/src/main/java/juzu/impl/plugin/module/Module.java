@@ -17,8 +17,8 @@
 package juzu.impl.plugin.module;
 
 import juzu.impl.common.JSON;
-import juzu.impl.plugin.PluginDescriptor;
-import juzu.impl.plugin.PluginContext;
+import juzu.impl.plugin.ServiceContext;
+import juzu.impl.plugin.ServiceDescriptor;
 import juzu.impl.resource.ResourceResolver;
 
 import java.net.URL;
@@ -32,16 +32,16 @@ public class Module {
   public final ModuleContext context;
 
   /** . */
-  private final HashMap<String, ModulePlugin> plugins;
+  private final HashMap<String, ModuleService> plugins;
 
   /** . */
-  private final HashMap<String, PluginDescriptor> descriptors;
+  private final HashMap<String, ServiceDescriptor> descriptors;
 
   public Module(final ModuleContext context) throws Exception {
 
     //
-    HashMap<String, ModulePlugin> plugins = new HashMap<String, ModulePlugin>();
-    for (ModulePlugin plugin : ServiceLoader.load(ModulePlugin.class)) {
+    HashMap<String, ModuleService> plugins = new HashMap<String, ModuleService>();
+    for (ModuleService plugin : ServiceLoader.load(ModuleService.class)) {
       plugins.put(plugin.getName(), plugin);
     }
 
@@ -53,12 +53,12 @@ public class Module {
     };
 
     // Init plugins
-    HashMap<String, PluginDescriptor> descriptors = new HashMap<String, PluginDescriptor>();
-    for (ModulePlugin plugin : plugins.values()) {
+    HashMap<String, ServiceDescriptor> descriptors = new HashMap<String, ServiceDescriptor>();
+    for (ModuleService plugin : plugins.values()) {
       final JSON pluginConfig = context.getConfig().getJSON(plugin.getName());
 
       //
-      PluginContext pluginContext = new PluginContext() {
+      ServiceContext pluginContext = new ServiceContext() {
         public JSON getConfig() {
           return pluginConfig;
         }
@@ -74,7 +74,7 @@ public class Module {
       };
 
       //
-      PluginDescriptor desc = plugin.init(pluginContext);
+      ServiceDescriptor desc = plugin.init(pluginContext);
       if (desc != null) {
         descriptors.put(plugin.getName(), desc);
       }
@@ -86,12 +86,12 @@ public class Module {
     this.context = context;
   }
 
-  public ModulePlugin getPlugin(String name) {
+  public ModuleService getPlugin(String name) {
     return plugins.get(name);
   }
 
-  public <P extends ModulePlugin> P getPlugin(Class<P> type) {
-    for (ModulePlugin plugin : plugins.values()) {
+  public <P extends ModuleService> P getPlugin(Class<P> type) {
+    for (ModuleService plugin : plugins.values()) {
       if (type.isInstance(plugin)) {
         return type.cast(plugin);
       }

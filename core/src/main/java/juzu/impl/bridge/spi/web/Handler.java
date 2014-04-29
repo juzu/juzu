@@ -21,10 +21,10 @@ import juzu.Resource;
 import juzu.impl.bridge.Bridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.UriBuilder;
-import juzu.impl.plugin.controller.ControllerPlugin;
+import juzu.impl.plugin.controller.ControllerService;
 import juzu.impl.plugin.router.RouteDescriptor;
 import juzu.impl.plugin.router.RouterDescriptor;
-import juzu.impl.plugin.router.RouterPlugin;
+import juzu.impl.plugin.router.RouterService;
 import juzu.impl.request.ControllerHandler;
 import juzu.request.RequestParameter;
 import juzu.impl.router.PathParam;
@@ -74,7 +74,7 @@ public class Handler implements Closeable {
 
     //
     Route root = new Router();
-    RouterPlugin router = bridge.getApplication().resolveBean(RouterPlugin.class);
+    RouterService router = bridge.getApplication().resolveBean(RouterService.class);
     if (router != null) {
       RouterDescriptor desc = router.getDescriptor();
       if (desc != null) {
@@ -128,7 +128,7 @@ public class Handler implements Closeable {
         RouteMatch match = matches.next();
         RouteDescriptor routeDesc = getMethods(match.getRoute());
         if (routeDesc != null) {
-          ControllerHandler target = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(routeDesc.handle);
+          ControllerHandler target = this.bridge.getApplication().resolveBean(ControllerService.class).getDescriptor().getMethodByHandle(routeDesc.handle);
           if (target.getPhase() == Phase.VIEW) {
             if (requestMethod == HttpMethod.POST) {
               requestTarget =  target;
@@ -174,7 +174,7 @@ public class Handler implements Closeable {
     // or we look for the handler method
     if (requestTarget == null) {
       // If we have an handler we locate the index method
-      requestTarget = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
+      requestTarget = this.bridge.getApplication().resolveBean(ControllerService.class).getResolver().resolve(Phase.VIEW, Collections.<String>emptySet());
     }
 
     // No method -> not found

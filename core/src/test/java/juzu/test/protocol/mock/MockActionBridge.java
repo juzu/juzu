@@ -21,7 +21,7 @@ import juzu.Response;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.runtime.ApplicationRuntime;
-import juzu.impl.plugin.controller.ControllerPlugin;
+import juzu.impl.plugin.controller.ControllerService;
 import juzu.request.Phase;
 import juzu.request.ResponseParameter;
 import juzu.test.AbstractTestCase;
@@ -67,7 +67,7 @@ public class MockActionBridge extends MockRequestBridge {
   }
 
   public void assertRender(String expectedTarget, Map<String, String> expectedArguments) {
-    assertRender(application.resolveBean(ControllerPlugin.class).getDescriptor().getMethodById(expectedTarget).getHandle(), expectedArguments);
+    assertRender(application.resolveBean(ControllerService.class).getDescriptor().getMethodById(expectedTarget).getHandle(), expectedArguments);
   }
 
   private void assertResponse(Response expectedResponse) {

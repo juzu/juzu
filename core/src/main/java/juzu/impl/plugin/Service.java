@@ -16,23 +16,32 @@
 
 package juzu.impl.plugin;
 
-import juzu.impl.inject.BeanDescriptor;
-
-import java.util.Collections;
-
 /**
- * Base plugin descriptor class.
+ * Base class for a plugin.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public class PluginDescriptor {
+public abstract class Service {
+
+  /** The plugin name. */
+  private final String name;
+
+  protected Service(String name) {
+    this.name = name;
+  }
+
+  public String getName() {
+    return name;
+  }
 
   /**
-   * Returns the list of bean to install.
+   * Returns the plugin descriptor or null if the plugin should not be loaded.
    *
-   * @return the list of bean ot install
+   * @param context the plugin context
+   * @return the descriptor
+   * @throws Exception any exception
    */
-  public Iterable<BeanDescriptor> getBeans() {
-    return Collections.emptyList();
+  public ServiceDescriptor init(ServiceContext context) throws Exception {
+    return null;
   }
 }

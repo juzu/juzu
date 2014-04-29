@@ -37,7 +37,7 @@ import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
 import juzu.impl.common.Tools;
-import juzu.impl.plugin.controller.ControllerPlugin;
+import juzu.impl.plugin.controller.ControllerService;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.request.Request;
@@ -135,7 +135,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
     }
 
     //
-    ControllerResolver<ControllerHandler> resolver = bridge.getApplication().resolveBean(ControllerPlugin.class).getResolver();
+    ControllerResolver<ControllerHandler> resolver = bridge.getApplication().resolveBean(ControllerService.class).getResolver();
     ControllerHandler<?> target;
     if (methodId != null) {
       target = resolver.resolveMethod(phase, methodId, parameters.keySet());
@@ -308,7 +308,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
 
   public void invoke() throws Exception {
     try {
-      bridge.getApplication().resolveBean(ControllerPlugin.class).invoke(this);
+      bridge.getApplication().resolveBean(ControllerService.class).invoke(this);
     } finally {
       Tools.safeClose(this);
     }
@@ -370,7 +370,7 @@ public abstract class PortletRequestBridge<Rq extends PortletRequest, Rs extends
           MimeResponse mimeResp = (MimeResponse)resp;
 
           //
-          ControllerHandler handler = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
+          ControllerHandler handler = bridge.getApplication().resolveBean(ControllerService.class).getDescriptor().getMethodByHandle(target);
 
           //
           BaseURL url;

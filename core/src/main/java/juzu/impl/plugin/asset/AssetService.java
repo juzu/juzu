@@ -22,11 +22,11 @@ import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetDeployment;
 import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
-import juzu.impl.plugin.PluginDescriptor;
+import juzu.impl.plugin.ServiceContext;
+import juzu.impl.plugin.ServiceDescriptor;
 import juzu.impl.asset.AssetManager;
 import juzu.impl.asset.AssetMetaData;
-import juzu.impl.plugin.PluginContext;
-import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.plugin.application.ApplicationService;
 import juzu.impl.request.Request;
 import juzu.impl.request.RequestFilter;
 import juzu.impl.common.JSON;
@@ -49,7 +49,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class AssetPlugin extends ApplicationPlugin implements RequestFilter<Stage.Unmarshalling> {
+public class AssetService extends ApplicationService implements RequestFilter<Stage.Unmarshalling> {
 
   /** . */
   private LinkedHashMap<String, Chunk.Property<String>> assets;
@@ -58,7 +58,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter<Stag
   private AssetDescriptor descriptor;
 
   /** . */
-  private PluginContext context;
+  private ServiceContext context;
 
   /** The path to the assets dir. */
   private String assetsPath;
@@ -67,7 +67,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter<Stag
   @Inject
   AssetManager assetManager;
 
-  public AssetPlugin() {
+  public AssetService() {
     super("asset");
   }
 
@@ -85,7 +85,7 @@ public class AssetPlugin extends ApplicationPlugin implements RequestFilter<Stag
   }
 
   @Override
-  public PluginDescriptor init(PluginContext context) throws Exception {
+  public ServiceDescriptor init(ServiceContext context) throws Exception {
     JSON config = context.getConfig();
     String assetsPath;
     List<AssetMetaData> assets;

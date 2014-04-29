@@ -17,14 +17,14 @@
 package juzu.plugin.portlet.impl;
 
 import juzu.Scope;
-import juzu.impl.plugin.PluginDescriptor;
+import juzu.impl.plugin.ServiceDescriptor;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.common.Tools;
 
 import javax.portlet.PortletPreferences;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class PortletDescriptor extends PluginDescriptor {
+public class PortletDescriptor extends ServiceDescriptor {
 
   /** . */
   public static PortletDescriptor INSTANCE = new PortletDescriptor();

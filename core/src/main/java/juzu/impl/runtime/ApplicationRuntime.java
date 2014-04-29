@@ -29,7 +29,7 @@ import juzu.impl.inject.spi.Injector;
 import juzu.impl.common.Logger;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
-import juzu.impl.plugin.asset.AssetPlugin;
+import juzu.impl.plugin.asset.AssetService;
 import juzu.impl.resource.ResourceResolver;
 
 import java.io.Closeable;
@@ -160,7 +160,7 @@ public class ApplicationRuntime<P, R> implements Closeable {
     InjectionContext<?, ?> injectionContext = application.getInjectionContext();
 
     //
-    AssetPlugin assetPlugin = injectionContext.get(AssetPlugin.class).get();
+    AssetService assetPlugin = injectionContext.get(AssetService.class).get();
 
     //
     if (assetServer != null) {

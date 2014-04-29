@@ -16,7 +16,7 @@
 package juzu.impl.request;
 
 import juzu.impl.common.AbstractAnnotatedElement;
-import juzu.impl.plugin.controller.ControllerPlugin;
+import juzu.impl.plugin.controller.ControllerService;
 import juzu.impl.value.ValueType;
 import juzu.request.RequestParameter;
 
@@ -47,7 +47,7 @@ public class BeanParameter extends ControlParameter {
     super(name, annotations, type);
   }
 
-  <T> T createMappedBean(ControllerPlugin plugin, boolean requiresPrefix, Class<T> clazz, String beanName, Map<String, RequestParameter> parameters) throws IllegalAccessException, InstantiationException {
+  <T> T createMappedBean(ControllerService plugin, boolean requiresPrefix, Class<T> clazz, String beanName, Map<String, RequestParameter> parameters) throws IllegalAccessException, InstantiationException {
     // Extract parameters
     Map<String, String[]> beanParams = new HashMap<String, String[]>();
     String prefix = requiresPrefix ? beanName + "." : "";
@@ -81,7 +81,7 @@ public class BeanParameter extends ControlParameter {
     return bean;
   }
 
-  Object getValue(ControllerPlugin plugin, AnnotatedElement annotated, Type type, String[] value) throws Exception {
+  Object getValue(ControllerService plugin, AnnotatedElement annotated, Type type, String[] value) throws Exception {
     if (type instanceof Class<?>) {
       Class<?> clazz = (Class<?>)type;
       if (clazz.isArray()) {
@@ -119,7 +119,7 @@ public class BeanParameter extends ControlParameter {
     return null;
   }
 
-  <T> boolean callSetter(ControllerPlugin plugin, String methodName, Class<T> clazz, T target, String[] value) throws Exception {
+  <T> boolean callSetter(ControllerService plugin, String methodName, Class<T> clazz, T target, String[] value) throws Exception {
     for (final java.lang.reflect.Method m : clazz.getMethods()) {
       if (m.getName().equals(methodName)) {
         int modifiers = m.getModifiers();
@@ -144,7 +144,7 @@ public class BeanParameter extends ControlParameter {
     return false;
   }
 
-  Map<String, String[]> buildBeanParameter(ControllerPlugin plugin, boolean requiresPrefix, String baseName, Object value) {
+  Map<String, String[]> buildBeanParameter(ControllerService plugin, boolean requiresPrefix, String baseName, Object value) {
     Map<String, String[]> parameters = new HashMap<String, String[]>();
 
     try {
@@ -175,14 +175,14 @@ public class BeanParameter extends ControlParameter {
     return parameters;
   }
 
-  private void addParameter(ControllerPlugin plugin, Map<String, String[]> parameters, String name, AnnotatedElement annotated, Type type, Object value) {
+  private void addParameter(ControllerService plugin, Map<String, String[]> parameters, String name, AnnotatedElement annotated, Type type, Object value) {
     String[] v = getParameters(plugin, annotated, type, value);
     if (v != null) {
       parameters.put(name, v);
     }
   }
 
-  private String[] getParameters(ControllerPlugin plugin, AnnotatedElement annotated, Type type, Object value) {
+  private String[] getParameters(ControllerService plugin, AnnotatedElement annotated, Type type, Object value) {
     if (type instanceof Class) {
       Class clazz = (Class)type;
       if (clazz.isArray()) {

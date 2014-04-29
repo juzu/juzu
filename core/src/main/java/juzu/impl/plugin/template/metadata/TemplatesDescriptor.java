@@ -18,7 +18,7 @@ package juzu.impl.plugin.template.metadata;
 
 import juzu.Path;
 import juzu.impl.common.Name;
-import juzu.impl.plugin.PluginDescriptor;
+import juzu.impl.plugin.ServiceDescriptor;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.common.JSON;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplatesDescriptor extends PluginDescriptor {
+public class TemplatesDescriptor extends ServiceDescriptor {
 
   /** . */
   private final List<TemplateDescriptor> templates;

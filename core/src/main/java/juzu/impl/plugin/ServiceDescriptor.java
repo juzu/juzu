@@ -16,42 +16,23 @@
 
 package juzu.impl.plugin;
 
-import juzu.impl.common.JSON;
-import juzu.impl.resource.ResourceResolver;
+import juzu.impl.inject.BeanDescriptor;
+
+import java.util.Collections;
 
 /**
- * The context of a plugin.
+ * Base plugin descriptor class.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public interface PluginContext {
+public class ServiceDescriptor {
 
   /**
-   * Returns the plugin configuration.
+   * Returns the list of bean to install.
    *
-   * @return the plugin configuraiton
+   * @return the list of bean ot install
    */
-  JSON getConfig();
-
-  /**
-   * Reurns the classloader.
-   *
-   * @return the classloader
-   */
-  ClassLoader getClassLoader();
-
-  /**
-   * Returns the resource resolver for server resources.
-   *
-   * @return the server resolver
-   */
-  ResourceResolver getServerResolver();
-
-  /**
-   * Returns the resource resolver for applications resources.
-   *
-   * @return the application resolver
-   */
-  ResourceResolver getApplicationResolver();
-
+  public Iterable<BeanDescriptor> getBeans() {
+    return Collections.emptyList();
+  }
 }

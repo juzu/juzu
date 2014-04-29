@@ -34,7 +34,7 @@ import juzu.request.ResponseParameter;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.common.MimeType;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.controller.ControllerPlugin;
+import juzu.impl.plugin.controller.ControllerService;
 import juzu.impl.bridge.spi.ScopedContext;
 import juzu.impl.request.Request;
 import juzu.impl.bridge.spi.RequestBridge;
@@ -198,12 +198,12 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   }
 
   public final DispatchBridge createDispatch(Phase phase, final MethodHandle target, final Map<String, ResponseParameter> parameters) {
-    ControllerHandler handler = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(target);
+    ControllerHandler handler = bridge.getApplication().resolveBean(ControllerService.class).getDescriptor().getMethodByHandle(target);
 
     //
     Route route = this.handler.getRoute(handler.getHandle());
     if (route == null) {
-      if (bridge.getApplication().resolveBean(ControllerPlugin.class).getResolver().isIndex(handler)) {
+      if (bridge.getApplication().resolveBean(ControllerService.class).getResolver().isIndex(handler)) {
         route = this.handler.getRoot();
       }
     }
@@ -292,7 +292,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
 
   void invoke() throws Exception {
     try {
-      bridge.getApplication().resolveBean(ControllerPlugin.class).invoke(this);
+      bridge.getApplication().resolveBean(ControllerService.class).invoke(this);
     } finally {
       Tools.safeClose(this);
     }
@@ -311,7 +311,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
       Phase.View.Dispatch update = (Phase.View.Dispatch)view;
       Boolean redirect = view.getProperties().getValue(PropertyType.REDIRECT_AFTER_ACTION);
       if (redirect != null && !redirect) {
-        ControllerHandler<?> desc = this.bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getMethodByHandle(update.getTarget());
+        ControllerHandler<?> desc = this.bridge.getApplication().resolveBean(ControllerService.class).getDescriptor().getMethodByHandle(update.getTarget());
         Map<String, RequestParameter> rp = Collections.emptyMap();
         for (ResponseParameter parameter : update.getParameters().values()) {
           if (rp.isEmpty()) {

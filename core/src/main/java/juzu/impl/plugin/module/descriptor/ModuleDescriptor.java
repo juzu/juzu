@@ -16,7 +16,7 @@
 
 package juzu.impl.plugin.module.descriptor;
 
-import juzu.impl.plugin.PluginDescriptor;
+import juzu.impl.plugin.ServiceDescriptor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,9 +25,9 @@ import java.util.Map;
 public class ModuleDescriptor {
 
   /** . */
-  private final Map<String, PluginDescriptor> plugins;
+  private final Map<String, ServiceDescriptor> plugins;
 
   public ModuleDescriptor() {
-    this.plugins = new HashMap<String, PluginDescriptor>();
+    this.plugins = new HashMap<String, ServiceDescriptor>();
   }
 }

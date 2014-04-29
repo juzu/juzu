@@ -39,7 +39,7 @@ import juzu.impl.common.Tools;
 import juzu.impl.inject.spi.Injector;
 import juzu.impl.inject.spi.InjectorProvider;
 import juzu.impl.inject.spi.spring.SpringInjector;
-import juzu.impl.plugin.controller.ControllerPlugin;
+import juzu.impl.plugin.controller.ControllerService;
 import juzu.impl.plugin.controller.ControllerResolver;
 import juzu.impl.request.ControllerHandler;
 import juzu.impl.resource.ResourceResolver;
@@ -259,7 +259,7 @@ public class JuzuPortlet implements Portlet, ResourceServingPortlet, EventPortle
   }
 
   public void processEvent(EventRequest request, EventResponse response) throws PortletException, IOException {
-    ControllerResolver<ControllerHandler> resolver = bridge.getApplication().resolveBean(ControllerPlugin.class).getDescriptor().getResolver();
+    ControllerResolver<ControllerHandler> resolver = bridge.getApplication().resolveBean(ControllerService.class).getDescriptor().getResolver();
     List<ControllerHandler> handlers = resolver.resolveMethods(Phase.EVENT, null, request.getParameterMap().keySet());
 
     //

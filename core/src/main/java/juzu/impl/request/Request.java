@@ -22,7 +22,6 @@ import juzu.asset.AssetLocation;
 import juzu.impl.bridge.Parameters;
 import juzu.impl.bridge.spi.DispatchBridge;
 import juzu.impl.bridge.spi.ScopedContext;
-import juzu.impl.common.AbstractAnnotatedElement;
 import juzu.impl.common.RunMode;
 import juzu.impl.inject.ScopeController;
 import juzu.impl.inject.Scoped;
@@ -30,7 +29,7 @@ import juzu.impl.inject.ScopingContext;
 import juzu.impl.inject.spi.BeanLifeCycle;
 import juzu.impl.bridge.spi.RequestBridge;
 import juzu.impl.plugin.application.Application;
-import juzu.impl.plugin.controller.ControllerPlugin;
+import juzu.impl.plugin.controller.ControllerService;
 import juzu.impl.plugin.controller.descriptor.ControllersDescriptor;
 import juzu.impl.value.ValueType;
 import juzu.io.UndeclaredIOException;
@@ -44,7 +43,6 @@ import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -79,7 +77,7 @@ public class Request implements ScopingContext {
   final RequestBridge bridge;
 
   /** . */
-  final ControllerPlugin controllerPlugin;
+  final ControllerService controllerPlugin;
 
   /** . */
   final ControllerHandler<?> handler;
@@ -91,7 +89,7 @@ public class Request implements ScopingContext {
   private Map<ContextualParameter, Object> contextualArguments;
 
   public Request(
-    ControllerPlugin controllerPlugin,
+    ControllerService controllerPlugin,
     ControllerHandler handler,
     RequestBridge bridge) {
 

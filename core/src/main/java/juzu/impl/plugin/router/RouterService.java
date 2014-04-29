@@ -17,24 +17,24 @@
 package juzu.impl.plugin.router;
 
 import juzu.impl.common.JSON;
-import juzu.impl.plugin.PluginDescriptor;
-import juzu.impl.plugin.PluginContext;
-import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.plugin.ServiceContext;
+import juzu.impl.plugin.ServiceDescriptor;
+import juzu.impl.plugin.application.ApplicationService;
 
 import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouterPlugin extends ApplicationPlugin {
+public class RouterService extends ApplicationService {
 
   /** . */
   private RouterDescriptor descriptor;
 
-  public RouterPlugin() {
+  public RouterService() {
     super("router");
   }
 
   @Override
-  public PluginDescriptor init(PluginContext context) throws Exception {
+  public ServiceDescriptor init(ServiceContext context) throws Exception {
     if (context.getConfig() != null) {
       List<? extends JSON> routesConfig = context.getConfig().getList("routes", JSON.class);
       RouterDescriptor routerDescriptor = new RouterDescriptor();

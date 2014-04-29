@@ -16,12 +16,12 @@
 
 package juzu.impl.plugin.binding;
 
-import juzu.impl.plugin.PluginDescriptor;
+import juzu.impl.plugin.ServiceContext;
+import juzu.impl.plugin.ServiceDescriptor;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.common.JSON;
-import juzu.impl.plugin.PluginContext;
-import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.plugin.application.ApplicationService;
 import juzu.inject.ProviderFactory;
 
 import javax.inject.Provider;
@@ -31,14 +31,14 @@ import java.util.List;
 import java.util.ServiceLoader;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class BindingPlugin extends ApplicationPlugin {
+public class BindingService extends ApplicationService {
 
-  public BindingPlugin() {
+  public BindingService() {
     super("binding");
   }
 
   @Override
-  public PluginDescriptor init(PluginContext context) throws Exception {
+  public ServiceDescriptor init(ServiceContext context) throws Exception {
     JSON config = context.getConfig();
     ClassLoader loader = context.getClassLoader();
     if (config != null) {

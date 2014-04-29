@@ -16,7 +16,7 @@
 
 package juzu.impl.plugin.router;
 
-import juzu.impl.plugin.PluginDescriptor;
+import juzu.impl.plugin.ServiceDescriptor;
 import juzu.impl.router.Route;
 
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class RouterDescriptor extends PluginDescriptor {
+public class RouterDescriptor extends ServiceDescriptor {
 
   /** . */
   final List<RouteDescriptor> routes = new ArrayList<RouteDescriptor>();

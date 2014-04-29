@@ -22,9 +22,9 @@ import juzu.impl.common.JSON;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.inject.spi.Injector;
-import juzu.impl.plugin.Plugin;
-import juzu.impl.plugin.PluginContext;
-import juzu.impl.plugin.PluginDescriptor;
+import juzu.impl.plugin.Service;
+import juzu.impl.plugin.ServiceContext;
+import juzu.impl.plugin.ServiceDescriptor;
 import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 import juzu.impl.inject.spi.InjectionContext;
 import juzu.impl.resource.ResourceResolver;
@@ -56,7 +56,7 @@ public class Application implements ResourceResolver {
   final Injector injector;
 
   /** . */
-  private Map<String, ApplicationPlugin> plugins;
+  private Map<String, ApplicationService> plugins;
 
   /** . */
   private final ClassLoader classLoader;
@@ -86,13 +86,13 @@ public class Application implements ResourceResolver {
     };
 
     // Take care of plugins
-    HashMap<String, ApplicationPlugin> plugins = new HashMap<String, ApplicationPlugin>();
-    for (ApplicationPlugin plugin : ServiceLoader.load(ApplicationPlugin.class)) {
+    HashMap<String, ApplicationService> plugins = new HashMap<String, ApplicationService>();
+    for (ApplicationService plugin : ServiceLoader.load(ApplicationService.class)) {
       plugins.put(plugin.getName(), plugin);
     }
     HashSet<String> names = new HashSet<String>(descriptor.getConfig().names());
-    HashMap<ApplicationPlugin, JSON> configs = new HashMap<ApplicationPlugin, JSON>();
-    for (ApplicationPlugin plugin : plugins.values()) {
+    HashMap<ApplicationService, JSON> configs = new HashMap<ApplicationService, JSON>();
+    for (ApplicationService plugin : plugins.values()) {
       String name = plugin.getName();
       if (names.remove(name)) {
         configs.put(plugin, descriptor.getConfig().getJSON(plugin.getName()));
@@ -105,10 +105,10 @@ public class Application implements ResourceResolver {
     }
 
     //
-    HashMap<String, PluginDescriptor> pluginDescriptors = new HashMap<String, PluginDescriptor>();
-    for (final Map.Entry<ApplicationPlugin, JSON> entry : configs.entrySet()) {
-      ApplicationPlugin plugin = entry.getKey();
-      PluginContext pluginContext = new PluginContext() {
+    HashMap<String, ServiceDescriptor> pluginDescriptors = new HashMap<String, ServiceDescriptor>();
+    for (final Map.Entry<ApplicationService, JSON> entry : configs.entrySet()) {
+      ApplicationService plugin = entry.getKey();
+      ServiceContext pluginContext = new ServiceContext() {
         public JSON getConfig() {
           return entry.getValue();
         }
@@ -123,7 +123,7 @@ public class Application implements ResourceResolver {
         }
       };
       plugin.setApplication(descriptor);
-      PluginDescriptor pluginDescriptor = plugin.init(pluginContext);
+      ServiceDescriptor pluginDescriptor = plugin.init(pluginContext);
       if (pluginDescriptor != null) {
         pluginDescriptors.put(plugin.getName(), pluginDescriptor);
       }
@@ -138,16 +138,16 @@ public class Application implements ResourceResolver {
     }
 
     // Bind the plugins
-    for (Plugin plugin : plugins.values()) {
+    for (Service service : plugins.values()) {
 
       // Bind the plugin as a bean
-      Class aClass = plugin.getClass();
-      Object o = plugin;
+      Class aClass = service.getClass();
+      Object o = service;
       injector.bindBean(aClass, null, o);
     }
 
     // Bind the beans
-    for (PluginDescriptor pluginDescriptor : pluginDescriptors.values()) {
+    for (ServiceDescriptor pluginDescriptor : pluginDescriptors.values()) {
       for (BeanDescriptor bean : pluginDescriptor.getBeans()) {
         bean.bind(injector);
       }
@@ -228,7 +228,7 @@ public class Application implements ResourceResolver {
     return injectionContext.resolveInstances(beanType);
   }
 
-  public ApplicationPlugin getPlugin(String pluginName) {
+  public ApplicationService getPlugin(String pluginName) {
     return plugins.get(pluginName);
   }
 

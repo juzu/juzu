@@ -16,20 +16,20 @@
 
 package juzu.impl.plugin.application;
 
-import juzu.impl.plugin.PluginDescriptor;
-import juzu.impl.plugin.PluginContext;
-import juzu.impl.plugin.application.descriptor.ApplicationModuleDescriptor;
-import juzu.impl.plugin.module.ModulePlugin;
+import juzu.impl.plugin.Service;
+import juzu.impl.plugin.application.descriptor.ApplicationDescriptor;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ApplicationModulePlugin extends ModulePlugin {
+public abstract class ApplicationService extends Service {
 
-  public ApplicationModulePlugin() {
-    super("application");
+  /** . */
+  protected ApplicationDescriptor application;
+
+  public ApplicationService(String name) {
+    super(name);
   }
 
-  @Override
-  public PluginDescriptor init(PluginContext context) throws Exception {
-    return new ApplicationModuleDescriptor(context.getConfig());
+  public void setApplication(ApplicationDescriptor application) {
+    this.application = application;
   }
 }

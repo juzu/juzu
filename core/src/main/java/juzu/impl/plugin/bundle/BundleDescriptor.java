@@ -19,12 +19,12 @@ package juzu.impl.plugin.bundle;
 import juzu.Scope;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.BeanDescriptor;
-import juzu.impl.plugin.PluginDescriptor;
+import juzu.impl.plugin.ServiceDescriptor;
 
 import java.util.ResourceBundle;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class BundleDescriptor extends PluginDescriptor {
+public class BundleDescriptor extends ServiceDescriptor {
 
   /** . */
   static BundleDescriptor INSTANCE = new BundleDescriptor();

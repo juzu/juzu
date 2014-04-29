@@ -18,7 +18,7 @@ package juzu.impl.bridge.spi.web;
 
 import juzu.Response;
 import juzu.impl.bridge.Bridge;
-import juzu.impl.plugin.asset.AssetPlugin;
+import juzu.impl.plugin.asset.AssetService;
 import juzu.impl.request.ControllerHandler;
 import juzu.request.Phase;
 import juzu.request.RequestParameter;
@@ -48,7 +48,7 @@ public abstract class WebMimeBridge extends WebRequestBridge {
       Response.Status status = (Response.Status)response;
 
       //
-      AssetPlugin assetPlugin = (AssetPlugin)handler.getBridge().getApplication().getPlugin("asset");
+      AssetService assetPlugin = (AssetService)handler.getBridge().getApplication().getPlugin("asset");
 
       //
       http.getRequestContext().send(assetPlugin, status);

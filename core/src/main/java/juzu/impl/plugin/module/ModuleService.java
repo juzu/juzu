@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-package juzu.impl.plugin.bundle;
+package juzu.impl.plugin.module;
 
-import juzu.impl.plugin.PluginContext;
-import juzu.impl.plugin.PluginDescriptor;
-import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.plugin.Service;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class BundlePlugin extends ApplicationPlugin {
+public abstract class ModuleService extends Service {
 
-  public BundlePlugin() {
-    super("bundle");
-  }
-
-  @Override
-  public PluginDescriptor init(PluginContext context) throws Exception {
-    return BundleDescriptor.INSTANCE;
+  public ModuleService(String name) {
+    super(name);
   }
 }

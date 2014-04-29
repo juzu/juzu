@@ -19,6 +19,7 @@ package juzu.template;
 import juzu.PropertyMap;
 import juzu.Response;
 import juzu.impl.common.Tools;
+import juzu.impl.plugin.template.TemplateService;
 import juzu.io.Chunk;
 import juzu.io.ChunkBuffer;
 import juzu.io.OutputStream;
@@ -26,7 +27,6 @@ import juzu.io.Stream;
 import juzu.io.UndeclaredIOException;
 import juzu.impl.plugin.application.Application;
 import juzu.impl.request.Request;
-import juzu.impl.plugin.template.TemplatePlugin;
 import juzu.impl.common.Path;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.template.spi.juzu.dialect.gtmpl.MessageKey;
@@ -89,16 +89,16 @@ public abstract class Template {
   private final Path path;
 
   /** . */
-  private final TemplatePlugin plugin;
+  private final TemplateService plugin;
 
   @Inject
   Application application;
 
-  public Template(TemplatePlugin plugin, String path) {
+  public Template(TemplateService plugin, String path) {
     this(plugin, Path.parse(path));
   }
 
-  public Template(TemplatePlugin plugin, Path path) {
+  public Template(TemplateService plugin, Path path) {
     this.plugin = plugin;
     this.path = path;
   }

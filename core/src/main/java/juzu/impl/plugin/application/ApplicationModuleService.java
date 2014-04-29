@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-package juzu.plugin.portlet.impl;
+package juzu.impl.plugin.application;
 
-import juzu.impl.plugin.PluginDescriptor;
-import juzu.impl.plugin.PluginContext;
-import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.plugin.ServiceContext;
+import juzu.impl.plugin.ServiceDescriptor;
+import juzu.impl.plugin.application.descriptor.ApplicationModuleDescriptor;
+import juzu.impl.plugin.module.ModuleService;
 
-/**
- * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
- * @version $Revision$
- */
-public class PortletPlugin extends ApplicationPlugin {
+/** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
+public class ApplicationModuleService extends ModuleService {
 
-  public PortletPlugin() {
-    super("portlet");
+  public ApplicationModuleService() {
+    super("application");
   }
 
   @Override
-  public PluginDescriptor init(PluginContext context) throws Exception {
-    return PortletDescriptor.INSTANCE;
+  public ServiceDescriptor init(ServiceContext context) throws Exception {
+    return new ApplicationModuleDescriptor(context.getConfig());
   }
 }

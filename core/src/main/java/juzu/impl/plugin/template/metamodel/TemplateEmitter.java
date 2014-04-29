@@ -17,7 +17,7 @@
 package juzu.impl.plugin.template.metamodel;
 
 import juzu.impl.common.Path;
-import juzu.impl.plugin.template.TemplatePlugin;
+import juzu.impl.plugin.template.TemplateService;
 import juzu.impl.plugin.template.metadata.TemplateDescriptor;
 import juzu.impl.template.spi.TemplateProvider;
 
@@ -46,13 +46,13 @@ class TemplateEmitter extends AbstractEmitter {
     // Template qualified class
     writer.append("package ").append(path.getDirs()).append(";\n");
     writer.append("import ").append(TemplateDescriptor.class.getCanonicalName()).append(";\n");
-    writer.append("import ").append(TemplatePlugin.class.getCanonicalName()).append(";\n");
+    writer.append("import ").append(TemplateService.class.getCanonicalName()).append(";\n");
     writer.append("@").append(Generated.class.getName()).append("({})\n");
     writer.append("public class ").append(path.getRawName()).append(" extends ").append(juzu.template.Template.class.getName()).append("\n");
     writer.append("{\n");
     writer.append("@javax.inject.Inject\n");
     writer.append("public ").append(path.getRawName()).append("(").
-        append(TemplatePlugin.class.getSimpleName()).append(" templatePlugin").
+        append(TemplateService.class.getSimpleName()).append(" templatePlugin").
         append(")\n");
     writer.append("{\n");
     writer.append("super(templatePlugin, \"").append(path.getValue()).append("\");\n");

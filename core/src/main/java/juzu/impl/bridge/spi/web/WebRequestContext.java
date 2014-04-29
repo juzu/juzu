@@ -21,7 +21,7 @@ import juzu.impl.asset.AssetManager;
 import juzu.impl.common.RunMode;
 import juzu.impl.compiler.CompilationException;
 import juzu.impl.io.SafeStream;
-import juzu.impl.plugin.asset.AssetPlugin;
+import juzu.impl.plugin.asset.AssetService;
 import juzu.request.RequestParameter;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ public abstract class WebRequestContext {
     send(null, error.asStatus(verbose));
   }
 
-  public final void send(AssetPlugin assetPlugin, Response.Status response) throws IOException {
+  public final void send(AssetService assetPlugin, Response.Status response) throws IOException {
 
     //
     AsyncStream stream = getStream(response.getCode());

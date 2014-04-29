@@ -19,7 +19,7 @@ package juzu.test.protocol.mock;
 import juzu.impl.bridge.spi.servlet.ServletScopedContext;
 import juzu.impl.common.Logger;
 import juzu.impl.common.MethodHandle;
-import juzu.impl.plugin.controller.ControllerPlugin;
+import juzu.impl.plugin.controller.ControllerService;
 import juzu.impl.request.ControllerHandler;
 import juzu.impl.inject.Scoped;
 import juzu.impl.bridge.spi.ScopedContext;
@@ -91,7 +91,7 @@ public class MockClient implements UserContext {
   final MockApplication<?> application;
 
   /** . */
-  private final ControllerPlugin controllerPlugin;
+  private final ControllerService controllerPlugin;
 
   /** . */
   private ScopedContext session;
@@ -109,7 +109,7 @@ public class MockClient implements UserContext {
 
     LinkedList<Locale> locales = new LinkedList<Locale>();
     locales.add(Locale.ENGLISH);
-    ControllerPlugin controllerPlugin = application.getLifeCycle().resolveBean(ControllerPlugin.class);
+    ControllerService controllerPlugin = application.getLifeCycle().resolveBean(ControllerService.class);
 
     //
     this.application = application;

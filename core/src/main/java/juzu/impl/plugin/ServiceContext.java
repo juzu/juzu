@@ -16,32 +16,42 @@
 
 package juzu.impl.plugin;
 
+import juzu.impl.common.JSON;
+import juzu.impl.resource.ResourceResolver;
+
 /**
- * Base class for a plugin.
+ * The context of a plugin.
  *
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
  */
-public abstract class Plugin {
-
-  /** The plugin name. */
-  private final String name;
-
-  protected Plugin(String name) {
-    this.name = name;
-  }
-
-  public String getName() {
-    return name;
-  }
+public interface ServiceContext {
 
   /**
-   * Returns the plugin descriptor or null if the plugin should not be loaded.
+   * Returns the plugin configuration.
    *
-   * @param context the plugin context
-   * @return the descriptor
-   * @throws Exception any exception
+   * @return the plugin configuraiton
    */
-  public PluginDescriptor init(PluginContext context) throws Exception {
-    return null;
-  }
+  JSON getConfig();
+
+  /**
+   * Reurns the classloader.
+   *
+   * @return the classloader
+   */
+  ClassLoader getClassLoader();
+
+  /**
+   * Returns the resource resolver for server resources.
+   *
+   * @return the server resolver
+   */
+  ResourceResolver getServerResolver();
+
+  /**
+   * Returns the resource resolver for applications resources.
+   *
+   * @return the application resolver
+   */
+  ResourceResolver getApplicationResolver();
+
 }

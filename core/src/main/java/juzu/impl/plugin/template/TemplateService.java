@@ -16,9 +16,9 @@
 
 package juzu.impl.plugin.template;
 
-import juzu.impl.plugin.PluginDescriptor;
-import juzu.impl.plugin.PluginContext;
-import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.plugin.ServiceContext;
+import juzu.impl.plugin.ServiceDescriptor;
+import juzu.impl.plugin.application.ApplicationService;
 import juzu.impl.plugin.template.metadata.TemplateDescriptor;
 import juzu.impl.template.spi.TemplateStub;
 import juzu.impl.plugin.template.metadata.TemplatesDescriptor;
@@ -29,7 +29,7 @@ import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class TemplatePlugin extends ApplicationPlugin {
+public class TemplateService extends ApplicationService {
 
   /** . */
   private TemplatesDescriptor descriptor;
@@ -38,12 +38,12 @@ public class TemplatePlugin extends ApplicationPlugin {
   private final ConcurrentHashMap<Path, TemplateStub> stubs;
 
   /** . */
-  private PluginContext context;
+  private ServiceContext context;
 
   /** . */
   private final ConcurrentHashMap<String, TagHandler> tags;
 
-  public TemplatePlugin() {
+  public TemplateService() {
     super("template");
 
     //
@@ -56,7 +56,7 @@ public class TemplatePlugin extends ApplicationPlugin {
   }
 
   @Override
-  public PluginDescriptor init(PluginContext context) throws Exception {
+  public ServiceDescriptor init(ServiceContext context) throws Exception {
     this.context = context;
     this.descriptor = new TemplatesDescriptor(application, context.getClassLoader(), context.getConfig());
     return descriptor;

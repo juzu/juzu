@@ -20,9 +20,9 @@ package juzu.plugin.validation.impl;
 import juzu.Scope;
 import juzu.impl.common.Tools;
 import juzu.impl.inject.BeanDescriptor;
-import juzu.impl.plugin.PluginContext;
-import juzu.impl.plugin.PluginDescriptor;
-import juzu.impl.plugin.application.ApplicationPlugin;
+import juzu.impl.plugin.ServiceContext;
+import juzu.impl.plugin.ServiceDescriptor;
+import juzu.impl.plugin.application.ApplicationService;
 
 import java.lang.annotation.Annotation;
 import java.util.Collections;
@@ -30,15 +30,15 @@ import java.util.Collections;
 /**
  * @author Julien Viet
  */
-public class ValidationPlugin extends ApplicationPlugin {
+public class ValidationService extends ApplicationService {
 
-  public ValidationPlugin() {
+  public ValidationService() {
     super("validation");
   }
 
   @Override
-  public PluginDescriptor init(PluginContext context) throws Exception {
-    return new PluginDescriptor() {
+  public ServiceDescriptor init(ServiceContext context) throws Exception {
+    return new ServiceDescriptor() {
       @Override
       public Iterable<BeanDescriptor> getBeans() {
         return Tools.iterable(BeanDescriptor.createFromBean(ValidationFilter.class, Scope.SINGLETON, Collections.<Annotation>emptyList()));
