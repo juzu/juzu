@@ -1,0 +1,38 @@
+This chapter continues the exploration of the architecture of Juzu, it is an essential read if you want to understand how Juzu
+globally works and a recommanded read if you extend Juzu. Juzu philosophy is to provide a minimal core that
+is extended with plugins: this design allows to extend Juzu with no need to touch its core.
+
+== Plugins
+
+Juzu plugins can be classified according several criterions. Let's study the different kind of plugins possible.
+
+=== Metamodel plugins
+
+A metamodel plugin is executed at compilation time when the application is compiled. Usually it reacts to Java
+annotations in order to:
+
+* Validate the application : make checks depending on Java annotations
+* Read or write application resources : create new resources
+* Generate Java code : the generated code will be transparently compiled by the Java compiler
+
+When a metamodel plugin is not happy, it can fail the current by reporting an error to the Java compiler.
+
+=== Runtime plugins
+
+A runtime plugin is executed during the execution of the web application. A runtime plugin can create objects
+that will be available for the application. Such objects are usually consumed by the application thanks to the
+IOC container.
+
+=== Entity processors
+
+Entity processors map the request and response stream to Java objects.
+
+=== Value types
+
+Value types map the controller request parameters to request parameters.
+
+=== Templating engine
+
+Juzu can easily be extended with new templating engine. Templating engine integrates of course at runtime, however
+they can optionally be part of the compilation phase of the application for validating templates or for creating
+resources or classes to be used at runtime.

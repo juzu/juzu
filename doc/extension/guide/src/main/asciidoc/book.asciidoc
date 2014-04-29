@@ -5,6 +5,10 @@ Juzu is a web framework based on MVC concepts for developing applications. Juzu 
 open source project developed on https://github.com/juzu/juzu[GitHub] licensed under the
 http://www.apache.org/licenses/LICENSE-2.0[Apache 2 License].
 
+= Plugins
+
+include::plugins.asciidoc[]
+
 = Value types
 
 include::valuetypes.asciidoc[]
