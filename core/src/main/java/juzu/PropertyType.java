@@ -30,7 +30,7 @@ import java.util.Map;
  */
 public abstract class PropertyType<T> {
 
-  /** Stylesheet. */
+  /** Asset. */
   public static PropertyType<String> ASSET = new PropertyType<String>(){};
 
   /** Title. */
