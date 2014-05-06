@@ -41,6 +41,9 @@ public class AssetMetaData {
   /** The asset value. */
   final String value;
 
+  /** The header value. */
+  final Boolean header;
+
   /** The asset minified value. */
   final String minified;
 
@@ -50,10 +53,11 @@ public class AssetMetaData {
   /** . */
   final Integer maxAge;
 
-  public AssetMetaData(String id, String type, AssetLocation location, String value, String minified, Integer maxAge, String... dependencies) {
+  public AssetMetaData(String id, String type, AssetLocation location, String value, Boolean header, String minified, Integer maxAge, String... dependencies) {
     this.id = id;
     this.type = type;
     this.value = value;
+    this.header = header;
     this.minified = minified;
     this.location = location;
     this.maxAge = maxAge;
@@ -74,6 +78,10 @@ public class AssetMetaData {
 
   public Integer getMaxAge() {
     return maxAge;
+  }
+
+  public Boolean getHeader() {
+    return header;
   }
 
   public String getValue() {

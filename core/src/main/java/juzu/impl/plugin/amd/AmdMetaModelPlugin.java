@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 
 import juzu.asset.AssetLocation;
-import juzu.impl.common.Tools;
 import juzu.impl.compiler.ProcessingContext;
 import juzu.impl.metamodel.AnnotationKey;
 import juzu.impl.metamodel.AnnotationState;
@@ -50,7 +49,7 @@ public class AmdMetaModelPlugin extends ApplicationMetaModelPlugin {
       "/juzu/impl/plugin/amd/require.js",
       null, Collections.<String>emptyList(),
       AssetLocation.APPLICATION,
-      null);
+      null, null);
 
   public AmdMetaModelPlugin() {
     super("amd");

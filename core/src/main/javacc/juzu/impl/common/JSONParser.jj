@@ -282,7 +282,7 @@ Object o = null;
             }
         }
     |   <K_TRUE> {o = Boolean.TRUE;}
-    |   <K_FALSE> {o = Boolean.TRUE;}
+    |   <K_FALSE> {o = Boolean.FALSE;}
     |   <K_NULL> )
     {
         return o;

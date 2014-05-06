@@ -53,7 +53,7 @@ public class LessAsset extends Asset {
       String lessValue,
       List<String> depends,
       Integer maxAge) {
-    super(id, "stylesheet", cssValue(lessValue), null, depends, AssetLocation.APPLICATION, maxAge);
+    super(id, "stylesheet", cssValue(lessValue), null, depends, AssetLocation.APPLICATION, maxAge, null);
 
     //
     this.lessValue = lessValue;

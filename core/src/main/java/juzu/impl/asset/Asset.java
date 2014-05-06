@@ -17,7 +17,6 @@
 package juzu.impl.asset;
 
 import juzu.asset.AssetLocation;
-import juzu.impl.common.RunMode;
 
 /**
  * <p>Representation of an asset at runtime, an asset can be a reference or a value.</p>
@@ -36,6 +35,9 @@ public class Asset {
 
   /** . */
   private final String type;
+
+  /** . */
+  private final Boolean header;
 
   /** . */
   private final AssetLocation location;
@@ -57,13 +59,18 @@ public class Asset {
    * @param uri the asset uri
    * @param maxAge the asset max age
    */
-  public Asset(String id, String type, AssetLocation location, String uri, String minifiedURI, Integer maxAge) {
+  public Asset(String id, String type, Boolean header, AssetLocation location, String uri, String minifiedURI, Integer maxAge) {
     this.id = id;
     this.type = type;
     this.location = location;
     this.uri = uri;
     this.minifiedURI = minifiedURI;
     this.maxAge = maxAge;
+    this.header = header;
+  }
+
+  public Boolean getHeader() {
+    return header;
   }
 
   public String getId() {

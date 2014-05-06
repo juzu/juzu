@@ -76,6 +76,7 @@ public class AjaxService extends ApplicationService implements RequestFilter<Sta
         "script",
         AssetLocation.APPLICATION,
         "/juzu/impl/plugin/ajax/script.js",
+        null,
         null, // Think about providing a minified version
         null,
         url,

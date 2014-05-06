@@ -78,13 +78,11 @@ public class JSONTestCase extends AbstractTestCase {
     assertEquals("\"\\t\"", JSON.toString("\t", new StringBuilder()).toString());
   }
 
-/*
   @Test
   public void testReadBoolean() throws Exception {
-    assertEquals(true, JSON.parse("true"));
-    assertEquals(false, JSON.parse("false"));
+    assertEquals(Boolean.TRUE, ((JSON)JSON.parse("{ \"value\":true }")).getBoolean("value"));
+    assertEquals(Boolean.FALSE, ((JSON)JSON.parse("{ \"value\":false }")).getBoolean("value"));
   }
-*/
 
   @Test
   public void testWriteBoolean() throws Exception {

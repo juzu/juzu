@@ -27,6 +27,16 @@ package my.application;
 <3> depends on _jquery_ and _jquery-ui.css_ assets
 <4> declares the _jquery-ui.css_ asset
 
+By default script assets are inserted in the _head_ section of the page, obviously they can also be inserted
+in the _footer_ as well by setting the +header+ value to _false_:
+
+.Configuring a footer script
+[source,java]
+----
+@Scripts(@Script(alue = "myfooterscript.js", header = false))
+package my.application;
+----
+
 == Configuring assets
 
 Assets can configured for the application with:

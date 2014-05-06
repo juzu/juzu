@@ -32,9 +32,14 @@ import java.lang.annotation.Target;
 public @interface Script {
 
   /**
-   * @return the asset id, used for referencing this script, the value is optional.
+   * @return the asset id, used for referencing this script, the value is optional
    */
   String id() default "";
+
+  /**
+   * @return true when the script should be inserted as a header, otherwise it would be as a footer.
+   */
+  boolean header() default true;
 
   /**
    * @return the value for resolving the script
@@ -47,7 +52,7 @@ public @interface Script {
   String minified() default "";
 
   /**
-   * @return the script dependencies, i.e the script that are needed by this asset.
+   * @return the script dependencies, i.e the script that are needed by this asset
    */
   String[] depends() default {};
 
@@ -57,9 +62,7 @@ public @interface Script {
   AssetLocation location() default AssetLocation.APPLICATION;
 
   /**
-   * Defines <code>max-age</code> cache control headers for this script asset.
-   *
-   * @return the max age
+   * @return the <code>max-age</code> cache control headers for this script asset
    */
   int maxAge() default -1;
 }

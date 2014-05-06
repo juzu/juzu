@@ -240,7 +240,7 @@ public abstract class WebStream implements AsyncStream {
         renderAMD(modules, stream);
       }
       for (Asset asset : resolvedAssets) {
-        if (asset.isScript()) {
+        if (asset.isScript() && !Boolean.FALSE.equals(asset.getHeader())) {
           String uri = asset.resolveURI(minifyAssets);
           String url = renderAssetURL(asset.getLocation(), uri);
           stream.provide(Chunk.create("<script type=\"text/javascript\" src=\""));
@@ -265,6 +265,15 @@ public abstract class WebStream implements AsyncStream {
     }
 
     void sendFooter(Stream stream) {
+      for (Asset asset : resolvedAssets) {
+        if (asset.isScript() && Boolean.FALSE.equals(asset.getHeader())) {
+          String uri = asset.resolveURI(minifyAssets);
+          String url = renderAssetURL(asset.getLocation(), uri);
+          stream.provide(Chunk.create("<script type=\"text/javascript\" src=\""));
+          stream.provide(Chunk.create(url));
+          stream.provide(Chunk.create("\"></script>\n"));
+        }
+      }
       stream.provide(Chunk.create(
           "</body>\n" +
               "</html>\n"));

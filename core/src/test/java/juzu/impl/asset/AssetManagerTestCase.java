@@ -36,26 +36,26 @@ public class AssetManagerTestCase extends AbstractTestCase {
   @Test
   public void testCycle1() {
     AssetManager mgr = new AssetManager("", ResourceResolver.NULL_RESOLVER);
-    assertTrue(mgr.createDeployment().addAsset("foo", "script", AssetLocation.APPLICATION, "foo.js", null, null, DUMMY_URL, "bar").deploy());
-    assertFalse(mgr.createDeployment().addAsset("bar", "script", AssetLocation.APPLICATION, "bar.js", null, null, DUMMY_URL, "foo").deploy());
+    assertTrue(mgr.createDeployment().addAsset("foo", "script", AssetLocation.APPLICATION, "foo.js", null, null, null, DUMMY_URL, "bar").deploy());
+    assertFalse(mgr.createDeployment().addAsset("bar", "script", AssetLocation.APPLICATION, "bar.js", null, null, null, DUMMY_URL, "foo").deploy());
   }
 
   @Test
   public void testCycle2() {
     AssetManager mgr = new AssetManager("", ResourceResolver.NULL_RESOLVER);
-    assertTrue(mgr.createDeployment().addAsset("foo", "script", AssetLocation.APPLICATION, "foo.js", null, null, DUMMY_URL, "bar").deploy());
-    assertTrue(mgr.createDeployment().addAsset("bar", "script", AssetLocation.APPLICATION, "bar.js", null, null, DUMMY_URL, "juu").deploy());
-    assertFalse(mgr.createDeployment().addAsset("juu", "script", AssetLocation.APPLICATION, "juu.js", null, null, DUMMY_URL, "foo").deploy());
+    assertTrue(mgr.createDeployment().addAsset("foo", "script", AssetLocation.APPLICATION, "foo.js", null, null, null, DUMMY_URL, "bar").deploy());
+    assertTrue(mgr.createDeployment().addAsset("bar", "script", AssetLocation.APPLICATION, "bar.js", null, null, null, DUMMY_URL, "juu").deploy());
+    assertFalse(mgr.createDeployment().addAsset("juu", "script", AssetLocation.APPLICATION, "juu.js", null, null, null, DUMMY_URL, "foo").deploy());
   }
 
   @Test
   public void testUndeploy() {
     AssetManager mgr = new AssetManager("", ResourceResolver.NULL_RESOLVER);
     AssetDeployment fooDepl = mgr.createDeployment();
-    fooDepl.addAsset("foo", "script", AssetLocation.APPLICATION, "foo.js", null, null, DUMMY_URL, "bar");
+    fooDepl.addAsset("foo", "script", AssetLocation.APPLICATION, "foo.js", null, null, null, DUMMY_URL, "bar");
     fooDepl.deploy();
     AssetDeployment barDepl = mgr.createDeployment();
-    barDepl.addAsset("bar", "script", AssetLocation.APPLICATION, "bar.js", null, null, DUMMY_URL);
+    barDepl.addAsset("bar", "script", AssetLocation.APPLICATION, "bar.js", null, null, null, DUMMY_URL);
     barDepl.deploy();
     List<Asset> asset = Tools.list(mgr.resolveAssets(Collections.singletonList("foo")));
     assertEquals(2, asset.size());

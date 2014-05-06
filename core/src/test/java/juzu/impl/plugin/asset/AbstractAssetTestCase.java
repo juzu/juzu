@@ -52,11 +52,15 @@ public abstract class AbstractAssetTestCase extends AbstractWebTestCase {
     return "a = 0;";
   }
 
+  protected By getFindBy() {
+    return By.tagName("script");
+  }
+
   @Test
   public void testSatisfied() throws Exception {
     URL url = applicationURL();
     driver.get(url.toString());
-    List<WebElement> scripts = driver.findElements(By.tagName("script"));
+    List<WebElement> scripts = driver.findElements(getFindBy());
     String expected = getExpectedAsset();
     if (expected != null) {
       if (scripts.size() != 1) {

@@ -130,6 +130,7 @@ public class AssetService extends ApplicationService implements RequestFilter<St
         if (location == AssetLocation.APPLICATION && minified != null && !minified.startsWith("/")) {
           minified = "/" + application.getPackageName().replace('.', '/') + "/" + packageName.replace('.', '/') + "/" + minified;
         }
+        Boolean header = script.getBoolean("header");
 
         //
         Integer maxAge = script.getInteger("max-age");
@@ -140,6 +141,7 @@ public class AssetService extends ApplicationService implements RequestFilter<St
           type,
           location,
           value,
+          header,
           minified,
           maxAge,
           script.getArray("depends", String.class)
@@ -205,7 +207,7 @@ public class AssetService extends ApplicationService implements RequestFilter<St
 
 
       //
-      deployment.addAsset(script.getId(), script.getType(), script.getLocation(), a[0], a[1], script.getMaxAge(), resources[0], script.getDependencies());
+      deployment.addAsset(script.getId(), script.getType(), script.getLocation(), a[0], script.getHeader(), a[1], script.getMaxAge(), resources[0], script.getDependencies());
       assets.put(script.getId(), new Chunk.Property<String>(script.getId(), PropertyType.ASSET));
     }
 

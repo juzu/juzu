@@ -38,6 +38,9 @@ public class Asset implements Serializable {
   /** Asset type. */
   public final String type;
 
+  /** . */
+  public final Boolean header;
+
   /** Asset dependencies. */
   public final List<String> depends;
 
@@ -57,6 +60,7 @@ public class Asset implements Serializable {
     AssetLocation location = AssetLocation.safeValueOf((String)asset.get("location"));
     Integer maxAge = (Integer)asset.get("maxAge");
     String minified = (String)asset.get("minified");
+    Boolean header = (Boolean)asset.get("header");
 
     //
     if (type == null) {
@@ -79,9 +83,18 @@ public class Asset implements Serializable {
     this.key = new AssetKey(value, location);
     this.maxAge = maxAge;
     this.minified = minified;
+    this.header = header;
   }
 
-  public Asset(String id, String type, String value, String minified, List<String> depends, AssetLocation location, Integer maxAge) {
+  public Asset(
+      String id,
+      String type,
+      String value,
+      String minified,
+      List<String> depends,
+      AssetLocation location,
+      Integer maxAge,
+      Boolean header) {
     if (type == null) {
       throw new NullPointerException("No null type accepted");
     }
@@ -102,6 +115,7 @@ public class Asset implements Serializable {
     this.key = new AssetKey(value, location);
     this.maxAge = maxAge;
     this.minified = minified;
+    this.header = header;
   }
 
   public boolean isApplication() {
@@ -150,6 +164,9 @@ public class Asset implements Serializable {
     }
     if (depends != null) {
       json.set("depends", depends);
+    }
+    if (header != null) {
+      json.set("header", header);
     }
     return json;
   }

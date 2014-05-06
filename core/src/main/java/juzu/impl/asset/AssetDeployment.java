@@ -45,11 +45,12 @@ public class AssetDeployment {
       String type,
       AssetLocation location,
       String value,
+      Boolean header,
       String minifiedValue,
       Integer maxAge,
       URL url,
       String... dependencies) throws NullPointerException, IllegalArgumentException {
-    return addAsset(id, type, location, value, minifiedValue, maxAge, url, Tools.set(dependencies));
+    return addAsset(id, type, location, value, header, minifiedValue, maxAge, url, Tools.set(dependencies));
   }
 
   /**
@@ -63,6 +64,8 @@ public class AssetDeployment {
    * @param type the asset type
    * @param location the asset location
    * @param value the asset value
+   * @param header the header setting
+   * @param minifiedValue the header minified value
    * @param maxAge the asset max age
    * @param resource the asset resource
    * @param dependencies the asset dependencies
@@ -74,11 +77,12 @@ public class AssetDeployment {
       String type,
       AssetLocation location,
       String value,
+      Boolean header,
       String minifiedValue,
       Integer maxAge,
       URL resource,
       Set<String> dependencies) throws NullPointerException, IllegalArgumentException {
-    assets.add(new AssetNode(id, type, location, value, minifiedValue, maxAge, resource, dependencies));
+    assets.add(new AssetNode(id, type, location, value, header, minifiedValue, maxAge, resource, dependencies));
     return this;
   }
 
