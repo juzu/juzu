@@ -54,6 +54,9 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   public static final MessageCode ASSET_NOT_FOUND = new MessageCode("ASSET_NOT_FOUND", "The asset %1$s cannot be resolved");
 
   /** . */
+  public static final MessageCode DUPLICATE_ASSET_ID = new MessageCode("DUPLICATE_ASSET_ID", "The asset id %1$s must be used once");
+
+  /** . */
   private static final Set<Class<? extends java.lang.annotation.Annotation>> ANNOTATIONS;
 
   static {
@@ -131,23 +134,31 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   @Override
   public void prePassivate(ApplicationMetaModel metaModel) {
     ProcessingContext context = metaModel.getProcessingContext();
+    AssetsMetaModel assetMetaMode = metaModel.getChild(AssetsMetaModel.KEY);
+
+    // Check duplicate ids
+    HashSet<String> ids = new HashSet<String>();
+    for (Asset asset : assetMetaMode.getAssets()) {
+      if (!ids.add(asset.id)) {
+        throw DUPLICATE_ASSET_ID.failure(asset.id);
+      }
+    }
+
+    //
     Name qn = metaModel.getHandle().getPackageName().append("assets");
     if(!context.isCopyFromSourcesExternallyManaged()) {
 
       //
-      AssetsMetaModel annotation = metaModel.getChild(AssetsMetaModel.KEY);
-
-      //
       HashMap<String, URL> bilta = new HashMap<String, URL>();
       HashMap<URL, Asset> bilto = new HashMap<URL, Asset>();
-      for (Asset asset : annotation.getAssets()) {
+      for (Asset asset : assetMetaMode.getAssets()) {
         if (asset.isApplication()) {
           for (Map.Entry<String, String> entry : asset.getSources().entrySet()) {
             String source = entry.getKey();
             if (!source.startsWith("/")) {
-              URL resource = annotation.getResources().get(source);
+              URL resource = assetMetaMode.getResources().get(source);
               if (resource == null) {
-                resource = annotation.resolveResource(source);
+                resource = assetMetaMode.resolveResource(source);
               }
               if (resource != null) {
                 bilto.put(resource, asset);
@@ -159,7 +170,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
           }
         }
       }
-      bilta.putAll(annotation.getResources());
+      bilta.putAll(assetMetaMode.getResources());
 
       // Process all resources
       for (Map.Entry<String, URL> entry : bilta.entrySet()) {
