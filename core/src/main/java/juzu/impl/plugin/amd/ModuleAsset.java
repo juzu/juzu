@@ -1,5 +1,6 @@
 package juzu.impl.plugin.amd;
 
+import juzu.impl.asset.NormalizeJSReader;
 import juzu.impl.common.Tools;
 import juzu.impl.plugin.asset.Asset;
 
@@ -50,7 +51,7 @@ public class ModuleAsset extends Asset {
   }
 
   @Override
-  public InputStream open(URLConnection resource) throws IOException {
+  public InputStream open(String source, URLConnection resource) throws IOException {
 
     InputStream stream = resource.getInputStream();
 

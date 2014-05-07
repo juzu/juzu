@@ -102,6 +102,7 @@
 		<module>jackson</module>
 		<module>validation</module>
 		<module>shiro</module>
+		<module>closurecompiler</module>
   </modules>
 
 </project>

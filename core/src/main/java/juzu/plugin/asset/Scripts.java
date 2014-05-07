@@ -54,4 +54,9 @@ public @interface Scripts {
    */
   int maxAge() default -1;
 
+  /**
+   * @return the list of minifiers for the script assets.
+   */
+  Class<? extends Minifier>[] minifier() default {};
+
 }

@@ -15,7 +15,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package juzu.impl.plugin.amd;
+package juzu.impl.asset;
 
 import juzu.impl.common.CompositeReader;
 
@@ -24,7 +24,7 @@ import java.io.Reader;
 import java.io.StringReader;
 
 /** @author Julien Viet */
-class NormalizeJSReader extends Reader {
+public class NormalizeJSReader extends Reader {
 
   private boolean finished = false;
 
@@ -34,7 +34,7 @@ class NormalizeJSReader extends Reader {
 
   private Reader sub;
 
-  NormalizeJSReader(Reader sub) {
+  public NormalizeJSReader(Reader sub) {
     this.sub = sub;
   }
 

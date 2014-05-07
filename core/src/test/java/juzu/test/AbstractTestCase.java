@@ -154,7 +154,7 @@ public abstract class AbstractTestCase extends Assert {
     return name.getMethodName();
   }
 
-  public final CompilerAssert<File, File> compiler(String packageName, String... qualifiers) {
+  public static final CompilerAssert<File, File> compiler(String packageName, String... qualifiers) {
     return compiler(false, Name.parse(packageName));
   }
 
@@ -164,7 +164,6 @@ public abstract class AbstractTestCase extends Assert {
 
   private CompilerAssert<File, File> compiler(boolean incremental, String packageName) {
     return compiler(incremental, Name.parse(packageName), getQualifiers());
-
   }
 
   /**

@@ -47,6 +47,11 @@ public @interface Script {
   String value();
 
   /**
+   * @return the list of minifiers for this script.
+   */
+  Class<? extends Minifier>[] minifier() default {};
+
+  /**
    * @return the minified version of the script
    */
   String minified() default "";

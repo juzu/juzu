@@ -54,4 +54,9 @@ public @interface Stylesheets {
    */
   int maxAge() default -1;
 
+  /**
+   * @return the list of minifiers for the stylesheet assets.
+   */
+  Class<? extends Minifier>[] minifier() default {};
+
 }

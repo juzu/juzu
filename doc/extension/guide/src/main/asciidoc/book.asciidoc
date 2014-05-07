@@ -17,6 +17,10 @@ include::valuetypes.asciidoc[]
 
 include::entityprocessing.asciidoc[]
 
+= Asset minifier
+
+include::assetminifier.asciidoc[]
+
 = Provider factories
 
 include::providerfactories.asciidoc[]

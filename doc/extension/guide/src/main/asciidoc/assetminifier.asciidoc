@@ -1,0 +1,28 @@
+An asset minifier is simple interface providing the opportunity to transform the original source files into
+a new version that is a minified version of this source.
+
+A minifier should implement the +juzu.plugin.assetMinifier+ interface and provide a no argument constructor.
+Minification occurs at compilation time when the annotations are processed: Juzu instantiates a minifier to
+transform the physical asset and write the minified version on the disk. The minified asset name uses the original
+asset name with the _-min_ suffix placed before the asset name extension, for instance _jquery.js_ will be
+named as _jquery-min.js_, this is totally transparent for the user.
+
+Let's look at the implementation of the  minifier:
+
+[source,java]
+----
+include::{sourcesdir}/juzu/plugin/asset/NormalizeJSMinifier.java[tags=class]
+----
+
+The +minify+ method provides three arguments:
+. the asset value, for instance _jquery.js_
+. the asset type with possible values of _script_ and _stylesheet_
+. the asset stream
+
+The implementation is quite simple it wraps, the +InputStream+ argument and returns the minifying stream.
+
+NOTE: in this implementation the stream is buffered before returning the stream because Java does not provide an
+out of the box +ReaderInputStream+ but if it would be the case, that could be done on the fly instead of buffering. In
+all case the implementation can chose between buffering the stream or transforming on the fly.
+
+

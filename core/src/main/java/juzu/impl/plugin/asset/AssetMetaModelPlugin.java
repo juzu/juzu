@@ -19,6 +19,8 @@ package juzu.impl.plugin.asset;
 import juzu.asset.AssetLocation;
 import juzu.impl.common.Name;
 import juzu.impl.common.Tools;
+import juzu.impl.compiler.CompilationException;
+import juzu.impl.compiler.ElementHandle;
 import juzu.impl.compiler.MessageCode;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModel;
 import juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin;
@@ -57,6 +59,9 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   public static final MessageCode DUPLICATE_ASSET_ID = new MessageCode("DUPLICATE_ASSET_ID", "The asset id %1$s must be used once");
 
   /** . */
+  public static final MessageCode CANNOT_PROCESS_ASSET = new MessageCode("CANNOT_PROCESS_ASSET", "The asset id %1$s cannot be processed: %2d");
+
+  /** . */
   private static final Set<Class<? extends java.lang.annotation.Annotation>> ANNOTATIONS;
 
   static {
@@ -92,7 +97,8 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       } else {
         type = "stylesheet";
       }
-      for (Asset asset : getAssets(metaModel, type, added, maxAge)) {
+      List<ElementHandle.Type> minifiers = (List<ElementHandle.Type>)added.get("minifier");
+      for (Asset asset : getAssets(type, added, maxAge, minifiers)) {
         assetsMetaModel.addAsset(asset);
       }
     }
@@ -102,13 +108,17 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
   public void processAnnotationRemoved(ApplicationMetaModel metaModel, AnnotationKey key, AnnotationState removed) {
     if (metaModel.getHandle().equals(key.getElement())) {
       AssetsMetaModel assetsMetaModel = metaModel.getChild(AssetsMetaModel.KEY);
-      for (Asset asset : getAssets(metaModel, null, removed, null)) {
+      for (Asset asset : getAssets(null, removed, null, null)) {
         assetsMetaModel.removeAsset(asset);
       }
     }
   }
 
-  private Iterable<Asset> getAssets(ApplicationMetaModel metaModel, String type, AnnotationState annotation, Integer maxAge) {
+  private Iterable<Asset> getAssets(
+      String type,
+      AnnotationState annotation,
+      Integer maxAge,
+      List<ElementHandle.Type> minifier) {
     ArrayList<Asset> assets = new ArrayList<Asset>();
     String location = (String)annotation.get("location");
     if (location == null) {
@@ -122,6 +132,9 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       }
       if (maxAge != null && state.get("maxAge") == null) {
         state.put("maxAge", maxAge);
+      }
+      if (minifier != null && state.get("minifier") == null) {
+        state.put("minifier", (Serializable)minifier);
       }
       if (state.get("id") == null) {
         state.put("id", state.get("value"));
@@ -154,7 +167,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
       for (Asset asset : assetMetaMode.getAssets()) {
         if (asset.isApplication()) {
           for (Map.Entry<String, String> entry : asset.getSources().entrySet()) {
-            String source = entry.getKey();
+            String source = entry.getValue();
             if (!source.startsWith("/")) {
               URL resource = assetMetaMode.getResources().get(source);
               if (resource == null) {
@@ -162,7 +175,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
               }
               if (resource != null) {
                 bilto.put(resource, asset);
-                bilta.put(entry.getValue(), resource);
+                bilta.put(entry.getKey(), resource);
               } else {
                 throw ASSET_NOT_FOUND.failure(source);
               }
@@ -183,9 +196,9 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
           if (dst == null || dst.getLastModified() < conn.getLastModified()) {
             dst = context.createResource(StandardLocation.CLASS_OUTPUT, qn, entry.getKey(), context.get(metaModel.getHandle()));
             context.info("Copying asset from source path " + src + " to class output " + dst.toUri());
-            Asset r = bilto.remove(entry.getValue());
+            Asset r = bilto.get(entry.getValue());
             if (r != null) {
-              in = r.open(conn);
+              in = r.open(entry.getKey(), conn);
             } else {
               in = conn.getInputStream();
             }
@@ -196,7 +209,7 @@ public class AssetMetaModelPlugin extends ApplicationMetaModelPlugin {
           }
         }
         catch (IOException e) {
-          context.info("Could not copy asset " + entry.getKey() + " ", e);
+          throw CANNOT_PROCESS_ASSET.failure(entry.getKey(), e.getMessage());
         }
         finally {
           Tools.safeClose(in);

@@ -60,12 +60,12 @@ public class LessAsset extends Asset {
   }
 
   @Override
-  public String getSource() {
+  protected String getSource() {
     return lessValue;
   }
 
   @Override
-  public InputStream open(URLConnection resource) throws IOException {
+  public InputStream open(String s, URLConnection resource) throws IOException {
     LessCompiler compiler = new ThreadUnsafeLessCompiler();
     try {
       LessCompiler.CompilationResult result = compiler.compile(resource.getURL());

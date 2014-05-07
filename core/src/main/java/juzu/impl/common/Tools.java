@@ -40,6 +40,7 @@ import java.io.ObjectStreamClass;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -360,6 +361,12 @@ public class Tools {
     finally {
       safeClose(in);
     }
+  }
+
+  public static String read(Reader in) throws IOException {
+    StringWriter buffer = new StringWriter();
+    copy(in, buffer);
+    return buffer.toString();
   }
 
   public static <O extends OutputStream> O copy(InputStream in, O out) throws IOException {

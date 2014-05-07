@@ -102,12 +102,53 @@ For performance reasons, assets can be minified: an optimized and trimmed down v
 is served instead of the original file, because it has a smaller size. Juzu allows to provide a minified version
 of an asset that will be used in _prod+ run mode.
 
+==== Ahead of time minification
+
+When an assets is already minified, it can be used in addition of regular asset. This is done via the +minified+
+member of the asset annotation.
+
 .Providing a minified version of jQuery
 [source,java]
 ----
 @Scripts(@Script(
   value = "jquery.js",
   minified = "jquery.min.js"))
+package my.application;
+----
+
+==== On-the-fly minification
+
+Juzu can minify assets on the fly by providing a minifier in assets declarations:
+
+.Minifying with the NormalizeJS minifier
+[source,java]
+----
+@Scripts(@Script(value = "jquery.js"), minifier = NormalizeJSMinifier.class),
+package my.application;
+----
+
+The +NormalizeJS+ minifier is simple minifier that strip the comments out of the asset. This minifier is bundled in
+Juzu core. While it does not have a great performance concerning minification, it does not require any external
+ dependency.
+
+The +Closure Compiler+ plugin provides a very performant minifier based on _Google Closure Compiler_ library, using
+it requires a dependency on the plugin:
+
+[source,xml,subs="attributes,specialcharacters"]
+----
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-plugin-closurecompiler</artifactId>
+  <version>{juzu-version}</version>
+</dependency>
+----
+
+Then it can be used as a minifier:
+
+.Minifying with the Google Closure minifier
+[source,java]
+----
+@Scripts(@Script(value = "jquery.js"), minifier = ClosureMinifier.class),
 package my.application;
 ----
 
