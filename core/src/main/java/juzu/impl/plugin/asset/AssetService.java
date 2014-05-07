@@ -91,7 +91,7 @@ public class AssetService extends ApplicationService implements RequestFilter<St
     List<AssetMetaData> assets;
     if (config != null) {
       String packageName = config.getString("package");
-      assets = load(packageName, config.getList("assets", JSON.class));
+      assets = load(packageName, config.getJSON("assets"));
       assetsPath = "/" + Name.parse(application.getPackageName()).append(packageName).toString().replace('.', '/') + "/";
     } else {
       assets = Collections.emptyList();
@@ -105,13 +105,13 @@ public class AssetService extends ApplicationService implements RequestFilter<St
 
   private List<AssetMetaData> load(
       String packageName,
-      List<? extends JSON> scripts) throws Exception {
+      JSON assets) throws Exception {
     List<AssetMetaData> abc = Collections.emptyList();
-    if (scripts != null && scripts.size() > 0) {
+    if (assets != null && assets.getSize() > 0) {
       abc = new ArrayList<AssetMetaData>();
-      for (JSON script : scripts) {
-        String id = script.getString("id");
-        AssetLocation location = AssetLocation.safeValueOf(script.getString("location"));
+      for (String id : assets.names()) {
+        JSON asset = assets.getJSON(id);
+        AssetLocation location = AssetLocation.safeValueOf(asset.getString("location"));
 
         //
         if (location == null) {
@@ -119,21 +119,21 @@ public class AssetService extends ApplicationService implements RequestFilter<St
         }
 
         //
-        String type = script.getString("type");
+        String type = asset.getString("type");
 
         //
-        String value = script.getString("value");
+        String value = asset.getString("value");
         if (location == AssetLocation.APPLICATION && !value.startsWith("/")) {
           value = "/" + application.getPackageName().replace('.', '/') + "/" + packageName.replace('.', '/') + "/" + value;
         }
-        String minified = script.getString("minified");
+        String minified = asset.getString("minified");
         if (location == AssetLocation.APPLICATION && minified != null && !minified.startsWith("/")) {
           minified = "/" + application.getPackageName().replace('.', '/') + "/" + packageName.replace('.', '/') + "/" + minified;
         }
-        Boolean header = script.getBoolean("header");
+        Boolean header = asset.getBoolean("header");
 
         //
-        Integer maxAge = script.getInteger("max-age");
+        Integer maxAge = asset.getInteger("max-age");
 
         //
         AssetMetaData descriptor = new AssetMetaData(
@@ -144,7 +144,7 @@ public class AssetService extends ApplicationService implements RequestFilter<St
           header,
           minified,
           maxAge,
-          script.getArray("depends", String.class)
+          asset.getArray("depends", String.class)
         );
         abc.add(descriptor);
       }

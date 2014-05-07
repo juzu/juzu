@@ -154,7 +154,6 @@ public class Asset implements Serializable {
 
   public JSON getJSON() {
     JSON json = new JSON().
-        set("id", id).
         set("value", key.value).
         set("minified", minified).
         set("location", key.location.toString()).

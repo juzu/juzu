@@ -123,6 +123,10 @@ public final class JSON implements Serializable {
     return this;
   }
 
+  public int getSize() {
+    return entries.size();
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (obj == this) {
