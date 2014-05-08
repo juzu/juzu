@@ -53,6 +53,9 @@ public class ExtensionImpl implements Extension {
   }
 
   <T> void processAnnotatedType(@Observes ProcessAnnotatedType<T> pat) {
+    if (manager == null) {
+      return;
+    }
 
     AnnotatedType<T> annotatedType = pat.getAnnotatedType();
     Class<T> type = annotatedType.getJavaClass();
@@ -76,6 +79,10 @@ public class ExtensionImpl implements Extension {
   }
 
   void afterBeanDiscovery(@Observes AfterBeanDiscovery event, BeanManager beanManager) {
+    if (manager == null) {
+      return;
+    }
+
     Container container = Container.boot.get();
 
     //
@@ -96,6 +103,10 @@ public class ExtensionImpl implements Extension {
   }
 
   void processBean(@Observes ProcessBean event, BeanManager beanManager) {
+    if (manager == null) {
+      return;
+    }
+
     Bean bean = event.getBean();
     manager.beans.add(bean);
 
