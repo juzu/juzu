@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-plugins-parent</artifactId>
-    <version>1.0.0-beta3-SNAPSHOT</version>
+    <version>1.0.0-beta3</version>
   </parent>
 
   <artifactId>juzu-plugins-less</artifactId>
-  <version>1.0.0-beta3-SNAPSHOT</version>
+  <version>1.0.0-beta3</version>
 
   <name>Juzu Less Plugin</name>
   <description>The Less plugin</description>
