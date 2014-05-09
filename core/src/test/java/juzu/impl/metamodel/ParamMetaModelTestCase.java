@@ -16,7 +16,10 @@
 
 package juzu.impl.metamodel;
 
+import japa.parser.ast.body.BodyDeclaration;
 import japa.parser.ast.body.ClassOrInterfaceDeclaration;
+import japa.parser.ast.body.MethodDeclaration;
+import japa.parser.ast.body.Parameter;
 import japa.parser.ast.expr.AnnotationExpr;
 import juzu.impl.plugin.module.metamodel.ModuleMetaModel;
 import juzu.impl.common.JSON;
@@ -74,10 +77,17 @@ public class ParamMetaModelTestCase extends AbstractTestCase {
     helper.assertCompile();
 
     // Remove @Param
-    JavaFile file = helper.assertJavaSource("metamodel.param.Bean");
+    JavaFile file = helper.assertJavaSource("metamodel.param.A");
     ClassOrInterfaceDeclaration bean = file.assertDeclaration();
-    AnnotationExpr annotation = bean.getAnnotations().get(0);
-    bean.getAnnotations().clear();
+    MethodDeclaration index = null;
+    for (BodyDeclaration decl : bean.getMembers()) {
+      if (decl instanceof MethodDeclaration) {
+        index = (MethodDeclaration)decl;
+      }
+    }
+    Parameter param = index.getParameters().get(0);
+    AnnotationExpr annotation = param.getAnnotations().get(0);
+    param.getAnnotations().clear();
     file.assertSave();
 //      helper.assertRemove("metamodel", "param", "A.java");
 
@@ -87,7 +97,7 @@ public class ParamMetaModelTestCase extends AbstractTestCase {
     // assertEquals(1, errors.size());
 
     // Add back @Param
-    bean.getAnnotations().add(annotation);
+    param.getAnnotations().add(annotation);
     file.assertSave();
 
     // Recompile

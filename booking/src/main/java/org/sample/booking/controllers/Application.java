@@ -17,6 +17,7 @@
 package org.sample.booking.controllers;
 
 import juzu.Action;
+import juzu.Mapped;
 import juzu.Path;
 import juzu.Response;
 import juzu.Route;
@@ -90,7 +91,7 @@ public class Application {
 
   @Action
   @Route("/register")
-  public Response saveUser(@Valid User user, String verifyPassword) {
+  public Response saveUser(@Mapped @Valid User user, String verifyPassword) {
 /*
        validation.required(verifyPassword);
        validation.equals(verifyPassword, user.password).message("Your password doesn't match");
@@ -107,7 +108,7 @@ public class Application {
 
   @Action
   @Route("/login")
-  public Response login(User u) {
+  public Response login(@Mapped User u) {
     System.out.println("Want login " + u.username + " " + u.password);
     User user = User.find(u.username, u.password);
     if (user != null) {

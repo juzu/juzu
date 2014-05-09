@@ -20,6 +20,7 @@ import juzu.Resource;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
+import juzu.Mapped;
 import juzu.plugin.upload.AbstractUploadTestCase;
 import org.apache.commons.fileupload.FileItem;
 
@@ -30,7 +31,7 @@ public class A {
 
   @Resource
   @Route("/resource")
-  public Response.Status resource(FileItem file, String text, Bean bean) throws IOException {
+  public Response.Status resource(FileItem file, String text, @Mapped Bean bean) throws IOException {
     if (file != null) {
       AbstractUploadTestCase.contentType = file.getContentType();
       AbstractUploadTestCase.content = file.getString();

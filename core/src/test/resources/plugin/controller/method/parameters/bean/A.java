@@ -18,6 +18,7 @@ package plugin.controller.method.parameters.bean;
 
 import juzu.Action;
 import juzu.Response;
+import juzu.Mapped;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -44,7 +45,7 @@ public class A {
   }
 
   @juzu.View
-  public Response.Content mA(B foo) throws IOException {
+  public Response.Content mA(@Mapped B foo) throws IOException {
     return Response.ok(foo.getA());
   }
 
@@ -54,7 +55,7 @@ public class A {
   }
 
   @Action
-  public Response.View mAAction(B foo) throws IOException {
+  public Response.View mAAction(@Mapped B foo) throws IOException {
     Response.View r = A_.mA(foo);
     return r;
   }
@@ -67,7 +68,7 @@ public class A {
   }
 
   @juzu.View
-  public Response.Content mB(B foo) throws IOException {
+  public Response.Content mB(@Mapped B foo) throws IOException {
     return Response.ok(Arrays.<String>asList((String[])foo.getB()).toString());
   }
 
@@ -77,7 +78,7 @@ public class A {
   }
 
   @Action
-  public Response.View mBAction(B foo) throws IOException {
+  public Response.View mBAction(@Mapped B foo) throws IOException {
     Response.View r = A_.mB(foo);
     return r;
   }
@@ -90,7 +91,7 @@ public class A {
   }
 
   @juzu.View
-  public Response.Content mC(B foo) throws IOException {
+  public Response.Content mC(@Mapped B foo) throws IOException {
     return Response.ok(foo.getC().toString());
   }
 
@@ -100,7 +101,7 @@ public class A {
   }
 
   @Action
-  public Response.View mCAction(B foo) throws IOException {
+  public Response.View mCAction(@Mapped B foo) throws IOException {
     Response.View r = A_.mC(foo);
     return r;
   }
@@ -113,7 +114,7 @@ public class A {
   }
 
   @juzu.View
-  public Response.Content mD(B foo) throws IOException {
+  public Response.Content mD(@Mapped B foo) throws IOException {
     return Response.ok(foo.d);
   }
 
@@ -123,7 +124,7 @@ public class A {
   }
 
   @Action
-  public Response.View mDAction(B foo) throws IOException {
+  public Response.View mDAction(@Mapped B foo) throws IOException {
     Response.View r = A_.mD(foo);
     return r;
   }
@@ -136,7 +137,7 @@ public class A {
   }
 
   @juzu.View
-  public Response.Content mE(B foo) throws IOException {
+  public Response.Content mE(@Mapped B foo) throws IOException {
     return Response.ok(Arrays.<String>asList((String[])foo.e).toString());
   }
 
@@ -146,7 +147,7 @@ public class A {
   }
 
   @Action
-  public Response.View mEAction(B foo) throws IOException {
+  public Response.View mEAction(@Mapped B foo) throws IOException {
     Response.View r = A_.mE(foo);
     return r;
   }
@@ -159,7 +160,7 @@ public class A {
   }
 
   @juzu.View
-  public Response.Content mF(B foo) throws IOException {
+  public Response.Content mF(@Mapped B foo) throws IOException {
     return Response.ok(foo.f.toString());
   }
 
@@ -169,7 +170,7 @@ public class A {
   }
 
   @Action
-  public Response.View mFAction(B foo) throws IOException {
+  public Response.View mFAction(@Mapped B foo) throws IOException {
     Response.View r = A_.mF(foo);
     return r;
   }
@@ -182,7 +183,7 @@ public class A {
   }
 
   @juzu.View
-  public Response.Content mG(String s, B foo) throws IOException {
+  public Response.Content mG(String s, @Mapped B foo) throws IOException {
     return Response.ok(s + foo.getA());
   }
 
@@ -192,7 +193,7 @@ public class A {
   }
 
   @Action
-  public Response.View mGAction(String s, B foo) throws IOException {
+  public Response.View mGAction(String s, @Mapped B foo) throws IOException {
     Response.View r = A_.mG(s, foo);
     return r;
   }
@@ -205,7 +206,7 @@ public class A {
   }
 
   @juzu.View
-  public Response.Content mH(String a, B foo) throws IOException {
+  public Response.Content mH(String a, @Mapped B foo) throws IOException {
     return Response.ok(a + foo.getA());
   }
 
@@ -215,7 +216,7 @@ public class A {
   }
 
   @Action
-  public Response.View mHAction(String a, B foo) throws IOException {
+  public Response.View mHAction(String a, @Mapped B foo) throws IOException {
     Response.View r = A_.mH(a, foo);
     return r;
   }
@@ -228,7 +229,7 @@ public class A {
   }
 
   @juzu.View
-  public Response.Content mI(String d, B foo) throws IOException {
+  public Response.Content mI(String d, @Mapped B foo) throws IOException {
     return Response.ok(d + foo.d);
   }
 
@@ -238,7 +239,7 @@ public class A {
   }
 
   @Action
-  public Response.View mIAction(String d, B foo) throws IOException {
+  public Response.View mIAction(String d, @Mapped B foo) throws IOException {
     Response.View r = A_.mI(d, foo);
     return r;
   }

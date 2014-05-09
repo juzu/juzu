@@ -38,6 +38,6 @@ import java.lang.annotation.Target;
  * @author <a href="mailto:alain.defrance@exoplatform.com">Alain Defrance</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target(ElementType.PARAMETER)
 public @interface Mapped {
 }

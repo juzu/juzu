@@ -2,7 +2,6 @@ package plugin.controller.valuetype.bean;
 
 import java.util.List;
 
-@juzu.Mapped
 public class Bean {
 
   public String s;

@@ -17,10 +17,11 @@
 package metamodel.param;
 
 import juzu.View;
+import juzu.Mapped;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class A {
   @View
-  public void index(Bean bean) {
+  public void index(@Mapped Bean bean) {
   }
 }

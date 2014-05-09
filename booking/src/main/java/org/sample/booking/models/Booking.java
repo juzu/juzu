@@ -17,7 +17,6 @@
 package org.sample.booking.models;
 
 import juzu.Format;
-import juzu.Mapped;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -33,7 +32,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 // @Entity
-@Mapped
 public class Booking {
 
   public String id;

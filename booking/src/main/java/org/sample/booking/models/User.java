@@ -16,8 +16,6 @@
 
 package org.sample.booking.models;
 
-import juzu.Mapped;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
@@ -27,7 +25,6 @@ import java.util.Map;
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 // @Entity
 // @Table(name="Customer")
-@Mapped
 public class User {
 
   @NotNull

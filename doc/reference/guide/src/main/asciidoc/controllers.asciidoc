@@ -260,7 +260,8 @@ Juzu supports simple data types such as string or integers, structured data type
 
 * Simple data types can be the following types +String+, +List<String>+ and +String[]+. Later this will be expanded
 to more simple types such as number, etc..
-* Structured data types using the +@juzu.Mapped+ annotation
+* Structured data types which are distinguished from other parameters by annotating the controller handler parameter annotation
+with the the +@juzu.Mapped+ annotation
 
 View controller method should return a +juzu.Response+ object that is the content produced by the method. To be more precise
  it should return a +Response.Body+ or +Response.Content+ object (the latter being a subclass of the former) that contains
@@ -405,7 +406,6 @@ Juzu is able to map a set of request parameters, to the properties of a simple b
 
 [source,java]
 ----
-@juzu.Mapped
 public class User {
 
   public String username;
@@ -419,6 +419,17 @@ public class User {
     this.password = password;
     this.username = username;
   }
+}
+----
+
+The controller handler needs to declare the parameter using this type with the +@Mapped+ annotation:
+
+[source,java]
+----
+@Action
+@Route("/login")
+public Response login(@Mapped User user) {
+  ...
 }
 ----
 

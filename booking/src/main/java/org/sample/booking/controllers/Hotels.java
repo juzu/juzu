@@ -17,6 +17,7 @@
 package org.sample.booking.controllers;
 
 import juzu.Action;
+import juzu.Mapped;
 import juzu.Path;
 import juzu.PropertyType;
 import juzu.Resource;
@@ -109,7 +110,7 @@ public class Hotels // extends Application
 
   @View
   @Route("/hotels/{id}/booking")
-  public Response.Content book(String id, Booking booking) {
+  public Response.Content book(String id, @Mapped Booking booking) {
     Hotel hotel = Hotel.findById(id);
     if (booking == null) {
       booking = new Booking();
@@ -119,7 +120,7 @@ public class Hotels // extends Application
 
   @Action
   @Route("/hotels/{id}/booking")
-  public Response processConfirmBooking(String confirm, String id, String revise, @Valid Booking booking) {
+  public Response processConfirmBooking(String confirm, String id, String revise, @Mapped @Valid Booking booking) {
     Hotel hotel = Hotel.findById(id);
     User user = User.find(login.getUserName(), null);
     booking.hotel = hotel;
@@ -146,7 +147,7 @@ public class Hotels // extends Application
 
   @View
   @Route("/hotels/{id}/confirm")
-  public Response.Content confirmBooking(String id, Booking booking) {
+  public Response.Content confirmBooking(String id, @Mapped Booking booking) {
     Hotel hotel = Hotel.findById(id);
     return confirmBooking.with().total(0).hotel(hotel).booking(booking).ok();
   }

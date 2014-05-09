@@ -18,6 +18,7 @@ package plugin.controller.valuetype.bean;
 
 import juzu.Response;
 import juzu.View;
+import juzu.Mapped;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -52,7 +53,7 @@ public class A {
   }
 
   @View
-  public Response.Content foo(Bean bean) throws Exception {
+  public Response.Content foo(@Mapped Bean bean) throws Exception {
     if (bean == null) {
       return Response.ok("no bean");
     }
