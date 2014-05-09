@@ -7,12 +7,12 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-plugins-parent</artifactId>
-    <version>0.6.2</version>
+    <version>0.6.3-SNAPSHOT</version>
   </parent>
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-plugins-servlet</artifactId>
-  <version>0.6.2</version>
+  <version>0.6.3-SNAPSHOT</version>
 
   <name>Juzu Servlet Plugin</name>
   <description>The Servlet plugin</description>
