@@ -35,7 +35,7 @@ public class RouteResourceHandlerTestCase extends AbstractWebTestCase {
   }
 
   @Test
-  public void testMethods() throws Exception {
+  public void testRouteToMethod() throws Exception {
     HttpMethod[] methods = { HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT };
     URL url = applicationURL();
     for (HttpMethod method : methods) {
@@ -45,5 +45,13 @@ public class RouteResourceHandlerTestCase extends AbstractWebTestCase {
       String ret = Tools.read(conn.getInputStream());
       assertTrue("Was expecting " + ret + " to container ok[" + method + "]", ret.contains("ok[" + method + "]"));
     }
+  }
+
+  @Test
+  public void testMethodNotMapped() throws Exception {
+    URL url = applicationURL();
+    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+    conn.setRequestMethod(HttpMethod.DELETE.name());
+    assertEquals(404, conn.getResponseCode());
   }
 }
