@@ -1,0 +1,99 @@
+= Authz plugin
+
+The _Authz_ plugin provides a lightweight implementation of the +javax.annotation.security+ annotations +@DenyAll+,
++@RolesAllowed+ and +@PermitAll+. Those annotations were originally created for Java EE containers in which authorization
+is done based on the current user roles. Juzu implements a lightweight authorization manager that performs access
+enforcement based on these three annotations.
+
+Authorization is performed on the user roles, provided by the underlying bridge via the +juzu.request.SecurityContext+
+interface.
+
+The plugin jars needs to be on the classpath of the application:
+
+[source,xml,subs="attributes,specialcharacters"]
+----
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-plugin-authz</artifactId>
+  <version>{juzu-version}</version>
+</dependency>
+----
+
+== Granting access to specific roles
+
+The +@RolesAllowed+ annotation can be used to restrict the access to a set of specific roles.
+
+[source,java]
+.Restrict the access to the _manager_ role
+----
+@View
+@Route("/admin")
+@RolesAllowed("manager")
+public Response Response admin() { ... }
+----
+
+== Denying access
+
+== Granting access
+
+The +@DenyAll+ annotation can be used to restrict the access to anyone.
+
+[source,java]
+.Restrict the access to the _manager_ role
+----
+@View
+@Route("/admin")
+@DenyAll("manager")
+public Response Response nevercallme() { ... }
+----
+
+== Denying access
+
+The +@PermitAll+ annotation can be used to grant the access to anyone.
+
+[source,java]
+.Granting full the access
+----
+@View
+@Route("/admin")
+@PermitAll
+public Response Response index() { ... }
+----
+
+This annotation is not really useful, however it is implemented by Juzu. Note that the first version of the annotation
+can only annotated a method and the last version allows also to annotation a class which allows to make all handlers
+of a controller denied.
+
+== Cascading
+
+The security annotations can also be used on controller classes to restrict the access on a the controller handlers.
+
+[source,java]
+.Restrict the access to the _manager_ role
+----
+@RolesAllowed("manager")
+public class MyController {
+
+  @View
+  @Route("/admin")
+  public Response Response admin() { ... }
+}
+----
+
+Class scoped declarations can of course be overriden on a per method basis:
+
+[source,java]
+.Overriding the class +@RolesAllowed+ declaration on the +index+ handler
+----
+@RolesAllowed("manager")
+public class MyController {
+
+  @View
+  @PermitAll
+  public Response index() { ... }
+
+  @View
+  @Route("/admin")
+  public Response Response admin() { ... }
+}
+----

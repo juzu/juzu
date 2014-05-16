@@ -1,6 +1,8 @@
+= Validation plugin
+
 Juzu provides controller handler parameter validation via the http://beanvalidation.org/1.1/[Bean Validation framework].
 
-## Controller parameter validation
+== Controller parameter validation
 
 The usage of Bean Validation for validating method parameters is very easy:
 
@@ -16,18 +18,18 @@ public class Controller {
 
 When a controller handler
 
-## Controller response validation
+== Controller response validation
 
 todo.
 
-## Handling validation errors
+== Handling validation errors
 
 When a controller validation fails, Juzu will not call the method however it can invoke other controllers that can
 handle the validation error better than the default mechanism. The validation plugin uses the
 +juzu.plugin.validation.ValidationError+ response (which is a subclass of +juzu.Response.Error+). The +ValidationError+
 object gives access to the bean violations.
 
-### Using request life ycle
+=== Using request life ycle
 
 When the controller implements the +juzu.request.RequestLifeCycle+ the +endRequest+ method will be invoked with the bean
 validation error.
@@ -55,7 +57,7 @@ NOTE: this works only with the request lifecycle of the bean that is requested. 
 handler, you can make your controller beans extend the same class and perform the handling at this place or use
 an application error handler as explained below
 
-### Using error handler
+=== Using error handler
 
 The application error handler can also be used to achieve the same result:
 

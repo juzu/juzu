@@ -1,3 +1,6 @@
+[[taglib]]
+= Taglib
+
 A tag library is an essential component of a templating system, allowing to enrich a templating by encapsulating reusable programmable
 logic.
 

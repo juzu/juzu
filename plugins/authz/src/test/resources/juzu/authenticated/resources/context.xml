@@ -1,0 +1,5 @@
+<Context debug="0" reloadable="true">
+
+  <Realm className="juzu.plugin.authz.MyRealm"/>
+
+</Context>

@@ -25,6 +25,7 @@ import juzu.impl.bridge.spi.ScopedContext;
 import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
+import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 
 import javax.servlet.AsyncContext;
@@ -33,13 +34,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Principal;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.concurrent.RejectedExecutionException;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class ServletWebBridge extends WebBridge implements HttpContext, ClientContext, UserContext {
+public class ServletWebBridge extends WebBridge implements HttpContext, ClientContext, UserContext, SecurityContext {
 
   /** . */
   private final ServletRequestContext ctx;
@@ -117,6 +119,10 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
   }
 
   public UserContext getUserContext() {
+    return this;
+  }
+
+  public SecurityContext getSecurityContext() {
     return this;
   }
 
@@ -233,5 +239,23 @@ public class ServletWebBridge extends WebBridge implements HttpContext, ClientCo
         };
       }
     };
+  }
+
+  // Security context implementation
+
+
+  @Override
+  public String getRemoteUser() {
+    return ctx.req.getRemoteUser();
+  }
+
+  @Override
+  public Principal getUserPrincipal() {
+    return ctx.req.getUserPrincipal();
+  }
+
+  @Override
+  public boolean isUserInRole(String role) {
+    return ctx.req.isUserInRole(role);
   }
 }

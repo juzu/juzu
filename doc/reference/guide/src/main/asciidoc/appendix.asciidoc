@@ -1,9 +1,9 @@
-== Appendix
+= Appendix
 
-=== Maven configurations
+== Maven configurations
 
 [[servlet_guice]]
-==== Guice for a Servlet Container
+=== Guice for a Servlet Container
 
 [source,xml,indent=0]
 ----
@@ -11,7 +11,7 @@ include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=guice]
 ----
 
 [[servlet_spring]]
-==== Spring for a Servlet Container
+=== Spring for a Servlet Container
 
 [source,xml,indent=0]
 ----
@@ -19,7 +19,7 @@ include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=spring]
 ----
 
 [[servlet_cdi]]
-==== CDI for a Servlet Container
+=== CDI for a Servlet Container
 
 [source,xml,indent=0]
 ----
@@ -27,7 +27,7 @@ include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=cdi]
 ----
 
 [[ee_guice]]
-==== Guice for an EE Container
+=== Guice for an EE Container
 
 [source,xml,indent=0]
 ----
@@ -35,7 +35,7 @@ include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=ee-guice
 ----
 
 [[ee_spring]]
-==== Spring for an EE Container
+=== Spring for an EE Container
 
 [source,xml,indent=0]
 ----
@@ -43,7 +43,7 @@ include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=ee-sprin
 ----
 
 [[ee_cdi]]
-==== CDI for an EE Container
+=== CDI for an EE Container
 
 [source,xml,indent=0]
 ----
@@ -51,7 +51,7 @@ include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=ee-cdi]
 ----
 
 [[gatein_guice]]
-==== Guice for GateIn Portal
+=== Guice for GateIn Portal
 
 [source,xml,indent=0]
 ----
@@ -59,7 +59,7 @@ include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=gatein-g
 ----
 
 [[gatein_spring]]
-==== Spring for GateIn Portal
+=== Spring for GateIn Portal
 
 [source,xml,indent=0]
 ----
@@ -67,7 +67,7 @@ include::{sourcesdir}/META-INF/maven/org.juzu/juzu-booking/pom.xml[tags=gatein-s
 ----
 
 [[gatein_cdi]]
-==== CDI for GateIn Portal
+=== CDI for GateIn Portal
 
 [source,xml,indent=0]
 ----

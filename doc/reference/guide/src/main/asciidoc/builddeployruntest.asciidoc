@@ -1,3 +1,6 @@
+[[builddeployruntest]]
+= Build, deploy, run and test =
+
 We will study in this chapter the life cycle of a Juzu application: Build, Deploy, Run and Test!
 
 == Introduction

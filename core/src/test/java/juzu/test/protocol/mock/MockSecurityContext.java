@@ -19,52 +19,27 @@ package juzu.test.protocol.mock;
 import juzu.request.SecurityContext;
 
 import java.security.Principal;
-import java.util.Set;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class MockSecurityContext implements SecurityContext {
 
   /** . */
-  private String remoteUser;
+  private final MockClient client;
 
-  /** . */
-  private Set<String> roles;
-
-  /** . */
-  private Principal principal;
-
-  public String getRemoteUser() {
-    return remoteUser;
+  public MockSecurityContext(MockClient client) {
+    this.client = client;
   }
 
-  public void setRemoteUser(String remoteUser) {
-    if (remoteUser == null) {
-      this.remoteUser = null;
-      this.principal = null;
-    }
-    else {
-      this.remoteUser = remoteUser;
-      this.principal = new Principal() {
-        public String getName() {
-          return MockSecurityContext.this.remoteUser;
-        }
-      };
-    }
+  public String getRemoteUser() {
+    return client.remoteUser;
   }
 
   public Principal getUserPrincipal() {
-    return principal;
+    return client.principal;
   }
 
   public boolean isUserInRole(String role) {
-    return roles.contains(role);
+    return client.roles.contains(role);
   }
 
-  public void addRole(String role) {
-    roles.add(role);
-  }
-
-  public void clearRoles() {
-    roles.clear();
-  }
 }

@@ -29,12 +29,15 @@ import juzu.request.Phase;
 import juzu.request.UserContext;
 import juzu.test.AbstractTestCase;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A conversation between a client and the application.
@@ -105,6 +108,15 @@ public class MockClient implements UserContext {
   /** . */
   private LinkedList<Locale> locales;
 
+  /** . */
+  String remoteUser;
+
+  /** . */
+  final Set<String> roles;
+
+  /** . */
+  Principal principal;
+
   public MockClient(MockApplication<?> application) {
 
     LinkedList<Locale> locales = new LinkedList<Locale>();
@@ -118,6 +130,7 @@ public class MockClient implements UserContext {
     this.flashHistory = new LinkedList<List<Scoped>>();
     this.controllerPlugin = controllerPlugin;
     this.locales = locales;
+    this.roles = new HashSet<String>();
   }
 
   public Locale getLocale() {
@@ -190,5 +203,28 @@ public class MockClient implements UserContext {
   public void invalidate() {
     session.close();
     session = new ServletScopedContext(Logger.SYSTEM);
+  }
+
+  public void setRemoteUser(String remoteUser) {
+    if (remoteUser == null) {
+      this.remoteUser = null;
+      this.principal = null;
+    }
+    else {
+      this.remoteUser = remoteUser;
+      this.principal = new Principal() {
+        public String getName() {
+          return MockClient.this.remoteUser;
+        }
+      };
+    }
+  }
+
+  public void addRole(String role) {
+    roles.add(role);
+  }
+
+  public void clearRoles() {
+    roles.clear();
   }
 }

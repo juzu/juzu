@@ -1,3 +1,5 @@
+= Shiro plugin
+
 http://shiro.apache.org[The Apache Shiro] is a powerful and easy-to-use Java security framework. Juzu provides a Shiro plugin
 that integrates http://shiro.apache.org/core.html[Apache Shiro core] to allow a Juzu application to easily
 perform authentication and authorization. This plugin works both the servlet bridge and portlet bridge.

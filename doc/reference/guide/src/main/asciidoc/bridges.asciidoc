@@ -1,3 +1,6 @@
+[[bridges]]
+= Bridges
+
 The bridge is the runtime in which Juzu executes, until now Juzu provides two bridges:
 
 * The servlet bridge executes a Juzu application in a servlet container like Tomcat

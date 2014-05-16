@@ -135,7 +135,7 @@ public abstract class MockRequestBridge implements RequestBridge {
     this.target = target;
     this.attributes = attributes;
     this.httpContext = new MockHttpContext();
-    this.securityContext = new MockSecurityContext();
+    this.securityContext = new MockSecurityContext(client);
     this.windowContext = new MockWindowContext();
     this.attributesHistory = new ArrayList<Scoped>();
     this.requestParameters = requestParameters;

@@ -5,91 +5,42 @@ Juzu is a web framework based on MVC concepts for developing applications. Juzu 
 open source project developed on https://github.com/juzu/juzu[GitHub] licensed under the
 http://www.apache.org/licenses/LICENSE-2.0[Apache 2 License].
 
-[[builddeployruntest]]
-= Build, deploy, run and test =
-
 include::builddeployruntest.asciidoc[]
-
-[[phases]]
-= Phases
 
 include::phases.asciidoc[]
 
-[[controllers]]
-= Controllers
-
 include::controllers.asciidoc[]
-
-[[responses]]
-= Responses
 
 include::responses.asciidoc[]
 
-[[bridges]]
-= Bridges
-
 include::bridges.asciidoc[]
-
-[[ioc]]
-= Inversion of Control
 
 include::ioc.asciidoc[]
 
-[[templating]]
-= Templating
-
 include::templating.asciidoc[]
-
-[[taglib]]
-= Taglib
 
 include::taglib.asciidoc[]
 
-[[i18n]]
-= Internationalization
-
 include::i18n.asciidoc[]
-
-[[assets]]
-= Assets
 
 include::assets.asciidoc[]
 
-[[amd]]
-= Javascript modularity
-
 include::amd.asciidoc[]
-
-[[error_handling]]
-= Error handling
 
 include::errorhandling.asciidoc[]
 
-= Validation plugin
-
 include::validation.asciidoc[]
-
-= Less plugin
 
 include::less.asciidoc[]
 
-= WebJars plugin
-
 include::webjars.asciidoc[]
-
-= Shiro plugin
 
 include::shiro.asciidoc[]
 
-[[servlet]]
-= Servlet
+include::authz.asciidoc[]
 
 include::servlet.asciidoc[]
 
-= Portlet
-
 include::portlet.asciidoc[]
-
-= Appendix
 
 include::appendix.asciidoc[]

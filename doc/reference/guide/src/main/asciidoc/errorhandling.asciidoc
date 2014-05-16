@@ -1,3 +1,5 @@
+[[error_handling]]
+= Error handling
 
 Juzu provides a central error handling mechanism, allowing to handle error that may occur at runtime in controllers
 or plugins (entity marshalling/unmarshalling, validation, etc...).

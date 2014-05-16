@@ -1,3 +1,5 @@
+[[i18n]]
+= Internationalization
 
 == Application resource bundle
 

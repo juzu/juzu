@@ -21,6 +21,7 @@ import juzu.impl.common.Logger;
 import juzu.request.ApplicationContext;
 import juzu.request.ClientContext;
 import juzu.request.HttpContext;
+import juzu.request.SecurityContext;
 import juzu.request.UserContext;
 
 import java.io.IOException;
@@ -58,5 +59,7 @@ public abstract class WebBridge {
   public abstract UserContext getUserContext();
 
   public abstract ApplicationContext getApplicationContext();
+
+  public abstract SecurityContext getSecurityContext();
 
 }

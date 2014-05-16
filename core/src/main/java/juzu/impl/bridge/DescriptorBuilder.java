@@ -98,6 +98,26 @@ public class DescriptorBuilder {
   /** . */
   private final String[] resourcesEnvRefType;
 
+  protected DescriptorBuilder(DescriptorBuilder other) {
+    this(
+        other.injector,
+        other.requestEncoding,
+        other.runMode,
+        other.sourcePath,
+        other.applicationNames,
+        other.applicationTypes,
+        other.urlPatterns,
+        other.listenersClass,
+        other.servletsName,
+        other.servletsUrlPattern,
+        other.servletsClass,
+        other.servletsLoadOnStartup,
+        other.servletsAsync,
+        other.resourcesEnvRefName,
+        other.resourcesEnvRefType
+    );
+  }
+
   private DescriptorBuilder(
       InjectorProvider injector,
       Charset requestEncoding,
@@ -276,14 +296,22 @@ public class DescriptorBuilder {
     buffer.append("</listener>");
   }
 
-  public String toWebXml() {
-
-    StringBuilder buffer = new StringBuilder();
+  protected void appendWebXmlHeader(StringBuilder buffer) {
     buffer.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>");
     buffer.append("<web-app xmlns=\"http://java.sun.com/xml/ns/javaee\"\n" +
         "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
         "xsi:schemaLocation=\"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd\"\n" +
         "version=\"3.0\">\n");
+  }
+
+  protected void appendWebXmlFooter(StringBuilder buffer) {
+    buffer.append("</web-app>");
+  }
+
+  public String toWebXml() {
+
+    StringBuilder buffer = new StringBuilder();
+    appendWebXmlHeader(buffer);
     appendContextParam(buffer, "juzu.run_mode", runMode.getValue());
     appendContextParam(buffer, "juzu.inject", injector.getValue());
     appendContextParam(buffer, "juzu.request_encoding", requestEncoding.name());
@@ -329,7 +357,9 @@ public class DescriptorBuilder {
     }
 
     //
-    buffer.append("</web-app>");
+    appendWebXmlFooter(buffer);
+
+    //
     return buffer.toString();
   }
 

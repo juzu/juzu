@@ -1,3 +1,6 @@
+[[ioc]]
+= Inversion of Control
+
 Juzu provides native support for Injection of Control (known as _IOC_) and relies on the specification
 http://docs.oracle.com/javaee/6/api/javax/inject/package-summary.html[JSR 330] (known as _@Inject_).
 

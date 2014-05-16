@@ -168,7 +168,7 @@ public abstract class WebRequestBridge implements RequestBridge, WindowContext {
   }
 
   public final SecurityContext getSecurityContext() {
-    return null;
+    return http.getSecurityContext();
   }
 
   public UserContext getUserContext() {

@@ -619,8 +619,12 @@ public abstract class Response {
       return message;
     }
 
+    protected int getStatus() {
+      return 500;
+    }
+
     public Status asStatus(boolean verbose) {
-      Response.Status response = Response.status(500);
+      Response.Status response = Response.status(getStatus());
       if (verbose) {
         StringBuilder buffer = new StringBuilder();
         Formatting.renderStyleSheet(buffer);
@@ -644,6 +648,28 @@ public abstract class Response {
     @Override
     public String toString() {
       return "Response.Error[" + (cause != null ? cause.getMessage() : "") + "]";
+    }
+
+    /**
+     * A specific subclass for forbidden access.
+     */
+    public static class Forbidden extends Error {
+      public Forbidden(Throwable cause) {
+        super(cause);
+      }
+
+      public Forbidden(String message) {
+        super(message);
+      }
+
+      public Forbidden(String message, Throwable cause) {
+        super(message, cause);
+      }
+
+      @Override
+      protected int getStatus() {
+        return 403;
+      }
     }
   }
 

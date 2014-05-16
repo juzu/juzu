@@ -93,6 +93,7 @@
   </dependencies>
 
   <modules>
+    <module>authz</module>
     <module>servlet</module>
     <module>portlet</module>
     <module>less</module>

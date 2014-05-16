@@ -1,3 +1,5 @@
+= Less plugin
+
 == Juzu Less Plugin
 
 LESS is a dynamic stylesheet language which extends CSS with dynamic behavior such as variables, mixins, operations

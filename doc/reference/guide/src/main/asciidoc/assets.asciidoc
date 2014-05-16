@@ -1,3 +1,6 @@
+[[assets]]
+= Assets
+
 Web assets are resources used over the web such as stylesheet and script files. Using an asset is done in two steps:
 
 * declare an asset

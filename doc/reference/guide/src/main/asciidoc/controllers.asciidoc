@@ -1,3 +1,6 @@
+[[controllers]]
+= Controllers
+
 Controllers play an essential role in a Juzu application: they contain the code executed when Juzu processes a
 request, this chapter provides an in depth study of Juzu controllers.
 

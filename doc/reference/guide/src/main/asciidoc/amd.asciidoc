@@ -1,3 +1,6 @@
+[[amd]]
+= Javascript modularity
+
 The AMD plugin provides declarative support for JavaScript modules using annotations. It relies on the
 https://github.com/amdjs/amdjs-api/wiki/AMD[Asynchronous Module Definition] specification implemented by the
 http://requirejs.org/[RequireJS] project.

@@ -1,3 +1,6 @@
+[[templating]]
+= Templating
+
 Templating is the _View_ part of a Model View Controlle architecture. We will study in this chapter how
 the templating system interacts with the Juzu, at compilation time and at runtime, both aspects are very
 important.

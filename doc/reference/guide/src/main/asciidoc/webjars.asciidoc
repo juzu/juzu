@@ -1,4 +1,4 @@
-== Juzu WebJars Plugin
+= WebJars plugin
 
 http://www.webjars.org/[WebJars] are client-side web libraries (e.g. jQuery & Bootstrap) packaged into jar files.
 WebJars allow to declaratively set the version, use a consistent version across an application, and easily deal with transitive dependencies.
@@ -7,7 +7,7 @@ Juzu provides a WebJars plugin that copies resources in jar libraries to applica
 plugin or the _AMD_ plugin.
 
 
-=== Usage
+== Usage
 
 .Annotating an application package for declaring WebJars
 [source,java]
@@ -96,7 +96,7 @@ In this special case, we need to tell the version to the plugin:
 package myapp;
 ----
 
-=== Building
+== Building
 
 Add the WebJars plugin jar to your compilation classpath.
 

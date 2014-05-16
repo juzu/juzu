@@ -72,6 +72,10 @@ public abstract class MockMimeBridge extends MockRequestBridge {
     assertStatus(404);
   }
 
+  public Response.Error assertError() {
+    return AbstractTestCase.assertInstanceOf(Response.Error.class, response);
+  }
+
   public void assertStatus(int status) {
     Response.Status content = AbstractTestCase.assertInstanceOf(Response.Status.class, response);
     Assert.assertEquals(status, content.getCode());

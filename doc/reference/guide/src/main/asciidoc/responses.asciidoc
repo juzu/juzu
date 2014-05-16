@@ -1,3 +1,6 @@
+[[responses]]
+= Responses
+
 Each request produces a response object: a subclass of the +juzu.Response+ class.
 
 Response objects are returned by method processing phases, the class of the object determines the kind of response

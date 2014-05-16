@@ -1,3 +1,6 @@
+[[phases]]
+= Phases
+
 Request life cycle is the most important concept to get right when developping a web application,
 whether it is a Juzu application or not. Juzu maps a request to a phase, in this chapter we will explain
 the phase concept and its importance.
