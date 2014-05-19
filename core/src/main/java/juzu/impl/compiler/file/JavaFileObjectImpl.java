@@ -63,6 +63,9 @@ public class JavaFileObjectImpl<P> implements JavaFileObject {
   public JavaFileObjectImpl(JavaFileManager.Location location, FileKey key, ReadFileSystem<P> fs, P file) throws NullPointerException, IOException {
 
     //
+    if (key == null) {
+      throw new NullPointerException("No null key accepted");
+    }
     if (file == null) {
       throw new NullPointerException("No null file accepted for " + key);
     }

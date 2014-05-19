@@ -350,7 +350,7 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
           f = new File(f, relativeName.toString());
           if (f.exists() && f.isFile()) {
             log.info("Resolved " + coordinates + " to " + f.getAbsolutePath());
-            return new JavaFileObjectImpl<File>(StandardLocation.SOURCE_PATH, null, sourcePath, f);
+            return new JavaFileObjectImpl<File>(StandardLocation.SOURCE_PATH, FileKey.newResourceName(pkg.toString(), relativeName.toString()), sourcePath, f);
           } else {
             log.info("Resolving " + coordinates + " from source path does not exists " + f.getAbsolutePath());
           }
