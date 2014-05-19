@@ -28,6 +28,7 @@
         </property>
       </activation>
       <modules>
+        <module>examples</module>
         <module>guide</module>
       </modules>
     </profile>
