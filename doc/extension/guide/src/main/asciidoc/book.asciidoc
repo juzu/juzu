@@ -16,3 +16,5 @@ include::assetminifier.asciidoc[]
 include::providerfactories.asciidoc[]
 
 include::templatespi.asciidoc[]
+
+include::tutorialbundlegenplugin.asciidoc[]

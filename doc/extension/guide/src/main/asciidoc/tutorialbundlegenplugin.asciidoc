@@ -1,0 +1,244 @@
+=  Bundlegen plugin tutorial
+
+The bundlegen plugin tutorial provides guidance for the implementation of a Juzu metamodel plugin.
+
+== Unbreakable resource bundles
+
+The bundlegen plugin generates a typed Java class for a resource bundle:
+
+[source,java]
+----
+@BundleGen("mybundle")
+@Application
+package my.app;
+----
+
+Le't suppose we have this +mybundle.properties+ file:
+
+----
+hello_world=Hello World
+----
+
+This will generate a +bundlegen+ Java class, the application can then retrieve the entries via static methods:
+
+[source,java]
+----
+String s = bundlegen.hello_world();
+----
+
+The bundle will be loaded using the current user locale, providing unbreakable resource bundles!
+
+== The implementation
+
+We will provide now a detailled analysis of the plugin structure and code. This plugin is a _metamodel plugin_,
+it does all the work during the compilation: it processes +@BundleGen+ annotations in order to generate
+a Java class source for this bundle. The generated source will be transparently compiled by the Java compiler
+ in the same compilation phase than the application.
+
+The plugin will be packaged under the +examples.plugin.bundlegen+
+package and provides three classes:
+
+* +examples.plugin.bundlegen.BundleGen+ annotation is the plugin _API_ : the application will use this annotation for
+describing its bundles
+* +examples.plugin.bundlegen.impl.BundlResolver+ is an utility class used by the generated code at _runtime_ for
+loading a bundle
+* +examples.plugin.bundlegen.impl.BundleGenMetaModelPlugin+ is the metamodel plugin triggered during by the
+compilation phase by Juzu
+
+=== The metamodel plugin structure
+
+Let's begin by describing the overral plugin structure.  The metamodel plugin +BundleGenMetaModelPlugin+ extends
+the +juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin+ base class. It must provide a no arguments public constructor
+
+[source,java]
+----
+include::{sourcesdir}/examples/plugin/bundlegen/impl/BundleGenMetaModelPlugin.java[tags=constructor]
+----
+
+This plugin must be declared in the _META-INF/services/juzu.impl.plugin.application.metamodel.ApplicationMetaModelPlugin_
+file:
+
+[source]
+----
+examples.plugin.bundlegen.impl.BundleGenMetaModelPlugin
+----
+
+To process the +@BundleGen+ annotation the plugin needs to declare the annotations it has interest for, this
+is done in the +init+ method.
+
+[source,java]
+----
+include::{sourcesdir}/examples/plugin/bundlegen/impl/BundleGenMetaModelPlugin.java[tags=init]
+----
+
+=== Processing the +@BundleGen+ annotation
+
+During compilation our plugin will receive lifecycle callbacks for the +BundleGen+ annotation:
+
+[source,java]
+----
+include::{sourcesdir}/examples/plugin/bundlegen/impl/BundleGenMetaModelPlugin.java[tags=processAnnotationAdded]
+
+include::{sourcesdir}/examples/plugin/bundlegen/impl/BundleGenMetaModelPlugin.java[tags=processAnnotationRemoved]
+----
+
+The two callbacks are used to maintain a map with all the known annotations by the plugin. Indeed code generation
+will not occur in those callbacks but in a later callback (+prePassivate+). The annotation key object provides
+access to:
+
+* the element declaring the annotation, in our case it is an +ElementHandle.Package+ since our annotation
+  can only target Java packages
+* the annotation type, we use it to check this is our annotation: in our case the check is here for
+  educational purpose since we only register interest for the +@BundleGen+ annotation
+
+The annotation state is a map containing the various annotation members: we retrieve the +value+ member that is
+the name of the resource bundle we will use later.
+
+=== Generating the bundle source
+
+Until now we focused on the plugin structure and the lifecycles of the framework. This part will show the implementation
+ of the +prePassivate+ callback we mentionned earlier:
+
+[source,java]
+.The +prePassivate+ callback
+----
+include::{sourcesdir}/examples/plugin/bundlegen/impl/BundleGenMetaModelPlugin.java[tags=prePassivate]
+----
+
+The
++prePassivate+ method has the +application+ argument which is the current application being processed it
+can be used to access the overral application structure. The implementation simply iterates the
++bundles+ map of the plugin calling the +processBundle+ method:
+
+[source,java]
+.The +processBundle+ method
+----
+include::{sourcesdir}/examples/plugin/bundlegen/impl/BundleGenMetaModelPlugin.java[tags=processBundle]
+----
+
+The +processBundle+ does three things:
+
+* it uses processing context to load the resource bundle via the +loadBundle+ method
+* when the bundle is found, the class generation is delegated to the +generateBundleClass+ method
+* error handling
+** when the bundle is not found, the plugin raises a +BUNDLE_NOT_FOUND+ exception
+** when the +generateBundleClass* method thows an +IOException+ the +CANNOT_CREATE_BUNDLE+ exception is raised
+
+Raising an error is done via the +juzu.impl.compiler.ProcessingException+.  Providing the package
+element is important as it allows the compiler to do a precise error reporting when showing the error.
+Such exception can be created directly or via the +juzu.impl.compiler.MessageCode+ class: it uses
+the +ProcessingException+ to create the notion of message code:
+
+[source,java]
+----
+include::{sourcesdir}/examples/plugin/bundlegen/impl/BundleGenMetaModelPlugin.java[tags=BUNDLE_NOT_FOUND]
+include::{sourcesdir}/examples/plugin/bundlegen/impl/BundleGenMetaModelPlugin.java[tags=CANNOT_CREATE_BUNDLE]
+----
+
+The +loadBundle+ implementation uses the current +ProcessingContext+ to load
+the bundle property file the user will provide in the package containing the +@BundleGen+ annotation:
+
+[source,java]
+.The +loadBundle+ method
+----
+include::{sourcesdir}/examples/plugin/bundlegen/impl/BundleGenMetaModelPlugin.java[tags=loadBundle]
+----
+
+Finally let's wrap up the bundle processing by looking at the +generateBundleClass+ method which generates the
+Java class:
+
+[source,java]
+.The +generateBundleClass+ method
+----
+include::{sourcesdir}/examples/plugin/bundlegen/impl/BundleGenMetaModelPlugin.java[tags=generateBundleClass]
+----
+
+The implementation is quite straightforward, it creates a source file that returns a +JavaFileObject+ whose
+ writer is used to to print the source code of the bundle. The generated bundle class contains one method
+ for each property of resource bundle.
+
+=== Testing the plugin
+
+The last part of the +bundlegen+ tutorial explains how to test a compilation plugin. We will
+use create a mock application from its sources, this way we will test the plugin works from the source
+files to the runtime.
+
+We will study three tests each one focusing on a different aspect of the plugin usage:
+
+* successful generation of the bundle class
+* runtime resolving of the bundle via the bundle class
+* correct error reporting when the bundle properties file does not exist
+
+==== Testing the bundle generation
+
+For this part, we will only use the Juzu compiler interface which is a wrapper of the underlying Java compiler
+that can be used for writing unit tests. This wrapper allows us to compile an application from its sources. Our
+test application contains the following package declaration:
+
+[source,java]
+----
+include::{sourcesdir}/examples/app1/package-info.java[tags=package]
+----
+
+The resource bundle properties contains a single property:
+
+[source]
+----
+include::{sourcesdir}/examples/app1/mybundle.properties[]
+----
+
+The sources of the application are located in the _resources_ of the project, the only thing needed for the compiler
+to resolve the source is the package of the application.
+
+[source,java]
+.The +testGenerateBundle+ test
+----
+include::{sourcesdir}/examples/plugin/bundlegen/BundleGenTestCase.java[tags=testGenerateBundle]
+----
+<1> Create the compiler from the tested application package
+<2> Triggers compilation
+<3> Get the file system where the compiler created the compiled classes
+<4> Create a classloader for loading the bundle class
+<5> Load the bundle class
+<6> Assert the bundle class structure
+
+==== Testing the plugin failure
+
+In the previous section we tested the expected behavior of the plugin when it works, we also need to test
+the behavior of the plugin when the bundle does not exist. The absence of the bundle properties file
+will raise a compilation error with the +BUNDLE_NOT_FOUND+ message code. By default the compiler will
+use the message defined in the constant, however we can set the compiler in the special +formalErrorReporting+
+mode that will use instead the message code value, making easier to write our test:
+
+[source,java]
+.The +testBundleNotFound+ test
+----
+include::{sourcesdir}/examples/plugin/bundlegen/BundleGenTestCase.java[tags=testBundleNotFound]
+----
+<1> Set the +formalErrorReporting+ mode
+<2> We call now the +failCompile+ that returns a list of compilation errors
+<3> We shall have a single error
+<4> Among other checks we assert that the +BUNDLE_NOT_FOUND+ code was used
+
+==== Testing the bundle resolution
+
+Last but not last, we will test now the runtime behavior. A very simple controller will test the behavior
+ at runtime:
+
+[source,java]
+----
+include::{sourcesdir}/examples/app1/Controller.java[tags=controller]
+----
+
+The previous test only required a compiler, now we need to execute our application. Juzu provides
+a mocking framework that takes an application, compiles and then run it.
+
+[source,java]
+.The +testResolveBundle+ test
+----
+include::{sourcesdir}/examples/plugin/bundlegen/BundleGenTestCase.java[tags=testResolveBundle]
+----
+<1> Create a mock application
+<2> The init step compiles and starts the application
+<3> Render the application, this invokes the +index+ method of the application
+<4> Assert the returned application markup is correct

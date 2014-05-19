@@ -19,7 +19,11 @@
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
       <classifier>sources</classifier>
-      <version>1.0.0-beta4-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-doc-extension-examples</artifactId>
+      <classifier>sources</classifier>
     </dependency>
   </dependencies>
 
@@ -29,7 +33,7 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack</id>
+            <id>unpack-core</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>unpack</goal>
@@ -47,7 +51,7 @@
             </configuration>
           </execution>
           <execution>
-            <id>unpack-foo</id>
+            <id>unpack-examples</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>unpack</goal>
@@ -57,10 +61,15 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.juzu</groupId>
-                  <artifactId>juzu-booking</artifactId>
-                  <type>war</type>
+                  <artifactId>juzu-doc-extension-examples</artifactId>
+                  <classifier>sources</classifier>
                   <version>${project.version}</version>
-                  <includes>META-INF/maven/org.juzu/juzu-booking/pom.xml,META-INF/context.xml</includes>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.juzu</groupId>
+                  <artifactId>juzu-doc-extension-examples</artifactId>
+                  <classifier>test-sources</classifier>
+                  <version>${project.version}</version>
                 </artifactItem>
               </artifactItems>
             </configuration>
