@@ -35,15 +35,10 @@ public class AuthzService extends ApplicationService {
 
   @Override
   public ServiceDescriptor init(ServiceContext context) throws Exception {
-    return new ServiceDescriptor() {
-      @Override
-      public Iterable<BeanDescriptor> getBeans() {
-        return Collections.singleton(BeanDescriptor.createFromBean(
-            AuthzManager.class,
-            Scope.SINGLETON,
-            Collections.<Annotation>emptyList())
-        );
-      }
-    };
+    return new ServiceDescriptor(Collections.singleton(BeanDescriptor.createFromBean(
+        AuthzManager.class,
+        Scope.SINGLETON,
+        Collections.<Annotation>emptyList())
+    ));
   }
 }

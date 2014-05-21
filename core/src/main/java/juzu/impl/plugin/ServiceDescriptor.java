@@ -27,12 +27,23 @@ import java.util.Collections;
  */
 public class ServiceDescriptor {
 
+  /** . */
+  private final Iterable<BeanDescriptor> beans;
+
+  public ServiceDescriptor(Iterable<BeanDescriptor> beans) {
+    this.beans = beans;
+  }
+
+  public ServiceDescriptor() {
+    this(Collections.<BeanDescriptor>emptyList());
+  }
+
   /**
    * Returns the list of bean to install.
    *
    * @return the list of bean ot install
    */
   public Iterable<BeanDescriptor> getBeans() {
-    return Collections.emptyList();
+    return beans;
   }
 }

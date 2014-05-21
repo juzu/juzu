@@ -103,7 +103,7 @@ public class BindingService extends ApplicationService {
         //
         beans.add(descriptor);
       }
-      return new BindingDescriptor(beans);
+      return new ServiceDescriptor(beans);
     } else {
       return null;
     }

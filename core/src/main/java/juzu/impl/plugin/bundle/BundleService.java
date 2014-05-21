@@ -16,12 +16,22 @@
 
 package juzu.impl.plugin.bundle;
 
+import juzu.Scope;
+import juzu.impl.common.Tools;
+import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.plugin.ServiceContext;
 import juzu.impl.plugin.ServiceDescriptor;
 import juzu.impl.plugin.application.ApplicationService;
 
+import java.util.ResourceBundle;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class BundleService extends ApplicationService {
+
+  /** . */
+  static ServiceDescriptor DESCRIPTOR = new ServiceDescriptor(Tools.list(
+      BeanDescriptor.createFromProviderType(ResourceBundle.class, Scope.REQUEST, null, BundleProvider.class)
+  ));
 
   public BundleService() {
     super("bundle");
@@ -29,6 +39,6 @@ public class BundleService extends ApplicationService {
 
   @Override
   public ServiceDescriptor init(ServiceContext context) throws Exception {
-    return BundleDescriptor.INSTANCE;
+    return DESCRIPTOR;
   }
 }

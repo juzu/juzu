@@ -38,11 +38,6 @@ public class ValidationService extends ApplicationService {
 
   @Override
   public ServiceDescriptor init(ServiceContext context) throws Exception {
-    return new ServiceDescriptor() {
-      @Override
-      public Iterable<BeanDescriptor> getBeans() {
-        return Tools.iterable(BeanDescriptor.createFromBean(ValidationFilter.class, Scope.SINGLETON, Collections.<Annotation>emptyList()));
-      }
-    };
+    return new ServiceDescriptor(Tools.iterable(BeanDescriptor.createFromBean(ValidationFilter.class, Scope.SINGLETON, Collections.<Annotation>emptyList())));
   }
 }

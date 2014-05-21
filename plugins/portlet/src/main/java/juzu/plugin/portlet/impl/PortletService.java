@@ -16,9 +16,14 @@
 
 package juzu.plugin.portlet.impl;
 
+import juzu.Scope;
+import juzu.impl.common.Tools;
+import juzu.impl.inject.BeanDescriptor;
 import juzu.impl.plugin.ServiceContext;
 import juzu.impl.plugin.ServiceDescriptor;
 import juzu.impl.plugin.application.ApplicationService;
+
+import javax.portlet.PortletPreferences;
 
 /**
  * @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a>
@@ -26,12 +31,17 @@ import juzu.impl.plugin.application.ApplicationService;
  */
 public class PortletService extends ApplicationService {
 
+  /** . */
+  public static ServiceDescriptor DESCRIPTOR = new ServiceDescriptor(Tools.list(
+      BeanDescriptor.createFromProviderType(PortletPreferences.class, Scope.REQUEST, null, PortletPreferencesProvider.class)
+  ));
+
   public PortletService() {
     super("portlet");
   }
 
   @Override
   public ServiceDescriptor init(ServiceContext context) throws Exception {
-    return PortletDescriptor.INSTANCE;
+    return DESCRIPTOR;
   }
 }
