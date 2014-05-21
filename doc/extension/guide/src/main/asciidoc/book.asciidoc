@@ -18,3 +18,5 @@ include::providerfactories.asciidoc[]
 include::templatespi.asciidoc[]
 
 include::tutorialbundlegenplugin.asciidoc[]
+
+include::tutorialmetricsplugin.asciidoc[]

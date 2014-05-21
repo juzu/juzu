@@ -1,0 +1,119 @@
+=  Metrics plugin tutorial
+
+The Metrics plugin tutorial provides guidance for the implementation of a Juzu service. This plugin provides an
+integration of the http://metrics.codahale.com[Metrics] library in Juzu. Metrics is an easy to use library for reporting
+and publishing metrics.
+
+In this section we will study three Juzu runtime aspects:
+
+* creation of a Juzu service
+* intercepting a Juzu request
+* binding a bean in the _IOC_ container
+
+== Creating a Juzu service
+
+A Juzu service is a class extending the +juzu.impl.plugin.application.ApplicationService+ abstract class. The
+service must be declared in a +META-INF/services/juzu.impl.plugin.application.ApplicationService_ file:
+
+.The +META-INF/services/juzu.impl.plugin.application.ApplicationService+ service declaration
+----
+examples.plugin.metrics.MetricsService
+----
+
+Our service constructor must be a public no argument constructor, it calls the super constructor with the
+service name _metrics_:
+
+[source,java]
+----
+include::{sourcesdir}/examples/plugin/metrics/MetricsService.java[tags=constructor]
+----
+
+The constructor initializes two fields:
+
+* the +registry+ field, a Metrics registry that holds all the metrics, this registry will be bound in the IOC container
+so an application or another service can be injected with this registry for publishing custom metrics
+* the +responses+ field, a Metrics timer, bound in registry that will accumulate request statistics
+
+== Service initialization
+
+After the service is created, Juzu will call its +init+ method to perform the initialization step. The +init+
+method can return a +ServiceDescriptor+ that will instruct Juzu to load the service. The service can chose
+to return null instead of the descriptor, the null value tells Juzu to discard the service instead.
+
+The service descriptor contains a list of +BeanDescriptor+ classes: this is the list of the beans the service
+ wants to register in the IOC container. In our case we want to expose the Metrics registry as a singleton
+ bean so it can be injected in the whole application:
+
+[source,java]
+----
+include::{sourcesdir}/examples/plugin/metrics/MetricsService.java[tags=init]
+----
+<1> Create a +javax.inject.Provider+ that wraps the +registry+ field
+<2> Create a singleton bean descriptor
+<3> Return the service descriptor with the registry bean
+
+After the service is initialized, the service will be _started_, this event can be intercepted with the
++javax.annotation.PostConstruct+ callback: our service will use it to bind the registry into the static
++SharedMetricRegistries+ exposed by Metrics:
+
+[source,java]
+----
+include::{sourcesdir}/examples/plugin/metrics/MetricsService.java[tags=start]
+----
+
+The registry is bound under the application package name, making sure that registries will be namespaced
+correctly to avoid collisions.
+
+== Intercepting the request
+
+We have now a fully initiliazed Metrics registry and timer, let's see how to intercept the Juzu requests
+to collect statistics in this timer. Intercepting a request is done by implementing the +juzu.impl.request.RequestFilter+
+interface for a specific request stage.
+
+The application request is indeed decomposed into four stages:
+
+* _unmarshalling_ : unmarshalls the request entity when there is one
+* _handler_       : determine the handler arguments and get the application handler from the IOC container
+* _lifecycle_     : trigger the controller lifecycle and calls the +juzu.request.RequestLifeCycle+ interface when necessary
+* _invoke_        : performs the handler method invocation on the controller
+
+Our service can use mostly any of these stage as it just wants to count the number of requests, so it will use
+the _invoke_ stage and thus our service implements the +RequestFilter<Stage.Invoke>+ interface:
+
+[source,java]
+----
+include::{sourcesdir}/examples/plugin/metrics/MetricsService.java[tags=handle]
+----
+
+The implementation is quite trivial, it uses the +responses+ timer to collect the request statistic.
+
+== Testing the plugin
+
+We will test the plugin via the +MockApplication+ object provided by Juzu, the test application is quite simple with
+a single controller:
+
+[source,java]
+----
+include::{sourcesdir}/examples/metrics/Controller.java[tags=class]
+----
+
+* the constructor is injected with the registry and it publishes a custom meter
+* the +index+ method handles the application request and returns a simple _ok_ value
+
+Our test will assert three things:
+
+* the Metrics registry is published in the +SharedMetricRegistries+
+* the Metrics registry recorded the request succesfully
+* the Metrics registry can be used by the application
+
+[source,java]
+----
+include::{sourcesdir}/examples/plugin/metrics/MetricsTestCase.java[tags=testTimer]
+----
+<1> Clear the +SharedMetricRegistries+
+<2> Create the mock application
+<3> Invoke the application
+<4> Check our registry was published under the application package name
+<5> Get the timer and check it recorded the statistic
+<6> Check the application used the registry via injection succesfully
+
