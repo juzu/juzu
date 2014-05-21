@@ -1,3 +1,5 @@
+= Provider factories
+
 Provider factories provide plugability for integrating beans that are not managed by the IOC container. A provider
 factory is dynamic: it is a factory for +javax.inject.Provider+ that returns a provider for a specificied class. Usually
 provider factories will lookup the service in a registry (like another IOC container) and returns a provider that

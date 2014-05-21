@@ -1,3 +1,5 @@
+= Asset minifier
+
 An asset minifier is simple interface providing the opportunity to transform the original source files into
 a new version that is a minified version of this source.
 

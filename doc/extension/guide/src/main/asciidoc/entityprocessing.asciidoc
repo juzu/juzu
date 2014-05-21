@@ -1,3 +1,5 @@
+= Entity processing
+
 Juzu allows the application to interact with request and response entities with the +juzu.request.ClientContext+ and
 the +juzu.Response.Body+ objects. Those objects are binary data (or character data) oriented and provide a low
  level interface for reading or writing request entities.

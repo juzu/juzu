@@ -1,3 +1,5 @@
+= Value types
+
 Value types is a Juzu plugin for dealing with controller parameters that can trivially be converted from and to strings.
 In this section we will explain how the +juzu.impl.value.ValueType+ interface works.
 

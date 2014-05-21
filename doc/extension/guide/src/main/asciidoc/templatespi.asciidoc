@@ -1,3 +1,6 @@
+[[templatespi]]
+= Templating SPI
+
 This chapter dives into the template life cycle from the compilation time to the run time. We will describe the
 template Service Provider Interface (SPI), the SPI is designed to make Juzu templating extensible and integrating
 template engines in Juzu. This chapter is optional is you are only writing ab application with Juzu, however it is
