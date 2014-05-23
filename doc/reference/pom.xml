@@ -29,6 +29,7 @@
       </activation>
       <modules>
         <module>api</module>
+        <module>examples</module>
         <module>guide</module>
       </modules>
     </profile>

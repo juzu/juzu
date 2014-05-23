@@ -1,0 +1,66 @@
+= Hello World
+
+The first section <<builddeployruntest>> of this guide covers the entire life cycle of an application, this section
+will teach you about the structure of a basic Hello World application written with Juzu. The goal of this chapter is
+not to show you an entire Juzu application, since the Juzu tutorial already serves this purpose, instead the goal is to
+show you how to write the most basic application as any Hello World app does.
+
+We suppose you have setup already the application structure, which means you have a Java project with the
+correct dependencies for compiling the Juzu application.
+
+== Step 1: application package
+
+The first step is to decide the application package name. Indeed a Juzu application belongs to a single Java
+package and its subpackages, allowing several applications in the same unit of compilation. Let's name our
+application +examples.helloworld+. That's how Juzu identifies an application, by its package name.
+
+Let's create this package and most importantly the Java _named package_: the named package is a file named
+ _package-info.java_ that resides a the package folder, it can be used for documenting a package but also
+to annotating a package. Indeed Java packages can be annoated and Juzu use the +@juzu.Application+ package
+annotation for declaring an application:
+
+[source,java]
+.The _examples/helloworld/package-info.java_ file
+----
+include::{sourcesdir}/examples/helloworld/package-info.java[]
+----
+
+== Step 2: hello world controller
+
+Juzu follows the MVC paradygm for creating application and thus we need to provide at least one controller
+ to handle web requests, let's create one!
+
+[source,java]
+.The _examples/helloworld/HelloWorldController.java_ file
+----
+import juzu.View;
+import juzu.Response;
+
+public class HelloWorldController {
+  @View
+  public Response index() {
+    return Reponse.ok("Hello World");
+  }
+}
+----
+
+That's it, our application will now say _Hello World_ to any incoming request. The +@View+ annotation defines
+ a Juzu view and the method name +index+ is a special name that catches any unmatched request. It returns
+ a response object that contains the markup of the page.
+
+== Step 3: adding a template
+
+Let's wrap up this by adding a template for the view. We need to create first an _helloworld.gtmpl_ template in
+the +templates+ sub package:
+
+.The _examples/helloworl/templates/helloworld.gtmpl_ file
+----
+include::{sourcesdir}/examples/helloworld/templates/helloworld.gtmpl[]
+----
+
+This template can then be used by injecting it in the controller using dependency injection:
+
+[source,java]
+----
+include::{sourcesdir}/examples/helloworld/HelloWorldController.java[]
+----

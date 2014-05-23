@@ -17,9 +17,18 @@
   <dependencies>
     <dependency>
       <groupId>org.juzu</groupId>
+      <artifactId>juzu-doc-tutorial-examples</artifactId>
+      <classifier>sources</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
+      <artifactId>juzu-doc-tutorial-examples</artifactId>
+      <classifier>test-sources</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
       <classifier>sources</classifier>
-      <version>1.0.0-beta4-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
@@ -40,6 +49,12 @@
                 <artifactItem>
                   <groupId>org.juzu</groupId>
                   <artifactId>juzu-core</artifactId>
+                  <classifier>sources</classifier>
+                  <version>${project.version}</version>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.juzu</groupId>
+                  <artifactId>juzu-doc-reference-examples</artifactId>
                   <classifier>sources</classifier>
                   <version>${project.version}</version>
                 </artifactItem>
