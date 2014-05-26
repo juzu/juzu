@@ -6,6 +6,7 @@ The bridge is the runtime in which Juzu executes, until now Juzu provides two br
 * The servlet bridge executes a Juzu application in a servlet container like Tomcat
 * The portlet bridge executes a Juzu application in a portlet container inside a portal
 
+[[servlet_bridge]]
 == Servlet bridge
 
 The servlet bridge exposes a Juzu application as a servlet in a Servlet Container.
@@ -55,6 +56,7 @@ In case of several applications, each can be configured with a _path mapping_ in
 WARNING: Any other kind of _url-pattern_ than the default servlet (_/_) or path mapping is not supported
 and will raise an error during startup.
 
+[[portlet_bridge]]
 == Portlet bridge
 
 The portlet bridge exposes a Juzu application as a portlet in a Portlet Container.

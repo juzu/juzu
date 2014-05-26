@@ -64,3 +64,53 @@ This template can then be used by injecting it in the controller using dependenc
 ----
 include::{sourcesdir}/examples/helloworld/HelloWorldController.java[]
 ----
+
+== Step 4: declaring the application
+
+Finally our application must be declared when it is deployed in a _war_ file. The runtime in which the application
+executes is called the _bridge_ and we can declare it either as a _servlet_ application or as a _portlet_ application.
+
+=== Servlet application
+
+Declaring as a servlet application is easy to do via the <<servlet>>: the +@Servlet+ annotation annotates our
+application package, pretty much like the +@Application+ does:
+
+[source,java]
+.Declare the servlet application mounted on the _/_ path
+----
+@Application
+@Servlet("/")
+package examples.helloworld;
+----
+
+This will generate a servlet running the application on the _/_ path. If you like you can declare the application
+directly in the _web.xml_ file, see <<servlet_bridge>>.
+
+=== Portlet application
+
+Declaring as a portlet application can only be done via the _portlet.xml_ file since portlet containers don't
+support annotation based configuration. The <<portlet_bridge>> chapter covers the configuration of such
+portlet, in our case the describe is:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<portlet>
+  <portlet-name>HelloWorldPortlet</portlet-name>
+  <display-name xml:lang="EN">Hello World Application</display-name>
+  <portlet-class>juzu.bridge.portlet.JuzuPortlet</portlet-class> <1>
+  <init-param>
+    <name>juzu.app_name</name> <2>
+    <value>examples.helloworld</value>
+  </init-param>
+  <supports>
+    <mime-type>text/html</mime-type>
+  </supports>
+  <portlet-info>
+    <title>Hello World</title>
+    <keywords>juzu,sample</keywords>
+  </portlet-info>
+</portlet>
+----
+<1> The +JuzuPortlet+ will run the application
+<2> Configured with the _juzu.app_name_ init parameter
