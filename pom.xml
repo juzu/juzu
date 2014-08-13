@@ -72,9 +72,9 @@
     <!-- Tells Sonar to use jacoco for coverage results -->
     <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
     <!-- Jacoco version to use -->
-    <jacoco.version>0.6.3.201306030806</jacoco.version>
+    <jacoco.version>0.7.1.201405082137</jacoco.version>
     <!-- The Sonar Jacoco Listener for JUnit to extract coverage details per test -->
-    <sonar-jacoco-listeners.version>1.4</sonar-jacoco-listeners.version>
+    <sonar-jacoco-listeners.version>2.4</sonar-jacoco-listeners.version>
     <!-- Don't let Sonar execute tests. We will ask it to Maven -->
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     <!-- The system property jacoco.outputDir needs to be override on the command line
