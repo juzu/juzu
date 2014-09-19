@@ -25,18 +25,26 @@ import juzu.Response;
 import juzu.Route;
 import juzu.View;
 import juzu.plugin.ajax.Ajax;
+import juzu.plugin.validation.ValidationError;
+import juzu.request.RequestContext;
+import juzu.request.RequestLifeCycle;
+
 import org.sample.booking.Flash;
 import org.sample.booking.models.Booking;
 import org.sample.booking.models.Hotel;
 import org.sample.booking.models.User;
+import org.sample.booking.models.Violation;
 
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
+
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Hotels // extends Application
+public class Hotels implements RequestLifeCycle// extends Application
 {
 
 /*
@@ -56,6 +64,9 @@ public class Hotels // extends Application
 
   @Inject
   Flash flash;
+  
+  @Inject
+  Violation violation;
 
   @Inject
   @Path("hotels/index.gtmpl")
@@ -181,4 +192,30 @@ public class Hotels // extends Application
        index();
    }
 */
+
+  @Override
+  public void beginRequest(RequestContext context) {
+  }
+
+  @Override
+  public void endRequest(RequestContext context) {
+      Response response = context.getResponse();
+      if (response instanceof ValidationError) {
+        ValidationError error = (ValidationError)response;
+        String id = context.getParameters().get("id").getValue();
+        
+        Iterator<ConstraintViolation<Object>> v = error.getViolations().iterator();
+        Booking booking = (Booking)error.getViolations().iterator().next().getLeafBean();
+        while (v.hasNext()) {
+          ConstraintViolation<Object> c = v.next();
+          Iterator<javax.validation.Path.Node> nodeIter = c.getPropertyPath().iterator(); 
+          javax.validation.Path.Node node = null;
+          while (nodeIter.hasNext()) {
+            node = nodeIter.next();
+          }
+          violation.add(node.getName(), c.getMessage());
+        }
+        context.setResponse(Hotels_.book(id, booking));
+      }
+  }
 }

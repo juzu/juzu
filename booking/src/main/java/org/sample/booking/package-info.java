@@ -15,7 +15,7 @@
  */
 
 @Application(defaultController = org.sample.booking.controllers.Application.class)
-@Bindings({@Binding(Flash.class), @Binding(Login.class)})
+@Bindings({@Binding(Flash.class), @Binding(Login.class), @Binding(Violation.class)})
 @Servlet("/")
 @WebJars(@WebJar("jquery"))
 @Stylesheets(
@@ -46,3 +46,4 @@ import juzu.plugin.servlet.Servlet;
 import juzu.plugin.webjars.WebJar;
 import juzu.plugin.webjars.WebJars;
 import org.sample.booking.controllers.Login;
+import org.sample.booking.models.Violation;

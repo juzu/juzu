@@ -22,15 +22,24 @@ import juzu.Path;
 import juzu.Response;
 import juzu.Route;
 import juzu.View;
+import juzu.plugin.validation.ValidationError;
+import juzu.request.RequestContext;
+import juzu.request.RequestLifeCycle;
 import juzu.template.Template;
+
 import org.sample.booking.Flash;
+import org.sample.booking.models.Booking;
 import org.sample.booking.models.User;
+import org.sample.booking.models.Violation;
 
 import javax.inject.Inject;
+import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
 
+import java.util.Iterator;
+
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
-public class Application {
+public class Application implements RequestLifeCycle {
 
 /*
    @Before
@@ -71,6 +80,9 @@ public class Application {
 
   @Inject
   Flash flash;
+  
+  @Inject
+  Violation violation;
 
   @View
   @Route("/")
@@ -130,4 +142,19 @@ public class Application {
     login.setUserName(null);
     return Application_.index();
   }
+
+  @Override
+  public void beginRequest(RequestContext context) {    
+  }
+
+  @Override
+  public void endRequest(RequestContext context) {
+      Response response = context.getResponse();
+      if (response instanceof ValidationError) {
+        ValidationError error = (ValidationError)response;        
+        violation.add(Violation.REGISTER, error.getHtmlMessage());
+        
+        context.setResponse(Application_.register());
+      }
+   }
 }
