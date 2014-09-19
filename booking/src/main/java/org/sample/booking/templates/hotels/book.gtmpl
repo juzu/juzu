@@ -2,6 +2,7 @@
 #{title value='Book $hotel.name'/}
 #{param name=hotel/}
 #{param name=booking/}
+#{param name=booking/}
 
 <h1>Book hotel</h1>
 
@@ -29,11 +30,25 @@
     </p>
         <p>
             <strong>Check In Date:</strong> <input type="text" size="10" name="booking.checkinDate" class="datepicker" value="${booking.checkinDate?.format('yyyy-MM-dd')?:''}"> *
-            <span class="error"></span>
+            <span class="error">
+           	<%
+           		def checkinMSG = violation.get(org.sample.booking.models.Violation.CHECKIN_DATE); 
+           		if (checkinMSG != null) {
+           		  print checkinMSG;
+           		}
+           	%>
+            </span>
         </p>
         <p class="">
             <strong>Check Out Date:</strong> <input type="text" size="10" name="booking.checkoutDate" class="datepicker" value="${booking.checkoutDate?.format('yyyy-MM-dd')?:''}"> *
-            <span class="error"></span>
+            <span class="error">
+           	<%
+           		def checkoutMSG = violation.get(org.sample.booking.models.Violation.CHECKOUT_DATE); 
+           		if (checkoutMSG != null) {
+           		  print checkoutMSG;
+           		}
+           	%>
+            </span>
         </p>
     <p>
         <strong>Room preference:</strong>
@@ -50,11 +65,25 @@
     </p>
         <p>
             <strong>Credit Card #:</strong> <input type="text" name="booking.creditCard" size="16" value="${booking.creditCard?:''}"> *
-            <span class="error"></span>
+            <span class="error">
+            <%
+           		def ccMSG = violation.get(org.sample.booking.models.Violation.CREDIT_CARD); 
+           		if (ccMSG != null) {
+           		  print ccMSG;
+           		}
+           	%>
+            </span>
         </p>
         <p>
             <strong>Credit Card Name:</strong> <input type="text" name="booking.creditCardName" size="16" value="${booking.creditCardName?:''}"> *
-            <span class="error"></span>
+            <span class="error">
+            <%
+           		def ccNameMSG = violation.get(org.sample.booking.models.Violation.CREDIT_CARD_NAME); 
+           		if (ccNameMSG != null) {
+           		  print ccNameMSG;
+           		}
+           	%>
+            </span>
         </p>
     <p>
         <strong>Credit Card Expiry:</strong>

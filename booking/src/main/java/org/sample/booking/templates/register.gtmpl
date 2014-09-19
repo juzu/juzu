@@ -2,7 +2,14 @@
 #{title value=Register/}
 
 <h1>Register</h1>
-
+<%
+	def registerError = violation.get(org.sample.booking.models.Violation.REGISTER); 
+	if (registerError != null) {
+	  print "<div class=\"error\">";
+	  print registerError;
+	  print "</div>";
+	}
+%>
 <form action="@{Application.saveUser()}" method="post">
         <p>
             <strong>Username:</strong> <input type="text" name="username" size="16" value=""> *

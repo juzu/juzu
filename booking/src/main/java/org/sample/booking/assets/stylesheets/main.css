@@ -152,8 +152,13 @@ div.booking {
     color: #c00;
 }
 
-.booking form .hasError .error {
+.booking .error {
     font-size: 80%;
+    color: #c00;
+}
+
+.booking section .error {
+    font-size: 100%;
 }
 
 .booking form .buttons {
