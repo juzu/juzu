@@ -29,11 +29,14 @@
     locations.eachWithIndex() { current, i -> %>
     <div class="accordion-group">
       <div class="accordion-heading">
-        <a class="accordion-toggle" href="#${current}" data-parent="${id}" data-toggle="collapse">${current}</a>
+        <a class="accordion-toggle" href="#${current}" data-parent="${id}">${current}</a>
       </div>
-      <% def expanded = i != index ? 'in' : ''; %>
+      <% def expanded = i == index ? 'in' : ''; %>
       <div id="${current}" class="accordion-body collapse ${expanded}">
         <div class="accordion-inner">
+        	<%if (i == index) {%>
+        	<p>The weather temperature in ${location} is ${temperature} degrees C</p>
+        	<%}%>
         </div>
       </div>
     </div>
