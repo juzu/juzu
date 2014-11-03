@@ -1,0 +1,7 @@
+#{param name=enableComment/}
+
+<form action="@{JuZcretApplication.enableComment()}" method="POST" role="form">
+    <h5>Configuration</h5>
+    <input type="checkbox" name="enableComment" <%=enableComment ? "checked" : "" %>/>Enable Comment
+    <button type="submit">Save</button>
+</form>

@@ -1,0 +1,115 @@
+// Variables
+//=======================================
+@heightSecretItem: 238px;
+@secretItemGutter: 6px;
+
+// Mixins
+//=======================================
+
+// Opacity
+.opacity(@opacity) {
+  opacity: @opacity;
+  // IE8 filter
+  @opacity-ie: (@opacity * 100);
+  filter: ~"alpha(opacity=@{opacity-ie})";
+}
+
+// Common Style
+//=======================================
+
+// Secret Wall
+.secret-wall-container {
+  padding: 20px 30px;
+  .btn-primary {
+    padding-right: 20px;
+    padding-left: 20px;
+  }
+}
+.secret-wall-container, .secret-wall-container * {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.secret-wall-heading {
+  margin-bottom: 10px;
+  .btn {
+    margin-top: 6px;
+  }
+}
+.secret-wall-list {
+  margin: 0 -@secretItemGutter;
+  > li {
+    float: left;
+    padding: @secretItemGutter;
+    width: 100% / 3;
+    .secret-image {
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-color: #000;
+      position: relative;
+      height: @heightSecretItem;
+      width: 100%;
+      display: block;
+      &:before {
+        background: none repeat scroll 0 0 rgba(0, 0, 0, 0.5);
+        content: "";
+        display: block;
+        height: 100%;
+        position: absolute;
+        width: 100%;
+      }
+    }
+    .secret-mesage {
+      bottom: 65px;
+      color: #fff;
+      font-size: 20px;
+      font-weight: normal;
+      left: 25px;
+      line-height: 24px;
+      position: absolute;
+      right: 25px;
+      text-align: center;
+      top: 25px;
+    }
+    &:nth-child(3n+3) {
+      .popover{
+        right: -1px;
+        .arrow {
+          left: auto;
+          right: 34px;
+        }
+      }
+    }
+  }
+}
+
+// Add Secret
+
+.share-secret-form {
+  .form-title {
+    margin: 0 0 10px;
+    text-shadow: none;
+  }
+  textarea {
+    min-width: 271px;
+    max-width: 271px;
+    max-height: 300px;
+    margin-bottom: 10px;
+    min-height: 80px;
+  }
+  textarea, input {
+    margin-bottom: 5px;
+  }
+}
+
+.share-secret-box {
+  display: inline-block;
+  text-align: left;
+  margin-top: 20px;
+  .title {
+    text-align: center;
+  }
+  .btn {
+    min-width: 78px;
+  }
+}

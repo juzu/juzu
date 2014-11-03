@@ -1,0 +1,466 @@
+:docinfo1: docinfo1
+:linkattrs:
+:hardbreaks:
+
+= Step 7 - Finish the job properly
+
+JuZcret application is now finish but our *project is not perfect*... 
+All through the JuZcret tutorial we ignore to tell you about *Unit Test* and this for sure, is not a good practice.
+The reason is that we wanted to keep you focus on a specific topic during each step. It’s why it’s only during this last step that we’ll talk about *Unit Test in Juzu*.
+The good point is that Juzu allow you to easily leverage *selenium* for simulating real application while taking advantage of the speed of *JUnit*.
+
+So it's time to write Unit Test for our JuZcret portlet. The portlet will be deploy to an embedded portlet container. *Selenium and webdriver* will help to simulate almost all user interactions with the application, then *Arquillian* will help to integrate with *JUnit*.
+
+= Dependencies
+
+So we will use:
+
+* *JUnit 4*
+* *Arquillian*: A testing framework for managing containers and write integration test
+* *ShrinkWrap*: Arquillian’s little brother for creating Java archives easily
+* *Selenium WebDriver*: A simple API for simulating browser behavior
+
+For making testing easy, Juzu provides a Maven dependencies called *depchains* containing all needed dependencies for testing an application with those tools: +juzu-depchain-arquillian+ and +juzu-depchain-arquillian-tomcat7+ that should be already in your +pom.xml+:
+
+[source,xml]
+----
+<dependency>
+  <groupId>junit</groupId>
+  <artifactId>junit</artifactId>
+  <version>4.10</version>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-depchain-arquillian</artifactId>
+  <version>1.0.0-cr1</version>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-depchain-arquillian-tomcat7</artifactId>
+  <version>1.0.0-cr1</version>
+  <scope>test</scope>
+</dependency>
+----
+
+Also Juzu core provides some *abstract test class*, that make our test easier to interact with Arquillian. Lets add this dependency and this plugin:
+
+[source,xml]
+----
+       [...]
+
+       <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-core</artifactId>
+          <version>1.0.0-cr1</version>
+          <type>test-jar</type>
+          <scope>test</scope>
+       </dependency>
+
+    [...]
+
+              <!-- juzu-core test jar need this configuration -->
+              <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.16</version>
+                <configuration>
+                <systemPropertyVariables>
+                  <targetDir>${project.build.directory}</targetDir>
+                  <juzu.test.compiler>javac</juzu.test.compiler>
+                  <juzu.test.resources.path>${basedir}/src/test/resources</juzu.test.resources.path>
+                  <juzu.test.workspace.path>
+                    ${project.build.directory}/workspace
+                  </juzu.test.workspace.path>
+                </systemPropertyVariables>
+                </configuration>
+              </plugin>
+
+        [...]
+----
+
+There are *xml parsing libraries conflicts* between htmlunit webdriver and our eXo JCR. We’ll need to add some *"exclusions"* tag into the +pom.xml+. Update the +exo.jcr.component.ext+ dependency:
+
+[source,xml]
+----
+     <dependency>
+        <groupId>org.exoplatform.jcr</groupId>
+        <artifactId>exo.jcr.component.ext</artifactId>
+        <version>1.15.x-SNAPSHOT</version>
+        <scope>provided</scope>
+        <exclusions>
+            <exclusion>
+               <groupId>xml-apis</groupId>
+               <artifactId>xml-apis</artifactId>
+            </exclusion>
+            <exclusion>
+               <groupId>org.exoplatform.core</groupId>
+               <artifactId>exo.core.component.document</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+----
+
+= Test configuration and Mocks
+
+We need to add a *configuration file* for arquillian: +src/test/resources/arquillian.xml+
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<arquillian
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://jboss.org/schema/arquillian"
+  xsi:schemaLocation="http://jboss.org/schema/arquillian http://jboss.org/schema/arquillian/arquillian_1_0.xsd">
+
+  <extension qualifier="webdriver">
+    <!-- Needed for html unit web driver -->
+    <property name="javascriptEnabled">true</property>
+  </extension>
+
+  <container qualifier="tomcat" default="true">
+    <configuration>
+      <property name="bindHttpPort">8080</property>
+    </configuration>
+  </container>
+
+</arquillian>
+----
+
+= Overwrite service implementation
+
+We only want to focus to testing the *JuZcret controller*, but not the JCR service. It’s better to mock the SecretService JCR implementation. The good news is we already have an in-memory service implementation (remember step-2). The bad news is that today we cannot override the service declared in +package-info.java+ in the unit test. For now, we have a workaround and for the future, we plan to improve the juzu-core unit test support.
+
+Create a mock for secret service and lets add it into +src/test/java/org/juzu/tutorial/services+:
+
+[source,java]
+----
+package org.juzu.tutorial.services;
+
+import javax.inject.Singleton;
+
+import java.util.List;
+import java.util.Set;
+
+import org.juzu.tutorial.models.Comment;
+import org.juzu.tutorial.models.Secret;
+
+@Singleton
+public class SecretServiceJCRImpl implements SecretService {
+
+  private SecretService delegate;
+
+  public SecretServiceJCRImpl() {
+    this.delegate = new SecretServiceMemImpl();
+  }
+
+  @Override
+  public List<Secret> getSecrets() {
+    return delegate.getSecrets();
+  }
+
+  @Override
+  public void addSecret(String message, String imageUrl) {
+    delegate.addSecret(message, imageUrl);
+  }
+
+  @Override
+  public Comment addComment(String secretId, Comment comment) {
+    return delegate.addComment(secretId, comment);
+  }
+
+  @Override
+  public Set<String> addLike(String secretId, String userId) {
+    return delegate.addLike(secretId, userId);
+  }
+}
+----
+
+Classloader of the test will load this service +SecretServiceJCRImpl+ instead of the one in main source. This mock service *delegate* all the task to our in-memory implementation.
+
+NOTE: If you are using IntelliJ you can get a "Duplicate class found in the file" warning due to the fact that we have two +SecretServiceJCRImpl+ in the same package (one in +/main+, one in +/test+). Just ignore it.
+
+We also have +SessionProviderService+ and +NodeHierarchyCreator+ which are eXo JCR service in +package-info.java+. We don’t need them for the test but we didn't declare an implementation for them in +package-info.java+. So we will mock the *eXo kernel provider* to avoid to get an error when it will try to bind the implementation.
+
+Lets mock the *eXo kernel provider* in +src/test/java/org/juzu/tutorial+:
+[source,java]
+----
+package org.juzu.tutorial;
+
+import javax.inject.Provider;
+
+import juzu.inject.ProviderFactory;
+
+public class MockProviderFactory implements ProviderFactory {
+
+  @Override
+  public <T> Provider<? extends T> getProvider(final Class<T> implementationType) throws Exception {
+    return new Provider<T>() {
+      @Override
+      public T get() {
+        return null;
+      }
+    };
+  }
+}
+----
+
+Notice that the *provider return null instance*, it’s just the *mock provider* to satisfy the IOC container. We don’t need any JCR service instance in the test.
+
+We need also to *register the mock* to service loader by creating +src/test/resources/META-INF/services/juzu.inject.ProviderFactory+:
+
+[source,text]
+----
+org.juzu.tutorial.MockProviderFactory
+----
+
+= Test cases
+
+We decide to have a dedicated test case for each result of tutorial step. We’ll simulate all available user interaction with the JuZcret portlet using Selenium. 
+
+NOTE: There still 2 actions that can not simulated for now: changing the language, and the portlet mode. This should be improved in the future version.
+
+We will develop our Unit Test in +JuZcretTestCase.java+ file in +src/test/java/org/juzu/tutorial+:
+[source,java]
+----
+package org.juzu.tutorial;
+
+import juzu.test.AbstractWebTestCase;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.drone.api.annotation.Drone;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.openqa.selenium.WebDriver;
+
+public class JuZcretTestCase extends AbstractWebTestCase {
+
+    @Deployment(testable = false)
+    public static WebArchive createDeployment() {
+        return createPortletDeployment("org.juzu.tutorial");
+    }
+
+    @Drone
+    WebDriver driver;
+
+}
+----
+
+We use +createPortletDeployment+ method from the *abstract test class* of juzu-core that allow to deploy our portlet into an embedded portlet container.
+*WebDriver* is injected by arquillian and help to *simulate* the *user interactions*.
+
+= Test rendering
+
+After step-1, we have a *running portlet*, that render the +secretWall.gtmpl+. Unit test should help to make a quick test on the result of render process
+
+[source,java]
+----
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+
+[...]
+
+  @Test
+  public void testRender() throws Exception {
+    driver.get(getPortletURL().toString());
+    WebElement body = driver.findElement(By.tagName("body"));
+    assertTrue(body.getText().indexOf("JuZcret Portlet") != -1);
+    System.out.println(driver.getPageSource());
+  }
+
+[...]
+
+----
+
+Our first test case is very simple:
+
+. Make the request, get the html body element and be sure that it contains the substring *"JuZcret Portlet"*
+. Printing out the whole server response to the console to see the result
+
+= Test adding secret
+
+After step-2, user is able to *add new secrets*. Thanks to arquillian and webdriver, we can easily simulate user input, and submit form in a JUnit test. Lets add this new test case for adding secret:
+
+[source,java]
+----
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+[...]
+
+  @Test
+  public void testSecret() throws Exception {
+    driver.get(getPortletURL().toString());
+    WebElement body = driver.findElement(By.tagName("body"));
+    assertFalse(body.getText().contains("test secret text"));
+
+    // add secret form
+    WebElement shareBtn = driver.findElement(By.cssSelector(".secret-wall-heading a"));
+    driver.get(shareBtn.getAttribute("href"));
+    // input
+    WebElement secretInput = driver.findElement(By.tagName("textarea"));
+    secretInput.sendKeys("test secret text");
+    // submit
+    WebElement submitBtn = driver.findElement(By.tagName("button"));
+    submitBtn.click();
+
+    // wait for redirecting to index page
+    body = new WebDriverWait(driver, 10).until(new ExpectedCondition<WebElement>() {
+      public WebElement apply(WebDriver drv) {
+        return drv.findElement(By.tagName("body"));
+      }
+    });
+    assertTrue(body.getText().contains("test secret text"));
+  }
+----
+
+. We assert that there is no text *"test secret text"* in the secret list
+. *WebDriver* provide *API for finding elements in a html page*. We find the url for the add secret page
+. Find the textarea, and button, then fill the form, and submit. All are written using java api to simulate the actions. That’s *fast and clean way for UI test*
+. After submitting the add secret form, the portlet will redirect to home page, notice that it may take some time, so we need to tell WebDriver to wait until we have the response from server by +WebDriverWait+
+
+= Test Assets
+
+We have tested for rendering and user interactions. In step 3 we improved the portlet *Look&Feel*. So we should test if the portlet is served with correct assets (css, and js files), to make sure all our declaration for assets in +package-info.java+ are correct:
+
+[source,java]
+----
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+[...]
+
+@Test
+  public void testAsset() throws Exception {
+    driver.get(getPortletURL().toString());
+    
+    List<WebElement> scripts = driver.findElements(By.tagName("script"));
+    Set<String> srcScripts = new HashSet<String>();
+    for (WebElement elem : scripts) {
+    srcScripts.add(elem.getAttribute("src"));
+    }
+    assertTrue(srcScripts.contains("http://localhost:8080/juzu/assets/org/juzu/tutorial/assets/jquery/1.10.2/jquery.js"));
+    assertTrue(srcScripts.contains("http://localhost:8080/juzu/assets/juzu/impl/plugin/ajax/script.js"));
+    assertTrue(srcScripts.contains("http://localhost:8080/juzu/assets/org/juzu/tutorial/assets/javascripts/secret.js"));
+    
+    WebElement style = driver.findElement(By.tagName("link"));
+    assertEquals("http://localhost:8080/juzu/assets/org/juzu/tutorial/assets/styles/juzcret.css",
+                   style.getAttribute("href"));
+  }
+----
+
+All necessary assets should be in the server response for rendering JuZcret. This test allow to check that all are presents:
+
+Our portlet need 3 javascript files:
+
+* *scripts.js*: This file is juzu-core ajax script, it provides jquery plugin to make ajax request to our juzu controller method
+* *jquery.js*: JQuery is used by script.js and our portlet js
+* *secret.js*: Our application js file
+
+The *juzcret.less* should be compiled and served as *juzcret.css*.
+
+= Test Ajax actions
+
+In step-5 we add some user interactions that was done by using Ajax. Fortunately, HtmlUnit do a well job on *simulating browser*. It can execute javascript, even ajax action.
+
+NOTE: Remember that we have enable js in +arquillian.xml+: +<property name="javascriptEnabled">true</property>+
+
+Lets test the *like feature*:
+
+[source,java]
+----
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+[...]
+
+@Test
+  public void testLike() throws Exception {
+    driver.get(getPortletURL().toString());
+
+    // like
+    WebElement likeBtn = driver.findElement(By.cssSelector(".btn-like"));
+    likeBtn.click();
+
+    // wait
+    By selector = By.cssSelector(".btn-like .numb");
+    ExpectedCondition<Boolean> condition = ExpectedConditions.textToBePresentInElement(selector, "1");
+    assertTrue(new WebDriverWait(driver, 10).until(condition));
+  }
+----
+
+The test is pretty simple:
+
+. Requesting the index page, click the like button
+. Don’t forget to wait until we have server response, the timeout is 10 second
+
+The last test, the *comment feature* test case:
+
+[source,java]
+----
+  @Test
+  public void testComment() throws Exception {
+    driver.get(getPortletURL().toString());
+    WebElement body = driver.findElement(By.tagName("body"));
+    assertFalse(body.getText().contains("test comment"));
+
+    // input
+    WebElement commentInput = driver.findElement(By.cssSelector(".secret-add-comment"));
+    commentInput.sendKeys("test comment");
+    // submit
+    WebElement submitBtn = driver.findElement(By.cssSelector(".btn-comment"));
+    submitBtn.click();
+    // wait
+    ExpectedCondition<Boolean> condition = ExpectedConditions.textToBePresentInElement(By.cssSelector(".secr-comments-list"),
+                                                                                       "test comment");
+    assertTrue(new WebDriverWait(driver, 10).until(condition));
+  }
+----
+
+. Check that no comment with the substring "test comment" already exist
+. Add a new comment with the message "test comment"
+. Click on the button to submit the new comment
+. Don’t forget to wait until we have server response, the timeout is 10 second
+
+Now our *JuZcret application is complete*.
+
+Perform a
+[source,text]
+----
+$ mvn clean install
+----
+and ensure that all tests success.
+
+This step is the end of the JuZcret tutorial. 
+Apprentice, you can be proud. You are now a *true Juzu developer* with the capability to develop more and more funny Juzu applications and *evangelize Juzu around you*.
+
+If you have any questions, link:http://community.exoplatform.com/portal/g/:spaces:juzu/juzu/forum[jump to the Juzu forum], we will be pleased to help you.
+
+If you want to contribute to Juzu, link:https://github.com/juzu[here is the Github repo] and don’t hesitate to contact us.
+
+++++
+<script type="text/javascript">
+//Get the left menu
+var leftmenu = document.getElementsByClassName("sectlevel0")[0];
+
+//Create back to menu link
+var menuLink = document.createElement("a");
+menuLink.href = "./index.html";
+menuLink.appendChild(document.createTextNode("Menu"));
+var menu = document.createElement("li");
+menu.setAttribute("class", "menuStep");
+menu.appendChild(menuLink);
+
+//Create go to previous step link
+var previousStepLink = document.createElement("a");
+previousStepLink.href = "./step6.html";
+previousStepLink.appendChild(document.createTextNode("Back to previous Step"));
+var previousStep = document.createElement("li");
+previousStep.setAttribute("class", "previousStep");
+previousStep.appendChild(previousStepLink);
+
+//Add them to Left Menu
+leftmenu.insertBefore(previousStep, leftmenu.firstChild);
+leftmenu.insertBefore(menu, leftmenu.firstChild);
+</script>
+++++

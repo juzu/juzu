@@ -103,6 +103,9 @@
         <executions>
           <execution>
             <id>generate-html</id>
+            <configuration>
+              <sourceDocumentName>${project.build.directory}/asciidoc/book.asciidoc</sourceDocumentName>
+            </configuration>
           </execution>
         </executions>
       </plugin>
