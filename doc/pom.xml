@@ -19,6 +19,7 @@
     <module>tutorial</module>
     <module>reference</module>
     <module>extension</module>
+    <module>tutorial-portlet</module>
   </modules>
 
   <build>
@@ -92,7 +93,7 @@
                      -a source-highlighter=coderay -a stylesheet=foundation-lime.css -a crash-version=${project.version} \
                      target/asciidoc/book.asciidoc -->
                 <sourceDirectory>${project.build.directory}/asciidoc</sourceDirectory>
-                <sourceDocumentName>${project.build.directory}/asciidoc/book.asciidoc</sourceDocumentName>
+                <!--<sourceDocumentName>${project.build.directory}/asciidoc/book.asciidoc</sourceDocumentName>-->
                 <outputDirectory>target/docs/html</outputDirectory>
                 <backend>html</backend>
                 <doctype>book</doctype>
