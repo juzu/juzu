@@ -19,6 +19,7 @@
     <module>tutorial</module>
     <module>reference</module>
     <module>extension</module>
+    <module>tutorial-portlet</module>
   </modules>
 
   <build>
