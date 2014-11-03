@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>juzu-doc-parent</artifactId>
+        <groupId>org.juzu</groupId>
+        <version>1.0.0-cr1</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>juzu-doc-tutorial-portlet-parent</artifactId>
+    <version>1.0.0-cr1</version>
+    <packaging>pom</packaging>
+
+    <name>Juzu Portlet Tutorial Aggregator</name>
+    <description>The Portlet tutorial aggregator</description>
+
+    <modules>
+        <module>examples</module>
+        <module>guide</module>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>noguide</id>
+            <activation>
+                <property>
+                    <name>!noguide</name>
+                </property>
+            </activation>
+            <modules>
+                <module>examples</module>
+                <module>guide</module>
+            </modules>
+        </profile>
+    </profiles>
+
+
+</project>
