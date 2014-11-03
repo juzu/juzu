@@ -23,7 +23,7 @@ JuZcret is funny social application allowing to share secrets.
 Juzu is a web framework written in *Java*, so first of all be sure you have a JDK install on your machine (later than 7).
 
 We will manage dependencies and project compilation with *Maven*.
-For more information about configure Maven for eXo Project please see  [[New Apache Maven setup guide for eXo projects>>http:_developer.exoplatform.org/news/website/2014/08/26/new-maven-setup-guide/]]
+For more information about configure Maven for eXo Project please see  [[New Apache Maven setup guide for eXo projects>>http://developer.exoplatform.org/news/website/2014/08/26/new-maven-setup-guide/]]
 
 We will assume that you have a basic knowledge of *Java and Web development* (HTML, CSS, JavaScript).
 
@@ -39,14 +39,14 @@ Don't forget that we are developing a Portlet. So we need a Portal to deploy it.
 To start our project, we will use the maven Juzu Archetype which will automatically generate all the structure of your Juzu project by populating it with all files and directory necessary to run a simple *Juzu HelloWorld application*.
 
 Open a new command line and place you on your working directory. Mine is:
-[source,bash]
+[source,text]
 ----
 $ cd ~/java/eXoProjects/juzu-tutorial/
 ----
 
 Then tape
 
-[source,bash]
+[source,text]
 ----
 mvn archetype:generate \
     -DarchetypeGroupId=org.exoplatform.maven.archetypes \
@@ -63,7 +63,7 @@ It’s possible to generate the application with different containers by specify
 
 When generation is finished, a *build success message* is displayed in your command line:
 
-[source,bash]
+[source,text]
 ----
 [INFO] Using following parameters for creating project from Archetype: juzu-archetype:1.0.0-cr1
 [INFO] ----------------------------------------------------------------------------
@@ -130,11 +130,11 @@ First open the portlet.xml file generated in _Juzcret/src/main/webapp/WEB-INF_ f
 [source,xml]
 ----
 <?xml version="1.0" encoding="UTF-8"?>
-<portlet-app xmlns="http:_java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+<portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
              version="2.0"
-             xmlns:xsi="http:_www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http:_java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd
-   http:_java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd
+   http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
    <portlet>
      <portlet-name>JuZcretApplication</portlet-name>
      <display-name xml:lang="EN">JuZcret Application</display-name>
@@ -180,20 +180,20 @@ Deploy it in eXo Platform
 
 Don't forget that we are developing a *Portlet application*. It means that we need a *Portal* to deploy it.
 
-Let's start by downloading [[eXo Platform Community Edition>>http:_sourceforge.net/projects/exo/files/Platform4.1/eXo-Platform-community-4.1.0-RC1.zip/download]]
+Let's start by downloading [[eXo Platform Community Edition>>http://sourceforge.net/projects/exo/files/Platform4.1/eXo-Platform-community-4.1.0-RC1.zip/download]]
 
 In command line, go to your download directory
-[source,bash]
+[source,text]
 ----
 $ cd ~/Downloads
 ----
 Unzip the download file
-[source,bash]
+[source,text]
 ----
 $ unzip eXo-Platform-community-4.1.zip
 ----
 Copy/Paste it in the directory of your of your choice (Mine is /java/eXoProjects/juzu-tutorial/platform-community-4.1/)
-[source,bash]
+[source,text]
 ----
 $ cp -R platform-community-4.1/ ~/java/eXoProjects/juzu-tutorial/platform-community-4.1/
 ----
@@ -201,12 +201,12 @@ $ cp -R platform-community-4.1/ ~/java/eXoProjects/juzu-tutorial/platform-commun
 Now we have to add our Portlet in PLF.
 
 Go back to your working directory
-[source,bash]
+[source,text]
 ----
 $ cd ~/java/eXoProjects/juzu-tutorial/tutorial-juzcret/
 ----
 Compile the application
-[source,bash]
+[source,text]
 ----
 $ mvn clean install
 ----
@@ -214,7 +214,7 @@ $ mvn clean install
 *BUILD FAILURE ???* What..??? I don't even finish the step one of this tutorial...!
 Relax guys. As usual try to understand what's wrong...
 In the maven log in the command line you can read
-[source,bash]
+[source,text]
 ----
 Results :
 
@@ -252,7 +252,7 @@ Modify it as below just to check that the body is not null as below. Unit test i
 ----
 
 So compile again:
-[source,bash]
+[source,text]
 ----
 $ mvn clean install
 ----
@@ -260,25 +260,25 @@ $ mvn clean install
 Here you should get a *Build Success*. Great now it's time to deploy our Portlet in eXo Platform.
 
 Copy the created war to eXo Platform webapps directory
-[source,bash]
+[source,text]
 ----
 $ cp ./target/tutorial-juzcret.war ~/java/eXoProjects/juzu-tutorial/platform-community-4.0.7/webapps/
 ----
 
 Go to eXo Platform directory
-[source,bash]
+[source,text]
 ----
 $ cd ~/java/eXoProjects/juzu-tutorial/platform-community-4.0.7/
 ----
 
 Start eXo in Dev mode
-[source,bash]
+[source,text]
 ----
 $ ./start_eXo.sh --dev
 ----
 
 Open your web browser and go to
-http:_localhost:8080/portal
+http://localhost:8080/portal
 username:root | Password:gtn
 
 What we want to do it's to add our *new Portlet* on a dedicated *JuZcret Page*. Here everybody will have the availability to see and share secrets !
@@ -328,4 +328,4 @@ Ah ah we get what I promised : *a ugly static Portlet !*
 
 It's time to go to [[step 2>>Step 2 - Viewing and posting Secret]] and add some functionality to our Portlet...
 
-_The final source of step 1 is available for link:https:_github.com/juzu/portlet-tutorial/tree/step-1[downloading on Github]_
+_The final source of step 1 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-1[downloading on Github]_
