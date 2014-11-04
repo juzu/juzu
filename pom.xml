@@ -39,7 +39,7 @@
     <weld.version>1.1.8.Final</weld.version>
     <spring.version>3.2.4.RELEASE</spring.version>
     <guice.version>3.0</guice.version>
-    <groovy.version>1.8.9</groovy.version>
+    <groovy.version>1.7.6</groovy.version>
     <servlet.version>3.0.1</servlet.version>
     <junit.version>4.10</junit.version>
 

@@ -94,7 +94,7 @@ public class GroovyTemplateEmitter extends DialectTemplateEmitter {
 
     //
     builder.append(sep);
-    builder.append("public class ").append(constants.getIdentifier()).append(sep);
+    builder.append("public static class ").append(constants.getIdentifier()).append(sep);
     builder.append("{").append(sep);
 
     // Add text constant

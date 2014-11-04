@@ -120,7 +120,6 @@
               <goal>compile</goal>
             </goals>
             <configuration>
-              <providerSelection>1.8</providerSelection>
               <sources>
                 <fileset>
                   <directory>${project.build.outputDirectory}</directory>
