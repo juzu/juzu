@@ -1,3 +1,5 @@
+:docinfo1: docinfo1
+
 = Want to learn how to develop Juzu Portlet for eXo platform ?
 
 Here is a step by step tutorial where we will learn Juzu by coding a real social Portlet named JuZcret.

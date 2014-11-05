@@ -1,3 +1,5 @@
+:docinfo1: docinfo1
+
 = Step 5: Save Secrets
 
 = eXo services and eXo JCR storage

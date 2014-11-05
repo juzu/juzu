@@ -1,3 +1,5 @@
+:docinfo1: docinfo1
+
 = Step 2: Viewing and posting Secret
 
 From the step 1 you learn how to start a simple Juzu project and deploy it in eXo Platform.

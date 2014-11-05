@@ -1,3 +1,5 @@
+:docinfo1: docinfo1
+
 = Step 1: Starting Up my project
 
 = Introduction

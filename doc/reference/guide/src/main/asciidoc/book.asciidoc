@@ -1,3 +1,5 @@
+:docinfo1: docinfo1
+
 = Juzu Reference Guide
 Julien Viet <http://www.julienviet.com>
 

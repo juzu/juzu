@@ -1,3 +1,5 @@
+:docinfo1: docinfo1
+
 = Step 3: Building a sexy Secret Wall
 
 From the step 2 we learn how to add some functionality to our application. We can now see a list of secrets and share new one. It's working but it's ugly... so during *step 3* we will focus on the *UI of JuZcret*..

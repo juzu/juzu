@@ -1,3 +1,5 @@
+:docinfo1: docinfo1
+
 = Let's all the world create new secrets
 
 We are close to end guys. Last step is to make our JuZcret portlet understandable for the *whole world !* Ok for this tutorial we will just manage *french and vietnamese language* but when you will understand the concept feel free to add all languages you can.

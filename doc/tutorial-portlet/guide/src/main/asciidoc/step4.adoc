@@ -1,3 +1,5 @@
+:docinfo1: docinfo1
+
 = Like and comment Secret
 
 What would be a *social feature* without any user interaction ? Nothing...
