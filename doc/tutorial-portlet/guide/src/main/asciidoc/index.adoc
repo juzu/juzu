@@ -1,0 +1,15 @@
+= Want to learn how to develop Juzu Portlet for eXo platform ?
+
+Here is a step by step tutorial where we will learn Juzu by coding a real social Portlet named JuZcret.
+We will start from an ugly Portlet with hardcoded data to finish with a sexy fully integrated Portlet allowing to share secret.
+
+image::images/step4/like-and-comment-feature.png[JuZcret Social App,800,align="center"]
+
+= Browse
+
+* Step 1: link:../html/step1.html[Starting Up my project]
+* Step 2: link:../html/step2.html[Viewing and posting Secret]
+* Step 3: link:../html/step3.html[Building a sexy Secret Wall]
+* Step 4: link:../html/step4.html[Like and comment Secret]
+* Step 5: link:../html/step5.html[Save Secrets]
+* Step 6: link:../html/step6.html[Let’s all the world create new secrets]

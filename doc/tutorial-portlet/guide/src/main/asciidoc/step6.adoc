@@ -1,9 +1,10 @@
+= Let's all the world create new secrets
 
-We are close to end guys. Last step is to make our JuZcret portlet understable for the *whole world !* Ok for this tutorial we will just manage *french and vietnamese language* but when you will understand the concept feel free to add all languages you can.
+We are close to end guys. Last step is to make our JuZcret portlet understandable for the *whole world !* Ok for this tutorial we will just manage *french and vietnamese language* but when you will understand the concept feel free to add all languages you can.
 
-== Internalization and Localization
+= Internalization and Localization
 
-=== Internalization
+== Internalization
 
 Internalization is the process of *developing software* whose core design does *not make assumptions based on a locale*. It means that all messages and labels in the application need to be *translated* to all *supported languages*.
 
@@ -161,7 +162,7 @@ That is for internationalizing templates, what about *controllers* ? It's very *
 
 Ok but now how can I manage the translation of +&{label.configuration}+ ? Of course the framework only provide the *mechanism*, It’s not a translator tool, we still need to translate it by ourself in the java resource bundle file (*.properties or *.xml).
 
-=== Localization
+== Localization
 
 Localization is the process of *customizing our app for a particular language*. That process includes the *translation* of labels and messages into the *native language*. In this tutorial we will limit support only to French and Vietnamese. We need a *place* to put our translation and we need to declare this place in the portlet.xml:
 

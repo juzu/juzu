@@ -1,3 +1,4 @@
+= Like and comment Secret
 
 What would be a *social feature* without any user interaction ? Nothing...
 It's why during this step, we'll add two very original social feature to our *JuZcret* application: A user can comment and "like" a secret... Crazy ! :D
@@ -5,7 +6,7 @@ By implementing these new features we will learn amongst other how to use *Ajax*
 
 Let's start by improving a little bit the application models.
 
-== Models
+= Models
 
 Here no Juzu Stuff, we will just *improve our current model*. Lets add the top of the tree, *Model*. This class contains common attributes for *Secret* and *Comment*:
 
@@ -18,7 +19,7 @@ In +org.juzu.tutorial.models+ package create +Model+ class as below:
 [source,java]
 ----
 public class Comment extends Model {
-  private String userId;  
+  private String userId;
   private String content;
 
   //getters and setters...
@@ -30,7 +31,7 @@ Then +Comment+ class:
 [source,java]
 ----
 public class Model implements Serializable {
-  private String id;  
+  private String id;
   private Date createdDate;
 
   //getters and setters...
@@ -38,13 +39,13 @@ public class Model implements Serializable {
 ----
 
 We also need to improve +Secret+:
-1. Make Secret *extends Model class* to inherits the parent attributes. 
+1. Make Secret *extends Model class* to inherits the parent attributes.
 1. A Secret object will contains *several Comment relationship*, and *several like* (that consist of a simple list of userId):
 
 [source,java]
 ----
-public class Secret extends Model {  
-  private Set<String> likes;  
+public class Secret extends Model {
+  private Set<String> likes;
   private List<Comment> comments;
   ...
 }
@@ -53,7 +54,7 @@ public class Secret extends Model {
 That's enough ! Our model is *ready for comment and like feature*. Now we need to improve the Secret service by providing an API to add comments and like secrets.
 
 
-== Improve Secret Service
+= Improve Secret Service
 
 Our Secret Service need *two more methods* to manage the new functionalities. One for *adding comment to secret* (addComment method) and an other one to *like a secret* (addLike method).
 
@@ -64,7 +65,7 @@ Firstly, declare these two method in the +SecretServie+ interface:
 [source,java]
 ----
 public Comment addComment(String secretId, Comment comment);
-  
+
 public Set<String> addLike(String secretId, String userId);
 ----
 
@@ -77,7 +78,7 @@ public Comment addComment(String secretId, Comment comment) {
     if (secret != null) {
       comment.setId(UUID.randomUUID().toString());
       comment.setCreatedDate(new Date());
-      
+
       List<Comment> comments = secret.getComments();
       comments.add(comment);
       secret.setComments(comments);
@@ -100,7 +101,7 @@ public Comment addComment(String secretId, Comment comment) {
   }
 ----
 
-Done for *service layer* ! 
+Done for *service layer* !
 
 We are agree that this two methods are pretty simple and self-explained and I don't have to spend time on it.
 
@@ -109,7 +110,7 @@ NOTE: If you are some doubt, I remember you that each step is available on a ded
 It's time to go back to Juzu and improve the *presentation layer*.
 
 
-== Present like and comment
+= Present like and comment
 
 The comment and like action will be manage using Ajax via the *@Ajax* Juzu annotation from the Juzu Ajax plugin. The Ajax plugin like the Binding plugin is already included in Juzu-core, so no need to add new dependencies in our pom.
 
@@ -125,7 +126,7 @@ It's now ready to *use @Ajax in our controller*. Lets add 2 new controller metho
   @Resource
   public Response addComment(String secretId, @Mapped Comment comment, SecurityContext context) {
     Principal user = context.getUserPrincipal();
-    comment.setUserId(user.getName());    
+    comment.setUserId(user.getName());
     Comment result = secretService.addComment(secretId, comment);
     if (result != null) {
       return Response.ok(new JSONObject(result).toString()).withMimeType("text/json");
@@ -133,7 +134,7 @@ It's now ready to *use @Ajax in our controller*. Lets add 2 new controller metho
       return Response.status(503);
     }
   }
-  
+
   @Ajax
   @Resource
   public Response addLike(String secretId, SecurityContext context) {
@@ -153,18 +154,18 @@ It's now ready to *use @Ajax in our controller*. Lets add 2 new controller metho
 
 *@Mapped* allow to map request parameter to Bean types. Juzu do automatically the conversion between the primary types and the request parameters but for a Bean, we need to declare it with @Mapped. Consequently the parameters of a form will be automatically mapped to the attribute of the @Mapped Bean.
 
-Juzu also *injects automatically* some *contextual useful objects* that you can use: 
+Juzu also *injects automatically* some *contextual useful objects* that you can use:
 * SecurityContext (provide security info, like current logged in user)
 * HttpContext
 * RequestContext
 * ApplicationContext
 * UserContext
-* ClientContext. 
+* ClientContext.
 You just need to declare it in the *method sign* as we do above for *SecurityContext* and Juzu will *inject them automatically* at runtime.
 
 You notice that we response a Json data to our client by declaring the *MimeType* to text/json. Now we need to handled this response on the client side.
 
-== Template
+= Template
 
 We need to add two new buttons to *like a secret* and *comment a secret* in the +secretWall.gtmpl+:
 
@@ -244,14 +245,14 @@ After that we need to improve our +juzcret.less+ file to manage new added class.
 [source,css]
 ----
 //Variables
-//=======================================
+//====================
 
 [...]
 
 @secretActionHeight: 43px;
 
 //Mixins
-//=======================================
+//====================
 
 [...]
 
@@ -284,7 +285,7 @@ After that we need to improve our +juzcret.less+ file to manage new added class.
 }
 
 //Common Style
-//=======================================
+//====================
 .secret-wall-container {
   padding: 20px 30px;
   .btn-primary {
@@ -304,9 +305,9 @@ After that we need to improve our +juzcret.less+ file to manage new added class.
   }
 }
 .secret-wall-list {
-  
+
   [...]
-  
+
     .secret-action {
       border-top: 1px solid rgba(255, 255, 255, 0.5);
       bottom: 0;
@@ -471,7 +472,7 @@ image::images/step4/two-social-buttons.png[Social buttons,800,align="center"]
 The second step is to add some *js handlers* to manage this two features using Ajax.
 
 
-=== Javascript Handler
+== Javascript Handler
 
 As for Stylesheet declaration, when we declare a Style in +package-info.java+, Juzu is expecting to find it in the *assets package*. For reminder, we declared previously our app js as below:
 [source,java]
@@ -506,10 +507,10 @@ This snippet register an event on our Like button. The interesting line to notic
 ----
 jLike.jzAjax('JuZcretApplication.addLike()', [...]);
 ----
-*jzAjax and jzLoad* functions are *jQuery plugin* provided by the Juzu Ajax plugin. They replace the standard Ajax and Load jQuery function. They accept the *same arguments* but the *URL is replace by the controller method*. 
+*jzAjax and jzLoad* functions are *jQuery plugin* provided by the Juzu Ajax plugin. They replace the standard Ajax and Load jQuery function. They accept the *same arguments* but the *URL is replace by the controller method*.
 All we need is provide the controller method like +JuZcretApplication.addLike()+ and Juzu take care to find the expected URL, and perform *Ajax request* (using jQuery).
 
-Similarly, we also have another three JS listener for the *comment feature*: 
+Similarly, we also have another three JS listener for the *comment feature*:
 
 [source,javascript]
 ----
@@ -536,7 +537,7 @@ Similarly, we also have another three JS listener for the *comment feature*:
         jComment.jzAjax('JuZcretApplication.addComment()', {
             data: {'secretId': secretId, 'content': jSecret.find('.secret-add-comment').val()},
             success: function (data) {
-                if (typeof(data) == 'string') {
+                if (typeof(data) = 'string') {
                     +error response
                     alert(data);
                 } else {
@@ -577,7 +578,7 @@ There is one major difference in this second handler is that we handle error res
 It's why our Juzu controller should be aware of invalid data that user submitted. Lets move to data validation and error handling provided by Juzu.
 
 
-=== Adding validation
+== Adding validation
 
 Juzu provides controller handler *parameter validation* via the *Bean Validation framework*. All that we need is just adding annotation to model attribute. Update the +Comment+ class as below:
 
@@ -590,7 +591,7 @@ Juzu provides controller handler *parameter validation* via the *Bean Validation
 }
 ----
 
-Thanks to *@Pattern and @NotNull annotation*, the validation framework will validate the parameter and *throw validation error* if needed. 
+Thanks to *@Pattern and @NotNull annotation*, the validation framework will validate the parameter and *throw validation error* if needed.
 We need also to declare when we want to *perform this validation*. In our case we want to validate new comment coming from user. This is managed by the +addComment+ Resource in +JuZcretApplication+ where we need to add the *@Valid annotation* to the Comment parameter:
 
 [source,java]
@@ -602,10 +603,10 @@ We need also to declare when we want to *perform this validation*. In our case w
 ----
 
 Now if a user try to enter an invalid comment, the validation framework will throw an error. Our job is not totally finish... We need also to cache properly this error.
-Juzu provides 2 solutions for error handling: 
+Juzu provides 2 solutions for error handling:
 1. Using request lifecycle
 1. Using error handler
-The error handler solution is for handle comment error, so request lifecycle is better for our controller. 
+The error handler solution is for handle comment error, so request lifecycle is better for our controller.
 What we need is to *analyze the Response* and check if the type is ValidationError. If it is, we simply get the error message and update the response to send it properly to the client. for doing this we need our controller +JuZcretApplication+ to implement the +interface RequestLifeCycle+ and override the +endRequest+ method:
 
 [source,java]
@@ -618,7 +619,7 @@ public class JuZcretApplication implements RequestLifeCycle {
     if (response instanceof ValidationError) {
       ValidationError error = (ValidationError)response;
       Set<ConstraintViolation<Object>> violations = error.getViolations();
-      
+
       String msg = violations.iterator().next().getMessage();
       response = Response.ok(msg).withMimeType("text/html");
       context.setResponse(response);
@@ -634,7 +635,7 @@ On the client side, our JS handler will display the error message:
       ...
 
       success: function(data) {
-        if (typeof(data) == 'string') {
+        if (typeof(data) = 'string') {
           //error response
           alert(data);
         } else {
@@ -646,11 +647,11 @@ Our JuZcret app now provides pretty good feature for end user:
 
 image::images/step4/like-and-comment-feature.png[Like and comment feature,800,align="center"]
 
-What is missing is an administration part to manage our application. An admininistrator must have the availability to configure the portlet. For instance, he may want to disable the comment feature. 
+What is missing is an administration part to manage our application. An admininistrator must have the availability to configure the portlet. For instance, he may want to disable the comment feature.
 To doing this, what is better that adding a portlet edit mode ?
 
 
-=== Portlet Edit Mode
+== Portlet Edit Mode
 
 Juzu portlet is *JSR286 compliant portlet*. To provide edit mode, we need to tell portlet container that our portlet support to show *edit mode*. It's why we need to modify our *portlet.xml* as below:
 
@@ -679,7 +680,7 @@ Now JuZcret portlet have 2 modes: *edit and view mode*. We need to create a new 
 </form>
 ----
 
-Our JuZcret application configuration will rely on the *portlet preference mechanism*. 
+Our JuZcret application configuration will rely on the *portlet preference mechanism*.
 Juzu framework provide a *juzu-portlet plugin* which help to bind portlet preference to our IOC container and allow use to inject and use *PortletPreferences* in our controller to store the configuration data of our portlet.
 To use it we need to add *juzu-plugins-portlet* and *portlet-api* dependency in the pom.xml:
 
@@ -732,7 +733,7 @@ We have the template for Edit mode and the controller action to persist the port
       return editMode.with().enableComment(enableComment).ok();
     } else {
       return secretWall.with().enableComment(enableComment)
-.secretsList(secretService.getSecrets()).ok();        
+.secretsList(secretService.getSecrets()).ok();
     }
    }
 ----

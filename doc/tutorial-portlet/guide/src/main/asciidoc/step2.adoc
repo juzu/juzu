@@ -1,21 +1,22 @@
+= Step 2: Viewing and posting Secret
 
 From the step 1 you learn how to start a simple Juzu project and deploy it in eXo Platform.
 Here we will start to play with Juzu and add some functionality to our application.
 
-== Introduction
+= Introduction
 It's time to tell you a little bit more about *JuZcret application*.
 First of all we have secret. A secret is a *simple message* but it can also be enliven by an *image* (to better illustrate the secret).
 Our application will manage a list of secrets and display them. Of course any user can *share* also their secrets using an *add* secret button.
 In the future, connected users will also have the possibility to *like and comment secrets*, but it's not include in the Step 2.
 
 
-== Create my model
+= Create my model
 Here no Juzu Stuff, we will just create a *simple Secret bean* containing a default constructor with getters and setters.
 In +org.juzu.tutorial+ package, add a new package named +models+. In this new package create a *Secret class* as below:
 
 image::images/step2/models-package.png[Models package,300,align="center"]
 
-=== Secret
+== Secret
 
 [source,java]
 ----
@@ -49,7 +50,7 @@ public class Secret implements Serializable {
 
 ----
 
-== Create my service
+= Create my service
 
 We need to create an application bean to manage all the secrets: *The SecretService !*
 The SecretService will contains all the logic of our application, like get list of secrets or add secret.
@@ -58,7 +59,7 @@ In *org.juzu.tutorial* package, add a new package named +services+. In this new 
 
 image::images/step2/services-package.png[Services package,300,align="center"]
 
-=== Secret Service Interface
+== Secret Service Interface
 
 [source,java]
 ----
@@ -75,7 +76,7 @@ List<Secret> getSecrets();
 void addSecret(String message, String imageUrl);
 }
 ----
-=== Secret Service Implementation
+== Secret Service Implementation
 
 +In the step-2 we will implement a simple in-memory data saving implementation for simplicity. Real persistence is only for real aspirant Juzu prayer not for rookie ;) and will be cover later in step-5.+
 
@@ -108,11 +109,11 @@ secretsList.add(secret);
 }
 ----
 
-== Display Secrets
+= Display Secrets
 Now that our +SecretService+ Application Bean is ready we would like to use it no ?
 But before to use it in our application, we need to declare it. And declare custom bean in Juzu is a very simple task.
 
-=== Binding Application Bean
+== Binding Application Bean
 Remember step 1, I told you about a configuration file of our application named package-info.java.
 The +package-info.java+ is a home for *package level annotation*. This is where we will declare our new Application Bean. Update the +package-info.java+ like below
 
@@ -142,7 +143,7 @@ Template index;
 However if you want to use a custom bean like our +SecretService+ you need first to declare it in the +package-info.java+ using the *@Binding annotation*.
 And that's it. Now we can use the +SecretService+ anywhere in our application simply by using the *@Inject annotation*.
 
-==== Scoped Binding
+== Scoped Binding
 It's time for lesson! Let's talk a little bit about *scoped binding in Juzu*.
 As you see, we declared our service as a *singleton*
 
@@ -175,7 +176,7 @@ public class SecretServiceMemImpl implements SecretService {
 ----
 Add scope in +package-info.java+ it's recommended. It's a more fine grained way and enable you by opening +package-info.java+ to have a quick overview of the composition of your project.
 
-==== Abstract Bean Binding
+== Abstract Bean Binding
 Let's have another talk about *abstract bean binding* in Juzu.
 In our example we need to set the *implementation member* of the @Binding annotation because +SecretService+ is an interface.
 In case your *Application Bean* doesn't have an interface, you don't need to set the implementation member. For instance in our case we may directly use the implementation:
@@ -187,7 +188,7 @@ In case your *Application Bean* doesn't have an interface, you don't need to set
 ----
 Ok that's all for explanation, we go back to the code.
 
-=== Develop the controller
+== Develop the controller
 We already develop a new Application Bean: +SecrectService+ and we declared it in +package-info.java+. Now it's time to use it with a *new Controller* named *JuZcretApplication* which will allow us to display the secret list.
 In +org.juzu.tutorial+ package create a new java class +JuZcretApplication+
 
@@ -244,7 +245,7 @@ public class JuZcretApplication {
 Now we need to create a *new View Controller*. A View Controller is a method with the *@View annotation* responsible to *provide markup*. The @View will use an injected template to create markup. The @View method delegates the rendering to the Template.
 In our case we will create a new View Controller responsible to provide the display of the secret list.
 
-==== Type safe parameters
+== Type safe parameters
 In a template you can declare some *parameters* which will be *directly available on a subclass* of the +juzu.template.Template+ class.
 For instance, open secretWall.gtmpl and add:
 
@@ -283,10 +284,10 @@ public Response.Content index() {
 ----
 But using *HashMap* means that if a template *parameter name changes*, the controller will continue to *compile without error* because of the generic parameter map. To avoid such situation, it's better to declare parameter in the template and use the generated method named by the parameter name.
 
-==== Default controller method
+== Default controller method
 One more thing. In Juzu, *Index* is a special name that *catches any unmatched request*. In other word, the method *index()* annotated with @View provide the *default markup* of our application.
 
-=== Integrating with PLF 4.1
+== Integrating with PLF 4.1
 Guys, after this explanation we need to take a break here because I have to confess about something.
 Today the *official Juzu version* supported by *PLF 4.1* is 0.6.2. I don't want to limit you to the 0.6.2, I want you to have the possibility to discover the *entire Juzu features* available in the 1.0.0-cr1 version. This means that in order to run a Juzu 1.0.0-cr1 portlet properly in PLF 4.1, we need to *override* the implementation that comes from *eXo commons* project. If not, we'll meet an unexpected error due to conflict of class version. This problem will be fixed as soon we upgrade PLF with the *newest Juzu version*.
 
@@ -321,7 +322,7 @@ public class KernelProviderFactory implements ProviderFactory {
   @Override
   public <T> Provider<? extends T> getProvider(final Class<T> implementationType) throws Exception {
       final PortalContainer container = PortalContainer.getInstance();
-      if (container == null) {
+      if (container = null) {
           throw new IllegalStateException("Not running in the context of a portal container");
       }
       final ComponentAdapter adapter = container.getComponentAdapterOfType(implementationType);
@@ -330,7 +331,7 @@ public class KernelProviderFactory implements ProviderFactory {
               @Override
               public T get() {
                   Object service = adapter.getComponentInstance(container);
-                  if (service == null) {
+                  if (service = null) {
                       throw new RuntimeException("Could not obtain service " + implementationType + " from container " + container);
                   }
                   return implementationType.cast(service);
@@ -364,7 +365,7 @@ I remember you that for your next personal project, a [[Juzu PLF 4.1 startup pro
 >>#]] is available.
 
 
-=== Display Secret
+== Display Secret
 Please configure now your project to use [[JRebel>>Develop Juzu Portlet with JRebel]].
 Recompile the project:
 [source,text]
@@ -399,7 +400,7 @@ public class SecretServiceMemImpl implements SecretService {
   private List<Secret> secretsList;
 
   public List<Secret> getSecrets() {
-    if (secretsList == null) {
+    if (secretsList = null) {
       secretsList = new LinkedList<Secret>();
       addFakeSecrets();
     }
@@ -436,11 +437,11 @@ Finally we need to update the +secretWall+ template to manage the secret list pa
 <% } %>
 </ul>
 ----
-==== Juzu templating
+== Juzu templating
 The *native Juzu template engine* extends the *Groovy templating system* so we can include *snippet* of Groovy code or resolve Groovy *expressions*.
 In our case, we use Groovy code with the scriptlet syntax +<% ... %>+ to perform a simple loop on each secret. Then each secret is added in a +<li>+ tag using Groovy expressions wrapped with the +${...}+ syntax.
 
-==== See the secret list
+== See the secret list
 Now rebuild our project, then refresh browser, and here is the result:
 
 image::images/step2/list-of-hardcoded-secret.png[list-of-hardcoded-secret,800,align="center"]
@@ -457,7 +458,7 @@ JRebel: Reloading class 'org.juzu.tutorial.models.Secret'
 JRebel tries to reload the classes, and save us from restarting tomcat server. But keep in mind that it can only reload class, it can't renew object instance. That means that *attributes of created object* stay the same after its class has been reloaded.
 
 
-== Add Secret
+= Add Secret
 We are *close to the end !* After displaying the secrets, we want to add a new secret.
 We already have a service ready for that with the +addSecret+ method:
 
@@ -479,7 +480,7 @@ What is missing is a *form to create a new secret* and the logic to manage it. B
 * Create a new view Controller to provide markup to create secret using the addSecret.gtmpl template :
 * Add Some logic to switch between the different view an manage the add secret feature
 
-=== Template
+== Template
 We need to add a link in the +secretWall.gtmpl+ to switch to the add secret form
 
 [source,html]
@@ -514,7 +515,7 @@ Then we need to create a new template for generate an add secret form. In +templ
 ----
 For both href and action parameters we keep the value empty, we will come back later on it.
 
-=== View
+== View
 We need to create a new View Controller to provide markup for adding a new secret in +JuZcretApplication.java+
 We already inject at the beginning of the this step, the new template +addSecret+
 
@@ -541,7 +542,7 @@ Now come back to +secretWall.gtmpl+ to update the href of the link and let Juzu 
 ----
 *Controller URL* are natively supported in template. So if you change the Route of your view, you don't need to update your template, Juzu manage this.
 
-=== Action
+== Action
 In Juzu, the logic of the application processing is implemented via *Action Controller*. Action Controller are method annotated with @Action.
 
 Let's create in +JuZcretApplication.java+ our first action controller responsible of the *creation of new secret*:
@@ -567,7 +568,7 @@ Now rebuild our project, then refresh browser, and click on the +Share my secret
 
 image::images/step2/secret-form-step-2.png[Secret form,800,align="center"]
 
-== Redirection
+= Redirection
 As explained in the Phases chapter, *an action never produces markup*, instead an action phase is followed by a *view* phase that will *return a markup response*. Juzu handles this interaction with an http redirection to the next view phase via the *redirect after post* pattern.
 What's +JuZcretApplication_+ ? It's a class generated by Juzu via Annotation of +JuZcretApplication+.
 It's the *companion class* of *JuZcretApplication* generated by Juzu during the compilation of the project. In Juzu any controller class generates a companion class. The companion class has the *same name* than the original class appended *with the _ character*.
@@ -582,4 +583,4 @@ image::images/step2/structure-project-end-step-2.png[Structure project,300,align
 
 We now have some *interesting features* allowing to interact with our Juzu Portlet but still a ugly design. It's time for *improving the UI* of JuZcret to attract many secret users...
 
-_The final source of step 2 is available for [[downloading on Github>>https://github.com/exoportal/juzu-portlet-tutorial/tree/step-2]]_
+_The final source of step 2 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-2[downloading on Github]_
