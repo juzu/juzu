@@ -1,6 +1,6 @@
 :docinfo1: docinfo1
 
-= Like and comment Secret
+= Step 4 -Like and comment Secret
 
 What would be a *social feature* without any user interaction ? Nothing...
 It's why during this step, we'll add two very original social feature to our *JuZcret* application: A user can comment and "like" a secret... Crazy ! :D

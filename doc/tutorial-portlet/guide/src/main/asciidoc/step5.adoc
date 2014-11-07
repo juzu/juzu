@@ -1,6 +1,6 @@
 :docinfo1: docinfo1
 
-= Step 5: Save Secrets
+= Step 5 - Save Secrets
 
 = eXo services and eXo JCR storage
 We are now a *JuZcret application* with some *nice features*. However we're saving our secret in memory... which is good for testing but not for production. It's time to learn how to *save our secret* in *eXo JCR*. During this step we will implement so a new secret service for save all secrets in JCR instead of memory.

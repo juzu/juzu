@@ -1,6 +1,6 @@
 :docinfo1: docinfo1
 
-= Step 1: Starting Up my project
+= Step 1 - Starting Up my project
 
 = Introduction
 
@@ -241,18 +241,7 @@ You can take a look at this unit test in test/java/org/juzu/tutorial/Application
   }
 ----
 
-Modify it as below just to check that the body is not null as below. Unit test in Juzu will be cover later.
-
-[source,java]
----- 
-@Test
-  @RunAsClient
-  public void testFoo() {
-    driver.get(deploymentURL.toString());
-    WebElement body = driver.findElement(By.tagName("body"));
-    assertNotNull(body.getText());
-  }
-----
+The aim of this step is not to learn you how to develop Unit test with Juzu. This will be cover later during step-7. For now, just remove +ApplicationTestCase.java+.
 
 So compile again:
 [source,text]
