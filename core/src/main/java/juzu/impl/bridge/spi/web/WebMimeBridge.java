@@ -51,7 +51,7 @@ public abstract class WebMimeBridge extends WebRequestBridge {
       AssetService assetPlugin = (AssetService)handler.getBridge().getApplication().getPlugin("asset");
 
       //
-      http.getRequestContext().send(assetPlugin, status);
+      http.getRequestContext().send(assetPlugin, status, getPhase().name().equals(Phase.RESOURCE.name()));
 
       //
       return true;

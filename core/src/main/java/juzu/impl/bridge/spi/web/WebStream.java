@@ -62,12 +62,16 @@ public abstract class WebStream implements AsyncStream {
 
   /** . */
   private final boolean minifyAssets;
+  
+  /** . */
+  private final boolean isFragment;
 
-  public WebStream(HttpStream stream, AssetManager assetManager, boolean minifyAssets) {
+  public WebStream(HttpStream stream, AssetManager assetManager, boolean minifyAssets, boolean isFragment) {
     this.stream = stream;
     this.assetManager = assetManager;
     this.page = new Page();
     this.minifyAssets = minifyAssets;
+    this.isFragment = isFragment;
   }
 
   public void provide(Chunk chunk) {
@@ -96,7 +100,9 @@ public abstract class WebStream implements AsyncStream {
             Tools.addAll(page.resolvedAssets, resolvedAssets);
           }
           status = STREAMING;
-          page.sendHeader(stream);
+          if (!isFragment) {
+            page.sendHeader(stream);            
+          }
         }
         catch (IllegalArgumentException e) {
 
@@ -138,7 +144,7 @@ public abstract class WebStream implements AsyncStream {
         if (status == BUFFERING) {
           provide(Chunk.create(""));
         }
-        if (status == STREAMING) {
+        if (status == STREAMING && !isFragment) {
           page.sendFooter(stream);
         }
       }

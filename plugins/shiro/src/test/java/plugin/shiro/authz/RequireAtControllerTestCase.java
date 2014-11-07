@@ -28,6 +28,11 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.sun.org.apache.xpath.internal.functions.Function2Args;
 
 import plugin.shiro.AbstractShiroTestCase;
 import plugin.shiro.SimpleRealm;
@@ -65,7 +70,13 @@ public class RequireAtControllerTestCase extends AbstractShiroTestCase {
     driver.get(deploymentURL.toString());
     WebElement resource = driver.findElement(By.id("resource"));
     resource.click();
-    waitForPresent("Unauthorized");
+    ExpectedCondition<Boolean> c = new ExpectedCondition<Boolean>() {
+      public Boolean apply(WebDriver input) {
+        return input.getPageSource().equals("Unauthorized");
+      }
+    };
+    assertTrue(new WebDriverWait(driver, 10).until(c));
+    
 
     driver.get(deploymentURL.toString());
     WebElement action = driver.findElement(By.id("action"));
