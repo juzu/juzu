@@ -657,6 +657,32 @@ ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .olist, .olist .ulist 
 #toc.toc2 .sectlevel0 li a{
 	color: white;
 }
+
+#toc.toc2 .sectlevel0 li ol li{
+    background: url('images/ArrowSmallIcon.png') no-repeat left 8px;
+    padding-left: 16px;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 24px;
+    padding-bottom: 0px;
+}
+
+ol.sectlevel1 {
+    position: relative;
+}
+
+ol.sectlevel1:before {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    background: #526CA8;
+    left: -18px;
+    top: 11px;
+}
+
+/*
 #toc.toc2 .sectlevel0 li:nth-child(2), #toc.toc2 .sectlevel0 li:nth-child(9), #toc.toc2 .sectlevel0 li:nth-child(11), #toc.toc2 .sectlevel0 li:nth-child(13){
 	background: none;
 	padding-bottom: 8px;
@@ -688,6 +714,8 @@ ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .olist, .olist .ulist 
 #toc.toc2 .sectlevel0 li:nth-child(11) ol li:nth-child(2n+2){
 	background: none;
 }
+
+*/
 
 .sect0{
 	color: #5473a7;
