@@ -15,6 +15,8 @@
  */
 package juzu.impl.bridge.spi.web;
 
+import juzu.request.Phase;
+
 import juzu.PropertyType;
 import juzu.Response;
 import juzu.asset.AssetLocation;
@@ -23,6 +25,7 @@ import juzu.impl.asset.AssetManager;
 import juzu.impl.common.Tools;
 import juzu.io.Chunk;
 import juzu.io.Stream;
+
 import org.w3c.dom.Element;
 
 import java.io.IOException;
@@ -62,12 +65,16 @@ public abstract class WebStream implements AsyncStream {
 
   /** . */
   private final boolean minifyAssets;
+  
+  /** . */
+  private final Phase phase;
 
-  public WebStream(HttpStream stream, AssetManager assetManager, boolean minifyAssets) {
+  public WebStream(HttpStream stream, AssetManager assetManager, boolean minifyAssets, Phase phase) {
     this.stream = stream;
     this.assetManager = assetManager;
     this.page = new Page();
     this.minifyAssets = minifyAssets;
+    this.phase = phase;
   }
 
   public void provide(Chunk chunk) {
@@ -96,7 +103,9 @@ public abstract class WebStream implements AsyncStream {
             Tools.addAll(page.resolvedAssets, resolvedAssets);
           }
           status = STREAMING;
-          page.sendHeader(stream);
+          if (!Phase.RESOURCE.equals(phase)) {
+            page.sendHeader(stream);            
+          }
         }
         catch (IllegalArgumentException e) {
 
@@ -138,7 +147,7 @@ public abstract class WebStream implements AsyncStream {
         if (status == BUFFERING) {
           provide(Chunk.create(""));
         }
-        if (status == STREAMING) {
+        if (status == STREAMING && !Phase.RESOURCE.equals(phase)) {
           page.sendFooter(stream);
         }
       }

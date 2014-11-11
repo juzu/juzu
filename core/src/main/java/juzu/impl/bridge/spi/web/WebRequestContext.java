@@ -15,6 +15,8 @@
  */
 package juzu.impl.bridge.spi.web;
 
+import juzu.request.Phase;
+
 import juzu.Response;
 import juzu.asset.AssetLocation;
 import juzu.impl.asset.AssetManager;
@@ -36,10 +38,10 @@ public abstract class WebRequestContext {
   }
 
   public final void send(Response.Error error, boolean verbose) throws IOException {
-    send(null, error.asStatus(verbose));
+    send(null, error.asStatus(verbose), null);
   }
 
-  public final void send(AssetService assetPlugin, Response.Status response) throws IOException {
+  public final void send(AssetService assetPlugin, Response.Status response, Phase phase) throws IOException {
 
     //
     AsyncStream stream = getStream(response.getCode());
@@ -56,7 +58,7 @@ public abstract class WebRequestContext {
       }
       
       //
-      stream = new WebStream((HttpStream)stream, assetManager, getRunMode().getMinifyAssets()) {
+      stream = new WebStream((HttpStream)stream, assetManager, getRunMode().getMinifyAssets(), phase) {
         @Override
         public String renderAssetURL(AssetLocation location, String uri) {
           try {
