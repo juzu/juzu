@@ -198,6 +198,7 @@ label.writeSecret=Write your secret here
 label.img=Image URL
 label.share=Share
 label.secretWall=Secret Wall
+label.comment=Comment
 ----
 
 *juzcret_vi.properties* for Vietnamese
@@ -215,6 +216,7 @@ label.img=\u0110\u01B0\u1EDDng d\u1EABn \u1EA3nh
 label.share=Chia s\u1EBB
 label.secretWall=T\u01B0\u1EDDng b\u00ED m\u1EADt
 label.addComment=Th\u00EAm b\u00ECnh lu\u1EADn
+label.comment=B\u00ECnh lu\u1EADn
 ----
 
 *juzcret_fr.properties* for French
@@ -232,6 +234,7 @@ label.img=URL de l'image
 label.share=Partager
 label.secretWall=Mur des secrets
 label.addComment=Ajouter votre commentaire
+label.comment=Ajouter
 ----
 
 Now you can share secret in Vietnamese:

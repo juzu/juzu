@@ -52,9 +52,10 @@ Then tape
 [source,text]
 ----
 mvn archetype:generate \
-    -DarchetypeGroupId=org.exoplatform.maven.archetypes \
+    -DarchetypeGroupId=org.juzu \
     -DarchetypeArtifactId=juzu-archetype \
     -DarchetypeVersion=1.0.0-cr1 \
+    -DjuzuServer=gatein \
     -DgroupId=org.juzu.tutorial \
     -DartifactId=tutorial-juzcret \
     -Dversion=1.0.0-SNAPSHOT \
@@ -148,9 +149,6 @@ First open the portlet.xml file generated in _Juzcret/src/main/webapp/WEB-INF_ f
      </init-param>
      <supports>
        <mime-type>text/html</mime-type>
-             <portlet-mode>view</portlet-mode>
-             <portlet-mode>edit</portlet-mode>
-             <portlet-mode>help</portlet-mode>
      </supports>
      <portlet-info>
        <title>JuZcret Application</title>
@@ -241,7 +239,7 @@ You can take a look at this unit test in test/java/org/juzu/tutorial/Application
   }
 ----
 
-The aim of this step is not to learn you how to develop Unit test with Juzu. This will be cover later during step-7. For now, just remove +ApplicationTestCase.java+.
+The aim of this step is not to learn you how to develop Unit test with Juzu. This will be cover later during step-7. For now, just remove the test folder.
 
 So compile again:
 [source,text]

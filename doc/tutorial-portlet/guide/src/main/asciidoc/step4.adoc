@@ -20,9 +20,9 @@ In +org.juzu.tutorial.models+ package create +Model+ class as below:
 
 [source,java]
 ----
-public class Comment extends Model {
-  private String userId;
-  private String content;
+public class Model implements Serializable {
+  private String id;
+  private Date createdDate;
 
   //getters and setters...
 }
@@ -32,9 +32,9 @@ Then +Comment+ class:
 
 [source,java]
 ----
-public class Model implements Serializable {
-  private String id;
-  private Date createdDate;
+public class Comment extends Model {
+  private String userId;
+  private String content;
 
   //getters and setters...
 }
@@ -92,7 +92,7 @@ public Comment addComment(String secretId, Comment comment) {
     Secret secret = getSecret(secretId);
     if (secret != null) {
       Set<String> likes = secret.getLikes();
-      +You can like only one time
+      // You can like only one time
       if (!likes.contains(userId)) {
         likes.add(userId);
       }
@@ -141,7 +141,7 @@ It's now ready to *use @Ajax in our controller*. Lets add 2 new controller metho
   @Resource
   public Response addLike(String secretId, SecurityContext context) {
     Principal user = context.getUserPrincipal();
-    List<String> likes = secretService.addLike(secretId, user.getName());
+    Set<String> likes = secretService.addLike(secretId, user.getName());
     if (likes != null) {
       return Response.ok(new JSONArray(likes).toString()).withMimeType("text/json");
     } else {
@@ -495,7 +495,7 @@ Add the first *snippet* in charge of the like feature:
         jLike.jzAjax('JuZcretApplication.addLike()', {
             data: {'secretId': secretId},
             success: function (data) {
-                +jSecret.find('.like-list').html(data);
+                //jSecret.find('.like-list').html(data);
                 var jLikeIcon = jSecret.find('.btn-like');
                 jLikeIcon.find('.numb').text($(data).size());
             }
@@ -540,10 +540,10 @@ Similarly, we also have another three JS listener for the *comment feature*:
             data: {'secretId': secretId, 'content': jSecret.find('.secret-add-comment').val()},
             success: function (data) {
                 if (typeof(data) = 'string') {
-                    +error response
+                    //error response
                     alert(data);
                 } else {
-                    +update html
+                    //update html
                     var cList = "";
                     var cCounter = 0;
                     $(data).each(function (idx, elem) {
@@ -582,10 +582,20 @@ It's why our Juzu controller should be aware of invalid data that user submitted
 
 == Adding validation
 
-Juzu provides controller handler *parameter validation* via the *Bean Validation framework*. All that we need is just adding annotation to model attribute. Update the +Comment+ class as below:
+Juzu provides controller handler *parameter validation* via the *Bean Validation framework*. We will need to add juzu-validation plugin
+[source,xml]
+----
+<dependency>
+  <groupId>org.juzu</groupId>
+  <artifactId>juzu-plugins-validation</artifactId>
+  <version>1.0.0-cr1</version>
+</dependency>
+----
+And now, all that we need is just adding annotation to model attribute. Update the +Comment+ class as below:
 
 [source,java]
-----public class Comment extends Model {
+----
+public class Comment extends Model {
   @Pattern(regexp = "^.+$", message = "Comment content must not be empty")
   @NotNull(message = "Comment content is required")
   private String            content;
@@ -597,7 +607,8 @@ Thanks to *@Pattern and @NotNull annotation*, the validation framework will vali
 We need also to declare when we want to *perform this validation*. In our case we want to validate new comment coming from user. This is managed by the +addComment+ Resource in +JuZcretApplication+ where we need to add the *@Valid annotation* to the Comment parameter:
 
 [source,java]
-----  @Ajax
+----
+  @Ajax
   @Resource
   public Response addComment(String secretId, @Mapped @Valid Comment comment, SecurityContext context) {
   ...
