@@ -161,13 +161,15 @@ For instance in our case, declaring in +package-info.java+
 @Bindings({
         @Binding(value = org.juzu.tutorial.services.SecretService.class, implementation = org.juzu.tutorial.services.SecretServiceMemImpl.class, scope = Scope.SINGLETON)
 })
-----Will give us the exact same result that declaring in +package-info.java+
+----
+Will give us the exact same result that declaring in +package-info.java+
 [source,java]
 ----
 @Bindings({
         @Binding(value = org.juzu.tutorial.services.SecretService.class, implementation = org.juzu.tutorial.services.SecretServiceMemImpl.class)
 })
-----and add in +SecretServiceMemImpl+ the *@Singletion annotation*:
+----
+and add in +SecretServiceMemImpl+ the *@Singletion annotation*:
 [source,java]
 ----
 @Singleton
@@ -305,8 +307,10 @@ In order for JuZcret running properly in PLF now, we need to declare a *KernelPr
 First we need to create a new file named +juzu.inject.ProviderFactory+ in +src/main/resources/META-INF/services+/
 In this file we just add a line with the implementation class name:
 {{code}}
+----
 org.exoplatform.commons.juzu.KernelProviderFactory
-----Notice that it's important to *keep the name exactly* like that, as it's a workaround to override the implementation that comes from eXo commons project.
+----
+Notice that it's important to *keep the name exactly* like that, as it's a workaround to override the implementation that comes from eXo commons project.
 
 Secondly we create the kernel provider factory class. In +org.exoplatform.commons.juzu+ package add a +KernelProviderFactory+ class:
 
@@ -363,18 +367,17 @@ The provider call the *PortalContainer* - an object from *eXo kernel library*, a
     </dependency>
 ----
 That's it, now our Juzu 1.0.0-cr1 Portlet can work on PLF 4.1
-I remember you that for your next personal project, a [[Juzu PLF 4.1 startup project
->>#]] is available.
+I remember you that for your next personal project, a [[Juzu PLF 4.1 startup project>>#]] is available.
 
 
 == Display Secret
-Please configure now your project to use [[JRebel>>Develop Juzu Portlet with JRebel]].
+Please configure now your project to use link:http://community.exoplatform.com/portal/g/:spaces:juzu/juzu/wiki/Develop_Juzu_Portlet_with_JRebel[Develop Juzu Portlet with JRebel].
 Recompile the project:
 [source,text]
 ----
 $ mvn clean install
 ----
-Copy/Paste the war +(replace the old one)+ in the webapp folder of PLF server as explain in step 1, start the server and open [[JuZcret page created in step 1>>http://localhost:8080/portal/intranet/JuZcret]]:
+Copy/Paste the war +(replace the old one)+ in the webapp folder of PLF server as explain in step 1, start the server and open link:http://localhost:8080/portal/intranet/JuZcret[JuZcret page created in step 1]:
 It display you the simple *My list of secret* message:
 
 [[image:.png]]

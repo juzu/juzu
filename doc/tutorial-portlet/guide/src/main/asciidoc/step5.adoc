@@ -233,7 +233,7 @@ The secret JCR service should be now ready to use. We just need before to make e
 
 == JuzCret JCR NodeType declaration
 
-Create *JCR node type definition* file *secret-nodetypes.xml* in+src/main/webapp/WEB-INF/conf+ . We'll define “exo:secret" and “exo:secretComment" node type. Their properties reflect our *JuZcret domain classes*: Secret and Comment. We'll not explain the JCR node type definition here, if you need more information to understand the code below, please take a look to the eXo JCR website.
+Create *JCR node type definition* file *secret-nodetypes.xml* in +src/main/webapp/WEB-INF/conf+ . We'll define “exo:secret" and “exo:secretComment" node type. Their properties reflect our *JuZcret domain classes*: Secret and Comment. We'll not explain the JCR node type definition here, if you need more information to understand the code below, please take a look to the eXo JCR website.
 
 [source,xml]
 ----
