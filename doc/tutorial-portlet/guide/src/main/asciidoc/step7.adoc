@@ -5,9 +5,9 @@
 JuZcret application is now finish but our *project is not perfect*... 
 All through the JuZcret tutorial we ignore to tell you about *Unit Test* and this for sure is not a good practice.
 The reason is that we wanted to keep you focus on a specific topic during each step. It’s why it’s only during this last step that we’ll talk about *Unit Test in Juzu*.
-The good point is that Juzu allow you to easily leverage *selenium* for simulating real application test with the speed of *JUnit*.
+The good point is that Juzu allow you to easily leverage *selenium* for simulating real application while taking advantage of the speed of *JUnit*.
 
-Let’s write Unit Test for the UI of JuZcret portlet. The portlet will be deploy to an embedded portlet container, *selenium and webdriver* will help to simulate almost all user interactions with the application, then *Arquillian* will help to integrate with *JUnit*. 
+Let’s write Unit Test for the UI of JuZcret portlet. The portlet will be deploy to an embedded portlet container. *Selenium and webdriver* will help to simulate almost all user interactions with the application, then *Arquillian* will help to integrate with *JUnit*.
 
 = Dependencies
 
@@ -114,7 +114,7 @@ We need to add a *configuration file* for arquillian: +src/test/resources/arquil
 </arquillian>
 ----
 
-We only want to focus to testing the *JuZcret controller*, but not the JCR service. It’s better to mock the SecretService JCR implementation. The good news is we already have an in-memory service implementation (remember step-2). The bad news is that today we cannot override the service declared in package-info.java in the unit test. For now, we have a workaround and for the future, we plan to improve the juzu-core unit test support. 
+We only want to focus to testing the *JuZcret controller*, but not the JCR service. It’s better to mock the SecretService JCR implementation. The good news is we already have an in-memory service implementation (remember step-2). The bad news is that today we cannot override the service declared in +package-info.java+ in the unit test. For now, we have a workaround and for the future, we plan to improve the juzu-core unit test support.
 
 = Overwrite service implementation
 Create a mock for secret service and lets add it into +src/test/java+:
@@ -135,7 +135,7 @@ public class SecretServiceJCRImpl implements SecretService {
 
 Classloader of the test will load this service +SecretServiceJCRImpl+ instead of the one in main source. This mock service *delegate* all the task to our in-memory implementation.
 
-We also have +SessionProviderService+ and +NodeHierarchyCreator+ which are eXo JCR service in package-info.java. We don’t need them for the test.
+We also have +SessionProviderService+ and +NodeHierarchyCreator+ which are eXo JCR service in +package-info.java+. We don’t need them for the test.
 
 Lets mock the *eXo kernel provider* in +src/test/java+:
 [source,java]
@@ -167,7 +167,7 @@ We decide to have a dedicated test case for each result of tutorial step. We’l
 
 NOTE: There still 2 actions that can not simulated for now: changing the language, and the portlet mode. This should be improved in the future version.
 
-We will develop our Unit Test in +JuZcretTestCase.java// file in +src/test/java/org/juzu/tutorial+:
+We will develop our Unit Test in +JuZcretTestCase.java+ file in +src/test/java/org/juzu/tutorial+:
 [source,java]
 ----
 public class JuZcretTestCase extends AbstractWebTestCase {
@@ -203,8 +203,9 @@ After step-1, we have a *running portlet*, that render the secretWall.gtmpl. Uni
 ----
 
 Our first test case is very simple:
-1. Make the request, get the html body element and be sure that it contains the substring *"JuZcret Portlet"*.
-1. Printing out the whole server response to the console to see the result.
+
+. Make the request, get the html body element and be sure that it contains the substring *"JuZcret Portlet"*.
+. Printing out the whole server response to the console to see the result.
 
 = Test adding secret
 
@@ -238,14 +239,14 @@ After step-2, user is able to *add new secrets*. Thanks to arquillian and webdri
   }
 ----
 
-1. We assert that there is no text *"test secret text"* in the secret list.
-1. *WebDriver* provide *API for finding elements in a html page*. We find the url for the add secret page
-1. Find the textarea, and button. Fill the form, and submit, all are written using java api to simulate the actions. That’s *fast and clean way for UI test*.
-1. After submitting the add secret form, the portlet will redirect to home page, notice that it may take some time, so we need to tell WebDriver to wait until we have the response from server by +WebDriverWait+
+. We assert that there is no text *"test secret text"* in the secret list.
+. *WebDriver* provide *API for finding elements in a html page*. We find the url for the add secret page
+. Find the textarea, and button. Fill the form, and submit, all are written using java api to simulate the actions. That’s *fast and clean way for UI test*.
+. After submitting the add secret form, the portlet will redirect to home page, notice that it may take some time, so we need to tell WebDriver to wait until we have the response from server by +WebDriverWait+
 
 = Test Assets
 
-We have tested for rendering and user interactions. In step 3 we improved the portlet *Look&Feel*. So we should test if the portlet is served with correct assets (css, and js files), to *make sure* all our *declaration for assets in package-info.java are correct*
+We have tested for rendering and user interactions. In step 3 we improved the portlet *Look&Feel*. So we should test if the portlet is served with correct assets (css, and js files), to make sure all our declaration for assets in +package-info.java+ are correct:
 
 [source,java]
 ----
@@ -269,7 +270,7 @@ assertTrue(srcScripts.contains("http:+localhost:8080/juzu/assets/juzu/impl/plugi
 
 All necessary assets should be in the server response for rendering JuZcret. This test allow to check that all are presents:
 
-Our portlet need 3 javascript files
+Our portlet need 3 javascript files:
 
 * *scripts.js*: This file is juzu-core ajax script, it provides jquery plugin to make ajax request to our juzu controller method
 * *jquery.js*: JQueryis used by script.js and our portlet js
@@ -280,9 +281,9 @@ The juzcret.less should be compiled and served as juzcret.css
 = Test Ajax actions
 
 In step-5 we add some user interactions that was done by using Ajax. Fortunately, htmlunit do a well job on *simulating browser*. It can execute javascript, even ajax action. 
-NOTE: Remember that we have enable js in arquillian.xml: <property name="javascriptEnabled">true</property>
+NOTE: Remember that we have enable js in +arquillian.xml+: +<property name="javascriptEnabled">true</property>+
 
-Lets test the *"like" feature*:
+Lets test the *like feature*:
 
 [source,java]
 ----
@@ -301,11 +302,12 @@ Lets test the *"like" feature*:
   }
 ----
 
-The test is pretty simple
-1. Requesting the index page, click the like button
-1. Don’t forget to wait until we have server response, the timeout is 10 second
+The test is pretty simple:
 
-The last test, the *"comment" feature* test case:
+. Requesting the index page, click the like button
+. Don’t forget to wait until we have server response, the timeout is 10 second
+
+The last test, the *comment feature* test case:
 
 [source,java]
 ----
@@ -328,12 +330,12 @@ The last test, the *"comment" feature* test case:
   }
 ----
 
-1. Check that no comment with the substring "test comment" already exist
-1. Add a new comment with the message "test comment"
-1. Click on the button to submit the new comment
-1. Don’t forget to wait until we have server response, the timeout is 10 second
+. Check that no comment with the substring "test comment" already exist
+. Add a new comment with the message "test comment"
+. Click on the button to submit the new comment
+. Don’t forget to wait until we have server response, the timeout is 10 second
 
-Now our JuZcret application is complete.  
+Now our *JuZcret application is complete*.
 
 _The final source of step 7 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-7[downloading on Github]_
 

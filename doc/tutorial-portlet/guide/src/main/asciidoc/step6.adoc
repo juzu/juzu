@@ -2,7 +2,7 @@
 
 = Step 6 - Let's all the world create new secrets
 
-We are close to end guys. Last step is to make our JuZcret portlet understandable for the *whole world !* Ok for this tutorial we will just manage *french and vietnamese language* but when you will understand the concept feel free to add all languages you can.
+We are close to end guys. In this step we will make our JuZcret portlet understandable for the *whole world !* Ok for this tutorial we will just manage *french and vietnamese language* but when you will understand the concept feel free to add all languages you want.
 
 = Internalization and Localization
 
@@ -166,7 +166,7 @@ Ok but now how can I manage the translation of +&{label.configuration}+ ? Of cou
 
 == Localization
 
-Localization is the process of *customizing our app for a particular language*. That process includes the *translation* of labels and messages into the *native language*. In this tutorial we will limit support only to French and Vietnamese. We need a *place* to put our translation and we need to declare this place in the portlet.xml:
+Localization is the process of *customizing our app for a particular language*. That process includes the *translation* of labels and messages into the *native language*. In this tutorial we will limit support only French and Vietnamese. We need a *place* to put our translation and we need to declare this place in the +portlet.xml+:
 
 [source,xml]
 ----
@@ -180,10 +180,10 @@ Localization is the process of *customizing our app for a particular language*. 
 </portlet-app>
 ----
 
-The *resource-bundle* tell portlet container to find the resource bundle files in classpath */locale/portlet/juzcret_*.properties*.
-So lets add resource bundle files to this path * /src/main/resources/locale/portlet/ *:
+The *resource-bundle* tell portlet container to find the resource bundle files in classpath +/locale/portlet/juzcret_*.properties+.
+So lets add resource bundle files to this path +/src/main/resources/locale/portlet/+:
 
-*juzcret.properties* for default language (English in PLF)
++juzcret.properties+ for default language (English in eXo Platform)
 
 [source,text]
 ----
@@ -201,7 +201,7 @@ label.secretWall=Secret Wall
 label.comment=Comment
 ----
 
-*juzcret_vi.properties* for Vietnamese
++juzcret_vi.properties+ for Vietnamese
 
 [source,text]
 ----
@@ -219,7 +219,7 @@ label.addComment=Th\u00EAm b\u00ECnh lu\u1EADn
 label.comment=B\u00ECnh lu\u1EADn
 ----
 
-*juzcret_fr.properties* for French
++juzcret_fr.properties+ for French
 
 [source,text]
 ----
@@ -246,5 +246,7 @@ or look at the Secret Wall and add comments in French:
 image::images/step6/secret-wall-french.png[French Secret Wall,800,align="center"]
 
 Here we are. An *international JuZcret application* ready for sharing secrets of the people of the world.
+
+Hum do you not think that we forgot some important things during all this steps...? Let's fix it in link:./step7.html[the last step]
 
 _The final source of step 6 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-6[downloading on Github]_
