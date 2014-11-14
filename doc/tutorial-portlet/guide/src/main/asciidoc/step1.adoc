@@ -5,7 +5,7 @@
 = Introduction
 
 In this tutorial we will learn *Juzu* by coding a real social Portlet named JuZcret. We will cover everything you need for *create real portlet application* and learn you the *best developement practice* for *Juzu*.
-Guys, be patient ! We decide to split this tutorial into *6 steps* for a simple reason: we will introduce smoothly more and more complex and interesting features to gradually build our application.
+Guys, be patient ! We decide to split this tutorial into *7 steps* for a simple reason: we will introduce smoothly more and more advanced and interesting features to gradually build our application.
 Yes, for sure we will start from an ugly Portlet with hard coded data... But, I promise ! At the end we will finish with a sexy fully integrated Portlet.
 And you, as a true Juzu prayer, you will have enough knowledge to develop *funny Juzu applications* and evangelize Juzu around you.
 
@@ -19,7 +19,7 @@ JuZcret is funny social application allowing to share secrets.
 * 1st Rule: Anybody can access to JuZcret
 * 2nd Rule: Anybody can add secret
 * 3rd Rule: Anybody can read, comment, and like secrets
-* 4nd Rule: Secret is anonymous
+* 4th Rule: Secret is anonymous
 
 = What we need
 
