@@ -340,8 +340,35 @@ Now our *JuZcret application is complete*.
 _The final source of step 7 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-7[downloading on Github]_
 
 This step is the end of the JuZcret tutorial. 
-Apprentice, you can be proud. You are now a *true Juzu prayer* with the capability to develop more and more funny Juzu applications and *evangelize Juzu around you*.
+Apprentice, you can be proud. You are now a *true Juzu developer* with the capability to develop more and more funny Juzu applications and *evangelize Juzu around you*.
 
 If you have any questions, link:http://community.exoplatform.com/portal/g/:spaces:juzu/juzu/forum[jump to the Juzu forum], we will be pleased to help you.
 
 If you want to contribute to Juzu, link:https://github.com/juzu[here is the Github repo] and don’t hesitate to contact us.
+
+++++
+<script type="text/javascript">
+//Get the left menu
+var leftmenu = document.getElementsByClassName("sectlevel0")[0];
+
+//Create back to menu link
+var menuLink = document.createElement("a");
+menuLink.href = "./index.html";
+menuLink.appendChild(document.createTextNode("Menu"));
+var menu = document.createElement("li");
+menu.setAttribute("class", "menuStep");
+menu.appendChild(menuLink);
+
+//Create go to previous step link
+var previousStepLink = document.createElement("a");
+previousStepLink.href = "./step6.html";
+previousStepLink.appendChild(document.createTextNode("Back to previous Step"));
+var previousStep = document.createElement("li");
+previousStep.setAttribute("class", "previousStep");
+previousStep.appendChild(previousStepLink);
+
+//Add them to Left Menu
+leftmenu.insertBefore(previousStep, leftmenu.firstChild);
+leftmenu.insertBefore(menu, leftmenu.firstChild);
+</script>
+++++

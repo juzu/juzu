@@ -7,7 +7,7 @@
 In this tutorial we will learn *Juzu* by coding a real social Portlet named JuZcret. We will cover everything you need for *create real portlet application* and learn you the *best developement practice* for *Juzu*.
 Guys, be patient ! We decide to split this tutorial into *7 steps* for a simple reason: we will introduce smoothly more and more advanced and interesting features to gradually build our application.
 Yes, for sure we will start from an ugly Portlet with hard coded data... But, I promise ! At the end we will finish with a sexy fully integrated Portlet.
-And you, as a true Juzu prayer, you will have enough knowledge to develop *funny Juzu applications* and evangelize Juzu around you.
+And you, as a true Juzu developer, you will have enough knowledge to develop *funny Juzu applications* and evangelize Juzu around you.
 
 = The project
 
@@ -317,3 +317,30 @@ Ah ah we get what I promised : *a ugly static Portlet !*
 It's time to go to link:./step2.html[Step 2 - Viewing and posting Secret] and add some functionality to our Portlet...
 
 _The final source of step 1 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-1[downloading on Github]_
+
+++++
+<script type="text/javascript">
+//Get the left menu
+var leftmenu = document.getElementsByClassName("sectlevel0")[0];
+
+//Create back to menu link
+var menuLink = document.createElement("a");
+menuLink.href = "./index.html";
+menuLink.appendChild(document.createTextNode("Menu"));
+var menu = document.createElement("li");
+menu.setAttribute("class", "menuStep");
+menu.appendChild(menuLink);
+
+//Create go to next step link
+var nextStepLink = document.createElement("a");
+nextStepLink.href = "./step2.html";
+nextStepLink.appendChild(document.createTextNode("Go to next Step"));
+var nextStep = document.createElement("li");
+nextStep.setAttribute("class", "nextStep");
+nextStep.appendChild(nextStepLink);
+
+//Add them to Left Menu
+leftmenu.insertBefore(menu, leftmenu.firstChild);
+leftmenu.appendChild(nextStep);
+</script>
+++++

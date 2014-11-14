@@ -654,6 +654,21 @@ ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .olist, .olist .ulist 
 	line-height: 36px;
 }
 
+#toc.toc2 .sectlevel0 li.previousStep {
+    background: url('images/previousArrow.png') no-repeat left 12px;
+    padding-left: 24px;
+}
+
+#toc.toc2 .sectlevel0 li.nextStep {
+    background: url('images/nextArrow.png') no-repeat left 12px;
+    padding-left: 24px;
+}
+
+#toc.toc2 .sectlevel0 li.menuStep {
+    background: url('images/menuIcon.png') no-repeat left 12px;
+    padding-left: 24px;
+}
+
 #toc.toc2 .sectlevel0 li a{
 	color: white;
 }
@@ -682,40 +697,6 @@ ol.sectlevel1:before {
     top: 11px;
 }
 
-/*
-#toc.toc2 .sectlevel0 li:nth-child(2), #toc.toc2 .sectlevel0 li:nth-child(9), #toc.toc2 .sectlevel0 li:nth-child(11), #toc.toc2 .sectlevel0 li:nth-child(13){
-	background: none;
-	padding-bottom: 8px;
-}
-
-#toc.toc2 .sectlevel0 li:nth-child(n) ol li{
-	background: url('images/ArrowSmallIcon.png') no-repeat left 8px;
-	padding-left: 16px;
-	font-size: 14px;
-	font-weight: bold;
-	line-height: 24px;
-	padding-bottom: 0px;
-}
-
-#toc.toc2 .sectlevel0 li:nth-child(n) ol li:nth-child(n) ol li:nth-child(n){
-	background: url('images/DotIcon.png') no-repeat left 10px;
-	font-size: 13px;
-	font-weight: normal;
-}
-
-#toc.toc2 .sectlevel0  li:nth-child(2) ol li:nth-child(3){
-	background: none;
-}
-
-#toc.toc2 .sectlevel0 li:nth-child(9) ol li:nth-child(2n+2){
-	background: none;
-}
-
-#toc.toc2 .sectlevel0 li:nth-child(11) ol li:nth-child(2n+2){
-	background: none;
-}
-
-*/
 
 .sect0{
 	color: #5473a7;

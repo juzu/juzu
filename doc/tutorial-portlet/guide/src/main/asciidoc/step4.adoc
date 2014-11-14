@@ -789,3 +789,40 @@ image::images/step4/cannot-add-comment.png[Cannot add comment,800,align="center"
 We are at the end of the step 4 with a nice social application. But our JuZcret application miss an important thing from production. We *don’t persist data*, all is saved in memory… For fix it, link:./step5.html[go ahead to the step 5]!
 
 _The final source of step 4 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-4[downloading on Github]_
+
+
+++++
+<script type="text/javascript">
+//Get the left menu
+var leftmenu = document.getElementsByClassName("sectlevel0")[0];
+
+//Create back to menu link
+var menuLink = document.createElement("a");
+menuLink.href = "./index.html";
+menuLink.appendChild(document.createTextNode("Menu"));
+var menu = document.createElement("li");
+menu.setAttribute("class", "menuStep");
+menu.appendChild(menuLink);
+
+//Create go to previous step link
+var previousStepLink = document.createElement("a");
+previousStepLink.href = "./step3.html";
+previousStepLink.appendChild(document.createTextNode("Back to previous Step"));
+var previousStep = document.createElement("li");
+previousStep.setAttribute("class", "previousStep");
+previousStep.appendChild(previousStepLink);
+
+//Create go to next step link
+var nextStepLink = document.createElement("a");
+nextStepLink.href = "./step5.html";
+nextStepLink.appendChild(document.createTextNode("Go to next Step"));
+var nextStep = document.createElement("li");
+nextStep.setAttribute("class", "nextStep");
+nextStep.appendChild(nextStepLink);
+
+//Add them to Left Menu
+leftmenu.insertBefore(previousStep, leftmenu.firstChild);
+leftmenu.insertBefore(menu, leftmenu.firstChild);
+leftmenu.appendChild(nextStep);
+</script>
+++++

@@ -80,7 +80,7 @@ public interface SecretService {
 ----
 == Secret Service Implementation
 
-NOTE:In the step-2 we will implement a simple in-memory data saving implementation for simplicity. Real persistence is only for real aspirant Juzu prayer not for rookie ;) and will be cover later in step-5.
+NOTE:In the step-2 we will implement a simple in-memory data saving implementation for simplicity. Real persistence is only for real aspirant Juzu developer not for rookie ;) and will be cover later in step-5.
 
 [source,java]
 ----
@@ -589,3 +589,40 @@ image::images/step2/structure-project-end-step-2.png[Structure project,300,align
 We now have some *interesting features* allowing to interact with our Juzu Portlet but still a ugly design. It's time for link:./step3.html[*improving the UI* of JuZcret to attract many secret users...]
 
 _The final source of step 2 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-2[downloading on Github]_
+
+
+++++
+<script type="text/javascript">
+//Get the left menu
+var leftmenu = document.getElementsByClassName("sectlevel0")[0];
+
+//Create back to menu link
+var menuLink = document.createElement("a");
+menuLink.href = "./index.html";
+menuLink.appendChild(document.createTextNode("Menu"));
+var menu = document.createElement("li");
+menu.setAttribute("class", "menuStep");
+menu.appendChild(menuLink);
+
+//Create go to previous step link
+var previousStepLink = document.createElement("a");
+previousStepLink.href = "./step1.html";
+previousStepLink.appendChild(document.createTextNode("Back to previous Step"));
+var previousStep = document.createElement("li");
+previousStep.setAttribute("class", "previousStep");
+previousStep.appendChild(previousStepLink);
+
+//Create go to next step link
+var nextStepLink = document.createElement("a");
+nextStepLink.href = "./step3.html";
+nextStepLink.appendChild(document.createTextNode("Go to next Step"));
+var nextStep = document.createElement("li");
+nextStep.setAttribute("class", "nextStep");
+nextStep.appendChild(nextStepLink);
+
+//Add them to Left Menu
+leftmenu.insertBefore(previousStep, leftmenu.firstChild);
+leftmenu.insertBefore(menu, leftmenu.firstChild);
+leftmenu.appendChild(nextStep);
+</script>
+++++
