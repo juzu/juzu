@@ -1,4 +1,6 @@
 :docinfo1: docinfo1
+:linkattrs:
+:hardbreaks:
 
 = Step 1 - Starting Up my project
 
@@ -12,7 +14,7 @@ And you, as a true Juzu developer, you will have enough knowledge to develop *fu
 = The project
 
 We will develop a new application named *JuZcret*. 
-JuZcret is funny social application allowing to share secrets.
+JuZcret is a funny social application allowing to share secrets.
 
 *The rules of JuzCret:*
 
@@ -26,12 +28,41 @@ JuZcret is funny social application allowing to share secrets.
 Juzu is a web framework written in *Java*, so first of all be sure you have a JDK install on your machine (later than 7).
 
 We will manage dependencies and project compilation with *Maven*.
-For more information about configure Maven for eXo Project please see  [[New Apache Maven setup guide for eXo projects>>http://developer.exoplatform.org/news/website/2014/08/26/new-maven-setup-guide/]]
+
+During coming steps, we will need to use the public maven repository of eXo for compilation. It's why you need to declare it in your maven settings.xml:
+[source,xml]
+----
+    </profiles>
+        <profile>
+            <id>exo-public</id>
+            <repositories>
+                <repository>
+                 <id>eXo-pub-repo</id>
+                 <name>eXoPlatform public repo</name>
+                 <url>http://repository.exoplatform.org/public</url>
+                </repository>
+            </repositories>
+        </profile>
+
+    ...
+
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>exo-public</activeProfile>
+
+        ...
+
+    </activeProfiles>
+----
+
+NOTE: For information about adding the eXo Platform Maven repository, link:http://docs.exoplatform.com/public/index.jsp?topic=%2FPLF41%2FPLFDevGuide.GettingStarted.Maven.html&cp=2_3_0_3_0[take a look here, , window="_blank"].
+
 
 We will assume that you have a basic knowledge of *Java and Web development* (HTML, CSS, JavaScript).
 
 I suggest you to use a Java IDE such as Eclipse or IntelliJ. But if you prefer, you can use a simple text editor like Sublime text, Emacs or even Vim (really..?).
-The compilation and live deployment will be manage in console with Maven.
+The compilation and deployment will be manage in console with Maven.
 
 Don't forget that we are developing a Portlet. So we need a Portal to deploy it. Let me think... we need a portal, we develop a sexy social application..? *eXo platform* will be the best !
 
@@ -100,11 +131,11 @@ Open your juzu project in you favorite IDE
 
 == IntelliJ
 
-See link:http://community.exoplatform.com/portal/g/:spaces:juzu/juzu/wiki/IntelliJ[How to configure IntelliJ to enjoy Juzu development]
+See link:http://community.exoplatform.com/portal/g/:spaces:juzu/juzu/wiki/IntelliJ[How to configure IntelliJ to enjoy Juzu development, window="_blank"]
 
 == Eclipse
 
-See link:http://community.exoplatform.com/portal/g/:spaces:juzu/juzu/wiki/Eclipse[How to configure Eclipse to enjoy Juzu development]
+See link:http://community.exoplatform.com/portal/g/:spaces:juzu/juzu/wiki/Eclipse[How to configure Eclipse to enjoy Juzu development, window="_blank"]
 
 = Explore my project
 
@@ -127,7 +158,7 @@ It's quite simple, doesn't it..?  If you don't understand exactly the purpose of
 = Run my application
 
 Before running let us personalize a little bit our *HelloWorld Juzu application* to transform it in our *simple JuZcret application*.
-First open the portlet.xml file generated in _Juzcret/src/main/webapp/WEB-INF_ folder. If you are not familiar with portlet development, you just need to know that the portlet.xml is the standard JSR-286 portlet configuration file used by the portlet container to deploy your Portlet. Let's modify our portlet name, display name, and title:
+First open the +portlet.xml+ file generated in _Juzcret/src/main/webapp/WEB-INF_ folder. If you are not familiar with portlet development, you just need to know that the portlet.xml is the standard JSR-286 portlet configuration file used by the portlet container to deploy your Portlet. Let's modify our portlet name, display name, and title:
 
 [source,xml]
 ----
@@ -138,7 +169,7 @@ First open the portlet.xml file generated in _Juzcret/src/main/webapp/WEB-INF_ f
              xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd
    http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
    <portlet>
-     <portlet-name>JuZcretApplication</portlet-name>
+     <portlet-name>JuzcretApplication</portlet-name>
      <display-name xml:lang="EN">JuZcret Application</display-name>
      <portlet-class>juzu.bridge.portlet.JuzuPortlet</portlet-class>
      <init-param>
@@ -155,7 +186,7 @@ First open the portlet.xml file generated in _Juzcret/src/main/webapp/WEB-INF_ f
 </portlet-app>
 ----
 
-Secondly make some changes for the presentation of the home page.
+Secondly make some changes for the presentation of the home page. Open +index.gtmpl+ in +templates+ folder and modify:
 
 [source,html]
 ----
@@ -173,13 +204,11 @@ By
 </p>
 ----
 
-Deploy it in eXo Platform
-
 == Deploy it in eXo Platform
 
 Don't forget that we are developing a *Portlet application*. It means that we need a *Portal* to deploy it.
 
-Let's start by downloading link:http://sourceforge.net/projects/exo/files/Platform4.1/eXo-Platform-community-4.1.0-RC1.zip/download[eXo Platform Community Edition]
+Let's start by downloading link:http://sourceforge.net/projects/exo/files/Platform4.1/eXo-Platform-community-4.1.0-RC1.zip/download[eXo Platform Community Edition, window="_blank"]
 
 In command line, go to your download directory
 [source,text]
@@ -223,9 +252,9 @@ Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
 ----
 
 *A test failed ?*
-Yes the Juzu archetype create a default unit test case with the HelloWolrd to test that the html of our application equal "Hello World".
+Yes the Juzu archetype create a default unit test case with the HelloWorld to test that the html of our application equal "Hello World".
 However it's not our case. We modified the index template, so the test failed.
-You can take a look at this unit test in test/java/org/juzu/tutorial/ApplicationTestCase.java
+You can take a look at this unit test in +test/java/org/juzu/tutorial/ApplicationTestCase.java+
 [source,java]
 ---- 
 @Test
@@ -237,7 +266,7 @@ You can take a look at this unit test in test/java/org/juzu/tutorial/Application
   }
 ----
 
-The aim of this step is not to learn you how to develop Unit test with Juzu. This will be cover later during step-7. For now, just remove the test folder.
+The aim of this step is not to learn you how to develop Unit test with Juzu. This will be cover later during step-7. For now, just remove +ApplicationTestCase.java+.
 
 So compile again:
 [source,text]
@@ -247,16 +276,16 @@ $ mvn clean install
 
 Here you should get a *Build Success*. Great now it's time to deploy our Portlet in eXo Platform.
 
-Copy the created war to eXo Platform webapps directory
+Copy the created *war* to eXo Platform webapps directory
 [source,text]
 ----
-$ cp ./target/tutorial-juzcret.war ~/java/eXoProjects/juzu-tutorial/platform-community-4.0.7/webapps/
+$ cp ./target/tutorial-juzcret.war ~/java/eXoProjects/juzu-tutorial/platform-community-4.1.0-RC1/webapps/
 ----
 
 Go to eXo Platform directory
 [source,text]
 ----
-$ cd ~/java/eXoProjects/juzu-tutorial/platform-community-4.0.7/
+$ cd ~/java/eXoProjects/juzu-tutorial/platform-community-4.1.0-RC1/
 ----
 
 Start eXo in Dev mode
@@ -265,9 +294,8 @@ Start eXo in Dev mode
 $ ./start_eXo.sh --dev
 ----
 
-Open your web browser and go to
-http://localhost:8080/portal
-username:root | Password:gtn
+Open your web browser and go to link:http://localhost:8080/portal[http://localhost:8080/portal, window="_blank"]
+NOTE: username:root | Password:gtn
 
 What we want to do it's to add our *new Portlet* on a dedicated *JuZcret Page*. Here everybody will have the availability to see and share secrets !
 For doing this we need to proceed in two steps:
@@ -278,8 +306,8 @@ For doing this we need to proceed in two steps:
 To be able to add our new Portlet, firstly we need to add it in a category.
 Because we are developing a social application, we will add it in the *Social Category*.
 
-Click on Administration->Applications and click on Portlet on the right
-If you scroll down you should see our Portlet "Juzu Secret Application" in the “tutorial-juzcret” section
+Click on Administration->Applications and click on Portlet on the top right.
+If you scroll down you should see our Portlet *Juzu Secret Application* in the *tutorial-juzcret* section
 
 image::images/step1/juzcret-in-portlet-list.png[JuZcret in Portlet List,800,align="center"]
 
@@ -296,12 +324,12 @@ Then Save
 
 Secondly we want to add our new Portlet on the dedicated *JuZcret Page*.
 
-Click on Edit on the top navigation bar then Page -> Add Page to open the Page Creation Wizard form
+Go back the Home Page of eXo and then click on Edit on the top navigation bar. Then click on Page -> Add Page to open the Page Creation Wizard form.
 Select the up level on the left menu, set JuZcret as Node and Display Name and check visible:
 
 image::images/step1/JuZcret-new-page.png[Add JuZcret in a new page,800,align="center"]
 
-Click on two time on Next
+Click on Next button two times
 
 In _Page Editor_ on the top right, expand social and *Drag & Drop* _Juzu Secret Application_ on the left:
 
@@ -316,7 +344,7 @@ Ah ah we get what I promised : *a ugly static Portlet !*
 
 It's time to go to link:./step2.html[Step 2 - Viewing and posting Secret] and add some functionality to our Portlet...
 
-_The final source of step 1 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-1[downloading on Github]_
+_The final source of step 1 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-1[downloading on Github, window="_blank"]_
 
 ++++
 <script type="text/javascript">
