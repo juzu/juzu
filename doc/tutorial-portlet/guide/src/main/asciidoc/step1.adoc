@@ -295,6 +295,7 @@ $ ./start_eXo.sh --dev
 ----
 
 Open your web browser and go to link:http://localhost:8080/portal[http://localhost:8080/portal, window="_blank"]
+
 NOTE: username:root | Password:gtn
 
 What we want to do it's to add our *new Portlet* on a dedicated *JuZcret Page*. Here everybody will have the availability to see and share secrets !
