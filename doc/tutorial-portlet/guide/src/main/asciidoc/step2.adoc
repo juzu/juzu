@@ -248,6 +248,21 @@ public class JuZcretApplication {
 
 }
 ----
+
+[NOTE]
+====
+If you encounter a +cannot resolve symbol+ exception after injecting a new created template like this:
+
+image::images/step2/template-issue.png[Template Issue,400,align="left"]
+
+you should recompile your project:
+[source,html]
+----
+$ mvn compile
+----
+This will generate the java class associate to this template and consequently fix the +cannot resolve symbol+ exception.
+====
+
 Now we need to create a *new View Controller*. A View Controller is a method with the *@View annotation* responsible to *provide markup*. The +@View+ will use an injected template to create markup. The +@View+ method delegates the rendering to the Template.
 In our case we will create a new *View Controller* responsible to provide the display of the secret list.
 
