@@ -1,4 +1,5 @@
 :docinfo1: docinfo1
+:hardbreaks:
 
 = Want to learn how to develop Juzu Portlet for eXo platform ?
 

@@ -1,4 +1,6 @@
 :docinfo1: docinfo1
+:linkattrs:
+:hardbreaks:
 
 = Step 3 - Building a sexy Secret Wall
 
@@ -13,7 +15,7 @@ During this step you will learn how to incorporate easily *Javascript* and *Less
 == Why Less and not only CSS
 Because Less it's an *amazing stylesheet dynamic language* that we love to use in eXo and the *integration with Juzu* is so *easy* that you don't have any more excuse to not use it.
 Just declare it and *Juzu* will take care to *transform it in CSS* during compilation.
-For newbie, you just need to know that Less *extends CSS language* with many interesting features like variables, mixins, operations and functions. If you want more information I let you check on the link:http://lesscss.org/[Less website].
+For newbie, you just need to know that Less *extends CSS language* with many interesting features like variables, mixins, operations and functions. If you want more information I let you check on the link:http://lesscss.org/[Less website, window="_blank"].
 
 
 = Create a Mockup
@@ -69,8 +71,8 @@ First create a new file +secret.js+ in the +org.juzu.tutorial.assets.javascripts
 
 image::images/step3/assets-folder-structure.png[Assets folder structure,300,align="center"]
 
-The *jQuery library* will be simply retrieved from *WebJars* thanks to the *Juzu WebJars plugin*. The Juzu WebJars plugin allow you to easily use *awesome javascript library* (link:http://www.webjars.org/[take a look here]) in your Juzu project. You just need to declare the WebJars in your +pom.xml+ and in the +package-info.java+. It saves us from downloading and cloning the library file and facilitate the management of your *JavaScript dependencies*.
-In our case we want to use jQuery. We just have to add the juzu-plugins-webjars  and the jQuery webjar dependency in the +pom.xml+:
+The *jQuery library* will be simply retrieved from *WebJars* thanks to the *Juzu WebJars plugin*. The Juzu WebJars plugin allow you to easily use *awesome javascript library* (link:http://www.webjars.org/[take a look here, window="_blank"]) in your Juzu project. You just need to add the WebJars dependency in your +pom.xml+ and declare it in the +package-info.java+. It saves us from downloading and cloning the library file and facilitate the management of your *JavaScript dependencies*.
+In our case we want to use jQuery. We just have to add the +juzu-plugins-webjars+  and the jQuery webjar dependency in the +pom.xml+:
 
 [source,xml]
 ----
@@ -105,18 +107,18 @@ Notice that we declare that +secret.js+ depends on jquery. This ensure that *jqu
 = Test Less and JQuery
 
 We created and declared all necessary files to implement the step-3.
-Configure your [[Juzu project with JRebel>>Develop Juzu Portlet with JRebel]] and compile it:
+Configure your link:http://community.exoplatform.com/portal/g/:spaces:juzu/juzu/wiki/Develop_Juzu_Portlet_with_JRebel[Juzu project with JRebel] if it's not done already and compile it:
 [source,text]
 ----
 $ mvn clean install
 ----
-Replace the war in the +webapp+ directory of PLF by the new one just created and *start the server*:
+Replace the war in the +webapp+ directory of eXo Platform by the new one just created and *start the server*:
 [source,text]
 ----
 $ ./start_eXo.sh --dev
 ----
 
-Go to link:http://localhost:8080/portal/intranet/JuZcret[] and you see exactly the same thing that at the end of step 2:
+Go to link:http://localhost:8080/portal/intranet/JuZcret[the JuZcret page, window="_blank"] and you see exactly the same thing that at the end of step 2:
 
 image::images/step3/same-step2.png[Same step 2,800,align="center"]
 
@@ -156,7 +158,7 @@ Compile:
 ----
 $ mvn clean install
 ----
-When you get a Build Successful message, refresh link:http://localhost:8080/portal/intranet/JuZcret[]:
+When you get a Build Successful message, refresh link:http://localhost:8080/portal/intranet/JuZcret[the JuZcret page, window="_blank"]:
 
 image::images/step3/juzu-rock.png[here,800,align="center"]
 
@@ -292,11 +294,11 @@ Compile:
 ----
 $ mvn clean install
 ----
-When you get a Build Successful message, refresh link:http://localhost:8080/portal/intranet/JuZcret[] and take a look to your new *Secret wall*:
+When you get a Build Successful message, refresh link:http://localhost:8080/portal/intranet/JuZcret[the JuZcret page, window="_blank"] and take a look to your new *Secret wall*:
 
 image::images/step3/secretwall-no-js.png[Secretwall no js,800,align="center"]
 
-Notice that the title *JuZcret Portlet* in a +<h3>+ tag is displayed in blue on the top left of our application. We didn't override the default +<h3>+ tag in +juzcret.less+ but it's displayed in blue because default +<h3>+ tag is *override in exo-platform.css* as link:http://exoplatform.github.io/ux-guidelines/Typography/Typography.html#S1[you can see here]. When you develop a *Juzu portlet for PLF*, you can *reuse all class* declared in http://exoplatform.github.io/ux-guidelines without need to declare it before. These class are available by default for *all Portlets in PLF*.
+Notice that the title *JuZcret Portlet* in a +<h3>+ tag is displayed in blue on the top left of our application while we didn't override the default +<h3>+ tag in +juzcret.less+. This is displayed in blue because default +<h3>+ tag is *override in exo-platform.css* as link:http://exoplatform.github.io/ux-guidelines/Typography/Typography.html#S1[you can see here, window="_blank"]. When you develop a *Juzu portlet for PLF*, you can *reuse all class* declared in http://exoplatform.github.io/ux-guidelines without need to declare it before. These class are available by default for *all Portlets in PLF*.
 
 You have seen that we still have the *Juzu rocks* popup…! Let’s modify the *Javascript* to remove this popup and set a width of *secret boxes randomly*.
 Open the +secret.js+ and modify it as below:
@@ -306,6 +308,11 @@ Open the +secret.js+ and modify it as below:
 (function ($) {
 
     $(document).ready(function () {
+
+        //Var to know the number of image in the line
+        var counterImg = 0;
+        //Var to know the place taken by previous image in the line
+        var totalWidthLine = 0;
 
         function getRangeRandom(min, max) {
             return Math.ceil(Math.random() * (max - min) + min);
@@ -330,20 +337,11 @@ Open the +secret.js+ and modify it as below:
             return randBoxNum;
         }
 
-        //Var to know the number of image in the line
-        var counterImg = 0;
-        //Var to know the place taken by previous image in the line
-        var totalWidthLine = 0;
-
         //Get all secrets boxes
-        var nums = document.getElementsByClassName("secret-wall-list");
-        var listItem = nums[0].getElementsByTagName("li");
-
-        //Set a random width
-        for (var i = 0; i < listItem.length; i++) {
-            listItem[i].style.width = randSecretBoxWidth() + "%";
-        }
-
+        $('.secret').each(function(idx, listItem) {
+          //Set a random width
+          listItem.style.width = randSecretBoxWidth() + "%";
+        });
     });
 
 })($);
@@ -354,7 +352,7 @@ Compile:
 ----
 $ mvn clean install
 ----
-When you get a Build Successful message, refresh link:http://localhost:8080/portal/intranet/JuZcret and take a look to your new JuZcret wall:
+When you get a Build Successful message, refresh link:http://localhost:8080/portal/intranet/JuZcret[th JuZcret page, window="_blank"] and take a look to your new JuZcret wall:
 
 image::images/step3/secretwall-js.png[Secretwall js,800,align="center"]
 
@@ -447,7 +445,7 @@ Compile:
 ----
 $ mvn clean install
 ----
-When you get a Build Successful message, refresh link:http://localhost:8080/portal/intranet/JuZcret[], click on the *Share my secret* button on the top right and take a look to your *new Add Secret form*:
+When you get a Build Successful message, refresh link:http://localhost:8080/portal/intranet/JuZcret[the JuZcret page, window="_blank"], click on the *Share my secret* button on the top right and take a look to your *new Add Secret form*:
 
 image::images/step3/addSecret.png[here,800,align="center"]
 
@@ -457,7 +455,7 @@ image::images/step3/final-screen.png[Final screen,800,align="center"]
 
 Here we are ! As promised a *sexy JuZcret Portlet* ! And it’s not finish… let's continue to link:./step4.html[step 4 to add new functionality]
 
-_The final source of step 3 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-3[downloading on Github]_
+_The final source of step 3 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-3[downloading on Github, window="_blank"]_
 
 _Thanks a lot to BD and UI team for their contribution ;)_
 

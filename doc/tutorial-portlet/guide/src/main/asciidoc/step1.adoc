@@ -56,7 +56,7 @@ During coming steps, we will need to use the public maven repository of eXo for 
     </activeProfiles>
 ----
 
-NOTE: For information about adding the eXo Platform Maven repository, link:http://docs.exoplatform.com/public/index.jsp?topic=%2FPLF41%2FPLFDevGuide.GettingStarted.Maven.html&cp=2_3_0_3_0[take a look here, , window="_blank"].
+NOTE: For more information about adding the eXo Platform Maven repository, link:http://docs.exoplatform.com/public/index.jsp?topic=%2FPLF41%2FPLFDevGuide.GettingStarted.Maven.html&cp=2_3_0_3_0[take a look here, , window="_blank"].
 
 
 We will assume that you have a basic knowledge of *Java and Web development* (HTML, CSS, JavaScript).
@@ -127,7 +127,7 @@ Let's open it in our IDE
 
 == Open your juzu project in IDE
 
-Open your juzu project in you favorite IDE
+Open your juzu project in your favorite IDE
 
 == IntelliJ
 
@@ -186,7 +186,7 @@ First open the +portlet.xml+ file generated in _Juzcret/src/main/webapp/WEB-INF_
 </portlet-app>
 ----
 
-Secondly make some changes for the presentation of the home page. Open +index.gtmpl+ in +templates+ folder and modify:
+Secondly make some changes for the presentation of the home page of JuZcret. Open +index.gtmpl+ in +templates+ folder and modify:
 
 [source,html]
 ----
@@ -296,7 +296,7 @@ $ ./start_eXo.sh --dev
 
 Open your web browser and go to link:http://localhost:8080/portal[http://localhost:8080/portal, window="_blank"]
 
-NOTE: username:root | Password:gtn
+NOTE: Username: root | Password: gtn
 
 What we want to do it's to add our *new Portlet* on a dedicated *JuZcret Page*. Here everybody will have the availability to see and share secrets !
 For doing this we need to proceed in two steps:
@@ -325,7 +325,7 @@ Then Save
 
 Secondly we want to add our new Portlet on the dedicated *JuZcret Page*.
 
-Go back the Home Page of eXo and then click on Edit on the top navigation bar. Then click on Page -> Add Page to open the Page Creation Wizard form.
+Go back the *Home Page* of eXo and then click on Edit on the top navigation bar. Then click on Page -> Add Page to open the Page Creation Wizard form.
 Select the up level on the left menu, set JuZcret as Node and Display Name and check visible:
 
 image::images/step1/JuZcret-new-page.png[Add JuZcret in a new page,800,align="center"]

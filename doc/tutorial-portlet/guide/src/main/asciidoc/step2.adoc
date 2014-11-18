@@ -1,4 +1,6 @@
 :docinfo1: docinfo1
+:linkattrs:
+:hardbreaks:
 
 = Step 2 - Viewing and posting Secret
 
@@ -55,9 +57,9 @@ public class Secret implements Serializable {
 = Create my service
 
 We need to create an application bean to manage all the secrets: *The SecretService !*
-The SecretService will contains all the logic of our application, like get list of secrets or add secret.
+The SecretService will contains all the logic of our application, like getting the list of secrets or adding secret.
 
-In *org.juzu.tutorial* package, add a new package named +services+. In this new package create the interface +SecretService+ and its implementation +SecretsServiceMemImpl+ as below:
+In *org.juzu.tutorial* package, add a new package named +services+. In this new package create the interface +SecretService+ and its implementation +SecretServiceMemImpl+ as below:
 
 image::images/step2/services-package.png[Services package,300,align="center"]
 
@@ -80,7 +82,7 @@ public interface SecretService {
 ----
 == Secret Service Implementation
 
-NOTE:In the step-2 we will implement a simple in-memory data saving implementation for simplicity. Real persistence is only for real aspirant Juzu developer not for rookie ;) and will be cover later in step-5.
+NOTE: In the step-2 we will implement a simple in-memory data saving implementation for simplicity. Real persistence is only for real aspirant Juzu developer not for rookie ;) and will be cover later in step-5.
 
 [source,java]
 ----
@@ -112,17 +114,16 @@ public class SecretServiceMemImpl implements SecretService {
 ----
 
 = Display Secrets
-Now that our +SecretService+ Application Bean is ready we would like to use it no ?
-But before to use it in our application, we need to declare it. And declare custom bean in Juzu is a very simple task.
+Now that our +SecretService+ Application Bean is ready we would like to use it.
+But before, we need to declare it. And declare custom bean in Juzu is a very simple task.
 
 == Binding Application Bean
 Remember step 1, I told you about a configuration file of our application named +package-info.java+.
-This java file is a home for *package level annotation*. This is where we will declare our new Application Bean. Update the +package-info.java+ like below
+This java file is a home for *package level annotation*. This is where we will declare our new Application Bean. Replace the +package-info.java+ with:
 
 [source,java]
 ----
 @juzu.Application
-@juzu.plugin.servlet.Servlet(value = "/")
 @Bindings({
         @Binding(value = org.juzu.tutorial.services.SecretService.class, implementation = org.juzu.tutorial.services.SecretServiceMemImpl.class, scope = Scope.SINGLETON)
 })
@@ -132,7 +133,7 @@ import juzu.Scope;
 import juzu.plugin.binding.Binding;
 import juzu.plugin.binding.Bindings;
 ----
-In a Juzu applications we have several kind of beans: *controllers, template, plugins, application services* (Don't worry each of this list will be covered in different step)
+In a Juzu application we have several kind of beans: *controllers, template, plugins, application services* (Don't worry each of this list will be covered in different step).
 All this different beans are *container managed*. It means that this is the job of the *IOC container* to manage the service lifecycle (instantiation, inject dependencies...) and inject it where you need it.
 For instance you can directly inject and use a template in a controller by adding the *@Inject annotation* when you declare it:
 
@@ -147,8 +148,7 @@ And that's it. Now we can use the +SecretService+ anywhere in our application si
 
 == Scoped Binding
 It's time for lesson! Let's talk a little bit about *scoped binding in Juzu*.
-As you see, we declared our service as a *singleton*
-
+As you see, we declared our service as a *singleton*:
 [source,java]
 ----
 scope = Scope.SINGLETON
@@ -204,10 +204,10 @@ public class JuZcretApplication {
 
 }
 ----
-The *JuZcretApplication Controller Bean* must be the *default Controller* of our applciation. Right now we have two Controllers beans in our project:
+The *JuZcretApplication Controller Bean* must be the *default Controller* of our application. Right now we have two Controllers beans in our project:
 
-. Controller.java
-. JuZcretApplication.java
+. +Controller.java+
+. +JuZcretApplication.java+
 
 No problem with this, you can *use as many controllers you want with Juzu*. But (always a but..) you need to tell Juzu which one is the *default Controller*.
 Guess where we will define this ? Yes, +package-info.java+ !
@@ -219,7 +219,7 @@ Open it and just update the *@Application annotation* by setting the *defaultCon
 ----
 To display the secret list, our +JuZcretApplication+ controller need:
 
-. The SecretService Application Bean
+. The +SecretService+ Application Bean
 . A new template able to display a list of secret
 
 Create a new empty template +secretWall.gtmpl+ in +org.juzu.tutorial.templates+ package. The *secretWall template* will be responsible to *display the list of secrets*.
@@ -249,7 +249,7 @@ public class JuZcretApplication {
 }
 ----
 Now we need to create a *new View Controller*. A View Controller is a method with the *@View annotation* responsible to *provide markup*. The +@View+ will use an injected template to create markup. The +@View+ method delegates the rendering to the Template.
-In our case we will create a new View Controller responsible to provide the display of the secret list.
+In our case we will create a new *View Controller* responsible to provide the display of the secret list.
 
 == Type safe parameters
 In a template you can declare some *parameters* which will be *directly available on a subclass* of the +juzu.template.Template+ class.
@@ -273,10 +273,9 @@ Now add the View in JuZcretApplication.java like below:
        return secretWall.with().secretsList("My list of secret").ok();
     }
 ----
-You see that we can directly set the parameter secretsList declared in the secretWall template via a *generated method* named by the *parameter name*. For the secretsList parameter
-+#{param name=secretsList/}+ we have a +secretsList()+ method that can be used.
+You see that we can directly set the parameter secretsList declared in the secretWall template via a *generated method* named by the *parameter name*. For the secretsList parameter +#{param name=secretsList/}+ we have a +secretsList()+ method that can be used.
 
-Consequently if you modify secretWall template and change the name of the parameter secretList, the *compilation* of JuZcretApplication.java will *failed*.
+Consequently if you modify +secretWall.gtmpl+ template and change the name of the parameter +secretList+, the *compilation* of JuZcretApplication.java will *failed*.
 
 Declare parameter in the template and use generated method in the controller is not mandatory. You can simply use an *HashMap* to store parameters passed by the controller to the template:
 [source,java]
@@ -288,22 +287,22 @@ public Response.Content index() {
     return secretWall.with(parameters).ok();
 }
 ----
-But using *HashMap* means that if a template *parameter name changes*, the controller will continue to *compile without error* because of the generic parameter map. To avoid such situation, it's better to declare parameter in the template and use the generated method named by the parameter name.
+But using *HashMap* means that if a template *parameter name changes*, the controller will continue to *compile without error* because of the generic parameter map. To avoid such situation and see the error only on running, it's better to declare parameter in the template and use the generated method named by the parameter name.
 
 == Default controller method
-One more thing. In Juzu, *Index* is a special name that *catches any unmatched request*. In other word, the method *index()* annotated with +@View+ provide the *default markup* of our application.
+One more thing. In Juzu, *index* is a special name that *catches any unmatched request*. In other word, the method *index()* annotated with +@View+ provide the *default markup* of our application.
 
 == Integrating with PLF 4.1
 Guys, after this explanation we need to take a break here because I have to confess about something.
-Today the *official Juzu version* supported by *PLF 4.1* is 0.6.2. I don't want to limit you to the 0.6.2, I want you to have the possibility to discover the *entire Juzu features* available in the 1.0.0-cr1 version. This means that in order to run a Juzu 1.0.0-cr1 portlet properly in PLF 4.1, we need to *override* the implementation that comes from *eXo commons* project. If not, we'll meet an unexpected error due to conflict of class version. This problem will be fixed as soon we upgrade PLF with the *newest Juzu version*.
+Today the *official Juzu version* supported by *PLF 4.1* is 0.6.2. I don't want to limit you to the 0.6.2, I want to give you the possibility to discover the *entire Juzu features* available in the 1.0.0-cr1 version. This means that in order to run a Juzu 1.0.0-cr1 portlet properly in PLF 4.1, we need to *override* the implementation that comes from *eXo commons* project. If not, we'll meet an unexpected error due to conflict of class version. This problem will be fixed as soon we upgrade PLF with the *newest Juzu version*.
 
 It's quick and pretty simple and because we are nice, notice that we created for you a specific Juzu helloWorld project that contains already all stuff needed to *create easily Juzu portlet for PLF 4.1*.
-So for your next personal project I advise you to clone this link:#[Juzu PLF 4.1 startup project]
-But in this tutorial it's important to understand what happened to become a *real Juzu prayer*. ;). It's why we need to follow this instruction:
+So for your next personal project I advise you to clone this link:https://github.com/juzu/portlet-tutorial/tree/master/juzu-plf41-helloworld[Juzu PLF 4.1 startup project, window="_blank"]
+But in this tutorial it's important to understand what happened to become a *real Juzu developer* ;). It's why we need to follow this instruction:
 
-PLF also have its services managed by *eXo container*, thanks to provider factory support. A *provider factory* provides pluggability for integrating beans that are not managed natively by the *IOC container* but needs to be integrated inside the container.
+PLF have its services managed by *eXo container*, thanks to provider factory support. A *provider factory* provides pluggability for integrating beans that are not managed natively by the *IOC container* but needs to be integrated inside the container.
 
-In order for JuZcret running properly in PLF now, we need to declare a *KernelProviderFactory*.
+In order to JuZcret run properly in PLF now, we need to declare a *KernelProviderFactory*.
 
 First we need to create a new file named +juzu.inject.ProviderFactory+ in +src/main/resources/META-INF/services+/
 In this file we just add a line with the implementation class name:
@@ -326,31 +325,31 @@ import org.picocontainer.ComponentAdapter;
 
 public class KernelProviderFactory implements ProviderFactory {
 
-  @Override
-  public <T> Provider<? extends T> getProvider(final Class<T> implementationType) throws Exception {
-      final PortalContainer container = PortalContainer.getInstance();
-      if (container = null) {
-          throw new IllegalStateException("Not running in the context of a portal container");
-      }
-      final ComponentAdapter adapter = container.getComponentAdapterOfType(implementationType);
-      if (adapter != null) {
-          return new Provider<T>() {
-              @Override
-              public T get() {
-                  Object service = adapter.getComponentInstance(container);
-                  if (service = null) {
-                      throw new RuntimeException("Could not obtain service " + implementationType + " from container " + container);
-                  }
-                  return implementationType.cast(service);
-              }
-          };
-      } else {
-          return null;
-      }
-  }
+    @Override
+    public <T> Provider<? extends T> getProvider(final Class<T> implementationType) throws Exception {
+        final PortalContainer container = PortalContainer.getInstance();
+        if (container == null) {
+            throw new IllegalStateException("Not running in the context of a portal container");
+        }
+        final ComponentAdapter adapter = container.getComponentAdapterOfType(implementationType);
+        if (adapter != null) {
+            return new Provider<T>() {
+                @Override
+                public T get() {
+                    Object service = adapter.getComponentInstance(container);
+                    if (service == null) {
+                        throw new RuntimeException("Could not obtain service " + implementationType + " from container " + container);
+                    }
+                    return implementationType.cast(service);
+                }
+            };
+        } else {
+            return null;
+        }
+    }
 }
 ----
-The provider call the *PortalContainer* - an object from *eXo kernel library*, and delegate the finding managed bean to it. Juzu will use the returned result for *binding to its container*. So we need to add the dependency to eXo kernel lib in the pom of our project:
+The provider call the *PortalContainer* - an object from *eXo kernel library* - and delegate the finding managed bean to it. Juzu will use the returned result for *binding to its container*. So we need to add the dependency to eXo kernel lib in the pom of our project:
 
 [source,xml]
 ----
@@ -367,25 +366,27 @@ The provider call the *PortalContainer* - an object from *eXo kernel library*, a
       </exclusions>
     </dependency>
 ----
+
 That's it, now our Juzu 1.0.0-cr1 Portlet can work on PLF 4.1.
-I remember you that for your next personal project, a link:#[Juzu PLF 4.1 startup project>] is available.
+I remember you that for your next personal project, a link:https://github.com/juzu/portlet-tutorial/tree/master/juzu-plf41-helloworld[Juzu PLF 4.1 startup project, window="_blank"] is available.
 
 
 == Display Secret
-Please link:http://community.exoplatform.com/portal/g/:spaces:juzu/juzu/wiki/Develop_Juzu_Portlet_with_JRebel[configure now your project to use JRebel] to allow hot redeployment of our Portlet without restarting the server.
+NOTE: Please link:http://community.exoplatform.com/portal/g/:spaces:juzu/juzu/wiki/Develop_Juzu_Portlet_with_JRebel[configure now your project to use JRebel, window="_blank"]. This will allow hot redeployment of our Portlet without restarting the server.
+
 Recompile the project:
 [source,text]
 ----
 $ mvn clean install
 ----
-Copy/Paste the war _(replace the old one)_ in the webapp folder of PLF server as explain in step 1, start the server and open link:http://localhost:8080/portal/intranet/JuZcret[JuZcret page created in step 1].
+Copy/Paste the war _(replace the old one)_ in the webapp folder of PLF server as explain in step 1, start the server and open link:http://localhost:8080/portal/intranet/JuZcret[JuZcret page created in step 1, window="_blank"].
 It display you the simple *My list of secret* message:
 
 image::images/step2/my-list-of-secret.png[My list of secret,800,align="center"]
 
 What we really want is to get the list of secrets and display it. Not display a single hard coded sentence.
 
-Remember that we just have configured the portlet to use JRebel. So *don't need to restart the server*, just modify the controller and our service.
+NOTE: Remember that we just have configured the portlet to use JRebel. So from now *don't need to restart the server* after modification, just rebuild using +mvn clean install+.
 
 In +JuZcretApplication.java+ modify the index method to pass a list of secret to the +secretWall+ template instead of a String:
 
@@ -396,16 +397,20 @@ In +JuZcretApplication.java+ modify the index method to pass a list of secret to
        return secretWall.with().secretsList(secretService.getSecrets()).ok();
     }
 ----
-In the +SecretService.java+ we will initiate the secret list with some fake secrets to have some default secrets to display for our test:
+In the +SecretServiceMemImpl.java+ we will initiate the secret list with some fake secrets to have some default secrets to display for our test:
 
 [source,java]
 ----
+import java.util.LinkedList;
+
+...
+
 public class SecretServiceMemImpl implements SecretService {
 
   private List<Secret> secretsList;
 
   public List<Secret> getSecrets() {
-    if (secretsList = null) {
+    if (secretsList == null) {
       secretsList = new LinkedList<Secret>();
       addFakeSecrets();
     }
@@ -428,7 +433,7 @@ public class SecretServiceMemImpl implements SecretService {
    }
  }
 ----
-Finally we need to update the +secretWall+ template to manage the secret list passed by the controller and *display all secrets*:
+Finally we need to update the +secretWall.gtmpl+ template to manage the secret list passed by the controller and *display all secrets*:
 
 [source,html]
 ----
@@ -460,7 +465,7 @@ JRebel: Reloading class 'org.juzu.tutorial.services.SecretService'.
 JRebel: Reloading class 'org.juzu.tutorial.models.Secret'
 ----
 
-JRebel tries to reload the classes, and save us from restarting tomcat server. But keep in mind that it can only reload class, it can't renew object instance. That means that *attributes of created object* stay the same after its class has been reloaded.
+JRebel reloads the classes, and save us from restarting tomcat server. But keep in mind that it can only reload class, it can't renew object instance. That means that *attributes of created object* stay the same after its class has been reloaded.
 
 
 = Add Secret
@@ -480,10 +485,10 @@ We already have a service ready for that with the +addSecret+ method:
 ----
 What is missing is a *form to create a new secret* and the logic to manage it. Below is the list of what we need:
 
-. Update the secretWall.gtmpl template to be able to add a secret
-. Create a new template containing the add secret form : addSecret.gtmpl
-. Create a new view Controller to provide markup to create secret using the addSecret.gtmpl template :
-. Add Some logic to switch between the different view an manage the add secret feature
+. Update the +secretWall.gtmpl+ template to be able to add a secret
+. Update the +addSecret.gtmpl+ template to display an add secret form
+. Create a new view Controller to provide markup to create secret using the +addSecret.gtmpl+ template
+. Add Some logic to switch between the different view and manage the add secret feature
 
 == Template
 We need to add a link in the +secretWall.gtmpl+ to switch to the add secret form:
@@ -501,9 +506,9 @@ We need to add a link in the +secretWall.gtmpl+ to switch to the add secret form
 </ul>
 <a href="#" role="button">Share my secret</a>
 ----
-For now we keep the action empty, we will come back later on it.
+For now we keep the href empty, we will come back later on it.
 
-Then we need to create a new template for generate an add secret form. In +templates+ package create a new +addSecret.gtmpl+ template:
+Then we need to update the +addSecret.gtmpl+ template for display an add secret form:
 
 [source,html]
 ----
@@ -539,7 +544,7 @@ Now we need to create the View method +addSecretForm()+:
        return addSecret.ok();
     }
 ----
-Now come back to +secretWall.gtmpl+ to update the href of the link and let *Juzu manage it*:
+Come back to +secretWall.gtmpl+ to update the href of the link and let *Juzu manage it*:
 
 [source,html]
 ----
@@ -588,7 +593,7 @@ image::images/step2/structure-project-end-step-2.png[Structure project,300,align
 
 We now have some *interesting features* allowing to interact with our Juzu Portlet but still a ugly design. It's time for link:./step3.html[*improving the UI* of JuZcret to attract many secret users...]
 
-_The final source of step 2 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-2[downloading on Github]_
+_The final source of step 2 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-2[downloading on Github, window="_blank"]_
 
 
 ++++
