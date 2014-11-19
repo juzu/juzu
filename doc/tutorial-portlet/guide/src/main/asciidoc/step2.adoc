@@ -233,18 +233,25 @@ We need to inject in JuZcretApplication, our Application bean and our Template b
 
 [source,java]
 ----
+package org.juzu.tutorial;
+
+import juzu.Path;
+import org.juzu.tutorial.services.SecretService;
+
+import javax.inject.Inject;
+
 public class JuZcretApplication {
 
-   @Inject
+    @Inject
     SecretService secretService;
 
-   @Inject
-   @Path("secretWall.gtmpl")
+    @Inject
+    @Path("secretWall.gtmpl")
     org.juzu.tutorial.templates.secretWall secretWall;
 
-   @Inject
-   @Path("addSecret.gtmpl")
-   org.juzu.tutorial.templates.addSecret addSecret;
+    @Inject
+    @Path("addSecret.gtmpl")
+    org.juzu.tutorial.templates.addSecret addSecret;
 
 }
 ----
@@ -283,6 +290,11 @@ Now add the View in JuZcretApplication.java like below:
 
 [source,java]
 ----
+import juzu.Response;
+import juzu.View;
+
+...
+
    @View
    public Response.Content index() {
        return secretWall.with().secretsList("My list of secret").ok();
@@ -574,6 +586,10 @@ Let's create in +JuZcretApplication.java+ our first action controller responsibl
 
 [source,java]
 ----
+import juzu.Action;
+
+...
+
    @Action
    public Response.View addSecret(String msg, String imgURL) {
         secretService.addSecret(msg, imgURL);
