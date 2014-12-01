@@ -1,4 +1,6 @@
 :docinfo1: docinfo1
+:linkattrs:
+:hardbreaks:
 
 = Step 6 - Let's all the world create new secrets
 
@@ -249,7 +251,7 @@ Here we are. An *international JuZcret application* ready for sharing secrets of
 
 Hum do you not think that we forgot some important things during all this steps...? Let's fix it in link:./step7.html[the last step]
 
-_The final source of step 6 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-6[downloading on Github]_
+_The final source of step 6 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-6[downloading on Github, window="_blank"]_
 
 ++++
 <script type="text/javascript">

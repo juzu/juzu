@@ -1,4 +1,6 @@
 :docinfo1: docinfo1
+:linkattrs:
+:hardbreaks:
 
 = Step 5 - Save Secrets
 
@@ -411,7 +413,7 @@ All features: sharing secret, adding comment, like... should run similar to prev
 
 Let's continue by link:./step6.html[adding internationalization in the next step]
 
-_The final source of step 5 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-5[downloading on Github]_
+_The final source of step 5 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-5[downloading on Github, window="_blank"]_
 
 ++++
 <script type="text/javascript">

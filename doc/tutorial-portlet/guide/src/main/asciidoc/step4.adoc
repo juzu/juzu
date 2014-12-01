@@ -1,4 +1,6 @@
 :docinfo1: docinfo1
+:linkattrs:
+:hardbreaks:
 
 = Step 4 -Like and comment Secret
 
@@ -20,11 +22,30 @@ In +org.juzu.tutorial.models+ package create +Model+ class as below:
 
 [source,java]
 ----
-public class Model implements Serializable {
-  private String id;
-  private Date createdDate;
+package org.juzu.tutorial.models;
 
-  //getters and setters...
+import java.io.Serializable;
+import java.util.Date;
+
+public class Model implements Serializable {
+    private String id;
+    private Date createdDate;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
+    }
 }
 ----
 
@@ -32,11 +53,27 @@ Then +Comment+ class:
 
 [source,java]
 ----
-public class Comment extends Model {
-  private String userId;
-  private String content;
+package org.juzu.tutorial.models;
 
-  //getters and setters...
+public class Comment extends Model {
+    private String userId;
+    private String content;
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
 }
 ----
 
@@ -47,10 +84,61 @@ We also need to improve +Secret+:
 
 [source,java]
 ----
+package org.juzu.tutorial.models;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 public class Secret extends Model {
-  private Set<String> likes;
-  private List<Comment> comments;
-  ...
+
+    private String message;
+
+    private String imageURL;
+
+    private Set<String> likes;
+
+    private List<Comment> comments;
+
+    public Secret() {
+        likes = new HashSet<String>();
+        comments = new LinkedList<Comment>();
+    }
+
+    public Set<String> getLikes() {
+        Set<String> lks = new HashSet<String>(likes);
+        return lks;
+    }
+
+    public void setLikes(Set<String> likes) {
+        this.likes = likes;
+    }
+
+    public List<Comment> getComments() {
+        List<Comment> cms = new LinkedList<Comment>(comments);
+        return cms;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
+    }
 }
 ----
 
@@ -61,54 +149,86 @@ That's enough ! Our model is *ready for comment and like feature*. Now we need t
 
 Our Secret Service need *two more methods* to manage the new functionalities. One for *adding comment to secret* (addComment method) and an other one to *like a secret* (addLike method).
 
-NOTE:Similarly to step-2, data is still saved in memory for now.
+NOTE: Similarly to step-2, data is still saved in memory for now.
 
 Firstly, declare these two method in the +SecretServie+ interface:
 
 [source,java]
 ----
+import org.juzu.tutorial.models.Comment;
+...
+import java.util.Set;
+
+...
+
 public Comment addComment(String secretId, Comment comment);
 
 public Set<String> addLike(String secretId, String userId);
 ----
 
-Then implement these 2 methods in the +SecretServiceMemImpl+:
+Then implement these 2 methods in the +SecretServiceMemImpl+ and update the +addSecret+ function:
 
 [source,java]
 ----
+import org.juzu.tutorial.models.Comment;
+[...]
+import java.util.*;
+[...]
+
+public void addSecret(String message, String imageUrl) {
+    Secret secret = new Secret();
+    secret.setId(UUID.randomUUID().toString());
+    secret.setMessage(message);
+    secret.setImageURL(imageUrl);
+    secret.setCreatedDate(new Date());
+    secretsList.add(secret);
+  }
+
 public Comment addComment(String secretId, Comment comment) {
-    Secret secret = getSecret(secretId);
-    if (secret != null) {
-      comment.setId(UUID.randomUUID().toString());
-      comment.setCreatedDate(new Date());
+        Secret secret = getSecret(secretId);
+        if (secret != null) {
+            comment.setId(UUID.randomUUID().toString());
+            comment.setCreatedDate(new Date());
 
-      List<Comment> comments = secret.getComments();
-      comments.add(comment);
-      secret.setComments(comments);
+            List<Comment> comments = secret.getComments();
+            comments.add(comment);
+            secret.setComments(comments);
+        }
+        return comment;
     }
-    return comment;
-  }
 
-  public Set<String> addLike(String secretId, String userId) {
-    Secret secret = getSecret(secretId);
-    if (secret != null) {
-      Set<String> likes = secret.getLikes();
-      // You can like only one time
-      if (!likes.contains(userId)) {
-        likes.add(userId);
-      }
-      secret.setLikes(likes);
-      return likes;
+    public Set<String> addLike(String secretId, String userId) {
+        Secret secret = getSecret(secretId);
+        if (secret != null) {
+            Set<String> likes = secret.getLikes();
+            // You can like only one time
+            if (!likes.contains(userId)) {
+                likes.add(userId);
+            }
+            secret.setLikes(likes);
+            return likes;
+        }
+        return null;
     }
-    return null;
-  }
+
+    private Secret getSecret(String secretId) {
+        Secret secret = null;
+        for (Secret s : getSecrets()) {
+            if (s.getId().equals(secretId)) {
+                secret = s;
+            }
+        }
+        return secret;
+    }
+
+    ...
 ----
 
 Done for *service layer* !
 
-We are agree that this two methods are pretty simple and self-explained and I don't have to spend time on it.
+This two methods are pretty simple and self-explained so we don't have to spend time on it.
 
-NOTE: If you are some doubt, I remember you that each step is available on a dedicated branch. For link:https://github.com/juzu/portlet-tutorial/tree/step-4[downloading on Github the result of step-4 here it is]
+NOTE: If you are some doubt, I remember you that each step is available on a dedicated branch. For link:https://github.com/juzu/portlet-tutorial/tree/step-4/tutorial-juzcret[downloading on Github the result of step-4 here it is, window="_blank"]
 
 It's time to go back to Juzu and improve the *presentation layer*.
 
@@ -117,45 +237,65 @@ It's time to go back to Juzu and improve the *presentation layer*.
 
 The comment and like action will be manage using Ajax via the *@Ajax* Juzu annotation from the Juzu Ajax plugin. The Ajax plugin like the Binding plugin is already included in Juzu-core, so no need to add new dependencies in our pom.
 
+It's important to know that the *Juzu-Ajax plugin* depends on *jQuery*. So it's mandatory to declare jQuery ad we do in the previous step if we want to use this plugin.
 
-Notice that we declare that +secret.js+ depends on jquery. This ensure that *jquery is available* to +secret.js+ at *runtime*.
-
-It's important to know that the *Juzu-Ajax plugin* depends on *jQuery*. So it's mandatory to declare jquery if we want to use this plugin. For us we already declare it in the previous step so no need.
-
-It's now ready to *use @Ajax in our controller*. Lets add 2 new controller methods in +JuZcretApplication+:
+Then you can *use @Ajax in our controller*. So lets add 2 new controller methods in +JuZcretApplication.java+:
 [source,java]
 ----
-  @Ajax
-  @Resource
-  public Response addComment(String secretId, @Mapped Comment comment, SecurityContext context) {
-    Principal user = context.getUserPrincipal();
-    comment.setUserId(user.getName());
-    Comment result = secretService.addComment(secretId, comment);
-    if (result != null) {
-      return Response.ok(new JSONObject(result).toString()).withMimeType("text/json");
-    } else {
-      return Response.status(503);
-    }
-  }
+import juzu.*;
+import juzu.plugin.ajax.Ajax;
+import juzu.request.SecurityContext;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.juzu.tutorial.models.Comment;
+import org.juzu.tutorial.services.SecretService;
+
+import javax.inject.Inject;
+import java.security.Principal;
+import java.util.Set;
+
+...
+
+  private static final String ANONYMOUS = "Anonymous";
 
   @Ajax
-  @Resource
-  public Response addLike(String secretId, SecurityContext context) {
-    Principal user = context.getUserPrincipal();
-    Set<String> likes = secretService.addLike(secretId, user.getName());
-    if (likes != null) {
-      return Response.ok(new JSONArray(likes).toString()).withMimeType("text/json");
-    } else {
-      return Response.status(503);
+    @Resource
+    public Response addComment(String secretId, @Mapped Comment comment, SecurityContext context) {
+      comment.setUserId(getCurrentUser(context));
+      Comment result = secretService.addComment(secretId, comment);
+      if (result != null) {
+        return Response.ok(new JSONObject(result).toString()).withMimeType("text/json");
+      } else {
+        return Response.status(503);
+      }
     }
-  }
+
+    @Ajax
+    @Resource
+    public Response addLike(String secretId, SecurityContext context) {
+      Set<String> likes = secretService.addLike(secretId, getCurrentUser(context));
+      if (likes != null) {
+        return Response.ok(new JSONArray(likes).toString()).withMimeType("text/json");
+      } else {
+        return Response.status(503);
+      }
+    }
+
+    private String getCurrentUser(SecurityContext context) {
+        Principal user = context.getUserPrincipal();
+        if (user == null) {
+          return ANONYMOUS;
+        } else {
+          return user.getName();
+        }
+      }
 ----
 
 *@Ajax annotation* comes from *Juzu-Ajax plugin*, it provide us convenient *ajax calling method: jzLoad, jzAjax*. We'll use this later in secret.js.
 
-*@Resource* is a new type of Controller. Resource controllers are pretty much like a view controllers except that they must produce the entire response sent to the client and that is perfect for implementing ajax request.
+*@Resource* is a new type of Controller. Resource controllers are pretty much like a view controller except that they must produce the entire response sent to the client and that is perfect for implementing ajax request.
 
-*@Mapped* allow to map request parameter to Bean types. Juzu do automatically the conversion between the primary types and the request parameters but for a Bean, we need to declare it with +@Mapped+. Consequently the parameters of a form will be automatically mapped to the attribute of the +@Mapped+ Bean.
+*@Mapped* allow to map request parameter to Bean types. Juzu do automatically the conversion between the primary types and the request parameters but for a Bean, we need to declare it with +@Mapped+. Consequently the parameters of the add secret form will be automatically mapped to the attribute of the +@Mapped+ Bean.
 
 Juzu also *injects automatically* some *contextual useful objects* that you can use:
 
@@ -172,78 +312,82 @@ You notice that we response a Json data to our client by declaring the *MimeType
 
 = Template
 
-We need to add two new buttons to *like a secret* and *comment a secret* in the +secretWall.gtmpl+:
+We need to add two new buttons to *like a secret* and *comment a secret* in the +secretWall.gtmpl+. Then for *Comment feature* we need also to display a popover to show the list of current comments and add a new comment.
+
+Replace the current content of +<ul class="secret-wall-list clearfix">+ by this:
 
 [source,html]
 ----
 [...]
-//Add it just after <div class="secret-mesage">${secret.message}</div>
-<div class="secret-action">
-                    <a class="btn-like secr-toggle-link toggle-like-comment" href="#"><i
-                            class="uiIconThumbUp uiIconWhite"></i><span
-                            class="numb"></span></a>
-                    <a class="btn-popup-comment secr-toggle-link toggle-write-comment" href="#"><i
-                            class="uiIconComment uiIconWhite"></i><span
-                            class="numb"></span></a>
-                </div>
-----
+            <ul class="secret-wall-list clearfix">
+                    <% secretsList.each { secret -> %>
+                    <li class="secret" data-secretId="${secret.id}">
+                        <div class="secret-image" style="background-image: url('${secret.imageURL}')">
 
-For *Comment feature* we need also to display a popover to how the list of current comments and add a new comment:
+                            <div class="secret-mesage">${secret.message}</div>
 
-[source,html]
-----
+                            <div class="secret-action">
+                                <a class="btn-like secr-toggle-link toggle-like-comment" href="#"><i
+                                        class="uiIconThumbUp uiIconWhite"></i><span
+                                        class="numb"></span></a>
+                                <a class="btn-popup-comment secr-toggle-link toggle-write-comment" href="#"><i
+                                        class="uiIconComment uiIconWhite"></i><span
+                                        class="numb"></span></a>
+                            </div>
 
-[...]
+                            <div class="popover popover-secret fade top">
+                                <button class="closePopover close" type="button">&times;</button>
+                                <div class="arrow"></div>
 
-//Add it just after the declaration of the two new buttons
-        <div class="popover popover-secret fade top">
-                    <button class="closePopover close" type="button">&times;</button>
-                    <div class="arrow"></div>
+                                <div class="popover-content">
+                                    <div class="secr-comments-box">
+                                        <ul class="secr-comments-list">
+                                            <% secret.getComments().each { comment -> %>
+                                            <li><!--Add class .open-popover to display popover -->
+                                                <div class="media">
+                                                    <a class="pull-left" href="http://localhost:8080/portal/intranet/profile/${comment.userId}">
+                                                        <img src="http://localhost:8080/social-resources/skin/images/ShareImages/UserAvtDefault.png"
+                                                             alt="avatar">
+                                                    </a>
 
-                    <div class="popover-content">
-                        <div class="secr-comments-box">
-                            <ul class="secr-comments-list">
-                                <% secret.getComments().each { comment -> %>
-                                <li><!--Add class .open-popover to display popover -->
-                                    <div class="media">
-                                        <a class="pull-left" href="http://localhost:8080/portal/intranet/profile/${comment.userId}">
-                                            <img src="http://localhost:8080/social-resources/skin/images/ShareImages/UserAvtDefault.png"
-                                                 alt="avatar">
-                                        </a>
+                                                    <div class="media-body">
+                                                        <div>
+                                                            <a class="cm-user-name" href="http://localhost:8080/portal/intranet/profile/${comment.userId}">${comment.userId}</a> <span
+                                                                class="cm-time">${comment.createdDate}</span>
+                                                        </div>
 
-                                        <div class="media-body">
-                                            <div>
-                                                <a class="cm-user-name" href="http://localhost:8080/portal/intranet/profile/${comment.userId}">${comment.userId}</a> <span
-                                                    class="cm-time">${comment.createdDate}</span>
-                                            </div>
-
-                                            <div class="cm-content">${comment.content}</div>
-                                        </div>
+                                                        <div class="cm-content">${comment.content}</div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <% } %>
+                                        </ul>
                                     </div>
-                                </li>
-                                <% } %>
-                            </ul>
-                        </div>
-                        <div class="secr-create-comment clearfix">
-                            <button class="btn-comment btn btn-primary pull-right">Comment</button>
+                                    <div class="secr-create-comment clearfix">
+                                        <button class="btn-comment btn btn-primary pull-right">Comment</button>
 
-                            <div class="secr-write-comment ">
-                                <div class="inner">
-                                    <div class="media">
-                                        <a href="#" class="pull-left"><img
-                                                src="http://localhost:8080/social-resources/skin/images/ShareImages/UserAvtDefault.png"
-                                                alt="avatar"></a>
+                                        <div class="secr-write-comment ">
+                                            <div class="inner">
+                                                <div class="media">
+                                                    <a href="#" class="pull-left"><img
+                                                            src="http://localhost:8080/social-resources/skin/images/ShareImages/UserAvtDefault.png"
+                                                            alt="avatar"></a>
 
-                                        <div class="media-body">
-                                            <textarea name="comment" class="secret-add-comment" placeholder="Add your comment"></textarea>
+                                                    <div class="media-body">
+                                                        <textarea name="comment" class="secret-add-comment" placeholder="Add your comment"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </li>
+                    <% } %>
+                </ul>
 ----
+
 
 After that we need to improve our +juzcret.less+ file to manage new added class. Update the existing less file with these:
 
@@ -291,28 +435,46 @@ After that we need to improve our +juzcret.less+ file to manage new added class.
 
 //Common Style
 //====================
-.secret-wall-container {
-  padding: 20px 30px;
-  .btn-primary {
-    padding-right: 20px;
-    padding-left: 20px;
-  }
-}
-.secret-wall-container, .secret-wall-container * {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-}
-.secret-wall-heading {
-  margin-bottom: 10px;
-  .btn {
-    margin-top: 6px;
-  }
-}
+
+[...]
+
+//After secret-wall-heading, remove the secret-wall-list section and replace by:
+//After secret-wall-heading, remove the secret-wall-list section and replace by:
 .secret-wall-list {
-
-  [...]
-
+  margin: 0 -@secretItemGutter;
+  > li {
+    float: left;
+    padding: @secretItemGutter;
+    width: 100% / 3;
+    .secret-image {
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-color: #000;
+      position: relative;
+      height: @heightSecretItem;
+      width: 100%;
+      display: block;
+      &:before {
+        background: none repeat scroll 0 0 rgba(0, 0, 0, 0.5);
+        content: "";
+        display: block;
+        height: 100%;
+        position: absolute;
+        width: 100%;
+      }
+    }
+    .secret-mesage {
+      bottom: 65px;
+      color: #fff;
+      font-size: 20px;
+      font-weight: normal;
+      left: 25px;
+      line-height: 24px;
+      position: absolute;
+      right: 25px;
+      text-align: center;
+      top: 25px;
+    }
     .secret-action {
       border-top: 1px solid rgba(255, 255, 255, 0.5);
       bottom: 0;
@@ -466,29 +628,29 @@ After that we need to improve our +juzcret.less+ file to manage new added class.
 }
 
 [...]
+
 ----
 
-NOTE: [...] means sections already added in step 3. If you feel a little bit lost, take a look directly on the github project for the link:https://github.com/juzu/portlet-tutorial/blob/step-4/tutorial-juzcret/src/main/java/org/juzu/tutorial/assets/styles/juzcret.less[juzcret.less file]
+NOTE: [...] means sections already added in step 3. If you feel a little bit lost, take a look directly on the github project for the link:https://github.com/juzu/portlet-tutorial/blob/step-4/tutorial-juzcret/src/main/java/org/juzu/tutorial/assets/styles/juzcret.less[juzcret.less file, window="_blank"]
 
-Now we have 2 buttons for *comment and like features* and a popover to display the list of comments:
+Now we have 2 buttons for *comment and like features* and a popover to display the list of comments.
 
-image::images/step4/two-social-buttons.png[Social buttons,800,align="center"]
-
-The second step is to add some *js handlers* to manage this two features using Ajax.
-
+Now that we finish the UI part, we need to add some *js handlers* to manage this two features using Ajax.
 
 == Javascript Handler
 
-As for Stylesheet declaration, when we declare a Style in +package-info.java+, Juzu is expecting to find it in the *assets package*. For reminder, we declared previously our app js as below:
-[source,java]
-----
-@Script(value = "javascripts/secret.js", depends = "jquery")
-----
-
-Add the first *snippet* in charge of the like feature:
+Update the +secret.js+ file by adding the *snippet* in charge of the like feature:
 
 [source,javascript]
 ----
+(function ($) {
+
+    $(document).ready(function () {
+
+        [...]
+
+    });
+
     //Ajax for managing like function
     $(document).on('click.juzu.secret.addLike', '.btn-like', function () {
         var jLike = $(this);
@@ -498,16 +660,17 @@ Add the first *snippet* in charge of the like feature:
         jLike.jzAjax('JuZcretApplication.addLike()', {
             data: {'secretId': secretId},
             success: function (data) {
-                //jSecret.find('.like-list').html(data);
                 var jLikeIcon = jSecret.find('.btn-like');
                 jLikeIcon.find('.numb').text($(data).size());
             }
         });
         return false;
     });
+
+})($);
 ----
 
-This snippet register an event on our Like button. The interesting line to notice here is
+This snippet register an event on our *Like* button. The interesting line to notice here is
 [source,javascript]
 ----
 jLike.jzAjax('JuZcretApplication.addLike()', [...]);
@@ -515,11 +678,11 @@ jLike.jzAjax('JuZcretApplication.addLike()', [...]);
 *jzAjax and jzLoad* functions are *jQuery plugin* provided by the Juzu Ajax plugin. They replace the standard Ajax and Load jQuery function. They accept the *same arguments* but the *URL is replace by the controller method*.
 All we need is provide the controller method like +JuZcretApplication.addLike()+ and Juzu take care to find the expected URL, and perform *Ajax request* (using jQuery).
 
-Similarly, we also have another three JS listener for the *comment feature*:
+Similarly, we also have another three JS listener for the *comment feature*. Add them just after the snippet which just added above:
 
 [source,javascript]
 ----
-       //Open the popover for displaying and adding comments
+    //Open the popover for displaying and adding comments
     $(document).on('click.juzu.secret.openPopover', '.btn-popup-comment', function () {
         var jComment = $(this);
         var jSecret = jComment.closest('.secret');
@@ -542,7 +705,7 @@ Similarly, we also have another three JS listener for the *comment feature*:
         jComment.jzAjax('JuZcretApplication.addComment()', {
             data: {'secretId': secretId, 'content': jSecret.find('.secret-add-comment').val()},
             success: function (data) {
-                if (typeof(data) = 'string') {
+                if (typeof(data) == 'string') {
                     //error response
                     alert(data);
                 } else {
@@ -553,16 +716,16 @@ Similarly, we also have another three JS listener for the *comment feature*:
                         if (elem.content) {
                             cList +=
                                 "<div class='media'>" +
-                                    "<a class='pull-left' href='http://localhost:8080/portal/intranet/profile/" + elem.userId + "'>" +
-                                        "<img src='http://localhost:8080/social-resources/skin/images/ShareImages/UserAvtDefault.png' alt='avatar'>" +
-                                    "</a>" +
-                                    "<div class='media-body'>" +
-                                        "<div>" +
-                                            "<a class='cm-user-name' href='http://localhost:8080/portal/intranet/profile/" + elem.userId + "'>" + elem.userId + "</a> " +
-                                            "<span class='cm-time'>" + elem.createdDate + "</span>" +
-                                        "</div>" +
-                                        "<div class='cm-content'>" + elem.content + "</div>" +
-                                    "</div>" +
+                                "<a class='pull-left' href='http://localhost:8080/portal/intranet/profile/" + elem.userId + "'>" +
+                                "<img src='http://localhost:8080/social-resources/skin/images/ShareImages/UserAvtDefault.png' alt='avatar'>" +
+                                "</a>" +
+                                "<div class='media-body'>" +
+                                "<div>" +
+                                "<a class='cm-user-name' href='http://localhost:8080/portal/intranet/profile/" + elem.userId + "'>" + elem.userId + "</a> " +
+                                "<span class='cm-time'>" + elem.createdDate + "</span>" +
+                                "</div>" +
+                                "<div class='cm-content'>" + elem.content + "</div>" +
+                                "</div>" +
                                 "</div>";
                             cCounter++;
                         }
@@ -579,7 +742,7 @@ Similarly, we also have another three JS listener for the *comment feature*:
     });
 ----
 
-There is one major difference in this second handler is that we *handle error response*. For which purpose ? To not allow user to submit empty comment!
+There is one major difference in this second handler is that we *handle error response*. For which purpose ? To not allow user to submit empty comment.
 It's why our Juzu controller should be aware of invalid data that user submitted. Lets move to *data validation* and *error handling* provided by Juzu.
 
 
@@ -598,62 +761,86 @@ And now, all that we need is just adding annotation to model attribute. Update t
 
 [source,java]
 ----
+package org.juzu.tutorial.models;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
 public class Comment extends Model {
+
+  private String userId;
   @Pattern(regexp = "^.+$", message = "Comment content must not be empty")
   @NotNull(message = "Comment content is required")
   private String            content;
-  ...
+
+  [...]
 }
 ----
 
 Thanks to *@Pattern and @NotNull annotation*, the validation framework will validate the parameter and *throw validation error* if needed.
-We need also to declare when we want to *perform this validation*. In our case we want to validate new comment coming from user. This is managed by the +addComment+ Resource in +JuZcretApplication+ where we need to add the *@Valid annotation* to the Comment parameter:
+
+We need also to declare to *perform this validation* in the controller. In our case we want to validate new comment coming from user. This is managed by the +addComment+ Resource in +JuZcretApplication+ where we need to add the *@Valid annotation* to the Comment parameter:
 
 [source,java]
 ----
+import javax.validation.Valid;
+
+[...]
+
   @Ajax
   @Resource
   public Response addComment(String secretId, @Mapped @Valid Comment comment, SecurityContext context) {
-  ...
+  [...]
   }
 ----
 
 Now if a user try to enter an invalid comment, the validation framework will throw an error. Our job is not totally finish... We need also to cache properly this error.
-Juzu provides 2 solutions for error handling:
+Juzu provides link:http://juzuweb.org/reference/index.html#_handling_validation_errors[2 solutions for error handling, window="_blank"]:
 
 . Using request lifecycle
 . Using error handler
 
-The error handler solution is for handle comment error, so request lifecycle is better for our controller.
-What we need is to *analyze the Response* and check if the type is ValidationError. If it is, we simply get the error message and update the response to send it properly to the client. for doing this we need our controller +JuZcretApplication+ to implement the +interface RequestLifeCycle+ and override the +endRequest+ method:
+In our case we will use the request lifecycle that allow us to handle the error in the controller.
+What we need is to *analyze the Response* and check if the type is ValidationError. If it is, we simply get the error message and update the response to send it properly to the client.
+For doing this we need our controller +JuZcretApplication+ to implement the interface +RequestLifeCycle+ and override the +endRequest+ method:
 
 [source,java]
 ----
+import juzu.plugin.validation.ValidationError;
+import juzu.request.RequestContext;
+import juzu.request.RequestLifeCycle;
+[...]
+import javax.validation.ConstraintViolation;
+
 public class JuZcretApplication implements RequestLifeCycle {
 
-  @Override
-  public void endRequest(RequestContext context) {
-    Response response = context.getResponse();
-    if (response instanceof ValidationError) {
-      ValidationError error = (ValidationError)response;
-      Set<ConstraintViolation<Object>> violations = error.getViolations();
+      @Override
+      public void endRequest(RequestContext context) {
+          Response response = context.getResponse();
+          if (response instanceof ValidationError) {
+              ValidationError error = (ValidationError)response;
+              Set<ConstraintViolation<Object>> violations = error.getViolations();
 
-      String msg = violations.iterator().next().getMessage();
-      response = Response.ok(msg).withMimeType("text/html");
-      context.setResponse(response);
-    }
-  }
+              String msg = violations.iterator().next().getMessage();
+              response = Response.ok(msg).withMimeType("text/html");
+              context.setResponse(response);
+          }
+      }
+
+      @Override
+      public void beginRequest(RequestContext context) {
+      }
 }
 ----
 
-On the client side, our JS handler will display the error message:
+On the client side, we already implement our JS handler to display the error message:
 
 [source,javascript]
 ----
       ...
 
       success: function(data) {
-        if (typeof(data) = 'string') {
+        if (typeof(data) == 'string') {
           //error response
           alert(data);
         } else {
@@ -665,7 +852,10 @@ Our JuZcret app now provides pretty good feature for end user:
 
 image::images/step4/like-and-comment-feature.png[Like and comment feature,800,align="center"]
 
-What is missing is an *administration part *to manage our application. An administrator must have the availability to configure the portlet. For instance, he may want to disable the comment feature.
+NOTE: If you continue this step just after finishing the step 3, you just have to compile your project, paste the new created war in eXo Platform and start the server. Then access to link:http://localhost:8080/portal/intranet/JuZcret[your JuZcret page, window="_blank"] and take a look at the result. If not, link:http://community.exoplatform.com/portal/g/:spaces:juzu/juzu/wiki/Develop_Juzu_Portlet_with_JRebel[configure your project to use JRebel, window="_blank"], compile it and deploy it in eXo Platform as explained in step-1.
+
+What is missing is an *administration part* to manage our application. An administrator must have the availability to configure the portlet. For instance, he may want to disable the comment feature.
+
 To doing this, what is better that adding a *portlet edit mode* ?
 
 
@@ -721,48 +911,37 @@ Now we can inject in our +JuZcretApplication+ controller PortletPreferences usin
 
 [source,java]
 ----
-public class JuZcretApplication implements RequestLifeCycle {
-  @Inject
-  PortletPreferences prefs;
+[...]
+import juzu.bridge.portlet.JuzuPortlet;
+[...]
+import javax.portlet.PortletMode;
+import javax.portlet.PortletPreferences;
+import javax.portlet.ReadOnlyException;
+import javax.portlet.ValidatorException;
+import java.io.IOException;
+[...]
 
-  @Action
-  public Response.View enableComment(String enableComment) {
-    if ("on".equals(enableComment)) {
-      enableComment = "true";
+public class JuZcretApplication  implements RequestLifeCycle {
+
+    @Inject
+    PortletPreferences prefs;
+
+    public static final String ENABLE_COMMENT = "enableComment";
+
+    @Action
+    public Response.View enableComment(String enableComment) throws ReadOnlyException, ValidatorException, IOException {
+        if ("on".equals(enableComment)) {
+            enableComment = "true";
+        }
+        prefs.setValue(ENABLE_COMMENT, enableComment);
+        prefs.store();
+        return JuZcretApplication_.index().with(JuzuPortlet.PORTLET_MODE, PortletMode.VIEW);
     }
-    prefs.setValue(ENABLE_COMMENT, enableComment);
-    prefs.store();
-    return JuZcretApplication_.index().with(JuzuPortlet.PORTLET_MODE, PortletMode.VIEW);
-  }
-}
 ----
 
 After saving the portlet preference, notice that we *redirect* the portlet to the *View mode* by responding with a *Juzu property*, the +JuzuPortlet.PORTLET_MODE+ property type with the value +PortletMode.VIEW+.
 
-We have the template for Edit mode and the controller action to persist the portlet preferences. The last step is to modify the +index+ View controller to *adapt the display* accordingly to the current *Portlet mode*:
-
-[source,java]
-----
-  @View
-  public Response.Content index(RequestContext context) {
-    boolean enableComment = Boolean.parseBoolean(prefs.getValue(ENABLE_COMMENT, "false"));
-
-    if (PortletMode.EDIT.equals(context.getProperty(JuzuPortlet.PORTLET_MODE))) {
-      return editMode.with().enableComment(enableComment).ok();
-    } else {
-      return secretWall.with().enableComment(enableComment)
-.secretsList(secretService.getSecrets()).ok();
-    }
-   }
-----
-
-To know the current Portlet mode, we use the +RequestContext+ object automatically injected by Juzu that allow us to check the property +JuzuPortlet.PORTLET_MODE+.
-
-You can check the result in admin part:
-
-image::images/step4/edit-mode.png[Portlet edit mode,800,align="center"]
-
-Now JuZcret can be configure to *disabled the comment feature*. It means that we have to adapt our +secretWall.gtmpl+ template to display or not the form for submitting comment:
+Now JuZcret can be configure to *disabled the comment feature*. It means that we have to adapt our +secretWall.gtmpl+ template to display or not the form for submitting comment by using the +enableComment+ parameter:
 
 [source,html]
 ----
@@ -782,13 +961,50 @@ Now JuZcret can be configure to *disabled the comment feature*. It means that we
 
 From security perspective, hiding the social toolbar on the bottom is not enough to prevent user from commenting, but for the sake of simplicity, we decide that it's acceptable for this tutorial. So when you disabled comment you cannot like or comment secret. Social features are deactivated.
 
-After disabled comment in edit mode, you *cannot add new comment* via the secret wall:
+Then the  last step is to inject the new +editMode.gtmpl+ template to the controller and modify the +index+ View controller to *adapt the display* accordingly to the current *Portlet mode*:
+
+[source,java]
+----
+  @Inject
+  @Path("editMode.gtmpl")
+  org.juzu.tutorial.templates.editMode editMode;
+
+  @View
+  public Response.Content index(RequestContext context) {
+    boolean enableComment = Boolean.parseBoolean(prefs.getValue(ENABLE_COMMENT, "false"));
+
+    if (PortletMode.EDIT.equals(context.getProperty(JuzuPortlet.PORTLET_MODE))) {
+      return editMode.with().enableComment(enableComment).ok();
+    } else {
+      return secretWall.with().enableComment(enableComment)
+.secretsList(secretService.getSecrets()).ok();
+    }
+   }
+----
+
+To know the current Portlet mode, we use the +RequestContext+ object automatically injected by Juzu that allow us to check the property +JuzuPortlet.PORTLET_MODE+.
+
+Recompile your application with
+[source,text]
+----
+$ mvn clean install
+----
+
+Stop eXo Platform, copy/paste the new created war in webapp folder and restart eXo Platform.
+
+Go to link:http://localhost:8080/portal/intranet/JuZcret[the JuZcret page, window="_blank"], click on Edit -> Page -> Edit Layout. Then mouse over the "Juzu Secret Application" and click on the "Edit Portlet" Icon.
+
+Here you can disabled comments:
+
+image::images/step4/edit-mode.png[Portlet edit mode,800,align="center"]
+
+After uncheck "enable comment", save and close the edit mode, you *cannot add new comment* via the secret wall:
 
 image::images/step4/cannot-add-comment.png[Cannot add comment,800,align="center"]
 
 We are at the end of the step 4 with a nice social application. But our JuZcret application miss an important thing from production. We *don’t persist data*, all is saved in memory… For fix it, link:./step5.html[go ahead to the step 5]!
 
-_The final source of step 4 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-4[downloading on Github]_
+_The final source of step 4 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-4/tutorial-juzcret[downloading on Github, window="_blank"]_
 
 
 ++++

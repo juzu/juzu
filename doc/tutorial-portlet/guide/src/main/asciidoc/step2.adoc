@@ -51,7 +51,6 @@ public class Secret implements Serializable {
 
    public void setCreatedDate(Date createdDate) { this.createdDate = createdDate; }
 }
-
 ----
 
 = Create my service
@@ -265,7 +264,7 @@ image::images/step2/template-issue.png[Template Issue,400,align="left"]
 you should recompile your project:
 [source,html]
 ----
-$ mvn compile
+$ mvn clean compile
 ----
 This will generate the java class associate to this template and consequently fix the +cannot resolve symbol+ exception.
 ====
@@ -413,7 +412,7 @@ image::images/step2/my-list-of-secret.png[My list of secret,800,align="center"]
 
 What we really want is to get the list of secrets and display it. Not display a single hard coded sentence.
 
-NOTE: Remember that we just have configured the portlet to use JRebel. So from now *don't need to restart the server* after modification, just rebuild using +mvn clean install+.
+NOTE: Remember that we just have configured the portlet to use JRebel. So from now *don't need to restart the server* after modification, just rebuild using +mvn clean compile+.
 
 In +JuZcretApplication.java+ modify the index method to pass a list of secret to the +secretWall+ template instead of a String:
 

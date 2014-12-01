@@ -1,4 +1,6 @@
 :docinfo1: docinfo1
+:linkattrs:
+:hardbreaks:
 
 = Step 7 - Finish the job properly
 
@@ -337,7 +339,7 @@ The last test, the *comment feature* test case:
 
 Now our *JuZcret application is complete*.
 
-_The final source of step 7 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-7[downloading on Github]_
+_The final source of step 7 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-7[downloading on Github, window="_blank"]_
 
 This step is the end of the JuZcret tutorial. 
 Apprentice, you can be proud. You are now a *true Juzu developer* with the capability to develop more and more funny Juzu applications and *evangelize Juzu around you*.

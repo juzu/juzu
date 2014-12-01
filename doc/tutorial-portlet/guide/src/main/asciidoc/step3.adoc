@@ -352,7 +352,7 @@ Compile:
 ----
 $ mvn clean install
 ----
-When you get a Build Successful message, refresh link:http://localhost:8080/portal/intranet/JuZcret[th JuZcret page, window="_blank"] and take a look to your new JuZcret wall:
+When you get a Build Successful message, refresh link:http://localhost:8080/portal/intranet/JuZcret[the JuZcret page, window="_blank"] and take a look to your new JuZcret wall:
 
 image::images/step3/secretwall-js.png[Secretwall js,800,align="center"]
 
