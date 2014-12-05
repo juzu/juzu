@@ -10,9 +10,10 @@ We are close to end guys. In this step we will make our JuZcret portlet understa
 
 == Internalization
 
-Internalization is the process of *developing software* whose core design does *not make assumptions based on a locale*. It means that all messages and labels in the application need to be *translated* to all *supported languages*.
+Internalization is the process of *developing software* whose core design does *not make assumptions based on a language*. It means that all messages and labels in the application can be *translated* to all *supported languages*.
 
-Juzu *support I18n natively* in the core! We just need to modify all the labels in all our templates. Next time you will remember to do it as soon you start your template.
+NOTE: Juzu *support i18n natively* in the core. We just need to modify all the labels in all our templates. Next time, remember to do it as soon you start developing your template.
+
 Update the +editMode.gtmpl+ template:
 
 [source,html]
@@ -26,7 +27,7 @@ Update the +editMode.gtmpl+ template:
 </form>
 ----
 
-The syntax of retrieving *i18nized message is &{label}*. For instance we've replaced +<h5>Configuration</h5>+ with +<h5>&{label.configuration}</h5>+
+The syntax of retrieving *i18nized message* is +&{label}+. For instance we've replaced +<h5>Configuration</h5>+ with +<h5>&{label.configuration}</h5>+
 
 We need to do it for all the labels in all *JuZcret templates*:
 
@@ -137,7 +138,7 @@ We need to do it for all the labels in all *JuZcret templates*:
                             </ul>
                         </div>
                         <div class="secr-create-comment clearfix">
-                            <button class="btn-comment btn btn-primary pull-right">&{label.post}</button>
+                            <button class="btn-comment btn btn-primary pull-right">&{label.comment}</button>
 
                             <div class="secr-write-comment ">
                                 <div class="inner">
@@ -162,35 +163,41 @@ We need to do it for all the labels in all *JuZcret templates*:
 </div>
 ----
 
-That is for internationalizing templates, what about *controllers* ? It's very *simple and easy in Juzu*, the framework has declared for you *ResourceBundle* bean in the IOC container.
+That's it for internationalizing templates.
 
-Ok but now how can I manage the translation of +&{label.configuration}+ ? Of course the framework only provide the *mechanism*, It’s not a translator tool, we still need to translate it by ourself in the java resource bundle file (*.properties or *.xml).
+Now how can I manage the translation of +&{label.configuration}+ ?
+It's very *simple and easy in Juzu*. You just need to configure the path of your bundle in the +portlet.xml+ and then create a java resource bundle file (*.properties or *.xml) per language.
 
-== Localization
-
-Localization is the process of *customizing our app for a particular language*. That process includes the *translation* of labels and messages into the *native language*. In this tutorial we will limit support only French and Vietnamese. We need a *place* to put our translation and we need to declare this place in the +portlet.xml+:
+So first update the +portlet.xml+ file in +src/main/webapp/WEB-INF+ folder:
 
 [source,xml]
 ----
 <portlet-app>
    <portlet>
      <portlet-name>JuzcretApplication</portlet-name>
-     ...
+     [...]
+     </supports>
      <resource-bundle>locale.portlet.juzcret</resource-bundle>
-     ...
+     <portlet-info>
+     [...]
    </portlet>
 </portlet-app>
 ----
 
-The *resource-bundle* tell portlet container to find the resource bundle files in classpath +/locale/portlet/juzcret_*.properties+.
-So lets add resource bundle files to this path +/src/main/resources/locale/portlet/+:
+The *resource-bundle* tell portlet container to find the resource bundle files in +/locale/portlet/juzcret_*.properties+.
+
+== Localization
+
+Localization is the process of *customizing our app for a particular language*. That process includes the *translation* of labels and messages into a *native language*.
+In this tutorial we will limit support to French and Vietnamese.
+
+Add the resource bundle files to this path +/src/main/resources/locale/portlet/+ as we declared in +portlet.xml+:
 
 +juzcret.properties+ for default language (English in eXo Platform)
 
 [source,text]
 ----
 label.addComment=Add your comment
-label.post=Post
 label.shareSecret=Share my secret
 label.configuration=Configuration
 label.enableComment=Enable Comment
@@ -199,15 +206,14 @@ label.mySecret=My secret
 label.writeSecret=Write your secret here
 label.img=Image URL
 label.share=Share
-label.secretWall=Secret Wall
 label.comment=Comment
+label.secretWall=Secret Wall
 ----
 
 +juzcret_vi.properties+ for Vietnamese
 
 [source,text]
 ----
-label.post=G\u1EEDi
 label.shareSecret=Chia s\u1EBB b\u00ED m\u1EADt
 label.configuration=C\u1EA5u h\u00ECnh
 label.enableComment=Cho ph\u00E9p b\u00ECnh lu\u1EADn
@@ -225,7 +231,6 @@ label.comment=B\u00ECnh lu\u1EADn
 
 [source,text]
 ----
-label.post=Ajouter
 label.shareSecret=Partager mon secret
 label.configuration=Configuration
 label.enableComment=Activer les commentaires
@@ -238,6 +243,14 @@ label.secretWall=Mur des secrets
 label.addComment=Ajouter votre commentaire
 label.comment=Ajouter
 ----
+
+That's all.
+Re-compile and deploy JuZcret eXo Platform as explain in previous step of this tutorial:
+[source,text]
+----
+$ mvn clean install
+----
+Copy/Paste the war _(replace the old one)_ in the webapp folder of eXo Platform, start the server and open link:http://localhost:8080/portal/intranet/JuZcret[JuZcret page created in step 1, window="_blank"].
 
 Now you can share secret in Vietnamese:
 

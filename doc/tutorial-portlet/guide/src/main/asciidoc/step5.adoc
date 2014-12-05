@@ -5,10 +5,196 @@
 = Step 5 - Save Secrets
 
 = eXo services and eXo JCR storage
-We are now a *JuZcret application* with some *nice features*. However we're saving our secret in memory... which is good for testing but not for production. It's time to learn how to *save our secret* in *eXo JCR*. During this step we will implement a new secret service for save all secrets in JCR instead of memory.
+We have a *JuZcret application* with some *nice features*. However we're saving our secret in memory... which is good for testing but not for production. It's time to learn how to *save our secret* in *eXo JCR*. During this step we will implement a new secret service for save all secrets in JCR instead of memory.
+
+
+== JuzCret JCR NodeType declaration
+
+First of all we will create *JCR node type definition*.
+
+NOTE: We'll not focus on eXo JCR api on this tutorial, but how to *leverage JCR support from eXo Platform* to develop Juzu Portlet. We will not explain in detail the JCR node type definition below. If you need more information to understand the code below, please take a look to the link:http://exojcr.jboss.org/[eXo JCR website, window="_blank"].
+
+Create a new file +secret-nodetypes.xml+ in +src/main/webapp/WEB-INF/conf+ .
+We will define +exo:secret+ and +exo:secretComment+ node type. Their properties reflect our *JuZcret domain classes*: Secret and Comment.
+
+[source,xml]
+----
+<nodeTypes xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0">
+    <nodeType name="exo:secret" isMixin="false" hasOrderableChildNodes="false" primaryItemName="">
+      <supertypes>
+        <supertype>nt:base</supertype>
+      </supertypes>
+      <propertyDefinitions>
+        <propertyDefinition name="exo:id" requiredType="String" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>
+        </propertyDefinition>
+        <propertyDefinition name="exo:message" requiredType="String" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>
+        </propertyDefinition>
+        <propertyDefinition name="exo:imageURL" requiredType="String" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>
+        </propertyDefinition>
+        <propertyDefinition name="exo:likes" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="true">
+          <valueConstraints/>
+        </propertyDefinition>
+        <propertyDefinition name="exo:createdDate" requiredType="Date" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>
+        </propertyDefinition>
+      </propertyDefinitions>
+      <childNodeDefinitions>
+        <childNodeDefinition name="*" defaultPrimaryType="" autoCreated="false" mandatory="false"
+          onParentVersion="COPY" protected="false" sameNameSiblings="false">
+          <requiredPrimaryTypes>
+            <requiredPrimaryType>exo:secretComment</requiredPrimaryType>
+          </requiredPrimaryTypes>
+        </childNodeDefinition>
+      </childNodeDefinitions>
+    </nodeType>
+
+    <nodeType  name="exo:secretComment" isMixin="false" hasOrderableChildNodes="false" primaryItemName="">
+      <supertypes>
+        <supertype>nt:base</supertype>
+      </supertypes>
+      <propertyDefinitions>
+        <propertyDefinition name="exo:id" requiredType="String" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>
+        </propertyDefinition>
+        <propertyDefinition name="exo:userId" requiredType="String" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>
+        </propertyDefinition>
+        <propertyDefinition name="exo:content" requiredType="String" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>
+        </propertyDefinition>
+        <propertyDefinition name="exo:createdDate" requiredType="Date" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
+          <valueConstraints/>
+        </propertyDefinition>
+      </propertyDefinitions>
+    </nodeType>
+</nodeTypes>
+----
+
+When +secret-nodetypes.xml+ file is ready, we need to register it to *eXo JCR service*. Add this new eXo container configuration file +/src/main/webapp/WEB-INF/conf/configuration.xml+:
+
+[source,xml]
+----
+<configuration
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd"
+  xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
+
+  <external-component-plugins>
+    <target-component>org.exoplatform.services.jcr.RepositoryService</target-component>
+    <component-plugin>
+      <name>add.nodeType</name>
+      <set-method>addPlugin</set-method>
+      <type>org.exoplatform.services.jcr.impl.AddNodeTypePlugin</type>
+      <init-params>
+        <values-param>
+          <name>autoCreatedInNewRepository</name>
+          <description>Node types configuration file</description>
+          <value>war:/conf/secret-nodetypes.xml</value>
+        </values-param>
+      </init-params>
+    </component-plugin>
+  </external-component-plugins>
+</configuration>
+----
+
+This configuration register a *node type plugin* with eXo RepositoryService, which will parse our node type at +war:/conf/secret-nodetypes.xml+ path.
+
+The only missing thing now is to make sure that eXo Platform will *scan and process* our +configuration.xml+ file in *tutorial-juzcret webapp* when it initializing the eXo container. This task is not specific to Juzu, it's about configuring a webapp as *eXo Platform extension* (for more details about extension, please link:http://docs.exoplatform.com/public/topic/PLF41/PLFDeveloperGuide.eXoAdd-ons.PortalExtension.Howto.html?cp=2_3_1_0_1[look at eXo documentation, window="_blank"])
+
+First, we need to modify the +web.xml+:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+  <display-name>tutorial-juzcret</display-name>
+
+  <!-- Run mode: prod, dev or live -->
+  <context-param>
+    <param-name>juzu.run_mode</param-name>
+    <param-value>${juzu.run_mode:dev}</param-value>
+  </context-param>
+
+  <!-- Injection container to use: guice, spring, cdi or weld -->
+  <context-param>
+    <param-name>juzu.inject</param-name>
+    <param-value>guice</param-value>
+  </context-param>
+
+  <listener>
+    <listener-class>org.exoplatform.container.web.PortalContainerConfigOwner</listener-class>
+  </listener>
+</web-app>
+----
+
+*eXo container* will need to know which webapp container contains its configuration files. By adding the +PortalContainerConfigOwner+ a *servlet context listener*, we've registered JuZcret webapp context to eXo container to scan and process xml configuration file. Notice that we also need to declare +<display-name>+ tag. eXo container use that information to *map the registered webapp*.
+
+At last, we config the JuZcret as a *dependency of eXo container*. Even you've registered the webapp context, we still need to tell eXo container that JuZcret webapp is a *portal container definition dependency*. There are 2 places to add the configuration:
+
+* +TOMCAT/gatein/conf/configuration.xml+
+* Create a jar file that contains +/conf/configuration.xml+ and put it into tomcat/lib
+
+NOTE: We take the 1st solution for this tutorial, it's quicker for the purpose of this tutorial that is not about eXo Platform extension. For your next application, you have to link:http://docs.exoplatform.com/public/topic/PLF41/PLFDeveloperGuide.eXoAdd-ons.PortalExtension.Howto.html?cp=2_3_1_0_1[follow the official documentation, window="_blank"] and create a specific jar that containing this configuration.xml.
+
+Lets modify the +TOMCAT/gatein/conf/configuration.xml+:
+
+[source,xml]
+----
+<configuration
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd http://www.exoplatform.org/xml/ns/kernel_1_2.xsd"
+    xmlns="http://www.exoplatform.org/xml/ns/kernel_1_2.xsd">
+
+<external-component-plugins>
+<target-component>org.exoplatform.container.definition.PortalContainerConfig</target-component>
+  <component-plugin>
+  <!-- The name of the plugin -->
+  <name>Change PortalContainer Definitions</name>
+  <!-- The name of the method to call on the PortalContainerConfig in order to register the changes on the PortalContainerDefinitions -->
+  <set-method>registerChangePlugin</set-method>
+  <!-- The full qualified name of the PortalContainerDefinitionChangePlugin -->
+  <type>org.exoplatform.container.definition.PortalContainerDefinitionChangePlugin</type>
+  <init-params>
+    <value-param>
+      <name>apply.default</name>
+      <value>true</value>
+    </value-param>
+    <object-param>
+      <name>change</name>
+      <object type="org.exoplatform.container.definition.PortalContainerDefinitionChange$AddDependencies">
+        <!-- The list of name of the dependencies to add -->
+        <field name="dependencies">
+          <collection type="java.util.ArrayList">
+            <value>
+              <string>tutorial-juzcret</string>
+            </value>
+          </collection>
+        </field>
+      </object>
+    </object-param>
+  </init-params>
+    </component-plugin>
+</external-component-plugins>
+
+<import>jar:/conf/platform/configuration.xml</import>
+
+</configuration>
+----
+
+NOTE: It's important to declare our application before the import of +jar:/conf/platform/configuration.xml+.
+
+We finish to declare all necessary JCR Node Type for JuZcret and we add the *JuZcret webapp context as a portal container definition dependency*.
+Now we can configure the *eXo JCR service*.
 
 == Binding eXo JCR service
-We'll not focus on eXo JCR api on this tutorial, but how to *leverage JCR support from PLF*. First, we need to declare dependency on eXo kernel in the classpath. Add this to the project +pom.xml+:
+
+First, we need to declare dependency on eXo kernel. Add +exo.jcr.component.ext+ to the project +pom.xml+:
 
 [source,xml]
 ----
@@ -20,42 +206,103 @@ We'll not focus on eXo JCR api on this tutorial, but how to *leverage JCR suppor
     </dependency>
 ----
 
-It's ready for us to implement the *new secret service* with *JCR api*. Let's create a new *SecretServiceJCRImpl* class in the +org.juzu.tutorial.services+ package:
+It's ready for us to implement the *new secret service* with *JCR api*. Let's create a new +SecretServiceJCRImpl.java+ class in the +org.juzu.tutorial.services+ package:
 
 [source,java]
 ----
+package org.juzu.tutorial.services;
 
 import org.exoplatform.services.jcr.ext.app.SessionProviderService;
 import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
+import org.juzu.tutorial.models.Comment;
+import org.juzu.tutorial.models.Secret;
+
+import javax.inject.Inject;
+import java.util.List;
+import java.util.Set;
 
 public class SecretServiceJCRImpl implements SecretService {
-  @Inject
+
+    private static final String SECRET_APP = "SecretApplication";
+
+    private static final String CREATED_DATE = "exo:createdDate";
+
+    private static final String ID = "exo:id";
+
+    private static final String IMAGE_URL = "exo:imageURL";
+
+    private static final String LIKES = "exo:likes";
+
+    private static final String MESSAGE = "exo:message";
+
+    private static final String CONTENT = "exo:content";
+
+    private static final String USER_ID = "exo:userId";
+
+    private static final String SECRET_NODE_TYPE = "exo:secret";
+
+    private static final String COMMENT_NODE_TYPE = "exo:secretComment";
+
+    @Inject
     private SessionProviderService  sessionService;
 
     @Inject
-private NodeHierarchyCreator    nodeCreator;
-  ...
+    private NodeHierarchyCreator    nodeCreator;
+
+    @Override
+    public List<Secret> getSecrets() {
+        return null;
+    }
+
+    @Override
+    public void addSecret(String message, String imageUrl) {
+
+    }
+
+    @Override
+    public Comment addComment(String secretId, Comment comment) {
+        return null;
+    }
+
+    @Override
+    public Set<String> addLike(String secretId, String userId) {
+        return null;
+    }
 }
 ----
 
-*sessionService* and *nodeCreator* are service components that was created by eXo container. There must be a bridge between PLF's container (eXo container) and JuZcret's IOC container (Guice). This means that before to use it we need to @Bind the necessary services in +package-info.java+:
+*sessionService* and *nodeCreator* are service components created by eXo container. There must be a bridge between eXo Platform's container (eXo container) and JuZcret's IOC container (Guice). This means that before to use it we need to bind the necessary services in +package-info.java+:
 
 [source,java]
 ----
 @Bindings({ @Binding(value = SecretService.class, implementation = SecretServiceJCRImpl.class),
-          @Binding(value = SessionProviderService.class), @Binding(value = NodeHierarchyCreator.class)})
+            @Binding(value = SessionProviderService.class),
+            @Binding(value = NodeHierarchyCreator.class)})
+
+[...]
+
+import org.exoplatform.services.jcr.ext.app.SessionProviderService;
+import org.exoplatform.services.jcr.ext.hierarchy.NodeHierarchyCreator;
+import org.juzu.tutorial.services.SecretService;
+import org.juzu.tutorial.services.SecretServiceJCRImpl;
 ----
 
-The *secret service implementation* is now JCR version. Notice that there is *no declaration* for implementation class of +SessionProviderService+ and +NodeHierarchyCreator+. We only declare the interfaces here because *JuZcret's IOC container* will not instantiate those services itself, but retrieve them from *PLF's container* by delegating the call to +KernelProviderFactory+ (we declared this in step-4 using service loader).
+The *secret service implementation* is now the JCR version (we update the implementation of +SecretService.class+ to +SecretServiceJCRImpl.class+ instead of +SecretServiceMemImpl.class+).
+Notice that there is *no declaration* for implementation class of +SessionProviderService+ and +NodeHierarchyCreator+. We only declare the interfaces because *JuZcret's IOC container* will not instantiate those services itself, but retrieve them from *exo's container* by delegating the call to +KernelProviderFactory+ (we declared this in step-4 using service loader).
 
 == JCR service implementation
 
-All the necessary services are now managed by *JuZcret's container*, and ready to be injected and used, the +NodeHierarchyCreator+ service will help us to init our JuZcret application *JCR data structure*. We create the root node of JuZcret application by adding this method to our secret service:
+All necessary services are now managed by *JuZcret's container*, and ready to be injected and used.
+The +NodeHierarchyCreator+ service will help us to initialize our JuZcret application *JCR data structure*.
+We create the root node of JuZcret application by adding this method to our secret service:
 
 [source,java]
 ----
+import org.exoplatform.services.jcr.ext.common.SessionProvider;
+import javax.jcr.Node;
+
 public class SecretServiceJCRImpl implements SecretService {
-  ...
+  [...]
   private Node getSecretHome() throws Exception {
     SessionProvider sProvider = sessionService.getSystemSessionProvider(null);
     Node publicApp = nodeCreator.getPublicApplicationNode(sProvider);
@@ -66,17 +313,24 @@ public class SecretServiceJCRImpl implements SecretService {
       publicApp.getSession().save();
       return secretApp;
     }
-    ...
   }
+  [...]
 }
 ----
 
-By calling +nodeCreator#getPublicApplicationNode+ method, we get the common place to put *application data*. If it's the first time running JuZcret, we create a new +SECRET_APP+ node with type +nt:unstructured+ node type. This node will then contains childrens with node type +exo:secret+. This node type should reflect our Secret domain class, and then declare this to *eXo JCR service* (we'll back to this next part)
+By calling +nodeCreator.getPublicApplicationNode+ method, we get the common place to put *application data*. If it's the first time running JuZcret, we create a new +SECRET_APP+ node with type +nt:unstructured+ node type. This node will then contains childrens with node type +exo:secret+. This node type should reflect our Secret domain class, and then declare this to *eXo JCR service* (we'll back to this part later).
 
-Now we have the root application node, lets implement the function to *add a new  secret*:
+Now we get the root application node, let's implement the function to *add a new  secret*:
 
 [source,java]
 ----
+[...]
+
+import java.util.Calendar;
+import java.util.UUID;
+
+[...]
+
 public class SecretServiceJCRImpl implements SecretService {
   …
 
@@ -94,31 +348,26 @@ public class SecretServiceJCRImpl implements SecretService {
       e.printStackTrace();
     }
   }
-  ...
+
+  [...]
 }
 ----
 
 It's pretty simple *JCR api*, and actually, no Juzu stuff here, the most important thing here is getting the root node using the +getSecretHome+ method:
-
-[source,java]
-----
-private Node getSecretHome() throws Exception {
-    SessionProvider sProvider = sessionService.getSystemSessionProvider(null);
-    Node publicApp = nodeCreator.getPublicApplicationNode(sProvider);
-    try {
-      return publicApp.getNode(SECRET_APP);
-    } catch (Exception e) {
-      Node secretApp = publicApp.addNode(SECRET_APP, "nt:unstructured");
-      publicApp.getSession().save();
-      return secretApp;
-    }
-  }
-----
-
 There are some other *similar method* that we need to implement: +addComment+, +addLike+ and +getSecrets+ method:
 
 [source,java]
 ----
+[...]
+
+import java.util.HashSet
+import java.util.LinkedList;
+import javax.jcr.NodeIterator;
+import javax.jcr.RepositoryException;
+import javax.jcr.Value;
+
+[...]
+
 @Override
   public List<Secret> getSecrets() {
     List<Secret> secrets = new LinkedList<Secret>();
@@ -231,185 +480,17 @@ private Secret buildSecret(Node secretNode) throws RepositoryException {
 
 ----
 
-The secret JCR service should be now ready to use. We just need before to make eXo JCR to be aware about secret's *JCR node type*. Lets configure *eXo JCR service*.
+That's all, the secret JCR service is now ready to use.
 
-== JuzCret JCR NodeType declaration
 
-Create *JCR node type definition* file +secret-nodetypes.xml+ in +src/main/webapp/WEB-INF/conf+ . We'll define +exo:secret+ and +exo:secretComment+ node type. Their properties reflect our *JuZcret domain classes*: Secret and Comment. We'll not explain the JCR node type definition here, if you need more information to understand the code below, please take a look to the eXo JCR website.
-
-[source,xml]
+Now re-compile and deploy JuZcret eXo Platform as explain in previous step of this tutorial:
+[source,text]
 ----
-<nodeTypes xmlns:nt="http:+www.jcp.org/jcr/nt/1.0" xmlns:mix="http:+www.jcp.org/jcr/mix/1.0" xmlns:jcr="http:+www.jcp.org/jcr/1.0">
-    <nodeType name="exo:secret" isMixin="false" hasOrderableChildNodes="false" primaryItemName="">
-      <supertypes>
-        <supertype>nt:base</supertype>
-      </supertypes>
-      <propertyDefinitions>
-        <propertyDefinition name="exo:id" requiredType="String" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
-          <valueConstraints/>
-        </propertyDefinition>
-        <propertyDefinition name="exo:message" requiredType="String" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
-          <valueConstraints/>
-        </propertyDefinition>
-        <propertyDefinition name="exo:imageURL" requiredType="String" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
-          <valueConstraints/>
-        </propertyDefinition>
-        <propertyDefinition name="exo:likes" requiredType="String" autoCreated="false" mandatory="false" onParentVersion="COPY" protected="false" multiple="true">
-          <valueConstraints/>
-        </propertyDefinition>
-        <propertyDefinition name="exo:createdDate" requiredType="Date" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
-          <valueConstraints/>
-        </propertyDefinition>
-      </propertyDefinitions>
-      <childNodeDefinitions>
-        <childNodeDefinition name="*" defaultPrimaryType="" autoCreated="false" mandatory="false"
-          onParentVersion="COPY" protected="false" sameNameSiblings="false">
-          <requiredPrimaryTypes>
-            <requiredPrimaryType>exo:secretComment</requiredPrimaryType>
-          </requiredPrimaryTypes>
-        </childNodeDefinition>
-      </childNodeDefinitions>
-    </nodeType>
-
-    <nodeType  name="exo:secretComment" isMixin="false" hasOrderableChildNodes="false" primaryItemName="">
-      <supertypes>
-        <supertype>nt:base</supertype>
-      </supertypes>
-      <propertyDefinitions>
-        <propertyDefinition name="exo:id" requiredType="String" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
-          <valueConstraints/>
-        </propertyDefinition>
-        <propertyDefinition name="exo:userId" requiredType="String" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
-          <valueConstraints/>
-        </propertyDefinition>
-        <propertyDefinition name="exo:content" requiredType="String" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
-          <valueConstraints/>
-        </propertyDefinition>
-        <propertyDefinition name="exo:createdDate" requiredType="Date" autoCreated="false" mandatory="true" onParentVersion="COPY" protected="false" multiple="false">
-          <valueConstraints/>
-        </propertyDefinition>
-      </propertyDefinitions>
-    </nodeType>
-</nodeTypes>
+$ mvn clean install
 ----
+Copy/Paste the war _(replace the old one)_ in the webapp folder of eXo Platform, start the server and open link:http://localhost:8080/portal/intranet/JuZcret[JuZcret page created in step 1, window="_blank"].
 
-After have +secret-nodetypes.xml+ file ready, lets register it to *eXo JCR service*. Add this new eXo container configuration file +/src/main/webapp/WEB-INF/conf/configuration.xml+:
-
-[source,xml]
-----
-<configuration
-  xmlns:xsi="http:+www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http:+www.exoplatform.org/xml/ns/kernel_1_2.xsd http:+www.exoplatform.org/xml/ns/kernel_1_2.xsd"
-  xmlns="http:+www.exoplatform.org/xml/ns/kernel_1_2.xsd">
-
-  <external-component-plugins>
-    <target-component>org.exoplatform.services.jcr.RepositoryService</target-component>
-    <component-plugin>
-      <name>add.nodeType</name>
-      <set-method>addPlugin</set-method>
-      <type>org.exoplatform.services.jcr.impl.AddNodeTypePlugin</type>
-      <init-params>
-        <values-param>
-          <name>autoCreatedInNewRepository</name>
-          <description>Node types configuration file</description>
-          <value>war:/conf/secret-nodetypes.xml</value>
-        </values-param>
-      </init-params>
-    </component-plugin>
-  </external-component-plugins>
-</configuration>
-----
-
-This configuration register a *node type plugin* with eXo RepositoryService, which will parse our node type at +war:/conf/secret-nodetypes.xml+ path.
-
-The only missing thing now is that make sure PLF will *scan and process* our *configuration.xml* file in *tutorial-juzcret webapp* when it initializing eXo container. This task is not specific to Juzu, it's about configuring a webapp as *PLF extension* (for more details about PLF extension, pls look at eXo kernel document)
-
-First, we need to modify the +web.xml+:
-
-[source,xml]
-----
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<web-app xmlns="http:+java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http:+www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http:+java.sun.com/xml/ns/javaee http:+java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-         version="3.0">
-  <display-name>tutorial-juzcret</display-name>
-
-  <!-- Run mode: prod, dev or live -->
-  <context-param>
-    <param-name>juzu.run_mode</param-name>
-    <param-value>${juzu.run_mode:dev}</param-value>
-  </context-param>
-
-  <!-- Injection container to use: guice, spring, cdi or weld -->
-  <context-param>
-    <param-name>juzu.inject</param-name>
-    <param-value>guice</param-value>
-  </context-param>
-
-  <listener>
-    <listener-class>org.exoplatform.container.web.PortalContainerConfigOwner</listener-class>
-  </listener>
-</web-app>
-----
-
-*eXo container* will need to know which webapp container contains its configuration files. By adding the +PortalContainerConfigOwner+ a *servlet context listener*, we've registered JuZcret webapp context to eXo container to scan and process xml configuration file. Notice that we also need to declare +<display-name>+ tag. eXo container use that information to *map the registered webapp*.
-
-At last, we config the JuZcret as a *dependency of eXo container*. Even you've registered the webapp context, we still need to tell eXo container that JuZcret webapp is a *portal container definition dependency*. There are 2 places to add the configuration:
-
-* +TOMCAT/gatein/conf/configuration.xml+
-* Create a jar file, contains +/conf/configuration.xml+ and put it into tomcat/lib
-
-We take 1st solution for this tutorial, it's simple and easy to do. Lets modify that configuration file:
-
-[source,xml]
-----
-<configuration
-    xmlns:xsi="http:+www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http:+www.exoplatform.org/xml/ns/kernel_1_2.xsd http:+www.exoplatform.org/xml/ns/kernel_1_2.xsd"
-    xmlns="http:+www.exoplatform.org/xml/ns/kernel_1_2.xsd">
-
-<external-component-plugins>
-<target-component>org.exoplatform.container.definition.PortalContainerConfig</target-component>
-  <component-plugin>
-  <!-- The name of the plugin -->
-  <name>Change PortalContainer Definitions</name>
-  <!-- The name of the method to call on the PortalContainerConfig in order to register the changes on the PortalContainerDefinitions -->
-  <set-method>registerChangePlugin</set-method>
-  <!-- The full qualified name of the PortalContainerDefinitionChangePlugin -->
-  <type>org.exoplatform.container.definition.PortalContainerDefinitionChangePlugin</type>
-  <init-params>
-    <value-param>
-      <name>apply.default</name>
-      <value>true</value>
-    </value-param>
-    <object-param>
-      <name>change</name>
-      <object type="org.exoplatform.container.definition.PortalContainerDefinitionChange$AddDependencies">
-        <!-- The list of name of the dependencies to add -->
-        <field name="dependencies">
-          <collection type="java.util.ArrayList">
-            <value>
-              <string>tutorial-juzcret</string>
-            </value>
-          </collection>
-        </field>
-      </object>
-    </object-param>
-  </init-params>
-    </component-plugin>
-</external-component-plugins>
-
-<import>jar:/conf/platform/configuration.xml</import>
-
-</configuration>
-----
-
-Notice that it's important to declare it before the import of +jar:/conf/platform/configuration.xml+.
-
-We add the *JuZcret webapp context as a portal container definition dependency*.
-That's all, now re-compile and deploy JuZcret app to PLF tomcat.
-All features: sharing secret, adding comment, like... should run similar to previous memory service implementation, except one thing, we *don't lose shared secret* or comment after restarting server. The data is now *really persisted !*
+All features: sharing secret, adding comment, like... should run similarly to previous memory service implementation, except one thing, we *don't lose shared secret* or comment after restarting server. The data is now *really persisted !*
 
 Let's continue by link:./step6.html[adding internationalization in the next step]
 
