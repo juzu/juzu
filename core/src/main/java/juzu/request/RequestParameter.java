@@ -211,9 +211,9 @@ public final class RequestParameter extends Parameter {
   }
 
   public RequestParameter append(String[] appended) {
-    String[] value = new String[this.value.length + 1];
+    String[] value = new String[this.value.length + appended.length];
     System.arraycopy(this.value, 0, value, 0, this.value.length);
-    System.arraycopy(appended, 0, value, appended.length, this.value.length);
+    System.arraycopy(appended, 0, value, this.value.length, appended.length);
     return new RequestParameter(name, null, value);
   }
 
