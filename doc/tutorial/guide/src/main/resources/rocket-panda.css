@@ -697,6 +697,16 @@ ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .olist, .olist .ulist 
 	padding: 5px 30px;
 }
 
+.sect0 + .paragraph, .sect0 + .paragraph + .paragraph {
+    background: none repeat scroll 0 0 #ececec;
+    margin: -1.5em -2.4em 0;
+    padding: 5px 30px;
+}
+
+.sect0 + .paragraph p, .sect0 + .paragraph + .paragraph p  {
+    font-size: 14px;
+}
+
 .ulist ul{
 	margin-left: 0px;
 }
