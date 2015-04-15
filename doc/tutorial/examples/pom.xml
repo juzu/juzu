@@ -95,12 +95,13 @@
   </build>
 
   <profiles>
-
+    
     <profile>
       <id>guice</id>
       <activation>
         <property>
-          <name>!target</name>
+          <name>target</name>
+          <value>guice</value>
         </property>
       </activation>
       <dependencies>
@@ -246,6 +247,54 @@
           <artifactId>spring-web</artifactId>
         </dependency>
       </dependencies>
+    </profile>
+    
+    <profile>
+      <id>PLF</id>
+      <activation>
+        <property>
+          <name>!target</name>
+        </property>
+      </activation>
+      <!-- tag::PLF[] -->
+      <dependencies>
+        <dependency>
+          <groupId>org.juzu</groupId>
+          <artifactId>juzu-core</artifactId>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+	      <groupId>org.juzu</groupId>
+	      <artifactId>juzu-plugins-less4j</artifactId>
+	      <scope>provided</scope>
+	     </dependency>
+	     <dependency>
+	      <groupId>org.juzu</groupId>
+	      <artifactId>juzu-plugins-servlet</artifactId>
+	      <scope>provided</scope>
+	     </dependency>
+	     <dependency>
+	      <groupId>org.juzu</groupId>
+	      <artifactId>juzu-plugins-portlet</artifactId>
+	      <scope>provided</scope>
+	     </dependency>
+        <dependency>
+          <groupId>org.codehaus.groovy</groupId>
+          <artifactId>groovy-all</artifactId>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>javax.inject</groupId>
+          <artifactId>javax.inject</artifactId>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>com.google.inject</groupId>
+          <artifactId>guice</artifactId>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+      <!-- end::PLF[] -->
     </profile>
 
     <profile>
