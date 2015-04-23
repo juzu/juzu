@@ -345,8 +345,6 @@ Ah ah we get what I promised : *a ugly static Portlet !*
 
 It's time to go to link:./step2.html[Step 2 - Viewing and posting Secret] and add some functionality to our Portlet...
 
-_The final source of step 1 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-1[downloading on Github, window="_blank"]_
-
 ++++
 <script type="text/javascript">
 //Get the left menu

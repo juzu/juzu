@@ -181,7 +181,7 @@ Classloader of the test will load this service +SecretServiceJCRImpl+ instead of
 
 NOTE: If you are using IntelliJ you can get a "Duplicate class found in the file" warning due to the fact that we have two +SecretServiceJCRImpl+ in the same package (one in +/main+, one in +/test+). Just ignore it.
 
-We also have +SessionProviderService+ and +NodeHierarchyCreator+ which are eXo JCR service in +package-info.java+. We don’t need them for the test.
+We also have +SessionProviderService+ and +NodeHierarchyCreator+ which are eXo JCR service in +package-info.java+. We don’t need them for the test but we didn't declare an implementation for them in +package-info.java+. So we will mock the *eXo kernel provider* to avoid to get an error when it will try to bind the implementation.
 
 Lets mock the *eXo kernel provider* in +src/test/java/org/juzu/tutorial+:
 [source,java]
@@ -430,8 +430,6 @@ Perform a
 $ mvn clean install
 ----
 and ensure that all tests success.
-
-_The final source of step 7 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-7[downloading on Github, window="_blank"]_
 
 This step is the end of the JuZcret tutorial. 
 Apprentice, you can be proud. You are now a *true Juzu developer* with the capability to develop more and more funny Juzu applications and *evangelize Juzu around you*.

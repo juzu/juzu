@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd"
+             version="2.0"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd
+   http://java.sun.com/xml/ns/portlet/portlet-app_2_0.xsd">
+  <portlet>
+    <portlet-name>JuzcretApplication-step1</portlet-name>
+    <display-name xml:lang="EN">Juzu Secret Application - Step 1</display-name>
+    <portlet-class>juzu.bridge.portlet.JuzuPortlet</portlet-class>
+    <init-param>
+      <name>juzu.app_name</name>
+      <value>org.juzu.tutorial.juzcret.step1</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>JuZcret Application 1</title>
+    </portlet-info>
+  </portlet>
+  <portlet>
+    <portlet-name>JuzcretApplication-step2</portlet-name>
+    <display-name xml:lang="EN">Juzu Secret Application - Step 2</display-name>
+    <portlet-class>juzu.bridge.portlet.JuzuPortlet</portlet-class>
+    <init-param>
+      <name>juzu.app_name</name>
+      <value>org.juzu.tutorial.juzcret.step2</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>JuZcret Application 2</title>
+    </portlet-info>
+  </portlet>
+  <portlet>
+    <portlet-name>JuzcretApplication-step3</portlet-name>
+    <display-name xml:lang="EN">Juzu Secret Application - Step 3</display-name>
+    <portlet-class>juzu.bridge.portlet.JuzuPortlet</portlet-class>
+    <init-param>
+      <name>juzu.app_name</name>
+      <value>org.juzu.tutorial.juzcret.step3</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>JuZcret Application 3</title>
+    </portlet-info>
+  </portlet>
+  <portlet>
+    <portlet-name>JuzcretApplication-step4</portlet-name>
+    <display-name xml:lang="EN">Juzu Secret Application - Step 4</display-name>
+    <portlet-class>juzu.bridge.portlet.JuzuPortlet</portlet-class>
+    <init-param>
+      <name>juzu.app_name</name>
+      <value>org.juzu.tutorial.juzcret.step4</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>JuZcret Application 4</title>
+    </portlet-info>
+  </portlet>
+  <portlet>
+    <portlet-name>JuzcretApplication-step5</portlet-name>
+    <display-name xml:lang="EN">Juzu Secret Application - Step 5</display-name>
+    <portlet-class>juzu.bridge.portlet.JuzuPortlet</portlet-class>
+    <init-param>
+      <name>juzu.app_name</name>
+      <value>org.juzu.tutorial.juzcret.step5</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>JuZcret Application 5</title>
+    </portlet-info>
+  </portlet>
+  <portlet>
+    <portlet-name>JuzcretApplication-step6</portlet-name>
+    <display-name xml:lang="EN">Juzu Secret Application - Step 6</display-name>
+    <portlet-class>juzu.bridge.portlet.JuzuPortlet</portlet-class>
+    <init-param>
+      <name>juzu.app_name</name>
+      <value>org.juzu.tutorial.juzcret.step6</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>JuZcret Application 6</title>
+    </portlet-info>
+  </portlet>
+  <portlet>
+    <portlet-name>JuzcretApplication-step7</portlet-name>
+    <display-name xml:lang="EN">Juzu Secret Application - Step 7</display-name>
+    <portlet-class>juzu.bridge.portlet.JuzuPortlet</portlet-class>
+    <init-param>
+      <name>juzu.app_name</name>
+      <value>org.juzu.tutorial.juzcret.step7</value>
+    </init-param>
+    <supports>
+      <mime-type>text/html</mime-type>
+    </supports>
+    <portlet-info>
+      <title>JuZcret Application 7</title>
+    </portlet-info>
+  </portlet>
+</portlet-app>

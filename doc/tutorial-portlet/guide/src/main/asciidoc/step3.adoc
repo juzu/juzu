@@ -455,8 +455,6 @@ image::images/step3/final-screen.png[Final screen,800,align="center"]
 
 Here we are ! As promised a *sexy JuZcret Portlet* ! And it’s not finish… let's continue to link:./step4.html[step 4 to add new functionality]
 
-_The final source of step 3 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-3[downloading on Github, window="_blank"]_
-
 _Thanks a lot to BD and UI team for their contribution ;)_
 
 ++++

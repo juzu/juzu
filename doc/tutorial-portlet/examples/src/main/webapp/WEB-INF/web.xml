@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
+  <display-name>juzu-doc-tutorial-juzcret-examples</display-name>
+
+  <!-- Run mode: prod, dev or live -->
+  <context-param>
+    <param-name>juzu.run_mode</param-name>
+    <param-value>${juzu.run_mode:dev}</param-value>
+  </context-param>
+
+  <!-- Injection container to use: guice, spring, cdi or weld -->
+  <context-param>
+    <param-name>juzu.inject</param-name>
+    <param-value>guice</param-value>
+  </context-param>
+
+  <listener>
+    <listener-class>org.exoplatform.container.web.PortalContainerConfigOwner</listener-class>
+  </listener>
+
+</web-app>

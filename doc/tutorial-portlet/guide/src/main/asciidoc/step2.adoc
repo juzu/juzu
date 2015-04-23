@@ -318,85 +318,6 @@ But using *HashMap* means that if a template *parameter name changes*, the contr
 == Default controller method
 One more thing. In Juzu, *index* is a special name that *catches any unmatched request*. In other word, the method *index()* annotated with +@View+ provide the *default markup* of our application.
 
-== Integrating with PLF 4.1
-Guys, after this explanation we need to take a break here because I have to confess about something.
-Today the *official Juzu version* supported by *PLF 4.1* is 0.6.2. I don't want to limit you to the 0.6.2, I want to give you the possibility to discover the *entire Juzu features* available in the 1.0.0-cr1 version. This means that in order to run a Juzu 1.0.0-cr1 portlet properly in PLF 4.1, we need to *override* the implementation that comes from *eXo commons* project. If not, we'll meet an unexpected error due to conflict of class version. This problem will be fixed as soon we upgrade PLF with the *newest Juzu version*.
-
-It's quick and pretty simple and because we are nice, notice that we created for you a specific Juzu helloWorld project that contains already all stuff needed to *create easily Juzu portlet for PLF 4.1*.
-So for your next personal project I advise you to clone this link:https://github.com/juzu/portlet-tutorial/tree/master/juzu-plf41-helloworld[Juzu PLF 4.1 startup project, window="_blank"]
-But in this tutorial it's important to understand what happened to become a *real Juzu developer* ;). It's why we need to follow this instruction:
-
-PLF have its services managed by *eXo container*, thanks to provider factory support. A *provider factory* provides pluggability for integrating beans that are not managed natively by the *IOC container* but needs to be integrated inside the container.
-
-In order to JuZcret run properly in PLF now, we need to declare a *KernelProviderFactory*.
-
-First we need to create a new file named +juzu.inject.ProviderFactory+ in +src/main/resources/META-INF/services+/
-In this file we just add a line with the implementation class name:
-[source,text]
-----
-org.exoplatform.commons.juzu.KernelProviderFactory
-----
-Notice that it's important to *keep the name exactly* like that, as it's a workaround to override the implementation that comes from eXo commons project.
-
-Secondly we create the kernel provider factory class. In +org.exoplatform.commons.juzu+ package add a +KernelProviderFactory+ class:
-
-[source,java]
-----
-package org.exoplatform.commons.juzu;
-
-import javax.inject.Provider;
-import juzu.inject.ProviderFactory;
-import org.exoplatform.container.PortalContainer;
-import org.picocontainer.ComponentAdapter;
-
-public class KernelProviderFactory implements ProviderFactory {
-
-    @Override
-    public <T> Provider<? extends T> getProvider(final Class<T> implementationType) throws Exception {
-        final PortalContainer container = PortalContainer.getInstance();
-        if (container == null) {
-            throw new IllegalStateException("Not running in the context of a portal container");
-        }
-        final ComponentAdapter adapter = container.getComponentAdapterOfType(implementationType);
-        if (adapter != null) {
-            return new Provider<T>() {
-                @Override
-                public T get() {
-                    Object service = adapter.getComponentInstance(container);
-                    if (service == null) {
-                        throw new RuntimeException("Could not obtain service " + implementationType + " from container " + container);
-                    }
-                    return implementationType.cast(service);
-                }
-            };
-        } else {
-            return null;
-        }
-    }
-}
-----
-The provider call the *PortalContainer* - an object from *eXo kernel library* - and delegate the finding managed bean to it. Juzu will use the returned result for *binding to its container*. So we need to add the dependency to eXo kernel lib in the pom of our project:
-
-[source,xml]
-----
-    <dependency>
-      <groupId>org.exoplatform.kernel</groupId>
-      <artifactId>exo.kernel.container</artifactId>
-      <version>2.4.x-SNAPSHOT</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>servlet-api</artifactId>
-          <groupId>javax.servlet</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-----
-
-That's it, now our Juzu 1.0.0-cr1 Portlet can work on PLF 4.1.
-I remember you that for your next personal project, a link:https://github.com/juzu/portlet-tutorial/tree/master/juzu-plf41-helloworld[Juzu PLF 4.1 startup project, window="_blank"] is available.
-
-
 == Display Secret
 NOTE: Please link:http://community.exoplatform.com/portal/g/:spaces:juzu/juzu/wiki/Develop_Juzu_Portlet_with_JRebel[configure now your project to use JRebel, window="_blank"]. This will allow hot redeployment of our Portlet without restarting the server.
 
@@ -622,9 +543,6 @@ At this step we don't need anymore of the +Controller.java+ and the +index.gtmpl
 image::images/step2/structure-project-end-step-2.png[Structure project,300,align="center"]
 
 We now have some *interesting features* allowing to interact with our Juzu Portlet but still a ugly design. It's time for link:./step3.html[*improving the UI* of JuZcret to attract many secret users...]
-
-_The final source of step 2 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-2[downloading on Github, window="_blank"]_
-
 
 ++++
 <script type="text/javascript">

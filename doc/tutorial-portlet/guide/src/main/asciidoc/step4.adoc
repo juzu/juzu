@@ -228,8 +228,6 @@ Done for *service layer* !
 
 This two methods are pretty simple and self-explained so we don't have to spend time on it.
 
-NOTE: If you are some doubt, I remember you that each step is available on a dedicated branch. For link:https://github.com/juzu/portlet-tutorial/tree/step-4/tutorial-juzcret[downloading on Github the result of step-4 here it is, window="_blank"]
-
 It's time to go back to Juzu and improve the *presentation layer*.
 
 
@@ -631,7 +629,7 @@ After that we need to improve our +juzcret.less+ file to manage new added class.
 
 ----
 
-NOTE: [...] means sections already added in step 3. If you feel a little bit lost, take a look directly on the github project for the link:https://github.com/juzu/portlet-tutorial/blob/step-4/tutorial-juzcret/src/main/java/org/juzu/tutorial/assets/styles/juzcret.less[juzcret.less file, window="_blank"]
+NOTE: [...] means sections already added in step 3.
 
 Now we have 2 buttons for *comment and like features* and a popover to display the list of comments.
 
@@ -1003,9 +1001,6 @@ After uncheck "enable comment", save and close the edit mode, you *cannot add ne
 image::images/step4/cannot-add-comment.png[Cannot add comment,800,align="center"]
 
 We are at the end of the step 4 with a nice social application. But our JuZcret application miss an important thing from production. We *don’t persist data*, all is saved in memory… For fix it, link:./step5.html[go ahead to the step 5]!
-
-_The final source of step 4 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-4/tutorial-juzcret[downloading on Github, window="_blank"]_
-
 
 ++++
 <script type="text/javascript">

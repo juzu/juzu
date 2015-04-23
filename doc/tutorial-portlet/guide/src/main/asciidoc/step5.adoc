@@ -113,7 +113,7 @@ First, we need to modify the +web.xml+:
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
-  <display-name>tutorial-juzcret</display-name>
+  <display-name>juzu-doc-tutorial-juzcret-examples</display-name>
 
   <!-- Run mode: prod, dev or live -->
   <context-param>
@@ -172,7 +172,7 @@ Lets modify the +TOMCAT/gatein/conf/configuration.xml+:
         <field name="dependencies">
           <collection type="java.util.ArrayList">
             <value>
-              <string>tutorial-juzcret</string>
+              <string>juzu-doc-tutorial-juzcret-examples</string>
             </value>
           </collection>
         </field>
@@ -493,8 +493,6 @@ Copy/Paste the war _(replace the old one)_ in the webapp folder of eXo Platform,
 All features: sharing secret, adding comment, like... should run similarly to previous memory service implementation, except one thing, we *don't lose shared secret* or comment after restarting server. The data is now *really persisted !*
 
 Let's continue by link:./step6.html[adding internationalization in the next step]
-
-_The final source of step 5 is available for link:https://github.com/juzu/portlet-tutorial/tree/step-5[downloading on Github, window="_blank"]_
 
 ++++
 <script type="text/javascript">
