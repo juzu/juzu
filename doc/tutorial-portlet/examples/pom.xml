@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>juzu-doc-tutorial-portlet-parent</artifactId>
     <groupId>org.juzu</groupId>
-    <version>1.0.x-SNAPSHOT</version>
+    <version>1.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>juzu-doc-tutorial-portlet-examples</artifactId>
-  <version>1.0.x-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>war</packaging>
 
   <name>Juzu Portlet Tutorial Examples</name>
@@ -22,18 +20,18 @@
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
-      <version>1.0.x-SNAPSHOT</version>
+      <version>1.0.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-validation</artifactId>
-      <version>1.0.x-SNAPSHOT</version>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-less4j</artifactId>
-      <version>1.0.x-SNAPSHOT</version>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -44,7 +42,7 @@
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-webjars</artifactId>
-      <version>1.0.x-SNAPSHOT</version>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
@@ -66,13 +64,13 @@
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-portlet</artifactId>
-      <version>1.0.x-SNAPSHOT</version>
+      <version>1.0.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.exoplatform.jcr</groupId>
       <artifactId>exo.jcr.component.ext</artifactId>
-      <version>1.15.x-SNAPSHOT</version>
+      <version>1.15.12-GA</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -124,7 +122,7 @@
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-core</artifactId>
-      <version>1.0.x-SNAPSHOT</version>
+      <version>1.0.0</version>
       <type>test-jar</type>
       <scope>test</scope>
     </dependency>
@@ -137,13 +135,13 @@
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-depchain-arquillian</artifactId>
-      <version>1.0.x-SNAPSHOT</version>
+      <version>1.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-depchain-arquillian-tomcat7</artifactId>
-      <version>1.0.x-SNAPSHOT</version>
+      <version>1.0.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
