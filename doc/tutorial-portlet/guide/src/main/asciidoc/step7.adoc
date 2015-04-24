@@ -33,13 +33,13 @@ For making testing easy, Juzu provides a Maven dependencies called *depchains* c
 <dependency>
   <groupId>org.juzu</groupId>
   <artifactId>juzu-depchain-arquillian</artifactId>
-  <version>1.0.0-cr1</version>
+  <version>1.0.0</version>
   <scope>test</scope>
 </dependency>
 <dependency>
   <groupId>org.juzu</groupId>
   <artifactId>juzu-depchain-arquillian-tomcat7</artifactId>
-  <version>1.0.0-cr1</version>
+  <version>1.0.0</version>
   <scope>test</scope>
 </dependency>
 ----
@@ -53,7 +53,7 @@ Also Juzu core provides some *abstract test class*, that make our test easier to
        <dependency>
           <groupId>org.juzu</groupId>
           <artifactId>juzu-core</artifactId>
-          <version>1.0.0-cr1</version>
+          <version>1.0.0</version>
           <type>test-jar</type>
           <scope>test</scope>
        </dependency>

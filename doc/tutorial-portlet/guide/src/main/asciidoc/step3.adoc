@@ -43,7 +43,7 @@ Before using less we need to add a *dependency to juzu-plugins-less4j* in the po
     <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-less4j</artifactId>
-        <version>1.0.0-cr1</version>
+        <version>1.0.0</version>
     </dependency>
 ----
 
@@ -79,7 +79,7 @@ In our case we want to use jQuery. We just have to add the +juzu-plugins-webjars
 <dependency>
       <groupId>org.juzu</groupId>
       <artifactId>juzu-plugins-webjars</artifactId>
-      <version>1.0.0-cr1</version>
+      <version>1.0.0</version>
 </dependency>
 <dependency>
       <groupId>org.webjars</groupId>

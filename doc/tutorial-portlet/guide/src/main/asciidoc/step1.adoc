@@ -85,7 +85,7 @@ Then tape
 mvn archetype:generate \
     -DarchetypeGroupId=org.juzu \
     -DarchetypeArtifactId=juzu-archetype \
-    -DarchetypeVersion=1.0.0-cr1 \
+    -DarchetypeVersion=1.0.0 \
     -DjuzuServer=gatein \
     -DgroupId=org.juzu.tutorial \
     -DartifactId=tutorial-juzcret \
@@ -100,7 +100,7 @@ When generation is finished, a *build success message* is displayed in your comm
 
 [source,text]
 ----
-[INFO] Using following parameters for creating project from Archetype: juzu-archetype:1.0.0-cr1
+[INFO] Using following parameters for creating project from Archetype: juzu-archetype:1.0.0
 [INFO] ----------------------------------------------------------------------------
 [INFO] Parameter: groupId, Value: org.juzu.tutorial
 [INFO] Parameter: artifactId, Value: tutorial-juzcret
