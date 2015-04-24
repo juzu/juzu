@@ -19,12 +19,14 @@ package juzu.impl.common;
 import juzu.io.UndeclaredIOException;
 import juzu.request.ResponseParameter;
 import juzu.impl.bridge.Parameters;
+
 import org.w3c.dom.*;
 
 import javax.annotation.processing.Completion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.xml.bind.DatatypeConverter;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
@@ -66,6 +68,8 @@ import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
@@ -75,6 +79,11 @@ public class Tools {
   private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
   /** . */
+  private static final ConcurrentMap<String, Class<?>> PACKAGE_INFO_CLASS_CACHE = new ConcurrentHashMap<String, Class<?>>();
+
+  private static final Set<String> PACKAGE_INFO_IGNORE_LIST = new HashSet<String>();
+
+  /** . */
   public static final Charset ISO_8859_1 = Charset.forName("ISO-8859-1");
 
   /** . */
@@ -82,6 +91,7 @@ public class Tools {
 
   /** . */
   public static final Charset UTF_8 = Charset.forName("UTF-8");
+
 
   /** . */
   private static final Iterator EMPTY_ITERATOR = new Iterator() {
@@ -203,10 +213,25 @@ public class Tools {
   }
 
   public static Class<?> getPackageClass(ClassLoader loader, String pkgName) {
+    // TODO: This cache should be taken care from AssetService as the root cause of the problem.
+    // Let's improve it when working on JUZU-41
+    if (PACKAGE_INFO_IGNORE_LIST.contains(pkgName)) {
+      return null;
+    }
+
     try {
-      return loader.loadClass(pkgName + ".package-info");
+      String className = pkgName + ".package-info";
+      Class<?> c = PACKAGE_INFO_CLASS_CACHE.get(className);
+      if (c != null) {
+        return c;
+      }
+
+      c = loader.loadClass(pkgName + ".package-info");
+      PACKAGE_INFO_CLASS_CACHE.put(className, c);
+      return c;
     }
     catch (ClassNotFoundException e) {
+      PACKAGE_INFO_IGNORE_LIST.add(pkgName);
       return null;
     }
   }
