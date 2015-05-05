@@ -76,36 +76,39 @@ public class ExtensionImpl implements Extension {
       try {
         final ClassLoader cl = Thread.currentThread().getContextClassLoader();
         InputStream in = cl.getResourceAsStream("juzu/config.json");
-        String serializedConfig = Tools.read(in);
-        JSON config = (JSON)JSON.parse(serializedConfig);
-        JSON applications = config.getJSON("application");
-        if (applications.names().size() != 1) {
-          throw new RuntimeException("Was expecting application size to be 1 instead of " + applications);
-        }
-        String packageFQN = applications.names().iterator().next();
-        ApplicationDescriptor descriptor = ApplicationDescriptor.create(cl, packageFQN);
-        // For now we don't resolve anything...
-        ResourceResolver resourceResolver = new ResourceResolver() {
-          public URL resolve(String uri) {
-            return null;
+        //JUZU-42 check if this webapp is juzu or not
+        if (in != null) {
+          String serializedConfig = Tools.read(in);
+          JSON config = (JSON)JSON.parse(serializedConfig);
+          JSON applications = config.getJSON("application");
+          if (applications.names().size() != 1) {
+              throw new RuntimeException("Was expecting application size to be 1 instead of " + applications);
           }
-        };
-
-        //
-        ProvidedCDIInjector injector = new ProvidedCDIInjector(cl, beanManager, descriptor, resourceResolver);
-
-        // We start the application
-        // it should:
-        // - instantiate the plugins
-        // - bind the beans from the plugins in the container
-        // we rely on the lazy nature of the beans for not really starting...
-        Application application = injector.getApplication();
-        application.start();
-
-        // At this point the application is not really started
-        // we must go through the other CDI phases for effectively registering
-        // the beans in the container
-        this.context = (CDIContext)application.getInjectionContext();
+          String packageFQN = applications.names().iterator().next();
+          ApplicationDescriptor descriptor = ApplicationDescriptor.create(cl, packageFQN);
+          // For now we don't resolve anything...
+          ResourceResolver resourceResolver = new ResourceResolver() {
+              public URL resolve(String uri) {
+                  return null;
+              }
+          };
+          
+          //
+          ProvidedCDIInjector injector = new ProvidedCDIInjector(cl, beanManager, descriptor, resourceResolver);
+          
+          // We start the application
+          // it should:
+          // - instantiate the plugins
+          // - bind the beans from the plugins in the container
+          // we rely on the lazy nature of the beans for not really starting...
+          Application application = injector.getApplication();
+          application.start();
+          
+          // At this point the application is not really started
+          // we must go through the other CDI phases for effectively registering
+          // the beans in the container
+          this.context = (CDIContext)application.getInjectionContext();            
+        }
       }
       catch (Exception e) {
         throw new UnsupportedOperationException(e);
@@ -114,52 +117,57 @@ public class ExtensionImpl implements Extension {
   }
 
   <T> void processAnnotatedType(@Observes ProcessAnnotatedType<T> pat) {
-
-    AnnotatedType<T> annotatedType = pat.getAnnotatedType();
-    Class<T> type = annotatedType.getJavaClass();
-
-    // Determine if bean should be processed
-    boolean veto = !context.filter.handle(type);
-    if (!veto) {
-      for (AbstractBean boundBean : context.injector.boundBeans) {
-        Class<?> beanType = boundBean.getBeanClass();
-        if (beanType.isAssignableFrom(type)) {
-          veto = true;
-          break;
-        }
+    if (context != null) {
+      AnnotatedType<T> annotatedType = pat.getAnnotatedType();
+      Class<T> type = annotatedType.getJavaClass();
+      
+      // Determine if bean should be processed
+      boolean veto = !context.filter.handle(type);
+      if (!veto) {
+          for (AbstractBean boundBean : context.injector.boundBeans) {
+              Class<?> beanType = boundBean.getBeanClass();
+              if (beanType.isAssignableFrom(type)) {
+                  veto = true;
+                  break;
+              }
+          }
       }
-    }
-
-    //
-    if (veto) {
-      pat.veto();
+      
+      //
+      if (veto) {
+          pat.veto();
+      }
     }
   }
 
   void afterBeanDiscovery(@Observes AfterBeanDiscovery event, BeanManager beanManager) {
-    for (Scope scope : context.injector.scopes) {
-      if (!scope.isBuiltIn()) {
-        event.addContext(new ContextImpl(context.injector.scopeController, scope, scope.getAnnotationType()));
+    if (context != null) {
+      for (Scope scope : context.injector.scopes) {
+        if (!scope.isBuiltIn()) {
+          event.addContext(new ContextImpl(context.injector.scopeController, scope, scope.getAnnotationType()));
+        }
       }
-    }
-
-    // Add the manager
-    event.addBean(new SingletonBean(InjectionContext.class, Tools.set(AbstractBean.DEFAULT_QUALIFIER, AbstractBean.ANY_QUALIFIER), context));
-
-    // Add bound beans
-    for (AbstractBean bean : context.injector.boundBeans) {
-      bean.register(beanManager);
-      event.addBean(bean);
+      
+      // Add the manager
+      event.addBean(new SingletonBean(InjectionContext.class, Tools.set(AbstractBean.DEFAULT_QUALIFIER, AbstractBean.ANY_QUALIFIER), context));
+      
+      // Add bound beans
+      for (AbstractBean bean : context.injector.boundBeans) {
+        bean.register(beanManager);
+        event.addBean(bean);
+      }      
     }
   }
 
   void processBean(@Observes ProcessBean event, BeanManager beanManager) {
-    Bean bean = event.getBean();
-    context.beans.add(bean);
-
-    //
-    if (bean.getScope() == Singleton.class) {
-      singletons.add(bean);
+    if (context != null) {
+      Bean bean = event.getBean();
+      context.beans.add(bean);
+      
+      //
+      if (bean.getScope() == Singleton.class) {
+        singletons.add(bean);
+      }      
     }
   }
 
