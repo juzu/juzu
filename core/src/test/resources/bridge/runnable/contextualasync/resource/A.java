@@ -70,8 +70,6 @@ public class A implements RequestLifeCycle {
         }
         catch (Exception e) {
           e.printStackTrace();
-        } finally {
-          content.close();
         }
       }
     };
