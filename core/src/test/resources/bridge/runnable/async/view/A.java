@@ -75,7 +75,6 @@ public class A implements RequestLifeCycle {
           e.printStackTrace();
         } finally {
           lf.resume();
-          content.close();
         }
       }
     };
