@@ -303,7 +303,14 @@ public abstract class MockRequestBridge implements RequestBridge {
   }
 
   public void execute(Runnable runnable) throws RejectedExecutionException {
-    new Thread(runnable).start();
+    Thread t = new Thread(runnable);
+    t.start();
+    try {
+      //Need to wait here to simulate servlet 3 async feature (JUZU-15)
+      t.join();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
   public void end() {
