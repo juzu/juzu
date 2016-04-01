@@ -129,7 +129,6 @@ public class AjaxService extends ApplicationService implements RequestFilter<Sta
                     sb.append("\" data-url=\"");
                     sb.append(baseURL);
                     sb.append("\"/>");
-                    sb.append("</div>");
                   }
                   stream.provide(Chunk.create(sb));
                 }
