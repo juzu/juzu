@@ -921,9 +921,9 @@
             <!-- Rest of config -->
             <useReleaseProfile>false</useReleaseProfile>
             <!-- for release:prepare -->
-            <pushChanges>false</pushChanges>
+            <pushChanges>true</pushChanges>
             <!-- for release:perform -->
-            <localCheckout>true</localCheckout>
+            <localCheckout>false</localCheckout>
             <autoVersionSubmodules>true</autoVersionSubmodules>
             <arguments>-Psign-artifacts,juzu-release</arguments>
           </configuration>
