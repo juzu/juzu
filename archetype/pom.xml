@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-parent</artifactId>
-    <version>1.1.x-SNAPSHOT</version>
+    <version>1.1.1-M01</version>
   </parent>
   
   <modelVersion>4.0.0</modelVersion>
