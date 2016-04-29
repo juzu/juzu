@@ -16,20 +16,25 @@
 
 package juzu.impl.common;
 
-import juzu.test.AbstractTestCase;
-import org.junit.Test;
-import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
-
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import juzu.impl.request.EntityUnmarshaller;
+import juzu.test.AbstractTestCase;
+
+import org.junit.Test;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ToolsTestCase extends AbstractTestCase {
@@ -254,4 +259,26 @@ public class ToolsTestCase extends AbstractTestCase {
     assertEquals("", Tools.interpolate("${bar}", context));
     assertEquals("juu", Tools.interpolate("${bar:juu}", context));
   }
+
+  @Test
+  public void testLoadService() {
+    Iterable<ServiceA> iterableServiceA = Tools.loadService(ServiceA.class, getClass().getClassLoader());
+    assertFalse("ServiceA shouldn't have a known service impl", iterableServiceA.iterator().hasNext());
+
+    List<Class<? extends ServiceB>> serviceBImpls = new ArrayList<Class<? extends ServiceB>>();
+    serviceBImpls.add(ServiceBImpl1.class);
+    serviceBImpls.add(ServiceBImpl2.class);
+    serviceBImpls.add(ServiceBImpl3.class);
+
+    Iterable<ServiceB> iterableServiceB = Tools.loadService(ServiceB.class, getClass().getClassLoader());
+    int count = 0;
+    for (ServiceB serviceB : iterableServiceB) {
+      assertNotNull("Returned Service is null", serviceB);
+      serviceBImpls.remove(serviceB.getClass());
+      count++;
+    }
+    assertEquals("Returned services missed service of type: " + serviceBImpls, 0, serviceBImpls.size());
+    assertEquals("Services count is different than expected", 3, count);
+  }
+
 }
