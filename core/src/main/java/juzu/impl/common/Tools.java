@@ -184,6 +184,9 @@ public class Tools {
             while (a != null && a.hasNext()) {
               try {
                 next = a.next();
+				if(next != null) {
+					return true;
+				}
               }
               catch (Exception e) {
                 // Ignore
