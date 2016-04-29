@@ -197,7 +197,11 @@ public class Tools {
 
           @Override
           public T next() {
-            if (!hasNext()) {
+            if(next != null) {
+              T tmp = next;
+              next = null;
+              return tmp;
+            } else if (!hasNext()) {
               throw new NoSuchElementException();
             } else {
               T tmp = next;
