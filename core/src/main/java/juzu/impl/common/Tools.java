@@ -170,53 +170,7 @@ public class Tools {
   }
 
   public static <T> Iterable<T> loadService(Class<T> service, ClassLoader loader) {
-    final Iterable<T> i = ServiceLoader.load(service, loader);
-    return new Iterable<T>() {
-      @Override
-      public Iterator<T> iterator() {
-        return new Iterator<T>() {
-
-          Iterator<T> a = i.iterator();
-          T next;
-
-          @Override
-          public boolean hasNext() {
-            while (a != null && a.hasNext()) {
-              try {
-                next = a.next();
-                if(next != null) {
-                  return true;
-                }
-              }
-              catch (Exception e) {
-                // Ignore
-              }
-            }
-            return next != null;
-          }
-
-          @Override
-          public T next() {
-            if(next != null) {
-              T tmp = next;
-              next = null;
-              return tmp;
-            } else if (!hasNext()) {
-              throw new NoSuchElementException();
-            } else {
-              T tmp = next;
-              next = null;
-              return tmp;
-            }
-          }
-
-          @Override
-          public void remove() {
-            throw new UnsupportedOperationException();
-          }
-        };
-      }
-    };
+    return ServiceLoader.load(service, loader);
   }
 
   public static Class<?> getPackageClass(ClassLoader loader, String pkgName) {
