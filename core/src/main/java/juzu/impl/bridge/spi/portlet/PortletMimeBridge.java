@@ -182,6 +182,7 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
         }
         writer.append("</div>");
         writer.close();
+        resp.addProperty(ResourceResponse.HTTP_STATUS_CODE, "500");
       } else {
         throw new PortletException(error.getCause());
       }
