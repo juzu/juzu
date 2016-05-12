@@ -4,7 +4,7 @@
 
   <groupId>org.juzu</groupId>
   <artifactId>juzu-parent</artifactId>
-  <version>1.1.x-SNAPSHOT</version>
+  <version>1.1.1-RC01</version>
   <packaging>pom</packaging>
 
   <name>Juzu Web Framework</name>
@@ -111,7 +111,7 @@
     <connection>scm:git:git://github.com/juzu/juzu.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/juzu/juzu.git</developerConnection>
     <url>https://github.com/juzu/juzu</url>
-    <tag>HEAD</tag>
+    <tag>1.1.1-RC01</tag>
   </scm>
 
   <distributionManagement>
@@ -131,230 +131,230 @@
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-core</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-core</artifactId>
         <classifier>sources</classifier>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-core</artifactId>
         <type>test-jar</type>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-core</artifactId>
         <classifier>javadoc</classifier>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-archetype</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-depchain-arquillian</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-depchain-arquillian-tomcat7</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
         <classifier>sources</classifier>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
         <classifier>gatein</classifier>
         <type>war</type>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-booking</artifactId>
         <type>war</type>
         <classifier>liferay</classifier>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-less</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-less</artifactId>
         <classifier>sources</classifier>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-validation</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-validation</artifactId>
         <classifier>sources</classifier>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-less4j</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-less4j</artifactId>
         <classifier>sources</classifier>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-servlet</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-servlet</artifactId>
         <classifier>sources</classifier>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-portlet</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-portlet</artifactId>
         <classifier>sources</classifier>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-webjars</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
 			</dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-webjars</artifactId>
         <classifier>sources</classifier>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
 			<dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-shiro</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-plugins-shiro</artifactId>
         <classifier>sources</classifier>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-templating-mustache</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-templating-mustache</artifactId>
         <classifier>sources</classifier>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-examples</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-examples</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-examples</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
         <type>test-jar</type>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-examples</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
         <classifier>test-sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-examples</artifactId>
         <type>war</type>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-guide</artifactId>
         <classifier>html</classifier>
         <type>zip</type>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-tutorial-guide</artifactId>
         <type>pdf</type>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-reference-examples</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-reference-examples</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-reference-examples</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
         <type>test-jar</type>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-reference-examples</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
         <classifier>test-sources</classifier>
       </dependency>
 
@@ -363,42 +363,42 @@
         <artifactId>juzu-doc-reference-guide</artifactId>
         <classifier>html</classifier>
         <type>zip</type>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-reference-api</artifactId>
         <classifier>javadoc</classifier>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-reference-guide</artifactId>
         <type>pdf</type>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-extension-examples</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-extension-examples</artifactId>
         <classifier>sources</classifier>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-extension-examples</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
         <type>test-jar</type>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-extension-examples</artifactId>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
         <classifier>test-sources</classifier>
       </dependency>
 
@@ -407,7 +407,7 @@
         <artifactId>juzu-doc-extension-guide</artifactId>
         <classifier>html</classifier>
         <type>zip</type>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
       <dependency>
         <groupId>org.juzu</groupId>
@@ -419,7 +419,7 @@
         <groupId>org.juzu</groupId>
         <artifactId>juzu-doc-extension-guide</artifactId>
         <type>pdf</type>
-        <version>1.1.x-SNAPSHOT</version>
+        <version>1.1.1-RC01</version>
       </dependency>
 
       <dependency>

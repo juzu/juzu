@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.juzu</groupId>
     <artifactId>juzu-depchain</artifactId>
-    <version>1.1.x-SNAPSHOT</version>
+    <version>1.1.1-RC01</version>
   </parent>
 
   <artifactId>juzu-depchain-arquillian-tomcat7</artifactId>
-  <version>1.1.x-SNAPSHOT</version>
+  <version>1.1.1-RC01</version>
 
   <name>Juzu Arquillian Tomcat7 Depchain</name>
   <description>The Juzu Depchain for Arquillian testing with Tomcat7</description>
