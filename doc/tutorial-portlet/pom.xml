@@ -3,12 +3,12 @@
   <parent>
     <artifactId>juzu-doc-parent</artifactId>
     <groupId>org.juzu</groupId>
-    <version>1.1.1-RC01</version>
+    <version>1.1.x-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>juzu-doc-tutorial-portlet-parent</artifactId>
-  <version>1.1.1-RC01</version>
+  <version>1.1.x-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Juzu Portlet Tutorial Aggregator</name>
