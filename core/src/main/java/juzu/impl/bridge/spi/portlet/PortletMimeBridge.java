@@ -73,7 +73,7 @@ public abstract class PortletMimeBridge<Rq extends PortletRequest, Rs extends Mi
       Stream stream = new Stream() {
 
         /** . */
-        private Charset charset = Tools.ISO_8859_1;
+        private Charset charset = Tools.UTF_8;
 
         /** . */
         private String mimeType = null;
