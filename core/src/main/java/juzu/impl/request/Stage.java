@@ -64,7 +64,7 @@ public abstract class Stage {
 
     // Build the filter list
     List<RequestFilter<?>> filters = new ArrayList<RequestFilter<?>>();
-    for (RequestFilter<?> filter : request.controllerPlugin.getInjectionContext().resolveInstances(RequestFilter.class)) {
+    for (RequestFilter<?> filter : request.controllerPlugin.getFilters()) {
       if (getClass().isAssignableFrom(filter.getStageType())) {
         filters.add(filter);
       }
