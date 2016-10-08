@@ -48,13 +48,13 @@ import java.util.Map;
 public abstract class Stage {
 
   /** . */
-  private int index = 0;
+  private int                                              index   = 0;
 
   /** . */
-  final Request request;
+  final Request                                            request;
 
   /** . */
-  final List<RequestFilter<?>> filters;
+  final List<RequestFilter<?>>                             filters;
 
   public Request getRequest() {
     return request;
@@ -64,7 +64,7 @@ public abstract class Stage {
 
     // Build the filter list
     List<RequestFilter<?>> filters = new ArrayList<RequestFilter<?>>();
-    for (RequestFilter<?> filter : request.controllerPlugin.getInjectionContext().resolveInstances(RequestFilter.class)) {
+    for (RequestFilter<?> filter : request.controllerPlugin.getFilters()) {
       if (getClass().isAssignableFrom(filter.getStageType())) {
         filters.add(filter);
       }
@@ -80,7 +80,7 @@ public abstract class Stage {
       RequestFilter plugin = filters.get(index);
       try {
         index++;
-        return (Response)plugin.handle(this);
+        return (Response) plugin.handle(this);
       }
       finally {
         index--;
@@ -113,10 +113,10 @@ public abstract class Stage {
       parameterArguments.putAll(request.bridge.getRequestArguments());
 
       //
-      Map<ContextualParameter,Object> contextualArguments = request.getContextualArguments();
+      Map<ContextualParameter, Object> contextualArguments = request.getContextualArguments();
       for (ControlParameter controlParameter : request.handler.getParameters()) {
         if (controlParameter instanceof ContextualParameter) {
-          ContextualParameter contextualParameter = (ContextualParameter)controlParameter;
+          ContextualParameter contextualParameter = (ContextualParameter) controlParameter;
           if (!contextualArguments.containsKey(contextualParameter)) {
             contextualArguments.put(contextualParameter, null);
           }
@@ -183,11 +183,11 @@ public abstract class Stage {
 
         // Build arguments
         Object[] args = new Object[handler.getParameters().size()];
-        for (int i = 0;i < args.length;i++) {
+        for (int i = 0; i < args.length; i++) {
           ControlParameter parameter = handler.getParameters().get(i);
           Object value;
           if (parameter instanceof PhaseParameter) {
-            PhaseParameter phaseParam = (PhaseParameter)parameter;
+            PhaseParameter phaseParam = (PhaseParameter) parameter;
             RequestParameter requestParam = request.getParameterArguments().get(phaseParam.getMappedName());
             if (requestParam != null) {
               ValueType<?> valueType = request.controllerPlugin.resolveValueType(phaseParam.getValueType());
@@ -217,9 +217,9 @@ public abstract class Stage {
               } else if (type == long.class) {
                 value = 0L;
               } else if (type == byte.class) {
-                value = (byte)0;
+                value = (byte) 0;
               } else if (type == short.class) {
-                value = (short)0;
+                value = (short) 0;
               } else if (type == boolean.class) {
                 value = false;
               } else if (type == float.class) {
@@ -231,7 +231,7 @@ public abstract class Stage {
               }
             }
           } else if (parameter instanceof BeanParameter) {
-            BeanParameter beanParam = (BeanParameter)parameter;
+            BeanParameter beanParam = (BeanParameter) parameter;
             Class<?> type = beanParam.getType();
             try {
               value = beanParam.createMappedBean(request.controllerPlugin, handler.requiresPrefix, type, beanParam.getName(), request.getParameterArguments());
@@ -240,7 +240,7 @@ public abstract class Stage {
               value = null;
             }
           } else {
-            ContextualParameter contextualParameter = (ContextualParameter)parameter;
+            ContextualParameter contextualParameter = (ContextualParameter) parameter;
             value = request.getContextualArguments().get(contextualParameter);
             if (value == null) {
               Class<?> contextualType = contextualParameter.getType();
@@ -293,10 +293,10 @@ public abstract class Stage {
     private final RequestContext context;
 
     /** . */
-    private final Object controller;
+    private final Object         controller;
 
     /** . */
-    private final Object[] args;
+    private final Object[]       args;
 
     public LifeCycle(Request request, RequestContext context, Object controller, Object[] args) {
       super(request);
@@ -311,7 +311,7 @@ public abstract class Stage {
       // Begin request callback
       if (controller instanceof juzu.request.RequestLifeCycle) {
         try {
-          ((juzu.request.RequestLifeCycle)controller).beginRequest(context);
+          ((juzu.request.RequestLifeCycle) controller).beginRequest(context);
         }
         catch (Exception e) {
           return new Response.Error(e);
@@ -328,7 +328,7 @@ public abstract class Stage {
         // End request callback
         if (controller instanceof juzu.request.RequestLifeCycle) {
           try {
-            ((juzu.request.RequestLifeCycle)controller).endRequest(context);
+            ((juzu.request.RequestLifeCycle) controller).endRequest(context);
           }
           catch (Exception e) {
             context.setResponse(Response.error(e));
@@ -353,10 +353,10 @@ public abstract class Stage {
     private final RequestContext context;
 
     /** . */
-    private final Object controller;
+    private final Object         controller;
 
     /** . */
-    private final Object[] args;
+    private final Object[]       args;
 
     public Invoke(Request request, RequestContext context, Object controller, Object[] args) {
       super(request);
@@ -388,7 +388,7 @@ public abstract class Stage {
         MimeType mimeType = null;
         for (Annotation annotation : context.getHandler().getMethod().getDeclaredAnnotations()) {
           if (annotation instanceof MimeType) {
-            mimeType = (MimeType)annotation;
+            mimeType = (MimeType) annotation;
           } else {
             mimeType = annotation.annotationType().getAnnotation(MimeType.class);
           }
@@ -406,7 +406,7 @@ public abstract class Stage {
           // @Action -> Response.Action
           // @View -> Response.Mime
           // as we can do it
-          Response resp = (Response)ret;
+          Response resp = (Response) ret;
           if (mimeType != null) {
             resp = resp.with(PropertyType.MIME_TYPE, mimeType.value()[0]);
           }
