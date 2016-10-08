@@ -24,6 +24,7 @@ import juzu.impl.plugin.application.Application;
 import juzu.impl.request.ContextualParameter;
 import juzu.impl.request.ControlParameter;
 import juzu.impl.request.ControllerHandler;
+import juzu.impl.request.RequestFilter;
 import juzu.impl.value.ValueType;
 import juzu.request.Phase;
 import juzu.io.UndeclaredIOException;
@@ -36,11 +37,13 @@ import juzu.impl.request.Request;
 import juzu.request.RequestParameter;
 
 import javax.inject.Inject;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /** @author <a href="mailto:julien.viet@exoplatform.com">Julien Viet</a> */
 public class ControllerService extends ApplicationService {
@@ -50,6 +53,9 @@ public class ControllerService extends ApplicationService {
 
   /** . */
   final ArrayList<ValueType<?>> valueTypes = new ArrayList<ValueType<?>>();
+
+  /** . */
+  final List<RequestFilter<?>>                             filters = new ArrayList<RequestFilter<?>>();
 
   /** . */
   @Inject
@@ -82,6 +88,20 @@ public class ControllerService extends ApplicationService {
 
   public InjectionContext<?, ?> getInjectionContext() {
     return application.getInjectionContext();
+  }
+  
+  public List<RequestFilter<?>> getFilters() {
+    if (filters.isEmpty()) {
+      synchronized (filters) {
+        if (filters.isEmpty()) {
+          // Build the filter list
+          for (RequestFilter<?> filter : getInjectionContext().resolveInstances(RequestFilter.class)) {
+            filters.add(filter);
+          }
+        }
+      }
+    }
+    return filters;
   }
 
   public <T> ValueType<T> resolveValueType(Class<T> type) {
