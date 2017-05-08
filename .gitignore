@@ -10,3 +10,11 @@ release.properties
 .DS_Store
 build
 .gradle
+# eclipse project file
+.settings/
+.wtpmodules/
+.classpath
+.project
+.factorypath
+# docker
+?/

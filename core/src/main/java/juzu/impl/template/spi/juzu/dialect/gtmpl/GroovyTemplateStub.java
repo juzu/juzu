@@ -69,7 +69,7 @@ public class GroovyTemplateStub extends TemplateStub {
     if (scriptClass == null) {
       CompilerConfiguration config = new CompilerConfiguration();
       String script = getScript(loader, fqn);
-      GroovyCodeSource gcs = new GroovyCodeSource(new ByteArrayInputStream(script.getBytes()), "myscript", "/groovy/shell");
+      GroovyCodeSource gcs = new GroovyCodeSource(new String(script.getBytes()), "myscript", "/groovy/shell");
       GroovyClassLoader gcl = new GroovyClassLoader(loader, config);
       try {
         scriptClass = gcl.parseClass(gcs, false);
