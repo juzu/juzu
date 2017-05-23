@@ -13,7 +13,7 @@ http://juzuweb.org
 # Build instructions
 
 Prerequisites
-- Java 1.7
+- Java 1.6
 - Apache Maven 3
 
 Build the project
