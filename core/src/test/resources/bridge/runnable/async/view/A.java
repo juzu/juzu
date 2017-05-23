@@ -50,7 +50,7 @@ public class A implements RequestLifeCycle {
   }
 
   @PreDestroy
-  public void destroy() {
+  public void destroy() {    
     AbstractRunnableAsyncTestCase.destroyed.set(true);
   }
 
