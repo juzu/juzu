@@ -334,8 +334,7 @@
       <id>gatein-spring</id>
       <activation>
         <property>
-          <name>target</name>
-          <value>gatein-spring</value>
+          <name>!target</name>
         </property>
       </activation>
       <properties>
@@ -385,7 +384,6 @@
         <dependency>
           <groupId>org.codehaus.groovy</groupId>
           <artifactId>groovy-all</artifactId>
-          <scope>provided</scope>
         </dependency>
         <dependency>
           <groupId>javax.inject</groupId>
