@@ -762,4 +762,8 @@ public class ProcessingContext extends Logger implements Filer, Elements, Types 
       }
     }
   }
+
+  public boolean isFunctionalInterface(TypeElement type) {
+    return false;
+  }
 }
