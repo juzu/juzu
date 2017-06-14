@@ -935,10 +935,8 @@
           <artifactId>maven-release-plugin</artifactId>
           <version>${version.release.plugin}</version>
           <configuration>
-            <!-- Avoid issues with signature plugin -->
-            <mavenExecutorId>forked-path</mavenExecutorId>
-
             <!-- Rest of config -->
+            <goals>deploy</goals>
             <useReleaseProfile>false</useReleaseProfile>
             <pushChanges>false</pushChanges>
             <autoVersionSubmodules>true</autoVersionSubmodules>
@@ -1003,6 +1001,8 @@
             <artifactId>maven-gpg-plugin</artifactId>
             <executions>
               <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
                 <goals>
                   <goal>sign</goal>
                 </goals>
