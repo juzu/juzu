@@ -940,7 +940,7 @@
             <useReleaseProfile>false</useReleaseProfile>
             <pushChanges>false</pushChanges>
             <autoVersionSubmodules>true</autoVersionSubmodules>
-            <arguments>-Psign-artifacts,juzu-release</arguments>
+            <arguments>-Psign-artifacts,juzu-release ${arguments}</arguments>
           </configuration>
         </plugin>
         <plugin>
