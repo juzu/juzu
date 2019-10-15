@@ -37,7 +37,7 @@
     <inject.version>1</inject.version>
     <javassist.version>3.14.0-GA</javassist.version>
     <weld.version>1.1.8.Final</weld.version>
-    <spring.version>3.2.4.RELEASE</spring.version>
+    <spring.version>5.2.0.RELEASE</spring.version>
     <guice.version>3.0</guice.version>
     <groovy.version>2.4.11</groovy.version>
     <servlet.version>3.0.1</servlet.version>
