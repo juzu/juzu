@@ -68,7 +68,7 @@ public class AssetServer {
               content = new AssetResource(resource, null);
             }
           }
-          if (content != null) {
+          if (content != null && content.url != null) {
             InputStream in;
             long lastModified;
             URLConnection conn = content.url.openConnection();
