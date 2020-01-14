@@ -17,6 +17,7 @@ package juzu.plugin.less4j.impl;
 
 import com.github.sommeri.less4j.Less4jException;
 import com.github.sommeri.less4j.LessCompiler;
+import com.github.sommeri.less4j.LessCompiler.Configuration;
 import com.github.sommeri.less4j.LessSource;
 import com.github.sommeri.less4j.core.ThreadUnsafeLessCompiler;
 import juzu.asset.AssetLocation;
@@ -68,7 +69,9 @@ public class LessAsset extends Asset {
   public InputStream open(String s, URLConnection resource) throws IOException {
     LessCompiler compiler = new ThreadUnsafeLessCompiler();
     try {
-      LessCompiler.CompilationResult result = compiler.compile(resource.getURL());
+      Configuration configuration = new Configuration();
+      configuration.setLinkSourceMap(false);
+      LessCompiler.CompilationResult result = compiler.compile(resource.getURL(), configuration);
       return new ByteArrayInputStream(result.getCss().getBytes());
     }
     catch (Less4jException e) {
