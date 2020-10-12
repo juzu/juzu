@@ -41,7 +41,7 @@
     <guice.version>3.0</guice.version>
     <groovy.version>2.4.11</groovy.version>
     <servlet.version>3.0.1</servlet.version>
-    <junit.version>4.10</junit.version>
+    <junit.version>4.13.1</junit.version>
 
     <!-- Test settings -->
     <juzu.test.compiler>javac</juzu.test.compiler>
